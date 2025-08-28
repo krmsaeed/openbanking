@@ -1,10 +1,18 @@
 import { apiClient, ApiResponse } from './api';
 
+export interface UserInfo {
+    email?: string;
+    phone?: string;
+    name?: string;
+    dateOfBirth?: string;
+    address?: string;
+}
+
 export interface VerificationData {
     signature: string | File;
     video: File;
     type: 'login' | 'register';
-    userInfo?: any;
+    userInfo?: UserInfo;
 }
 
 export interface VerificationResponse {

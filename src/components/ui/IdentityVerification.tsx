@@ -241,7 +241,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                                             </Button>
                                         </div>
                                         <p className="text-base text-gray-800 leading-relaxed text-center">
-                                            "{currentText}"
+                                            {currentText}
                                         </p>
                                         <div className="flex justify-between items-center mt-2">
                                             <span className="text-sm text-blue-600 font-medium">

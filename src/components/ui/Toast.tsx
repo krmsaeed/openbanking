@@ -5,11 +5,11 @@ import toast, { Toaster, Toast } from "react-hot-toast";
 import { CheckCircleIcon, XCircleIcon, ExclamationTriangleIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
 
 interface ToastContextType {
-    success: (message: string, options?: any) => void;
-    error: (message: string, options?: any) => void;
-    warning: (message: string, options?: any) => void;
-    info: (message: string, options?: any) => void;
-    loading: (message: string, options?: any) => string;
+    success: (message: string, options?: object) => void;
+    error: (message: string, options?: object) => void;
+    warning: (message: string, options?: object) => void;
+    info: (message: string, options?: object) => void;
+    loading: (message: string, options?: object) => string;
     dismiss: (toastId?: string) => void;
 }
 
@@ -60,35 +60,35 @@ const CustomToast: React.FC<{ t: Toast; type: 'success' | 'error' | 'warning' | 
 };
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const success = (message: string, options?: any) => {
+    const success = (message: string, options?: object) => {
         return toast.custom((t: Toast) => <CustomToast t={t} type="success" />, {
             duration: 4000,
             ...options,
         });
     };
 
-    const error = (message: string, options?: any) => {
+    const error = (message: string, options?: object) => {
         return toast.custom((t: Toast) => <CustomToast t={t} type="error" />, {
             duration: 5000,
             ...options,
         });
     };
 
-    const warning = (message: string, options?: any) => {
+    const warning = (message: string, options?: object) => {
         return toast.custom((t: Toast) => <CustomToast t={t} type="warning" />, {
             duration: 4000,
             ...options,
         });
     };
 
-    const info = (message: string, options?: any) => {
+    const info = (message: string, options?: object) => {
         return toast.custom((t: Toast) => <CustomToast t={t} type="info" />, {
             duration: 4000,
             ...options,
         });
     };
 
-    const loading = (message: string, options?: any) => {
+    const loading = (message: string, options?: object) => {
         return toast.loading(message, {
             style: {
                 borderRadius: '12px',
