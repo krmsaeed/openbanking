@@ -1,0 +1,299 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { CameraIcon, VideoCameraIcon, XMarkIcon, MicrophoneIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
+import { Button } from "./Button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./Card";
+
+interface IdentityVerificationProps {
+    onComplete: (selfieFile: File | null, videoFile: File | null) => void;
+    onCancel: () => void;
+}
+
+export function IdentityVerification({ onComplete, onCancel }: IdentityVerificationProps) {
+    const [isRecording, setIsRecording] = useState(false);
+    const [recordingTime, setRecordingTime] = useState(0);
+    const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
+    const [currentTextIndex, setCurrentTextIndex] = useState(0);
+
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const streamRef = useRef<MediaStream | null>(null);
+    const recordedChunksRef = useRef<Blob[]>([]);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    const verificationTexts = [
+        "من [نام کاربر] به تاریخ [تاریخ] درخواست احراز هویت می‌کنم.",
+        "کد ملی من [کد ملی] است و این درخواست را شخصاً انجام می‌دهم.",
+        "اطلاعات ارائه شده صحیح بوده و مسئولیت آن را می‌پذیرم."
+    ];
+
+    const currentText = verificationTexts[currentTextIndex];
+
+    useEffect(() => {
+        if (recordingTime > 0) {
+            timerRef.current = setTimeout(() => {
+                setRecordingTime(recordingTime - 1);
+            }, 1000);
+        }
+        return () => {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+        };
+    }, [recordingTime]);
+
+    useEffect(() => {
+        if (!videoFile) {
+            startCamera();
+        }
+
+        return () => {
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
+            }
+            if (videoPreviewUrl) {
+                URL.revokeObjectURL(videoPreviewUrl);
+            }
+        };
+    }, []);
+
+    const startCamera = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true
+            });
+
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+                streamRef.current = stream;
+            }
+        } catch (error) {
+            console.error('Error accessing camera:', error);
+            alert('دسترسی به دوربین امکان‌پذیر نیست');
+        }
+    };
+
+    const stopCamera = () => {
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current = null;
+        }
+        setIsRecording(false);
+        setRecordingTime(0);
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
+    };
+
+    const startVideoRecording = async () => {
+        if (!streamRef.current) return;
+
+        try {
+            const mediaRecorder = new MediaRecorder(streamRef.current);
+            recordedChunksRef.current = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    recordedChunksRef.current.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+                const file = new File([blob], `verification_video_${Date.now()}.webm`, { type: 'video/webm' });
+                setVideoFile(file);
+
+                const url = URL.createObjectURL(blob);
+                setVideoPreviewUrl(url);
+
+                stopCamera();
+            };
+
+            mediaRecorder.start();
+            mediaRecorderRef.current = mediaRecorder;
+            setIsRecording(true);
+            setRecordingTime(30);
+        } catch (error) {
+            console.error('Error starting recording:', error);
+            alert('خطا در شروع ضبط');
+        }
+    };
+
+    const stopVideoRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+        }
+    };
+
+    const handleComplete = () => {
+        if (videoFile) {
+            onComplete(null, videoFile);
+        }
+    };
+
+    const handleRetakeVideo = () => {
+        setVideoFile(null);
+        if (videoPreviewUrl) {
+            URL.revokeObjectURL(videoPreviewUrl);
+            setVideoPreviewUrl(null);
+        }
+        setCurrentTextIndex(0);
+    };
+
+    const speakText = () => {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(currentText);
+            utterance.lang = 'fa-IR';
+            utterance.rate = 0.8;
+            speechSynthesis.speak(utterance);
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            <Card padding="lg">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                        <VideoCameraIcon className="w-6 h-6 text-red-600" />
+                        ضبط ویدیو احراز هویت
+                    </CardTitle>
+                    <CardDescription>
+                        متن نمایش داده شده را با صدای بلند بخوانید
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="text-center">
+                        {videoFile && videoPreviewUrl ? (
+                            <div className="space-y-4">
+                                <div className="border-2 border-green-200 rounded-lg p-4 bg-green-50">
+                                    <h4 className="font-medium text-green-800 mb-3">پیش‌نمایش ویدیو ضبط شده:</h4>
+                                    <video
+                                        src={videoPreviewUrl}
+                                        controls
+                                        className="w-full max-w-md mx-auto rounded-lg border border-gray-300"
+                                        style={{ maxHeight: '200px' }}
+                                    >
+                                        مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                                    </video>
+                                </div>
+
+                                <p className="text-green-600 font-medium">✓ ویدیو احراز هویت ضبط شد</p>
+
+                                <div className="flex justify-center gap-3">
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleRetakeVideo}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <VideoCameraIcon className="w-4 h-4" />
+                                        ضبط مجدد
+                                    </Button>
+
+                                    <Button
+                                        onClick={handleComplete}
+                                        className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                                    >
+                                        <VideoCameraIcon className="w-4 h-4" />
+                                        تأیید ویدیو
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className="border-2 border-dashed border-blue-300 rounded-lg p-4 bg-blue-50">
+                                    <div className="relative bg-black rounded-lg overflow-hidden mb-4">
+                                        <video
+                                            ref={videoRef}
+                                            autoPlay
+                                            muted
+                                            className="w-full h-64 object-cover"
+                                            style={{ transform: 'scaleX(-1)' }}
+                                        />
+                                        <canvas ref={canvasRef} className="hidden" />
+
+                                        {isRecording && (
+                                            <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full">
+                                                <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                                                <span className="text-sm font-medium">
+                                                    ضبط: {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="mb-4 p-3 bg-white border-2 border-blue-200 rounded-lg">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h4 className="font-medium text-blue-900">متن زیر را بخوانید:</h4>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={speakText}
+                                                className="flex items-center gap-1"
+                                            >
+                                                <SpeakerWaveIcon className="w-4 h-4" />
+                                                پخش صوتی
+                                            </Button>
+                                        </div>
+                                        <p className="text-base text-gray-800 leading-relaxed text-center">
+                                            "{currentText}"
+                                        </p>
+                                        <div className="flex justify-between items-center mt-2">
+                                            <span className="text-sm text-blue-600 font-medium">
+                                                متن {currentTextIndex + 1} از {verificationTexts.length}
+                                            </span>
+                                            {currentTextIndex < verificationTexts.length - 1 && (
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setCurrentTextIndex(prev => prev + 1)}
+                                                >
+                                                    متن بعدی
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-center gap-3">
+                                        {!isRecording ? (
+                                            <Button
+                                                onClick={startVideoRecording}
+                                                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-6 py-3"
+                                            >
+                                                <VideoCameraIcon className="w-5 h-5" />
+                                                شروع ضبط
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={stopVideoRecording}
+                                                className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-6 py-3"
+                                            >
+                                                <XMarkIcon className="w-5 h-5" />
+                                                پایان ضبط
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="text-center">
+                                    <Button
+                                        variant="outline"
+                                        onClick={onCancel}
+                                        className="mx-auto"
+                                    >
+                                        انصراف
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}

@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  direction: rtl;
+}
+
+body {
+  font-family: var(--font-vazirmatn), "Tahoma", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* RTL adjustments */
+[dir="rtl"] input {
+  text-align: right;
+}
+
+[dir="rtl"] .text-center {
+  text-align: center !important;
+}
+
+/* LTR for OTP inputs */
+.otp-container {
+  direction: ltr;
+}
+
+.otp-input {
+  direction: ltr;
+  text-align: center;
+}
+
+/* Toast Animations */
+@keyframes enter {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes leave {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+  }
+}
+
+.animate-enter {
+  animation: enter 0.35s ease-out forwards;
+}
+
+.animate-leave {
+  animation: leave 0.35s ease-in forwards;
+}
+
+/* File Upload Drag & Drop */
+.file-upload-drag {
+  border: 2px dashed #d1d5db;
+  transition: all 0.2s ease-in-out;
+}
+
+.file-upload-drag:hover {
+  border-color: #3b82f6;
+  background-color: #f8fafc;
+}
+
+.file-upload-drag.drag-over {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+  transform: scale(1.02);
+}
+
+/* Form improvements */
+.form-field-group {
+  position: relative;
+}
+
+.form-field-group input:focus + label,
+.form-field-group select:focus + label,
+.form-field-group textarea:focus + label {
+  color: #3b82f6;
+}
+
+/* Loading spinner improvements */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Progress steps */
+.step-connector {
+  position: relative;
+  flex: 1;
+  height: 2px;
+}
+
+.step-connector::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    #e5e7eb 50%,
+    transparent 100%
+  );
+}
+
+.step-connector.completed::before {
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    #3b82f6 50%,
+    transparent 100%
+  );
+}

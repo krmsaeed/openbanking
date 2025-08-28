@@ -1,0 +1,57 @@
+import { apiClient, ApiResponse } from './api';
+
+export interface VerificationData {
+    signature: string | File;
+    video: File;
+    type: 'login' | 'register';
+    userInfo?: any;
+}
+
+export interface VerificationResponse {
+    referenceId: string;
+    status: 'pending' | 'processing' | 'approved' | 'rejected';
+    message: string;
+}
+
+export interface VerificationStatus {
+    referenceId: string;
+    status: 'pending' | 'processing' | 'approved' | 'rejected';
+    message: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+class VerificationService {
+    async submitVerification(data: VerificationData): Promise<ApiResponse<VerificationResponse>> {
+        const formData = new FormData();
+
+        if (typeof data.signature === 'string') {
+            formData.append('signature', data.signature);
+        } else {
+            formData.append('signature', data.signature);
+        }
+
+        formData.append('video', data.video);
+        formData.append('type', data.type);
+        formData.append('timestamp', Date.now().toString());
+
+        if (data.userInfo) {
+            formData.append('userInfo', JSON.stringify(data.userInfo));
+        }
+
+        return apiClient.postFormData<VerificationResponse>('/verification', formData);
+    }
+
+    async getVerificationStatus(referenceId: string): Promise<ApiResponse<VerificationStatus>> {
+        return apiClient.get<VerificationStatus>(`/verification?referenceId=${referenceId}`);
+    }
+
+    async updateVerificationStatus(
+        referenceId: string,
+        status: VerificationStatus['status']
+    ): Promise<ApiResponse<VerificationStatus>> {
+        return apiClient.put<VerificationStatus>(`/verification/${referenceId}`, { status });
+    }
+}
+
+export const verificationService = new VerificationService();
