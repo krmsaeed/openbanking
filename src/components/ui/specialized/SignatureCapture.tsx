@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { PencilIcon, TrashIcon, CheckIcon } from "@heroicons/react/24/outline";
-import { Button } from "./Button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./Card";
+import { Button } from "../core/Button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../core/Card";
 
 interface SignatureCaptureProps {
     onComplete: (signatureFile: File) => void;

@@ -8,12 +8,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
 import { UserIcon, ArrowRightIcon, CheckCircleIcon, CameraIcon, PencilIcon } from "@heroicons/react/24/outline";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
-import { Loading } from "@/components/ui/Loading";
-import { IdentityVerification } from "@/components/ui/IdentityVerification";
-import { SignatureCapture } from "@/components/ui/SignatureCapture";
+import { Button } from "@/components/ui/core/Button";
+import { Input } from "@/components/ui/forms/Input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/core/Card";
+import { Loading } from "@/components/ui/feedback/Loading";
+import { IdentityVerification } from "@/components/ui/specialized/IdentityVerification";
+import { SignatureCapture } from "@/components/ui/specialized/SignatureCapture";
 
 // Schema for form validation
 const personalInfoSchema = z.object({
@@ -29,7 +29,7 @@ type PersonalInfoForm = z.infer<typeof personalInfoSchema>;
 
 export default function Register() {
     const router = useRouter();
-    const [step, setStep] = useState(1); // 1: اطلاعات، 2: امضا، 3: ویدیو
+    const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [signatureFile, setSignatureFile] = useState<File | null>(null);
     const [identityVerified, setIdentityVerified] = useState(false);

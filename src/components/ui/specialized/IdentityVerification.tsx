@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { VideoCameraIcon, XMarkIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
-import { Button } from "./Button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./Card";
+import { Button } from "../core/Button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../core/Card";
 
 interface IdentityVerificationProps {
     onComplete: (selfieFile: File | null, videoFile: File | null) => void;
@@ -49,7 +49,9 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
         if (!videoFile) {
             startCamera();
         }
+    }, [videoFile]);
 
+    useEffect(() => {
         return () => {
             if (streamRef.current) {
                 streamRef.current.getTracks().forEach(track => track.stop());
@@ -58,7 +60,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                 URL.revokeObjectURL(videoPreviewUrl);
             }
         };
-    }, []);
+    }, [videoPreviewUrl]);
 
     const startCamera = async () => {
         try {
@@ -74,19 +76,6 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
         } catch (error) {
             console.error('Error accessing camera:', error);
             alert('دسترسی به دوربین امکان‌پذیر نیست');
-        }
-    };
-
-    const stopCamera = () => {
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => track.stop());
-            streamRef.current = null;
-        }
-        setIsRecording(false);
-        setRecordingTime(0);
-        if (timerRef.current) {
-            clearTimeout(timerRef.current);
-            timerRef.current = null;
         }
     };
 
@@ -111,7 +100,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                 const url = URL.createObjectURL(blob);
                 setVideoPreviewUrl(url);
 
-                stopCamera();
+                // Camera is already stopped in stopVideoRecording function
             };
 
             mediaRecorder.start();
@@ -128,6 +117,17 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
         if (mediaRecorderRef.current && isRecording) {
             mediaRecorderRef.current.stop();
             setIsRecording(false);
+
+            // Immediately stop the camera stream when user clicks stop
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
+                streamRef.current = null;
+            }
+
+            // Clear the video element's source immediately
+            if (videoRef.current) {
+                videoRef.current.srcObject = null;
+            }
         }
     };
 

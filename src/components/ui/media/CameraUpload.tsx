@@ -1,10 +1,7 @@
 "use client";
-
-"use client";
-
 import { useState, useRef } from "react";
 import { CameraIcon, VideoCameraIcon, XMarkIcon, PlayIcon, PauseIcon, StopIcon } from "@heroicons/react/24/outline";
-import { Button } from "./Button";
+import { Button } from "../core/Button";
 
 interface CameraUploadProps {
     files: File[];

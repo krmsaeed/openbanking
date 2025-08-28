@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BuildingLibraryIcon, UserPlusIcon } from "@heroicons/react/24/outline";
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
+import { Button } from "@/components/ui/core/Button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/core/Card";
 
 export default function Home() {
   return (
@@ -22,8 +22,8 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-4">
-            <Link href="/login">
+          <CardContent className="space-y-4 ">
+            <Link href="/login" className="mb-5">
               <Button size="lg" className="w-full">
                 <BuildingLibraryIcon className="w-4 h-4 ml-2" />
                 ورود به حساب

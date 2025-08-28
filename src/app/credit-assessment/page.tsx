@@ -31,7 +31,7 @@ import {
     Select,
     Textarea
 } from "@/components/ui";
-import { SimpleFileUpload } from "@/components/ui/SimpleFileUpload";
+import { SimpleFileUpload } from "@/components/ui/media/SimpleFileUpload";
 
 export default function CreditAssessment() {
     const router = useRouter();

@@ -1,3 +1,4 @@
+"use client"
 import { useState } from "react";
 
 interface SimpleFileUploadProps {
@@ -44,8 +45,8 @@ export function SimpleFileUpload({
         <div>
             <div
                 className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${dragOver
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                     }`}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}

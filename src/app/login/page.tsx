@@ -4,10 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PhoneIcon, ArrowRightIcon, ClockIcon } from "@heroicons/react/24/outline";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
-import { Loading } from "@/components/ui/Loading";
+import { Button } from "@/components/ui/core/Button";
+import { Input } from "@/components/ui/forms/Input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/core/Card";
+import { Loading } from "@/components/ui/feedback/Loading";
 
 export default function Login() {
     const router = useRouter();

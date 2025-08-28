@@ -10,9 +10,9 @@ import {
     CheckCircleIcon,
     XCircleIcon
 } from "@heroicons/react/24/outline";
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
-import { Loading } from "@/components/ui/Loading";
+import { Button } from "@/components/ui/core/Button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/core/Card";
+import { Loading } from "@/components/ui/feedback/Loading";
 
 export default function Verification() {
     const router = useRouter();
