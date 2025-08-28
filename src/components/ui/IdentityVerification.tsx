@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { CameraIcon, VideoCameraIcon, XMarkIcon, MicrophoneIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
+import { VideoCameraIcon, XMarkIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
 import { Button } from "./Button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./Card";
 

@@ -6,16 +6,11 @@ import {
     CheckCircleIcon,
     BuildingLibraryIcon,
     BanknotesIcon,
-    ArrowsRightLeftIcon,
     DocumentTextIcon,
-    CreditCardIcon,
-    PhoneIcon,
-    ArrowRightOnRectangleIcon,
-    CameraIcon,
-    UserIcon
+    ArrowRightOnRectangleIcon
 } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 
 export default function Dashboard() {
     const router = useRouter();
