@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { PhoneIcon, ArrowRightIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/core/Button";
 import { Input } from "@/components/ui/forms/Input";
@@ -39,7 +40,7 @@ export default function Login() {
         e.preventDefault();
 
         if (!phoneNumber) {
-            alert("لطفاً شماره تلفن را وارد کنید");
+            toast.error("لطفاً شماره تلفن را وارد کنید");
             return;
         }
 
@@ -57,7 +58,7 @@ export default function Login() {
         e.preventDefault();
 
         if (otp.length !== 5) {
-            alert("لطفاً کد ۵ رقمی را وارد کنید");
+            toast.error("لطفاً کد ۵ رقمی را وارد کنید");
             return;
         }
 

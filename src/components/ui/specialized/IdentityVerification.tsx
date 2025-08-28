@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import toast from "react-hot-toast";
 import { VideoCameraIcon, XMarkIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
 import { Button } from "../core/Button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../core/Card";
@@ -75,7 +76,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
             }
         } catch (error) {
             console.error('Error accessing camera:', error);
-            alert('دسترسی به دوربین امکان‌پذیر نیست');
+            toast.error('دسترسی به دوربین امکان‌پذیر نیست');
         }
     };
 
@@ -109,7 +110,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
             setRecordingTime(30);
         } catch (error) {
             console.error('Error starting recording:', error);
-            alert('خطا در شروع ضبط');
+            toast.error('خطا در شروع ضبط');
         }
     };
 

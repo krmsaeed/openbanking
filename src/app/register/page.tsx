@@ -69,13 +69,11 @@ export default function Register() {
 
         setLoading(true);
 
-        // Simulate identity verification process
         setTimeout(() => {
             setIdentityVerified(true);
             setLoading(false);
             toast.success("احراز هویت با موفقیت انجام شد!");
 
-            // Complete registration
             setTimeout(() => {
                 toast.success("ثبت‌نام با موفقیت انجام شد! خوش آمدید!");
                 router.push("/dashboard");
@@ -234,7 +232,7 @@ export default function Register() {
                                         type="tel"
                                         placeholder="09123456789"
                                         maxLength={11}
-                                        className="text-center"
+                                        className="text-left"
                                         required
                                     />
                                     {errors.phoneNumber && (

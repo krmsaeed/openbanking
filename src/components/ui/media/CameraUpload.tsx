@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
+import toast from "react-hot-toast";
 import { CameraIcon, VideoCameraIcon, XMarkIcon, PlayIcon, PauseIcon, StopIcon } from "@heroicons/react/24/outline";
 import { Button } from "../core/Button";
 
@@ -71,7 +72,7 @@ export function CameraUpload({
             }
         } catch (error) {
             console.error('Error accessing camera:', error);
-            alert('دسترسی به دوربین امکان‌پذیر نیست');
+            toast.error('دسترسی به دوربین امکان‌پذیر نیست');
         }
     };
 
@@ -148,7 +149,7 @@ export function CameraUpload({
             }, 1000);
         } catch (error) {
             console.error('Error starting recording:', error);
-            alert('خطا در شروع ضبط');
+            toast.error('خطا در شروع ضبط');
         }
     };
 

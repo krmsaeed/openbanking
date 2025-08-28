@@ -1,18 +1,17 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import toast from "react-hot-toast";
 import {
     CameraIcon,
     ArrowRightIcon,
     DocumentIcon,
-    CheckCircleIcon,
-    XCircleIcon
 } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/core/Button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/core/Card";
 import { Loading } from "@/components/ui/feedback/Loading";
+import Image from "next/image";
 
 export default function Verification() {
     const router = useRouter();
@@ -90,7 +89,7 @@ export default function Verification() {
                 videoRef.current.srcObject = mediaStream;
             }
         } catch (err) {
-            alert('دسترسی به دوربین امکان‌پذیر نیست');
+            toast.error('دسترسی به دوربین امکان‌پذیر نیست');
         }
     };
 
@@ -128,7 +127,7 @@ export default function Verification() {
                 router.push(isRegister ? "/dashboard" : "/");
             }, 3000);
         } else {
-            alert(step === 1 ? "لطفاً امضای خود را ثبت کنید" : "لطفاً عکس سلفی بگیرید");
+            toast.error(step === 1 ? "لطفاً امضای خود را ثبت کنید" : "لطفاً عکس سلفی بگیرید");
         }
     };
 
@@ -280,8 +279,10 @@ export default function Verification() {
 
                                 {selfieImage && (
                                     <div className="text-center space-y-4">
-                                        <img
+                                        <Image
                                             src={selfieImage}
+                                            width={400}
+                                            height={400}
                                             alt="Selfie"
                                             className="w-full max-w-sm mx-auto rounded-xl border border-gray-300"
                                         />

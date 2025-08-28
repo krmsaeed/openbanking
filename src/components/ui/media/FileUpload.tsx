@@ -1,6 +1,7 @@
 import { forwardRef, useCallback } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import toast from "react-hot-toast";
 import { DocumentIcon, PhotoIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const fileUploadVariants = cva(
@@ -60,14 +61,14 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
             const selectedFiles = e.target.files;
             if (selectedFiles) {
                 if (multiple && selectedFiles.length > maxFiles) {
-                    alert(`حداکثر ${maxFiles} فایل مجاز است`);
+                    toast.error(`حداکثر ${maxFiles} فایل مجاز است`);
                     return;
                 }
 
                 for (let i = 0; i < selectedFiles.length; i++) {
                     const fileSizeMB = selectedFiles[i].size / (1024 * 1024);
                     if (fileSizeMB > maxSizeMB) {
-                        alert(`حجم فایل ${selectedFiles[i].name} بیش از ${maxSizeMB}MB است`);
+                        toast.error(`حجم فایل ${selectedFiles[i].name} بیش از ${maxSizeMB}MB است`);
                         return;
                     }
                 }
@@ -81,14 +82,14 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
             const droppedFiles = e.dataTransfer.files;
             if (droppedFiles.length > 0) {
                 if (multiple && droppedFiles.length > maxFiles) {
-                    alert(`حداکثر ${maxFiles} فایل مجاز است`);
+                    toast.error(`حداکثر ${maxFiles} فایل مجاز است`);
                     return;
                 }
 
                 for (let i = 0; i < droppedFiles.length; i++) {
                     const fileSizeMB = droppedFiles[i].size / (1024 * 1024);
                     if (fileSizeMB > maxSizeMB) {
-                        alert(`حجم فایل ${droppedFiles[i].name} بیش از ${maxSizeMB}MB است`);
+                        toast.error(`حجم فایل ${droppedFiles[i].name} بیش از ${maxSizeMB}MB است`);
                         return;
                     }
                 }

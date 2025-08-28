@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import {
     ArrowRightIcon,
     ArrowLeftIcon,
@@ -11,11 +12,9 @@ import {
     IdentificationIcon,
     BriefcaseIcon,
     UserIcon,
-    HomeIcon,
     CreditCardIcon,
     DocumentTextIcon,
-    PhoneIcon,
-    MapPinIcon
+    PhoneIcon
 } from "@heroicons/react/24/outline";
 import {
     Button,
@@ -26,45 +25,18 @@ import {
     CardTitle,
     CardDescription,
     Loading,
-    FormField,
-    useToast,
-    Select,
-    Textarea
+    FormField
 } from "@/components/ui";
 import { SimpleFileUpload } from "@/components/ui/media/SimpleFileUpload";
 
 export default function CreditAssessment() {
     const router = useRouter();
-    const { success, error, info } = useToast();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [assessmentResult, setAssessmentResult] = useState<'approved' | 'rejected' | 'pending' | null>(null);
     const [creditLimit, setCreditLimit] = useState(0);
 
-    // مرحله 1: اطلاعات شخصی
-    const [personalInfo, setPersonalInfo] = useState({
-        firstName: "",
-        lastName: "",
-        nationalCode: "",
-        birthDate: "",
-        fatherName: "",
-        maritalStatus: "",
-        dependents: "",
-        education: ""
-    });
-
-    // مرحله 2: اطلاعات تماس
-    const [contactInfo, setContactInfo] = useState({
-        mobile: "",
-        phone: "",
-        email: "",
-        address: "",
-        city: "",
-        province: "",
-        postalCode: ""
-    });
-
-    // مرحله 3: اطلاعات مالی
+    // مرحله 1: اطلاعات مالی
     const [financialInfo, setFinancialInfo] = useState({
         monthlyIncome: "",
         otherIncome: "",
@@ -77,8 +49,7 @@ export default function CreditAssessment() {
         loanPurpose: ""
     });
 
-    // مرحله 4: اطلاعات بانکی
-    const [bankingInfo, setBankingInfo] = useState({
+    const [bankingInfo] = useState({
         bankName: "",
         accountNumber: "",
         cardNumber: "",
@@ -87,7 +58,6 @@ export default function CreditAssessment() {
         creditScore: ""
     });
 
-    // مرحله 5: مدارک شناسایی
     const [identityFiles, setIdentityFiles] = useState<{
         nationalCardFront: File[];
         nationalCardBack: File[];
@@ -100,7 +70,6 @@ export default function CreditAssessment() {
         personalPhoto: []
     });
 
-    // مرحله 6: مدارک شغلی
     const [jobFiles, setJobFiles] = useState<{
         salarySlips: File[];
         workContract: File[];
@@ -113,7 +82,6 @@ export default function CreditAssessment() {
         companyLicense: []
     });
 
-    // مرحله 7: مدارک بانکی
     const [bankFiles, setBankFiles] = useState<{
         bankStatements: File[];
         accountStatement: File[];
@@ -124,116 +92,38 @@ export default function CreditAssessment() {
         creditReport: []
     });
 
-    // مرحله 1: اطلاعات شخصی
     const handleStep1Submit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const requiredFields = ['firstName', 'lastName', 'nationalCode', 'birthDate', 'fatherName', 'maritalStatus'];
-        const missingFields = requiredFields.filter(field => !personalInfo[field as keyof typeof personalInfo]);
+        const requiredFields = ['monthlyIncome', 'workExperience', 'requestedAmount'];
+        const missingFields = requiredFields.filter(field => {
+            const value = financialInfo[field as keyof typeof financialInfo];
+            return !value || value.trim() === '';
+        });
 
         if (missingFields.length > 0) {
-            error("لطفاً تمام فیلدهای ضروری را پر کنید");
+            toast.error("لطفاً تمام فیلدهای ضروری را پر کنید");
             return;
         }
 
-        success("اطلاعات شخصی ثبت شد");
         setStep(2);
     };
 
-    // مرحله 2: اطلاعات تماس
-    const handleStep2Submit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const requiredFields = ['mobile', 'email', 'address', 'city', 'province'];
-        const missingFields = requiredFields.filter(field => !contactInfo[field as keyof typeof contactInfo]);
-
-        if (missingFields.length > 0) {
-            error("لطفاً تمام فیلدهای ضروری را پر کنید");
-            return;
-        }
-
-        success("اطلاعات تماس ثبت شد");
-        setStep(3);
-    };
-
-    // مرحله 3: اطلاعات مالی
-    const handleStep3Submit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const requiredFields = ['monthlyIncome', 'workExperience', 'jobTitle', 'companyName', 'requestedAmount', 'loanPurpose'];
-        const missingFields = requiredFields.filter(field => !financialInfo[field as keyof typeof financialInfo]);
-
-        if (missingFields.length > 0) {
-            error("لطفاً تمام فیلدهای ضروری را پر کنید");
-            return;
-        }
-
-        success("اطلاعات مالی ثبت شد");
-        setStep(4);
-    };
-
-    // مرحله 4: اطلاعات بانکی
-    const handleStep4Submit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const requiredFields = ['bankName', 'accountNumber', 'hasOtherLoans'];
-        const missingFields = requiredFields.filter(field => !bankingInfo[field as keyof typeof bankingInfo]);
-
-        if (missingFields.length > 0) {
-            error("لطفاً تمام فیلدهای ضروری را پر کنید");
-            return;
-        }
-
-        success("اطلاعات بانکی ثبت شد");
-        setStep(5);
-    };
-
-    // مرحله 5: مدارک شناسایی
-    const handleStep5Submit = () => {
+    const handleStep2Submit = () => {
         const hasNationalCardFront = identityFiles.nationalCardFront.length > 0;
         const hasNationalCardBack = identityFiles.nationalCardBack.length > 0;
         const hasBirthCertificate = identityFiles.birthCertificate.length > 0;
 
         if (!hasNationalCardFront || !hasNationalCardBack || !hasBirthCertificate) {
-            error("لطفاً تمام مدارک شناسایی ضروری را بارگذاری کنید");
+            toast.error("لطفاً تمام مدارک شناسایی ضروری را بارگذاری کنید");
             return;
         }
 
-        success("مدارک شناسایی بارگذاری شد");
-        setStep(6);
+        setStep(3);
     };
 
-    // مرحله 6: مدارک شغلی
-    const handleStep6Submit = () => {
-        const hasSalarySlips = jobFiles.salarySlips.length > 0;
-        const hasWorkContract = jobFiles.workContract.length > 0;
-
-        if (!hasSalarySlips || !hasWorkContract) {
-            error("لطفاً حداقل فیش حقوقی و قرارداد کار را بارگذاری کنید");
-            return;
-        }
-
-        success("مدارک شغلی بارگذاری شد");
-        setStep(7);
-    };
-
-    // مرحله 7: مدارک بانکی
-    const handleStep7Submit = () => {
-        const hasBankStatements = bankFiles.bankStatements.length > 0;
-
-        if (!hasBankStatements) {
-            error("لطفاً حداقل گردش حساب بانکی را بارگذاری کنید");
-            return;
-        }
-
-        success("مدارک بانکی بارگذاری شد");
-        setStep(8);
-    };
-
-    // مرحله 8: تأیید نهایی و ارسال
     const handleFinalSubmit = () => {
         setLoading(true);
-        info("در حال پردازش درخواست...");
 
         setTimeout(() => {
             const income = parseInt(financialInfo.monthlyIncome);
@@ -242,7 +132,6 @@ export default function CreditAssessment() {
             const experience = parseInt(financialInfo.workExperience);
             const otherLoans = parseInt(bankingInfo.otherLoansAmount || "0");
 
-            // الگوریتم پیچیده‌تر اعتبارسنجی
             const netIncome = income - expenses - otherLoans;
             const incomeToLoanRatio = netIncome > 0 ? requested / netIncome : 999;
 
@@ -253,7 +142,6 @@ export default function CreditAssessment() {
 
                 setAssessmentResult('approved');
                 setCreditLimit(Math.min(requested, netIncome * 48));
-                success("تبریک! درخواست شما تأیید شد");
 
             } else if (netIncome >= 3000000 &&
                 experience >= 1 &&
@@ -261,11 +149,9 @@ export default function CreditAssessment() {
 
                 setAssessmentResult('approved');
                 setCreditLimit(Math.min(requested * 0.8, netIncome * 36));
-                success("درخواست شما با مبلغ کمتر تأیید شد");
 
             } else {
                 setAssessmentResult('rejected');
-                error("متأسفانه درخواست شما رد شد");
             }
 
             setLoading(false);
@@ -280,17 +166,17 @@ export default function CreditAssessment() {
 
         const fileArray = Array.from(files);
 
-        if (step === 5) {
+        if (step === 2) {
             setIdentityFiles(prev => ({
                 ...prev,
                 [field]: fileArray
             }));
-        } else if (step === 6) {
+        } else if (step === 3) {
             setJobFiles(prev => ({
                 ...prev,
                 [field]: fileArray
             }));
-        } else if (step === 7) {
+        } else if (step === 4) {
             setBankFiles(prev => ({
                 ...prev,
                 [field]: fileArray
@@ -299,23 +185,25 @@ export default function CreditAssessment() {
     };
 
     const handleRemoveFile = (field: string, index: number, step: number) => {
-        if (step === 5) {
+        if (step === 2) {
             setIdentityFiles(prev => ({
                 ...prev,
                 [field]: prev[field as keyof typeof prev]?.filter((_, i) => i !== index) || []
             }));
-        } else if (step === 6) {
+        } else if (step === 3) {
             setJobFiles(prev => ({
                 ...prev,
                 [field]: prev[field as keyof typeof prev]?.filter((_, i) => i !== index) || []
             }));
-        } else if (step === 7) {
+        } else if (step === 4) {
             setBankFiles(prev => ({
                 ...prev,
                 [field]: prev[field as keyof typeof prev]?.filter((_, i) => i !== index) || []
             }));
         }
-    }; if (loading) {
+    };
+
+    if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
                 <Card padding="lg" className="max-w-md w-full">
@@ -376,7 +264,6 @@ export default function CreditAssessment() {
                     </div>
                 </div>
 
-                {/* مرحله 1: اطلاعات مالی */}
                 {step === 1 && (
                     <Card padding="lg">
                         <CardHeader>

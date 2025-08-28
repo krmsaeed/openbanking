@@ -19,13 +19,10 @@ export default function CameraTest() {
     const router = useRouter();
     const { success, error } = useToast();
 
-    // فایل‌های عکس
     const [photoFiles, setPhotoFiles] = useState<File[]>([]);
 
-    // فایل‌های ویدیو
     const [videoFiles, setVideoFiles] = useState<File[]>([]);
 
-    // فایل‌های ترکیبی (عکس و ویدیو)
     const [mixedFiles, setMixedFiles] = useState<File[]>([]);
 
     const handlePhotoSelect = (files: FileList | null) => {
@@ -95,7 +92,6 @@ export default function CameraTest() {
                 </div>
 
                 <div className="space-y-8">
-                    {/* بخش عکس */}
                     <Card padding="lg">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-3">
@@ -121,7 +117,6 @@ export default function CameraTest() {
                         </CardContent>
                     </Card>
 
-                    {/* بخش ویدیو */}
                     <Card padding="lg">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-3">
@@ -147,7 +142,6 @@ export default function CameraTest() {
                         </CardContent>
                     </Card>
 
-                    {/* بخش ترکیبی */}
                     <Card padding="lg">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-3">
@@ -176,7 +170,6 @@ export default function CameraTest() {
                         </CardContent>
                     </Card>
 
-                    {/* خلاصه فایل‌ها */}
                     {(photoFiles.length > 0 || videoFiles.length > 0 || mixedFiles.length > 0) && (
                         <Card padding="lg">
                             <CardHeader>
