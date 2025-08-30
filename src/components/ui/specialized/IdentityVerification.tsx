@@ -17,6 +17,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
+    const [cameraActive, setCameraActive] = useState(false);
 
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -26,7 +27,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     const verificationTexts = [
-        "من [نام کاربر] به تاریخ [تاریخ] درخواست احراز هویت می‌کنم.",
+        "این یک متن تستی است",
         "کد ملی من [کد ملی] است و این درخواست را شخصاً انجام می‌دهم.",
         "اطلاعات ارائه شده صحیح بوده و مسئولیت آن را می‌پذیرم."
     ];
@@ -47,10 +48,10 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
     }, [recordingTime]);
 
     useEffect(() => {
-        if (!videoFile) {
+        if (!videoFile && !isRecording && !streamRef.current && !cameraActive) {
             startCamera();
         }
-    }, [videoFile]);
+    }, [videoFile, isRecording, cameraActive]);
 
     useEffect(() => {
         return () => {
@@ -73,6 +74,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
                 streamRef.current = stream;
+                setCameraActive(true);
             }
         } catch (error) {
             console.error('Error accessing camera:', error);
@@ -96,12 +98,13 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
             mediaRecorder.onstop = () => {
                 const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
                 const file = new File([blob], `verification_video_${Date.now()}.webm`, { type: 'video/webm' });
-                setVideoFile(file);
 
                 const url = URL.createObjectURL(blob);
                 setVideoPreviewUrl(url);
 
-                // Camera is already stopped in stopVideoRecording function
+                setTimeout(() => {
+                    setVideoFile(file);
+                }, 100);
             };
 
             mediaRecorder.start();
@@ -115,36 +118,94 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
     };
 
     const stopVideoRecording = () => {
+        navigator.mediaDevices.getUserMedia({ video: false, audio: false });
         if (mediaRecorderRef.current && isRecording) {
             mediaRecorderRef.current.stop();
             setIsRecording(false);
 
-            // Immediately stop the camera stream when user clicks stop
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+                timerRef.current = null;
+            }
+
             if (streamRef.current) {
-                streamRef.current.getTracks().forEach(track => track.stop());
+                streamRef.current.getTracks().forEach(track => {
+                    track.stop();
+                });
                 streamRef.current = null;
             }
 
-            // Clear the video element's source immediately
             if (videoRef.current) {
                 videoRef.current.srcObject = null;
             }
+
+            setCameraActive(false);
+            navigator.mediaDevices.getUserMedia({ video: false, audio: false });
+            toast.success('ضبط ویدیو متوقف شد و دوربین خاموش شد');
         }
     };
 
     const handleComplete = () => {
         if (videoFile) {
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
+                navigator.mediaDevices.getUserMedia({ video: false, audio: false });
+                streamRef.current = null;
+            }
+
+            if (videoRef.current) {
+                videoRef.current.srcObject = null;
+            }
+
+            setCameraActive(false);
+
             onComplete(null, videoFile);
         }
-    };
+    }; const handleRetakeVideo = () => {
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current = null;
+        }
 
-    const handleRetakeVideo = () => {
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+
+        setCameraActive(false);
+
         setVideoFile(null);
         if (videoPreviewUrl) {
             URL.revokeObjectURL(videoPreviewUrl);
             setVideoPreviewUrl(null);
         }
         setCurrentTextIndex(0);
+
+        toast.success('آماده برای ضبط مجدد');
+    };
+
+    const handleCancel = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+        }
+
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current = null;
+        }
+
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
+
+        setCameraActive(false);
+        navigator.mediaDevices.getUserMedia({ video: false, audio: false });
+        onCancel();
     };
 
     const speakText = () => {
@@ -154,9 +215,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
             utterance.rate = 0.8;
             speechSynthesis.speak(utterance);
         }
-    };
-
-    return (
+    }; return (
         <div className="space-y-6">
             <Card padding="lg">
                 <CardHeader>
@@ -284,7 +343,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                                 <div className="text-center">
                                     <Button
                                         variant="outline"
-                                        onClick={onCancel}
+                                        onClick={handleCancel}
                                         className="mx-auto"
                                     >
                                         انصراف
