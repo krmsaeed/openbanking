@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, FormField } from "@/components/ui";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, FormField, Box, Typography } from "@/components/ui";
 import { newUserSchema, type NewUserFormData } from "@/lib/schemas/newUser";
 
 interface UserInfoStepProps {
@@ -40,7 +40,7 @@ export function UserInfoStep({ onNext }: UserInfoStepProps) {
 
             <CardContent>
                 <form onSubmit={handleSubmit(onNext)} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Box className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField label="نام" required>
                             <Input
                                 type="text"
@@ -62,7 +62,7 @@ export function UserInfoStep({ onNext }: UserInfoStepProps) {
                                 <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>
                             )}
                         </FormField>
-                    </div>
+                    </Box>
 
                     <FormField label="کد ملی" required>
                         <Input
@@ -109,13 +109,13 @@ export function UserInfoStep({ onNext }: UserInfoStepProps) {
                         )}
                     </FormField>
 
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h3 className="font-medium text-blue-900 mb-2">مرحله بعد: احراز هویت</h3>
-                        <ul className="text-sm text-blue-800 space-y-1">
-                            <li>• ضبط ویدیو با خواندن متن تأیید</li>
-                            <li>• تأیید نهایی هویت</li>
-                        </ul>
-                    </div>
+                    <Box variant="info" size="md" radius="lg" border>
+                        <Typography variant="h6" weight="medium" color="info">مرحله بعد: احراز هویت</Typography>
+                        <Box className="space-y-1">
+                            <Typography variant="body2" color="info">• ضبط ویدیو با خواندن متن تأیید</Typography>
+                            <Typography variant="body2" color="info">• تأیید نهایی هویت</Typography>
+                        </Box>
+                    </Box>
 
                     <Button
                         type="submit"

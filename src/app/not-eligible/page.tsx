@@ -1,8 +1,7 @@
 "use client";
-
 import Link from "next/link";
 import { XCircleIcon, ArrowLeftIcon, PhoneIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
-import { Button, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle, Box, Typography, List, ListItem } from "@/components/ui";
 
 export default function NotEligiblePage() {
     const reasons = [
@@ -28,21 +27,21 @@ export default function NotEligiblePage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100 flex items-center justify-center p-4">
-            <div className="w-full max-w-2xl">
-                <div className="text-center mb-8">
-                    <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <Box className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100 flex items-center justify-center p-4">
+            <Box className="w-full max-w-2xl">
+                <Box className="text-center mb-8">
+                    <Box className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
                         <XCircleIcon className="h-10 w-10 text-red-600" />
-                    </div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                    </Box>
+                    <Typography variant="h1" className="text-3xl font-bold text-gray-900 mb-2">
                         عدم واجد شرایط دریافت تسهیلات
-                    </h1>
-                    <p className="text-gray-600 text-lg">
+                    </Typography>
+                    <Typography variant="body1" color="secondary" className="text-lg">
                         متأسفانه در حال حاضر شرایط لازم برای دریافت تسهیلات را ندارید
-                    </p>
-                </div>
+                    </Typography>
+                </Box>
 
-                <div className="grid gap-6 mb-8">
+                <Box className="grid gap-6 mb-8">
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-xl text-red-700">
@@ -50,14 +49,14 @@ export default function NotEligiblePage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <ul className="space-y-3">
+                            <List variant="unordered" spacing="md" marker={false}>
                                 {reasons.map((reason, index) => (
-                                    <li key={index} className="flex items-center space-x-3 space-x-reverse">
-                                        <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
-                                        <span className="text-gray-700">{reason}</span>
-                                    </li>
+                                    <ListItem key={index} className="flex items-center space-x-3 space-x-reverse">
+                                        <Box className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></Box>
+                                        <Typography variant="body2" color="secondary">{reason}</Typography>
+                                    </ListItem>
                                 ))}
-                            </ul>
+                            </List>
                         </CardContent>
                     </Card>
 
@@ -68,18 +67,18 @@ export default function NotEligiblePage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
+                            <Box className="space-y-4">
                                 {nextSteps.map((step, index) => (
-                                    <div key={index} className="border-r-4 border-blue-500 pr-4">
-                                        <h3 className="font-semibold text-gray-900 mb-1">
+                                    <Box key={index} className="border-r-4 border-blue-500 pr-4">
+                                        <Typography variant="h6" className="font-semibold text-gray-900 mb-1">
                                             {step.title}
-                                        </h3>
-                                        <p className="text-gray-600 text-sm">
+                                        </Typography>
+                                        <Typography variant="body2" color="secondary">
                                             {step.description}
-                                        </p>
-                                    </div>
+                                        </Typography>
+                                    </Box>
                                 ))}
-                            </div>
+                            </Box>
                         </CardContent>
                     </Card>
 
@@ -90,27 +89,27 @@ export default function NotEligiblePage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div className="flex items-center space-x-3 space-x-reverse">
+                            <Box className="grid md:grid-cols-2 gap-4">
+                                <Box className="flex items-center space-x-3 space-x-reverse">
                                     <PhoneIcon className="h-5 w-5 text-green-600" />
-                                    <div>
-                                        <p className="font-medium text-gray-900">تماس تلفنی</p>
-                                        <p className="text-gray-600 text-sm">021-12345678</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center space-x-3 space-x-reverse">
+                                    <Box>
+                                        <Typography variant="body2" weight="medium">تماس تلفنی</Typography>
+                                        <Typography variant="caption" color="secondary">021-12345678</Typography>
+                                    </Box>
+                                </Box>
+                                <Box className="flex items-center space-x-3 space-x-reverse">
                                     <EnvelopeIcon className="h-5 w-5 text-green-600" />
-                                    <div>
-                                        <p className="font-medium text-gray-900">ایمیل پشتیبانی</p>
-                                        <p className="text-gray-600 text-sm">support@en-bank.com</p>
-                                    </div>
-                                </div>
-                            </div>
+                                    <Box>
+                                        <Typography variant="body2" weight="medium">ایمیل پشتیبانی</Typography>
+                                        <Typography variant="caption" color="secondary">support@en-bank.com</Typography>
+                                    </Box>
+                                </Box>
+                            </Box>
                         </CardContent>
                     </Card>
-                </div>
+                </Box>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Box className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link href="/credit-assessment">
                         <Button
                             variant="outline"
@@ -130,14 +129,13 @@ export default function NotEligiblePage() {
                             بازگشت به داشبورد
                         </Button>
                     </Link>
-                </div>
-
-                <div className="mt-8 text-center">
-                    <p className="text-gray-500 text-sm">
+                </Box>
+                <Box className="mt-8 text-center">
+                    <Typography variant="body2" color="secondary">
                         می‌توانید پس از بهبود شرایط، مجدداً درخواست دهید
-                    </p>
-                </div>
-            </div>
-        </div>
+                    </Typography>
+                </Box>
+            </Box>
+        </Box>
     );
 }

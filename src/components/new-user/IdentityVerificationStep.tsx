@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import { Button, Card, CardContent } from "@/components/ui";
+import { Button, Card, CardContent, Box, Typography } from "@/components/ui";
 import { IdentityVerification } from "@/components/ui/specialized/IdentityVerification";
 import { type NewUserFormData } from "@/lib/schemas/newUser";
 
@@ -13,8 +13,8 @@ interface IdentityVerificationStepProps {
 
 export function IdentityVerificationStep({ userInfo, onBack, onComplete }: IdentityVerificationStepProps) {
     return (
-        <div className="max-w-2xl mx-auto">
-            <div className="mb-8">
+        <Box className="max-w-2xl mx-auto">
+            <Box className="mb-8">
                 <Button
                     variant="ghost"
                     onClick={onBack}
@@ -24,28 +24,34 @@ export function IdentityVerificationStep({ userInfo, onBack, onComplete }: Ident
                     بازگشت به اطلاعات پایه
                 </Button>
 
-                <div className="text-center mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">احراز هویت</h1>
-                    <p className="text-gray-600">
+                <Box className="text-center mb-6">
+                    <Typography variant="h1" color="default" align="center" className="mb-2">احراز هویت</Typography>
+                    <Typography variant="body1" color="secondary" align="center">
                         برای تأیید هویت خود، لطفاً مراحل زیر را تکمیل کنید
-                    </p>
-                </div>
+                    </Typography>
+                </Box>
 
                 <Card padding="sm" className="mb-6">
                     <CardContent>
-                        <div className="text-sm text-gray-600">
-                            <p><span className="font-medium">نام:</span> {userInfo.firstName} {userInfo.lastName}</p>
-                            <p><span className="font-medium">کد ملی:</span> {userInfo.nationalCode}</p>
-                            <p><span className="font-medium">موبایل:</span> {userInfo.mobile}</p>
-                        </div>
+                        <Box>
+                            <Typography variant="body2" color="secondary">
+                                <Typography variant="body2" as="span" weight="medium" color="default">نام:</Typography> {userInfo.firstName} {userInfo.lastName}
+                            </Typography>
+                            <Typography variant="body2" color="secondary">
+                                <Typography variant="body2" as="span" weight="medium" color="default">کد ملی:</Typography> {userInfo.nationalCode}
+                            </Typography>
+                            <Typography variant="body2" color="secondary">
+                                <Typography variant="body2" as="span" weight="medium" color="default">موبایل:</Typography> {userInfo.mobile}
+                            </Typography>
+                        </Box>
                     </CardContent>
                 </Card>
-            </div>
+            </Box>
 
             <IdentityVerification
                 onComplete={onComplete}
                 onCancel={onBack}
             />
-        </div>
+        </Box>
     );
 }

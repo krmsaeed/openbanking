@@ -8,6 +8,8 @@ import { PhoneIcon, ArrowRightIcon, ClockIcon } from "@heroicons/react/24/outlin
 import { Button } from "@/components/ui/core/Button";
 import { Input } from "@/components/ui/forms/Input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/core/Card";
+import { Box, Typography } from "@/components/ui";
+import { Label } from "@/components/ui/forms/Label";
 import { Loading } from "@/components/ui/feedback/Loading";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -119,8 +121,8 @@ export default function Login() {
 
     if (step === 1) {
         return (
-            <div className="min-h-screen  flex items-center justify-center p-4">
-                <div className="max-w-md w-full">
+            <Box className="min-h-screen  flex items-center justify-center p-4">
+                <Box className="max-w-md w-full">
 
                     <Link
                         href="/"
@@ -132,9 +134,9 @@ export default function Login() {
 
                     <Card padding="lg">
                         <CardHeader>
-                            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <Box className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                                 <PhoneIcon className="h-6 w-6 text-white" />
-                            </div>
+                            </Box>
 
                             <CardTitle className="text-center">
                                 ورود به حساب
@@ -188,14 +190,14 @@ export default function Login() {
                             </form>
                         </CardContent>
                     </Card>
-                </div>
-            </div>
+                </Box>
+            </Box>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-            <div className="max-w-md w-full">
+        <Box className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+            <Box className="max-w-md w-full">
 
                 <Button
                     variant="ghost"
@@ -208,26 +210,26 @@ export default function Login() {
 
                 <Card padding="lg">
                     <CardHeader>
-                        <div className="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <Box className="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                             <PhoneIcon className="h-6 w-6 text-white" />
-                        </div>
+                        </Box>
 
-                        <CardTitle className="text-center">
+                        <Typography variant="subtitle1" className="text-center">
                             کد تأیید
-                        </CardTitle>
-                        <CardDescription className="text-center">
+                        </Typography>
+                        <Typography variant="body2" color="muted" className="text-center">
                             کد ارسال شده به {phoneNumber} را وارد کنید
-                        </CardDescription>
+                        </Typography>
                     </CardHeader>
 
                     <CardContent>
                         <form onSubmit={handleOtpSubmit} className="space-y-6">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-4 text-center">
+                            <Box>
+                                <Label className="block text-sm font-medium text-gray-700 mb-4 text-center">
                                     کد ۵ رقمی
-                                </label>
+                                </Label>
 
-                                <div className="otp-container flex justify-center space-x-3">
+                                <Box className="otp-container flex justify-center space-x-3">
                                     {[...Array(5)].map((_, index) => (
                                         <input
                                             key={index}
@@ -243,15 +245,15 @@ export default function Login() {
                                             maxLength={1}
                                         />
                                     ))}
-                                </div>
-                            </div>
+                                </Box>
+                            </Box>
 
-                            <div className="text-center">
+                            <Box className="text-center">
                                 {timer > 0 ? (
-                                    <div className="flex items-center justify-center text-gray-600">
+                                    <Box className="flex items-center justify-center text-gray-600">
                                         <ClockIcon className="w-4 h-4 ml-2" />
-                                        <span>ارسال مجدد در {formatTime(timer)}</span>
-                                    </div>
+                                        <Typography as="span">ارسال مجدد در {formatTime(timer)}</Typography>
+                                    </Box>
                                 ) : (
                                     <Button
                                         type="button"
@@ -261,7 +263,7 @@ export default function Login() {
                                         ارسال مجدد کد
                                     </Button>
                                 )}
-                            </div>
+                            </Box>
 
                             <Button
                                 type="submit"
@@ -277,7 +279,7 @@ export default function Login() {
                         </form>
                     </CardContent>
                 </Card>
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

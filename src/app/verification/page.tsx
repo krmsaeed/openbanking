@@ -9,7 +9,9 @@ import {
     DocumentIcon,
 } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/core/Button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/core/Card";
+import { Card, CardContent, CardHeader } from "@/components/ui/core/Card";
+import { Box, Typography } from "@/components/ui";
+import { SelfieCapture } from "@/components/ui/specialized";
 import { Loading } from "@/components/ui/feedback/Loading";
 import Image from "next/image";
 
@@ -133,25 +135,25 @@ export default function Verification() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+            <Box className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
                 <Card padding="lg" className="max-w-md w-full">
                     <CardContent className="text-center">
                         <Loading className="mx-auto mb-6" />
-                        <CardTitle className="mb-4">
+                        <Typography variant="h6" className="mb-4">
                             در حال بررسی اطلاعات
-                        </CardTitle>
-                        <CardDescription>
+                        </Typography>
+                        <Typography variant="body2" color="muted">
                             لطفاً صبر کنید...
-                        </CardDescription>
+                        </Typography>
                     </CardContent>
                 </Card>
-            </div>
+            </Box>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-            <div className="max-w-lg w-full">
+        <Box className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+            <Box className="max-w-lg w-full">
 
                 <Button
                     variant="ghost"
@@ -164,50 +166,50 @@ export default function Verification() {
 
                 <Card padding="lg">
                     <CardHeader>
-                        <div className="w-12 h-12 bg-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <Box className="w-12 h-12 bg-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                             {step === 1 ? (
                                 <DocumentIcon className="h-6 w-6 text-white" />
                             ) : (
                                 <CameraIcon className="h-6 w-6 text-white" />
                             )}
-                        </div>
+                        </Box>
 
-                        <CardTitle className="text-center">
+                        <Typography variant="h6" className="text-center">
                             تأیید هویت
-                        </CardTitle>
-                        <CardDescription className="text-center">
+                        </Typography>
+                        <Typography variant="body2" color="muted" className="text-center">
                             {step === 1 ? "امضای خود را ثبت کنید" : "عکس سلفی بگیرید"}
-                        </CardDescription>
+                        </Typography>
 
-                        <div className="flex items-center justify-center mt-6">
-                            <div className="flex items-center">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${step >= 1 ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600'
+                        <Box className="flex items-center justify-center mt-6">
+                            <Box className="flex items-center">
+                                <Box className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${step >= 1 ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600'
                                     }`}>
                                     1
-                                </div>
-                                <div className={`w-16 h-1 mx-2 transition-colors ${step >= 2 ? 'bg-purple-600' : 'bg-gray-200'
+                                </Box>
+                                <Box className={`w-16 h-1 mx-2 transition-colors ${step >= 2 ? 'bg-purple-600' : 'bg-gray-200'
                                     }`} />
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${step >= 2 ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600'
+                                <Box className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${step >= 2 ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600'
                                     }`}>
                                     2
-                                </div>
-                            </div>
-                        </div>
+                                </Box>
+                            </Box>
+                        </Box>
                     </CardHeader>
 
                     <CardContent>
                         {step === 1 && (
-                            <div className="space-y-6">
-                                <div className="text-center">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            <Box className="space-y-6">
+                                <Box className="text-center">
+                                    <Typography variant="h5" className="text-gray-900 mb-2">
                                         ثبت امضا
-                                    </h3>
-                                    <p className="text-sm text-gray-600 mb-6">
+                                    </Typography>
+                                    <Typography variant="body2" color="secondary" className="mb-6">
                                         امضای خود را در کادر زیر بکشید
-                                    </p>
-                                </div>
+                                    </Typography>
+                                </Box>
 
-                                <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 bg-gray-50">
+                                <Box className="border-2 border-dashed border-gray-300 rounded-xl p-4 bg-gray-50">
                                     <canvas
                                         ref={canvasRef}
                                         width={400}
@@ -218,9 +220,9 @@ export default function Verification() {
                                         onMouseUp={stopDrawing}
                                         onMouseLeave={stopDrawing}
                                     />
-                                </div>
+                                </Box>
 
-                                <div className="flex gap-3">
+                                <Box className="flex gap-3">
                                     <Button
                                         variant="outline"
                                         onClick={clearSignature}
@@ -235,35 +237,35 @@ export default function Verification() {
                                     >
                                         تأیید امضا
                                     </Button>
-                                </div>
-                            </div>
+                                </Box>
+                            </Box>
                         )}
 
                         {step === 2 && (
-                            <div className="space-y-6">
-                                <div className="text-center">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            <Box className="space-y-6">
+                                <Box className="text-center">
+                                    <Typography variant="h5" className="text-gray-900 mb-2">
                                         عکس سلفی
-                                    </h3>
-                                    <p className="text-sm text-gray-600 mb-6">
+                                    </Typography>
+                                    <Typography variant="body2" color="secondary" className="mb-6">
                                         برای تأیید هویت، عکس سلفی بگیرید
-                                    </p>
-                                </div>
+                                    </Typography>
+                                </Box>
 
                                 {!selfieImage && !stream && (
-                                    <div className="text-center">
-                                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 bg-gray-50">
+                                    <Box className="text-center">
+                                        <Box className="border-2 border-dashed border-gray-300 rounded-xl p-12 bg-gray-50">
                                             <CameraIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                                             <Button onClick={startCamera}>
                                                 <CameraIcon className="h-5 w-5 ml-2" />
                                                 شروع دوربین
                                             </Button>
-                                        </div>
-                                    </div>
+                                        </Box>
+                                    </Box>
                                 )}
 
                                 {stream && !selfieImage && (
-                                    <div className="text-center space-y-4">
+                                    <Box className="text-center space-y-4">
                                         <video
                                             ref={videoRef}
                                             autoPlay
@@ -274,11 +276,11 @@ export default function Verification() {
                                             <CameraIcon className="h-5 w-5 ml-2" />
                                             گرفتن عکس
                                         </Button>
-                                    </div>
+                                    </Box>
                                 )}
 
                                 {selfieImage && (
-                                    <div className="text-center space-y-4">
+                                    <Box className="text-center space-y-4">
                                         <Image
                                             src={selfieImage}
                                             width={400}
@@ -286,7 +288,7 @@ export default function Verification() {
                                             alt="Selfie"
                                             className="w-full max-w-sm mx-auto rounded-xl border border-gray-300"
                                         />
-                                        <div className="flex gap-3">
+                                        <Box className="flex gap-3">
                                             <Button
                                                 variant="outline"
                                                 onClick={retakePhoto}
@@ -300,14 +302,14 @@ export default function Verification() {
                                             >
                                                 تأیید عکس
                                             </Button>
-                                        </div>
-                                    </div>
+                                        </Box>
+                                    </Box>
                                 )}
-                            </div>
+                            </Box>
                         )}
                     </CardContent>
                 </Card>
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

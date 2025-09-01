@@ -80,6 +80,7 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                             onFileSelect={(files) => handleFileSelect('nationalCardFront', files)}
                             onRemoveFile={() => handleRemoveFile('nationalCardFront')}
                             label="تصویر جلوی کارت ملی را اینجا بکشید"
+                            id="national-card-front"
                         />
                     </FormField>
 
@@ -93,6 +94,7 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                             onFileSelect={(files) => handleFileSelect('nationalCardBack', files)}
                             onRemoveFile={() => handleRemoveFile('nationalCardBack')}
                             label="تصویر پشت کارت ملی را اینجا بکشید"
+                            id="national-card-back"
                         />
                     </FormField>
 
@@ -106,6 +108,7 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                             onFileSelect={(files) => handleFileSelect('birthCertificate', files)}
                             onRemoveFile={() => handleRemoveFile('birthCertificate')}
                             label="تصویر شناسنامه را اینجا بکشید"
+                            id="birth-certificate"
                         />
                     </FormField>
 

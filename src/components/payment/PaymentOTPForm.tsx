@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input } from "@/components/ui";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, Box, Typography } from "@/components/ui";
 import { otpFormSchema, type PaymentOtpFormData } from "@/lib/schemas/payment";
 
 interface PaymentOTPFormProps {
@@ -93,7 +93,7 @@ export function PaymentOTPForm({ cardNumber, onVerify, onBack, onResend, loading
                     })}
                     className="space-y-6"
                 >
-                    <div className="flex justify-center gap-2" dir="ltr">
+                    <Box className="flex justify-center gap-2" dir="ltr">
                         {[0, 1, 2, 3, 4, 5].map((index) => (
                             <Input
                                 key={index}
@@ -112,13 +112,13 @@ export function PaymentOTPForm({ cardNumber, onVerify, onBack, onResend, loading
                                 }}
                             />
                         ))}
-                    </div>
+                    </Box>
 
-                    <div className="text-center">
+                    <Box className="text-center">
                         {timer > 0 ? (
-                            <p className="text-sm text-gray-600">
+                            <Typography variant="body2" color="secondary">
                                 ارسال مجدد رمز در {formatTime(timer)}
-                            </p>
+                            </Typography>
                         ) : (
                             <Button
                                 type="button"
@@ -132,9 +132,9 @@ export function PaymentOTPForm({ cardNumber, onVerify, onBack, onResend, loading
                                 ارسال مجدد رمز
                             </Button>
                         )}
-                    </div>
+                    </Box>
 
-                    <div className="flex gap-4">
+                    <Box className="flex gap-4">
                         <Button
                             type="button"
                             variant="outline"
@@ -151,7 +151,7 @@ export function PaymentOTPForm({ cardNumber, onVerify, onBack, onResend, loading
                         >
                             {loading ? 'در حال پردازش...' : 'تأیید پرداخت'}
                         </Button>
-                    </div>
+                    </Box>
                 </form>
             </CardContent>
         </Card>

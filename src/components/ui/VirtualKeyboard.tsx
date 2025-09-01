@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { Button } from "./core/Button";
 import { Card } from "./core/Card";
+import { Box, Typography } from "./core";
 import {
     XMarkIcon,
     BackspaceIcon
@@ -63,7 +64,7 @@ export function VirtualKeyboard({
     }
 
     return (
-        <div className="relative">
+        <Box className="relative">
             <Button
                 type="button"
                 variant="ghost"
@@ -76,19 +77,21 @@ export function VirtualKeyboard({
             </Button>
 
             {/* کیبورد مجازی - inline نمایش */}
-            <div className="mt-12">
+            <Box className="mt-12">
                 <Card
                     className="p-4 bg-white shadow-lg border border-gray-200 w-full max-w-xs"
                     padding="none"
                 >
-                    <div className="space-y-4">
+                    <Box className="space-y-4">
                         {/* نمایش مقدار فعلی */}
-                        <div className="bg-gray-50 p-3 rounded-lg text-center font-mono text-lg tracking-wider border-2 border-dashed border-gray-300">
-                            {currentValue || "---"}
-                        </div>
+                        <Box className="bg-gray-50 p-3 rounded-lg text-center font-mono text-lg tracking-wider border-2 border-dashed border-gray-300">
+                            <Typography variant="body1" className="font-mono">
+                                {currentValue || "---"}
+                            </Typography>
+                        </Box>
 
                         {/* اعداد رندوم شده */}
-                        <div className="grid grid-cols-3 gap-2">
+                        <Box className="grid grid-cols-3 gap-2">
                             {randomizedNumbers.map((number) => (
                                 <Button
                                     key={number}
@@ -101,10 +104,10 @@ export function VirtualKeyboard({
                                     {number}
                                 </Button>
                             ))}
-                        </div>
+                        </Box>
 
                         {/* دکمه‌های عملیات */}
-                        <div className="grid grid-cols-3 gap-2 pt-2 border-t border-gray-200">
+                        <Box className="grid grid-cols-3 gap-2 pt-2 border-t border-gray-200">
                             {/* دکمه پاک کردن */}
                             <Button
                                 type="button"
@@ -127,10 +130,10 @@ export function VirtualKeyboard({
                             >
                                 <XMarkIcon className="h-4 w-4" />
                             </Button>
-                        </div>
-                    </div>
+                        </Box>
+                    </Box>
                 </Card>
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

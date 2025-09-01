@@ -79,7 +79,16 @@ export async function POST(request: NextRequest) {
     }
 }
 
-async function sendToExternalService(metadata: any) {
+interface VerificationMetadata {
+    referenceId: string;
+    type: string;
+    sizes: {
+        signature: number;
+        video: number;
+    };
+}
+
+async function sendToExternalService(metadata: VerificationMetadata) {
     try {
 
         console.log('Data would be sent to external service:', {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
@@ -22,35 +22,33 @@ const personalInfoSchema = z.object({
     nationalId: z.string().length(10, "کد ملی باید ۱۰ رقم باشد").regex(/^\d+$/, "کد ملی باید فقط شامل عدد باشد"),
     phoneNumber: z.string().regex(/^09\d{9}$/, "شماره موبایل باید با ۰۹ شروع شده و ۱۱ رقم باشد"),
     email: z.string().email("ایمیل وارد شده معتبر نیست").optional().or(z.literal("")),
-    password: z.string().min(6, "رمز عبور باید حداقل ۶ کاراکتر باشد"),
 });
 
 type PersonalInfoForm = z.infer<typeof personalInfoSchema>;
 
 export default function Register() {
     const router = useRouter();
-    const [step, setStep] = useState(3);
+    const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
-    const [signatureFile, setSignatureFile] = useState<File | null>(null);
     const [identityVerified, setIdentityVerified] = useState(false);
 
     const {
-        register,
+        control,
         handleSubmit,
         formState: { errors },
-        getValues,
     } = useForm<PersonalInfoForm>({
         resolver: zodResolver(personalInfoSchema),
         mode: "onBlur",
     });
 
     const onPersonalInfoSubmit = (data: PersonalInfoForm) => {
+        console.log("Form data:", data); // Log the form data
         toast.success("اطلاعات شخصی ثبت شد");
         setStep(2);
     };
 
     const handleSignatureComplete = (signatureFile: File) => {
-        setSignatureFile(signatureFile);
+        console.log("Signature file:", signatureFile); // Log the signature file
         toast.success("امضا ثبت شد");
         setStep(3);
     };
@@ -164,11 +162,18 @@ export default function Register() {
                             <form onSubmit={handleSubmit(onPersonalInfoSubmit)} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <Input
-                                            {...register("firstName")}
-                                            label="نام"
-                                            placeholder="نام را وارد کنید"
-                                            required
+                                        <Controller
+                                            name="firstName"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Input
+                                                    {...field}
+                                                    label="نام"
+                                                    placeholder="نام را وارد کنید"
+                                                    required
+                                                    error={errors.firstName?.message}
+                                                />
+                                            )}
                                         />
                                         {errors.firstName && (
                                             <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>
@@ -176,11 +181,18 @@ export default function Register() {
                                     </div>
 
                                     <div>
-                                        <Input
-                                            {...register("lastName")}
-                                            label="نام خانوادگی"
-                                            placeholder="نام خانوادگی را وارد کنید"
-                                            required
+                                        <Controller
+                                            name="lastName"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Input
+                                                    {...field}
+                                                    label="نام خانوادگی"
+                                                    placeholder="نام خانوادگی را وارد کنید"
+                                                    required
+                                                    error={errors.lastName?.message}
+                                                />
+                                            )}
                                         />
                                         {errors.lastName && (
                                             <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>
@@ -189,16 +201,22 @@ export default function Register() {
                                 </div>
 
                                 <div>
-                                    <Input
-                                        {...register("nationalId")}
-                                        label="کد ملی"
-                                        placeholder="0123456789"
-                                        maxLength={10}
-                                        required
-                                        onChange={(e) => {
-                                            const value = e.target.value.replace(/\D/g, "");
-                                            e.target.value = value;
-                                        }}
+                                    <Controller
+                                        name="nationalId"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input
+                                                {...field}
+                                                label="کد ملی"
+                                                placeholder="0123456789"
+                                                maxLength={10}
+                                                required
+                                                error={errors.nationalId?.message}
+                                                type="tel"
+                                                dir="ltr"
+                                                className="text-center"
+                                            />
+                                        )}
                                     />
                                     {errors.nationalId && (
                                         <p className="text-red-500 text-xs mt-1">{errors.nationalId.message}</p>
@@ -206,14 +224,22 @@ export default function Register() {
                                 </div>
 
                                 <div>
-                                    <Input
-                                        {...register("phoneNumber")}
-                                        label="شماره تلفن همراه"
-                                        type="tel"
-                                        placeholder="09123456789"
-                                        maxLength={11}
-                                        className="text-left"
-                                        required
+                                    <Controller
+                                        name="phoneNumber"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input
+                                                {...field}
+                                                label="شماره تلفن همراه"
+                                                type="tel"
+                                                placeholder="09123456789"
+                                                maxLength={11}
+                                                className="text-center"
+                                                dir="ltr"
+                                                required
+                                                error={errors.phoneNumber?.message}
+                                            />
+                                        )}
                                     />
                                     {errors.phoneNumber && (
                                         <p className="text-red-500 text-xs mt-1">{errors.phoneNumber.message}</p>
@@ -221,29 +247,27 @@ export default function Register() {
                                 </div>
 
                                 <div>
-                                    <Input
-                                        {...register("email")}
-                                        label="ایمیل (اختیاری)"
-                                        type="email"
-                                        placeholder="example@gmail.com"
+                                    <Controller
+                                        name="email"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input
+                                                {...field}
+                                                label="ایمیل (اختیاری)"
+                                                type="email"
+                                                placeholder="example@gmail.com"
+                                                dir="ltr"
+                                                className="text-center"
+                                                error={errors.email?.message}
+                                            />
+                                        )}
                                     />
                                     {errors.email && (
                                         <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
                                     )}
                                 </div>
 
-                                <div>
-                                    <Input
-                                        {...register("password")}
-                                        label="رمز عبور"
-                                        type="password"
-                                        placeholder="حداقل ۶ کاراکتر"
-                                        required
-                                    />
-                                    {errors.password && (
-                                        <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
-                                    )}
-                                </div>
+
 
                                 <Button
                                     type="submit"

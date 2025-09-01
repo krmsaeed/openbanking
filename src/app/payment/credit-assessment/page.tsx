@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CreditCardIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
-import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Loading } from "@/components/ui";
+import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Loading, Box, Typography } from "@/components/ui";
 
 export default function CreditAssessmentPayment() {
     const router = useRouter();
@@ -21,34 +21,34 @@ export default function CreditAssessmentPayment() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-            <div className="max-w-md w-full">
+        <Box className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+            <Box className="max-w-md w-full">
                 <Card padding="lg">
                     <CardHeader>
-                        <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <Box className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                             <CreditCardIcon className="h-6 w-6 text-white" />
-                        </div>
-                        <CardTitle className="text-center">پرداخت هزینه اعتبارسنجی</CardTitle>
-                        <CardDescription className="text-center">
+                        </Box>
+                        <Typography variant="h6" className="text-center">پرداخت هزینه اعتبارسنجی</Typography>
+                        <Typography variant="body2" color="secondary" className="text-center">
                             برای ادامه استفاده از خدمات، لطفاً هزینه اعتبارسنجی را پرداخت کنید
-                        </CardDescription>
+                        </Typography>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-6">
-                            <div className="p-4 bg-white rounded-xl border border-gray-200">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <div className="text-sm text-gray-500">مبلغ قابل پرداخت</div>
-                                        <div className="text-2xl font-bold text-gray-900 mt-1">
-                                            {amountTomans.toLocaleString("fa-IR")} <span className="text-base font-normal">تومان</span>
-                                        </div>
-                                    </div>
+                        <Box className="space-y-6">
+                            <Box className="p-4 bg-white rounded-xl border border-gray-200">
+                                <Box className="flex items-center justify-between">
+                                    <Box>
+                                        <Typography variant="caption" color="secondary">مبلغ قابل پرداخت</Typography>
+                                        <Typography variant="h4" className="text-gray-900 mt-1">
+                                            {amountTomans.toLocaleString("fa-IR")} <Typography as="span" variant="body2">تومان</Typography>
+                                        </Typography>
+                                    </Box>
                                     <ShieldCheckIcon className="w-8 h-8 text-emerald-600" />
-                                </div>
-                                <p className="text-xs text-gray-500 mt-3">
+                                </Box>
+                                <Typography variant="caption" color="secondary" className="mt-3 block">
                                     پرداخت امن از طریق درگاه بانکی انجام می‌شود.
-                                </p>
-                            </div>
+                                </Typography>
+                            </Box>
 
                             <Button
                                 onClick={handlePay}
@@ -67,10 +67,10 @@ export default function CreditAssessmentPayment() {
                             >
                                 انصراف
                             </Button>
-                        </div>
+                        </Box>
                     </CardContent>
                 </Card>
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

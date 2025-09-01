@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { PaymentForm, PaymentOTPForm } from "@/components/payment";
+import { Box } from "@/components/ui";
 import { type CardFormData } from "@/lib/schemas/payment";
 
 export default function PaymentGateway() {
@@ -45,8 +46,8 @@ export default function PaymentGateway() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-            <div className="w-full max-w-md">
+        <Box className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+            <Box className="w-full max-w-md">
                 {step === 1 && (
                     <PaymentForm
                         amount={amount}
@@ -64,7 +65,7 @@ export default function PaymentGateway() {
                         loading={loading}
                     />
                 )}
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

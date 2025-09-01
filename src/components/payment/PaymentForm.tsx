@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, FormField } from "@/components/ui";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, FormField, Box, Typography } from "@/components/ui";
 import { cardFormSchema, type CardFormData } from "@/lib/schemas/payment";
 import { convertPersianToEnglish } from "@/lib/utils";
 
@@ -303,7 +303,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                         required
                         error={errors.cvv2?.message}
                     >
-                        <div className="relative">
+                        <Box className="relative">
                             {/* Hidden honeypot field to confuse browsers */}
                             <input
                                 type="password"
@@ -333,9 +333,9 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                             />
 
 
-                        </div>
+                        </Box>
                     </FormField>
-                    <div className="grid grid-cols-2 gap-4">
+                    <Box className="grid grid-cols-2 gap-4">
                         <FormField
                             label="ماه انقضا"
                             required
@@ -405,15 +405,15 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                                 role="textbox"
                             />
                         </FormField>
-                    </div>
+                    </Box>
 
 
 
-                    <div className="bg-gray-100 p-4 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                            <label className="text-sm font-medium text-gray-700">
+                    <Box variant="secondary" size="md" className="rounded-lg">
+                        <Box className="flex items-center justify-between mb-2">
+                            <Typography variant="body2" weight="medium" color="secondary">
                                 کد امنیتی *
-                            </label>
+                            </Typography>
                             <Button
                                 type="button"
                                 variant="ghost"
@@ -424,12 +424,12 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                                 <ArrowPathIcon className="w-4 h-4 ml-1" />
                                 تازه‌سازی
                             </Button>
-                        </div>
-                        <div className="flex items-start gap-4">
-                            <div className="bg-white px-4 py-2 border-2 border-dashed border-gray-300 rounded font-mono text-lg font-bold tracking-wider select-none">
+                        </Box>
+                        <Box className="flex items-start gap-4">
+                            <Box className="bg-white px-4 py-2 border-2 border-dashed border-gray-300 rounded font-mono text-lg font-bold tracking-wider select-none">
                                 {captcha}
-                            </div>
-                            <div className="relative flex-1">
+                            </Box>
+                            <Box className="relative flex-1">
                                 <Input
                                     {...register("captchaInput", {
                                         onChange: handleCaptchaChange
@@ -446,10 +446,10 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                                 />
 
 
-                            </div>
-                        </div>
+                            </Box>
+                        </Box>
 
-                    </div>
+                    </Box>
 
                     <Button
                         type="submit"

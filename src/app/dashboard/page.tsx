@@ -11,6 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/core/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/core/Card";
+import { Box, Typography } from "@/components/ui";
 
 export default function Dashboard() {
     const router = useRouter();
@@ -25,17 +26,17 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-4xl mx-auto">
-                <div className="flex items-center justify-between mb-8">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">
+        <Box className="min-h-screen bg-gray-50 p-6">
+            <Box className="max-w-4xl mx-auto">
+                <Box className="flex items-center justify-between mb-8">
+                    <Box>
+                        <Typography variant="h3" className="text-gray-900">
                             پنل کاربری بانک اقتصاد نوین
-                        </h1>
-                        <p className="text-gray-600">
+                        </Typography>
+                        <Typography variant="body1" color="secondary" className="mt-2">
                             سعید عزیز خوش آمدید
-                        </p>
-                    </div>
+                        </Typography>
+                    </Box>
                     <Button
                         variant="outline"
                         onClick={handleLogout}
@@ -43,41 +44,41 @@ export default function Dashboard() {
                         <ArrowRightOnRectangleIcon className="w-4 h-4 ml-2" />
                         خروج از حساب
                     </Button>
-                </div>
+                </Box>
 
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+                <Box className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
                     <Card>
                         <CardHeader>
-                            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center mb-4">
+                            <Box className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center mb-4">
                                 <BanknotesIcon className="h-6 w-6 text-white" />
-                            </div>
+                            </Box>
                             <CardTitle>
                                 موجودی حساب
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-2xl font-bold text-gray-900">
+                            <Typography variant="h5" className="text-gray-900">
                                 {formatCurrency(balance)}
-                            </p>
-                            <p className="text-sm text-gray-600 mt-2">
+                            </Typography>
+                            <Typography variant="caption" color="secondary" className="mt-2">
                                 حساب پس‌انداز - شماره: ۱۲۳۴۵۶۷۸۹
-                            </p>
+                            </Typography>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader>
-                            <div className="w-12 h-12 bg-amber-600 rounded-2xl flex items-center justify-center mb-4">
+                            <Box className="w-12 h-12 bg-amber-600 rounded-2xl flex items-center justify-center mb-4">
                                 <DocumentTextIcon className="h-6 w-6 text-white" />
-                            </div>
+                            </Box>
                             <CardTitle>
                                 اعتبارسنجی
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-sm text-gray-600 mb-4">
+                            <Typography variant="body2" color="secondary" className="mb-4">
                                 درخواست تسهیلات بانکی
-                            </p>
+                            </Typography>
                             <Button
                                 size="sm"
                                 className="w-full"
@@ -90,15 +91,15 @@ export default function Dashboard() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center">
+                            <Typography variant="h6" className="flex items-center">
                                 <DocumentTextIcon className="w-5 h-5 text-purple-600 ml-2" />
                                 قرارداد تسهیلات
-                            </CardTitle>
+                            </Typography>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-sm text-gray-600 mb-4">
+                            <Typography variant="body2" color="secondary" className="mb-4">
                                 مشاهده و تأیید قرارداد
-                            </p>
+                            </Typography>
                             <Button
                                 size="sm"
                                 className="w-full"
@@ -111,15 +112,15 @@ export default function Dashboard() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center">
+                            <Typography variant="h6" className="flex items-center">
                                 <BanknotesIcon className="w-5 h-5 text-green-600 ml-2" />
                                 لیست اقساط
-                            </CardTitle>
+                            </Typography>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-sm text-gray-600 mb-4">
+                            <Typography variant="body2" color="secondary" className="mb-4">
                                 مشاهده و پرداخت اقساط
-                            </p>
+                            </Typography>
                             <Button
                                 size="sm"
                                 className="w-full"
@@ -131,52 +132,52 @@ export default function Dashboard() {
                     </Card>
 
 
-                </div>
+                </Box>
 
                 <Card className="mb-8">
                     <CardHeader>
-                        <CardTitle className="flex items-center">
+                        <Typography variant="h6" className="flex items-center">
                             <CheckCircleIcon className="w-5 h-5 text-green-600 ml-2" />
                             وضعیت حساب
-                        </CardTitle>
+                        </Typography>
                     </CardHeader>
                     <CardContent>
-                        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
-                            <div className="flex items-center">
+                        <Box className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+                            <Box className="flex items-center">
                                 <BuildingLibraryIcon className="w-8 h-8 text-green-600 ml-3" />
-                                <div>
-                                    <p className="font-semibold text-green-800">
+                                <Box>
+                                    <Typography variant="subtitle2" className="font-semibold text-green-800">
                                         حساب فعال
-                                    </p>
-                                    <p className="text-sm text-green-700">
+                                    </Typography>
+                                    <Typography variant="body2" className="text-green-700">
                                         اطلاعات شما تأیید شده است
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Box>
 
-                        <div>
-                            <h4 className="font-medium text-gray-900 mb-3">
+                        <Box>
+                            <Typography variant="h6" className="font-medium text-gray-900 mb-3">
                                 مراحل تکمیل شده:
-                            </h4>
-                            <div className="space-y-2">
+                            </Typography>
+                            <Box className="space-y-2">
                                 {[
                                     'تکمیل اطلاعات شخصی',
                                     'ثبت امضای دیجیتال',
                                     'تأیید هویت با عکس سلفی',
                                     'فعال‌سازی حساب'
                                 ].map((item, index) => (
-                                    <div key={index} className="flex items-center">
+                                    <Box key={index} className="flex items-center">
                                         <CheckCircleIcon className="w-4 h-4 text-green-500 ml-2" />
-                                        <span className="text-sm text-gray-700">{item}</span>
-                                    </div>
+                                        <Typography variant="body2" className="text-gray-700">{item}</Typography>
+                                    </Box>
                                 ))}
-                            </div>
-                        </div>
+                            </Box>
+                        </Box>
                     </CardContent>
                 </Card>
 
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input } from "@/components/ui";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, Box, Typography } from "@/components/ui";
 import { otpSchema, type LoginOtpFormData } from "@/lib/schemas/login";
 
 interface OTPFormProps {
@@ -77,7 +77,7 @@ export function OTPForm({ phoneNumber, onVerify, onBack, onResend, loading }: OT
                 <form onSubmit={handleSubmit((data) => onVerify(data.otp))} className="space-y-6">
                     <input type="hidden" {...register('otp')} />
 
-                    <div className="flex justify-center gap-3">
+                    <Box className="flex justify-center gap-3">
                         {[0, 1, 2, 3, 4].map((index) => (
                             <Input
                                 key={index}
@@ -94,13 +94,13 @@ export function OTPForm({ phoneNumber, onVerify, onBack, onResend, loading }: OT
                                 }}
                             />
                         ))}
-                    </div>
+                    </Box>
 
-                    <div className="text-center">
+                    <Box className="text-center">
                         {timer > 0 ? (
-                            <p className="text-sm text-gray-600">
+                            <Typography variant="body2" color="secondary">
                                 ارسال مجدد کد در {formatTime(timer)}
-                            </p>
+                            </Typography>
                         ) : (
                             <Button
                                 type="button"
@@ -114,9 +114,9 @@ export function OTPForm({ phoneNumber, onVerify, onBack, onResend, loading }: OT
                                 ارسال مجدد کد
                             </Button>
                         )}
-                    </div>
+                    </Box>
 
-                    <div className="flex gap-4">
+                    <Box className="flex gap-4">
                         <Button
                             type="button"
                             variant="outline"
@@ -133,7 +133,7 @@ export function OTPForm({ phoneNumber, onVerify, onBack, onResend, loading }: OT
                         >
                             {loading ? 'در حال بررسی...' : 'تأیید و ورود'}
                         </Button>
-                    </div>
+                    </Box>
                 </form>
             </CardContent>
         </Card>

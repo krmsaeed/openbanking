@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Loading } from "@/components/ui";
+import { Box, Typography } from "@/components/ui";
 import { FinancialInfoStep, IdentityFilesStep, JobFilesStep, ProgressSteps } from "@/components/credit-assessment";
 
 export default function CreditAssessment() {
@@ -38,20 +39,20 @@ export default function CreditAssessment() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <Box className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <Loading />
-            </div>
+            </Box>
         );
     }
 
     return (
-        <div className="min-h-screen  p-6">
-            <div className="max-w-4xl mx-auto">
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">اعتبارسنجی</h1>
-                    <p className="text-gray-600">برای دریافت وام، لطفاً مراحل زیر را تکمیل کنید</p>
+        <Box className="min-h-screen p-6">
+            <Box className="max-w-4xl mx-auto">
+                <Box className="text-center mb-8">
+                    <Typography variant="h1" className="text-4xl font-bold text-gray-900 mb-4">اعتبارسنجی</Typography>
+                    <Typography variant="body1" color="secondary">برای دریافت وام، لطفاً مراحل زیر را تکمیل کنید</Typography>
                     <ProgressSteps currentStep={step} />
-                </div>
+                </Box>
 
                 {step === 1 && (
                     <FinancialInfoStep onNext={handleStep1Submit} />
@@ -72,7 +73,7 @@ export default function CreditAssessment() {
                         loading={loading}
                     />
                 )}
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

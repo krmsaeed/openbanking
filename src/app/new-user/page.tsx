@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserInfoStep, IdentityVerificationStep } from "@/components/new-user";
 import { NewUserFormData } from "@/lib/schemas/newUser";
-import { useToast } from "@/components/ui";
+import { useToast, Box } from "@/components/ui";
 
 export default function NewUserPage() {
     const [step, setStep] = useState<'userInfo' | 'identity'>('userInfo');
@@ -37,8 +37,8 @@ export default function NewUserPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
-            <div className="w-full max-w-2xl">
+        <Box className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
+            <Box className="w-full max-w-2xl">
                 {step === 'userInfo' ? (
                     <UserInfoStep onNext={handleUserInfoSubmit} />
                 ) : userInfo ? (
@@ -48,7 +48,7 @@ export default function NewUserPage() {
                         onComplete={handleIdentityComplete}
                     />
                 ) : null}
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

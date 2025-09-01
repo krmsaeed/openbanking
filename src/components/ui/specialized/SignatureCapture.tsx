@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { PencilIcon, TrashIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { Button } from "../core/Button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../core/Card";
+import { Box, Typography } from "../core";
 
 interface SignatureCaptureProps {
     onComplete: (signatureFile: File) => void;
@@ -104,19 +105,19 @@ export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps
     return (
         <Card padding="lg">
             <CardHeader>
-                <CardTitle className="flex items-center gap-3">
+                <Typography variant="h6" className="flex items-center gap-3">
                     <PencilIcon className="w-6 h-6 text-blue-600" />
                     ثبت امضای الکترونیک
-                </CardTitle>
-                <CardDescription>
+                </Typography>
+                <Typography variant="body2" color="secondary">
                     لطفاً امضای خود را در کادر زیر بکشید
-                </CardDescription>
+                </Typography>
             </CardHeader>
 
             <CardContent>
-                <div className="space-y-4">
+                <Box className="space-y-4">
                     {/* Signature Canvas */}
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
+                    <Box className="border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
                         <canvas
                             ref={canvasRef}
                             className="w-full h-40 bg-white border border-gray-200 rounded cursor-crosshair touch-none"
@@ -128,17 +129,17 @@ export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps
                             onTouchMove={draw}
                             onTouchEnd={stopDrawing}
                         />
-                    </div>
+                    </Box>
 
                     {/* Instructions */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                        <p className="text-sm text-blue-800 text-center">
+                    <Box className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <Typography variant="caption" className="text-blue-800 text-center block">
                             امضای خود را با ماوس یا انگشت در کادر بالا بکشید
-                        </p>
-                    </div>
+                        </Typography>
+                    </Box>
 
                     {/* Action Buttons */}
-                    <div className="flex justify-between items-center gap-4">
+                    <Box className="flex justify-between items-center gap-4">
                         <Button
                             variant="outline"
                             onClick={onCancel}
@@ -147,7 +148,7 @@ export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps
                             بازگشت
                         </Button>
 
-                        <div className="flex gap-2">
+                        <Box className="flex gap-2">
                             <Button
                                 variant="outline"
                                 onClick={clearSignature}
@@ -166,9 +167,9 @@ export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps
                                 <CheckIcon className="w-4 h-4" />
                                 تأیید امضا
                             </Button>
-                        </div>
-                    </div>
-                </div>
+                        </Box>
+                    </Box>
+                </Box>
             </CardContent>
         </Card>
     );
