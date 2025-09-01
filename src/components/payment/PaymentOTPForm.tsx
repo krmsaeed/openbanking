@@ -31,6 +31,11 @@ export function PaymentOTPForm({ cardNumber, onVerify, onBack, onResend, loading
 
     const digits = watch(['digit1', 'digit2', 'digit3', 'digit4', 'digit5', 'digit6']);
 
+    // فوکوس اولیه روی اولین ورودی (چپ به راست)
+    useEffect(() => {
+        inputRefs.current[0]?.focus();
+    }, []);
+
     useEffect(() => {
         const interval = setInterval(() => {
             setTimer(prev => {
@@ -45,14 +50,23 @@ export function PaymentOTPForm({ cardNumber, onVerify, onBack, onResend, loading
         return () => clearInterval(interval);
     }, []);
 
-    const handleDigitChange = (value: string, index: number) => {
+    const handleDigitChange = (rawValue: string, index: number) => {
+        const value = rawValue.replace(/\D/g, '').slice(0, 1);
         const fieldName = `digit${index + 1}` as keyof PaymentOtpFormData;
-        setValue(fieldName, value);
+        setValue(fieldName, value, { shouldValidate: true, shouldDirty: true });
 
         if (value && index < 5) {
             inputRefs.current[index + 1]?.focus();
         }
-    }; const formatTime = (seconds: number) => {
+
+        // لاگ فوری وقتی هر ۶ رقم تکمیل شد
+        const currentOtp = inputRefs.current.map((el) => el?.value || '').join('');
+        if (currentOtp.length === 6) {
+            console.log('OTP:', currentOtp);
+        }
+    };
+
+    const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
@@ -71,14 +85,23 @@ export function PaymentOTPForm({ cardNumber, onVerify, onBack, onResend, loading
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSubmit(onVerify)} className="space-y-6">
-                    <div className="flex justify-center gap-2">
+                <form
+                    onSubmit={handleSubmit(() => {
+                        const otp = (digits as (string | undefined)[]).map(d => d || '').join('');
+                        console.log('OTP:', otp);
+                        onVerify();
+                    })}
+                    className="space-y-6"
+                >
+                    <div className="flex justify-center gap-2" dir="ltr">
                         {[0, 1, 2, 3, 4, 5].map((index) => (
                             <Input
                                 key={index}
                                 ref={(el) => { inputRefs.current[index] = el }}
                                 type="text"
                                 maxLength={1}
+                                inputMode="numeric"
+                                dir="ltr"
                                 className="w-10 h-10 text-center text-lg font-bold"
                                 value={digits[index] || ''}
                                 onChange={(e) => handleDigitChange(e.target.value, index)}

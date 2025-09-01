@@ -1,5 +1,5 @@
 import { InputHTMLAttributes, forwardRef } from 'react';
-import { cn } from '@/lib/utils';
+import { cn, convertPersianToEnglish } from '@/lib/utils';
 
 type InputVariant = 'default' | 'error' | 'success';
 type InputSize = 'default' | 'sm' | 'lg';
@@ -13,7 +13,7 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>
 }
 
 const getInputClasses = (variant: InputVariant, size: InputSize) => {
-    const baseClasses = "flex w-full rounded-xl border bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
+    const baseClasses = "flex w-full rounded-xl shadow-sm bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
 
     const variantClasses = {
         default: "border-gray-300 focus-visible:ring-blue-500",
@@ -31,7 +31,20 @@ const getInputClasses = (variant: InputVariant, size: InputSize) => {
 };
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-    ({ className, variant = 'default', size = 'default', label, error, helper, ...props }, ref) => {
+    ({ className, variant = 'default', size = 'default', label, error, helper, onChange, ...props }, ref) => {
+        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            // تبدیل خودکار اعداد فارسی به انگلیسی بدون ساختن event جدید
+            const convertedValue = convertPersianToEnglish(e.target.value);
+
+            if (convertedValue !== e.target.value) {
+                // مقدار event.target/currentTarget را به مقدار تبدیل‌شده تغییر بده
+                (e.target as HTMLInputElement).value = convertedValue;
+                (e.currentTarget as HTMLInputElement).value = convertedValue;
+            }
+
+            onChange?.(e);
+        };
+
         return (
             <div className="space-y-2">
                 {label && (
@@ -42,6 +55,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 <input
                     className={cn(getInputClasses(variant, size), className)}
                     ref={ref}
+                    onChange={handleChange}
                     {...props}
                 />
                 {error && (

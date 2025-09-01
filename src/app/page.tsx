@@ -22,8 +22,8 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-4 ">
-            <Link href="/login" className="mb-5">
+          <CardContent className="flex flex-col gap-4 w-full">
+            <Link href="/login" className="">
               <Button size="lg" className="w-full">
                 <BuildingLibraryIcon className="w-4 h-4 ml-2" />
                 ورود به حساب

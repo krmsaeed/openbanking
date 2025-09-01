@@ -9,7 +9,16 @@ import { Button } from "@/components/ui/core/Button";
 import { Input } from "@/components/ui/forms/Input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/core/Card";
 import { Loading } from "@/components/ui/feedback/Loading";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
+const loginFormSchema = z.object({
+    nationalCode: z.string().length(10, "کد ملی باید ۱۰ رقم باشد").regex(/^\d+$/, "کد ملی باید فقط شامل عدد باشد"),
+    phoneNumber: z.string().regex(/^09\d{9}$/, "شماره موبایل باید با ۰۹ شروع شده و ۱۱ رقم باشد"),
+});
+
+type LoginForm = z.infer<typeof loginFormSchema>;
 export default function Login() {
     const router = useRouter();
     const [step, setStep] = useState(1);
@@ -20,7 +29,15 @@ export default function Login() {
     const [canResend, setCanResend] = useState(false);
 
     const otpInputs = useRef<(HTMLInputElement | null)[]>([]);
+    const {
 
+        handleSubmit,
+        control,
+        formState: { errors },
+    } = useForm<LoginForm>({
+        resolver: zodResolver(loginFormSchema),
+        mode: "onBlur",
+    });
     useEffect(() => {
         if (timer > 0) {
             const interval = setInterval(() => {
@@ -36,22 +53,14 @@ export default function Login() {
         }
     }, [timer]);
 
-    const handlePhoneSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!phoneNumber) {
-            toast.error("لطفاً شماره تلفن را وارد کنید");
-            return;
-        }
-
-        setLoading(true);
-
+    const handlePhoneSubmit = async () => {
+        setLoading(true)
         setTimeout(() => {
             setStep(2);
             setTimer(120);
             setCanResend(false);
             setLoading(false);
-        }, 1500);
+        }, 500);
     };
 
     const handleOtpSubmit = async (e: React.FormEvent) => {
@@ -65,7 +74,14 @@ export default function Login() {
         setLoading(true);
 
         setTimeout(() => {
-            router.push("/dashboard");
+            const randomOutcome = Math.random();
+            if (randomOutcome < 0.3) {
+                router.push("/not-eligible");
+                toast.error("متأسفانه واجد شرایط دریافت تسهیلات نیستید");
+            } else {
+                router.push("/dashboard");
+                toast.success("ورود موفقیت‌آمیز بود");
+            }
         }, 2000);
     };
 
@@ -103,7 +119,7 @@ export default function Login() {
 
     if (step === 1) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+            <div className="min-h-screen  flex items-center justify-center p-4">
                 <div className="max-w-md w-full">
 
                     <Link
@@ -129,17 +145,35 @@ export default function Login() {
                         </CardHeader>
 
                         <CardContent>
-                            <form onSubmit={handlePhoneSubmit} className="space-y-6">
-                                <Input
-                                    label="شماره تلفن همراه"
-                                    type="tel"
-                                    value={phoneNumber}
-                                    onChange={(e) => setPhoneNumber(e.target.value)}
-                                    placeholder="09123456789"
-                                    className="text-center"
-                                    maxLength={11}
+                            <form onSubmit={handleSubmit(handlePhoneSubmit)} className="space-y-6">
+                                <Controller
+                                    name="phoneNumber"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Input
+                                            {...field}
+                                            label="شماره تلفن همراه"
+                                            type="tel"
+                                            placeholder="0912*******"
+                                            className="text-center"
+                                            maxLength={11}
+                                        />
+                                    )}
                                 />
-
+                                <Controller
+                                    name="nationalCode"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Input
+                                            {...field}
+                                            label="کد ملی"
+                                            type="tel"
+                                            placeholder="کد ملی را وارد کن"
+                                            className="text-center"
+                                            maxLength={10}
+                                        />
+                                    )}
+                                />
                                 <Button
                                     type="submit"
                                     size="lg"

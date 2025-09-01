@@ -88,6 +88,48 @@ export default function Dashboard() {
                         </CardContent>
                     </Card>
 
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center">
+                                <DocumentTextIcon className="w-5 h-5 text-purple-600 ml-2" />
+                                قرارداد تسهیلات
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-gray-600 mb-4">
+                                مشاهده و تأیید قرارداد
+                            </p>
+                            <Button
+                                size="sm"
+                                className="w-full"
+                                onClick={() => router.push("/contract")}
+                            >
+                                مشاهده قرارداد
+                            </Button>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center">
+                                <BanknotesIcon className="w-5 h-5 text-green-600 ml-2" />
+                                لیست اقساط
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-gray-600 mb-4">
+                                مشاهده و پرداخت اقساط
+                            </p>
+                            <Button
+                                size="sm"
+                                className="w-full"
+                                onClick={() => router.push("/installments")}
+                            >
+                                مشاهده اقساط
+                            </Button>
+                        </CardContent>
+                    </Card>
+
 
                 </div>
 

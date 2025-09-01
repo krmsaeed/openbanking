@@ -29,7 +29,7 @@ type PersonalInfoForm = z.infer<typeof personalInfoSchema>;
 
 export default function Register() {
     const router = useRouter();
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useState(3);
     const [loading, setLoading] = useState(false);
     const [signatureFile, setSignatureFile] = useState<File | null>(null);
     const [identityVerified, setIdentityVerified] = useState(false);
@@ -43,12 +43,6 @@ export default function Register() {
         resolver: zodResolver(personalInfoSchema),
         mode: "onBlur",
     });
-
-    const handleNext = () => {
-        if (step === 1) {
-            handleSubmit(onPersonalInfoSubmit)();
-        }
-    };
 
     const onPersonalInfoSubmit = (data: PersonalInfoForm) => {
         toast.success("اطلاعات شخصی ثبت شد");
@@ -80,20 +74,6 @@ export default function Register() {
             }, 1500);
         }, 3000);
     };
-
-    const getStepTitle = () => {
-        switch (step) {
-            case 1:
-                return "اطلاعات شخصی";
-            case 2:
-                return "ثبت امضا";
-            case 3:
-                return "احراز هویت";
-            default:
-                return "";
-        }
-    };
-
     const getStepDescription = () => {
         switch (step) {
             case 1:

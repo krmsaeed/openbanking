@@ -6,12 +6,28 @@
 
 html {
   direction: rtl;
+  font-size: 100%;
 }
 
 body {
   font-family: var(--font-vazirmatn), "Tahoma", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Remove outline for all inputs and buttons */
+input,
+button,
+textarea,
+select {
+  outline: none !important;
+}
+
+input:focus,
+button:focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
 }
 
 /* RTL adjustments */
@@ -135,4 +151,38 @@ body {
     #3b82f6 50%,
     transparent 100%
   );
+}
+
+/* CVV input masking */
+.cvv-input {
+  -webkit-text-security: disc;
+}
+
+/* Disable autofill highlighting */
+form[autocomplete="off"] input:-webkit-autofill,
+form[autocomplete="off"] input:-webkit-autofill:hover,
+form[autocomplete="off"] input:-webkit-autofill:focus,
+form[autocomplete="off"] input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: inherit !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Hide browser suggestion dropdowns */
+form[autocomplete="off"] input::-webkit-credentials-auto-fill-button,
+form[autocomplete="off"] input::-webkit-strong-password-auto-fill-button {
+  display: none !important;
+}
+
+/* Additional autocomplete prevention */
+input[data-form-type="other"] {
+  background: transparent !important;
+}
+
+input[data-form-type="other"]::-webkit-contacts-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
 }

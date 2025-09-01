@@ -27,9 +27,6 @@ const FormField = forwardRef<HTMLDivElement, FormFieldProps>(
                 {description && !error && (
                     <p className="text-xs text-gray-500">{description}</p>
                 )}
-                {error && (
-                    <p className="text-xs text-red-600">{error}</p>
-                )}
             </div>
         );
     }

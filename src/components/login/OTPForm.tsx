@@ -9,7 +9,7 @@ import { otpSchema, type LoginOtpFormData } from "@/lib/schemas/login";
 
 interface OTPFormProps {
     phoneNumber: string;
-    onVerify: () => void;
+    onVerify: (otp: string) => void;
     onBack: () => void;
     onResend: () => void;
     loading?: boolean;
@@ -74,7 +74,7 @@ export function OTPForm({ phoneNumber, onVerify, onBack, onResend, loading }: OT
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSubmit(onVerify)} className="space-y-6">
+                <form onSubmit={handleSubmit((data) => onVerify(data.otp))} className="space-y-6">
                     <input type="hidden" {...register('otp')} />
 
                     <div className="flex justify-center gap-3">

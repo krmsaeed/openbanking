@@ -12,3 +12,6 @@ export * from './media';
 
 // Specialized Components
 export * from './specialized';
+
+// Virtual Keyboard
+export { VirtualKeyboard } from './VirtualKeyboard';
