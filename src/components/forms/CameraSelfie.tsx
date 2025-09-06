@@ -25,23 +25,24 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
     const [closenessPercent, setClosenessPercent] = useState(0);
     const [lastBoxSkin, setLastBoxSkin] = useState<number | null>(null);
     const [targetSkin, setTargetSkin] = useState<number | null>(null);
-    const [obstructionRatio, setObstructionRatio] = useState(0); // New state for obstruction ratio
+    const [obstructionRatio, setObstructionRatio] = useState(0);
+    const [eyeFeatureRatio, setEyeFeatureRatio] = useState(0);
 
     useEffect(() => {
         setIsClient(true);
     }, []);
 
-    // Reference calibration state and setter to satisfy static analysis tools and
-    // surface a helpful debug line during development. This has no behavioral impact.
     useEffect(() => {
         if (lastBoxSkin !== null || targetSkin !== null) {
             console.debug('calibration', { lastBoxSkin, targetSkin });
         }
-        // reference setter to avoid 'assigned but never used' complaints from some analyzers
         void setTargetSkin;
     }, [lastBoxSkin, targetSkin, setTargetSkin]);
 
     // Advanced face detection based on circular face shape and symmetry
+    const MIN_EYE_RATIO = 0.03;
+    const MAX_OBSTRUCTION = 0.08;
+
     const detectFace = useCallback(() => {
         if (!videoRef.current || !stream) return;
 
@@ -119,7 +120,10 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
 
                             // Detect dark features (eyes, nose, mouth)
                             if (gray < 60) {
-                                darkFeatures++;
+                                const isUpperHalf = y < faceRadius;
+                                if (isUpperHalf) {
+                                    darkFeatures++;
+                                }
                             }
 
                             // Detect eyes specifically using a 3x3 local neighborhood average
@@ -154,7 +158,9 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                             }
 
                             // Detect potential obstructions (very dark or very bright pixels)
-                            if (gray < 20 || gray > 240) {
+                            const isBright = gray > 220;
+                            const isDark = gray < 30;
+                            if (isBright || isDark) {
                                 obstructionPixels++;
                             }
 
@@ -218,15 +224,14 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                 } else {
                     // Map boxSkinRatio into a 0-100 closeness percent using a reasonable range.
                     // Tweak these min/max values to match the example image; current range is [0.04, 0.25].
-                    const minSkin = 0.04;
-                    const maxSkin = 0.25;
+                    const minSkin = 0.08;
+                    const maxSkin = 0.35;
                     const raw = Math.max(0, Math.min(1, (boxSkinRatio - minSkin) / (maxSkin - minSkin)));
                     const percent = Math.round(raw * 100);
                     currentClosenessPercent = percent;
                     setClosenessPercent(percent);
-                    // Decide closeness: use percent threshold (70%) to match the example image distance
-                    if (percent < 70) centerBoxClose = false; // too far
-                    else centerBoxClose = true; // close enough
+                    if (percent < 85) centerBoxClose = false;
+                    else centerBoxClose = true;
                 }
                 setFaceTooFar(!centerBoxClose);
 
@@ -254,23 +259,18 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
             );
 
             // Conservative thresholds that must pass in addition to the computed confidence.
-            const MIN_SKIN_RATIO = 0.10; // require at least ~10% skin-like pixels in circular crop
-            const MIN_SYMMETRY = 0.35; // require a minimum symmetry score
-            const MIN_EYE_RATIO = 0.02; // require at least some eye-like features
-            const MIN_CLOSENESS = 70; // require closeness percent >= 70
+            const requiredCloseness = 85;
 
             // require closeness for detection (user must come nearer)
             // use the per-frame computed closeness percent when available; otherwise fall back to centerBoxClose
-            const closenessOk = (currentClosenessPercent !== null) ? (currentClosenessPercent >= MIN_CLOSENESS) : centerBoxClose;
-
             const detected = (
                 confidence > 0.45 &&
-                obstructionRatio < 0.15 && // Ensure no significant obstructions
+                obstructionRatio < 0.15 &&
                 centerBoxClose &&
-                skinRatio >= MIN_SKIN_RATIO &&
-                symmetryRatio >= MIN_SYMMETRY &&
+                skinRatio >= 0.15 &&
+                symmetryRatio >= 0.40 &&
                 eyeRatio >= MIN_EYE_RATIO &&
-                closenessOk
+                (currentClosenessPercent ?? 0) >= 85
             );
 
 
@@ -279,6 +279,7 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
             setFaceConfidence(confidence);
             setFaceTooFar(!centerBoxClose);
             setObstructionRatio(obstructionRatio); // New state update
+            setEyeFeatureRatio(eyeRatio); // New state update
         } catch (error) {
             console.error('Face detection error:', error);
         }
@@ -540,13 +541,33 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                     </Typography>
                 </Box>
             </Box>}
-            <Box className="relative bg-black rounded-full overflow-hidden  w-70 h-70 mx-auto">
-                {/* {!capturedPhoto && stream && faceDetected && (
-                    <Box
-                        className={`absolute inset-0 rounded-full pointer-events-none z-20 face-detection-border ${faceConfidence > 0.7 ? 'pulse-animation' : ''}`}
-                    />
-                )} */}
+            <Box className="relative bg-black rounded-full overflow-hidden w-70 h-70 mx-auto">
+                {/* Add circular progress */}
+                {!capturedPhoto && stream && (
+                    <svg className="absolute inset-0 w-full h-full -rotate-90 z-30 pointer-events-none">
+                        <circle
+                            className="transition-all duration-300"
+                            stroke={
+                                closenessPercent <= 50
+                                    ? '#EF4444'  // red-500
+                                    : closenessPercent <= 85
+                                        ? '#F59E0B'  // amber-500
+                                        : '#22C55E'  // green-500
+                            }
+                            strokeWidth="4"
+                            fill="none"
+                            r="49%"  // تغییر به 49% برای پوشش کامل لبه
+                            cx="50%"
+                            cy="50%"
+                            style={{
+                                strokeDasharray: `${2 * Math.PI * 49}%`,  // محاسبه محیط دایره
+                                strokeDashoffset: `${2 * Math.PI * 49 * (1 - closenessPercent / 100)}%`  // محاسبه offset بر اساس درصد
+                            }}
+                        />
+                    </svg>
+                )}
 
+                {/* Rest of existing video/camera elements */}
                 <video
                     ref={videoRef}
                     autoPlay
@@ -616,29 +637,18 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                 </Box>
             )}
             {/* Face detection status - outside the camera frame */}
-            {!capturedPhoto && stream && (
+            {!capturedPhoto && stream && closenessPercent !== 100 && (
                 <Box className="text-center space-y-3">
-                    <Typography variant="body1" className={`text-sm font-medium transition-colors duration-300 text-center  ${closenessPercent <= 50 && "text-red-500"}
-                                ${closenessPercent <= 85 && "text-amber-500"}
-                                ${closenessPercent >= 95 && "text-green-500"}`}>
-                        {!faceDetected &&
-                            (faceTooFar ? 'لطفاً نزدیک‌تر بیایید' : 'صورت خود را در مقابل دوربین قرار دهید')
-                        }
+                    <Typography variant="body1" className={`text-sm font-medium transition-colors duration-300 text-center
+                        ${!faceDetected && "text-red-500"}
+                        ${faceDetected && closenessPercent >= 95 && "text-green-500"}`}>
+                        {!faceDetected && (
+                            faceTooFar ? 'لطفاً نزدیک‌تر بیایید' :
+                                obstructionRatio >= MAX_OBSTRUCTION ? 'لطفاً دست یا اشیاء را از جلوی صورت بردارید' :
+                                    eyeFeatureRatio < MIN_EYE_RATIO ? 'لطفاً مطمئن شوید چشم‌ها و ابروها به وضوح دیده می‌شوند' :
+                                        'صورت خود را در مقابل دوربین قرار دهید'
+                        )}
                     </Typography>
-
-                    {/* Closeness progress bar */}
-                    <Box className="relative w-48 h-2 mx-auto">
-                        <Box className="absolute inset-0 rounded-full border-2 border-gray-200 overflow-hidden">
-                            <Box
-                                className={`absolute inset-0 h-full rounded-full transition-all duration-200
-                ${closenessPercent <= 50 ? 'bg-red-500' : ''}
-                ${closenessPercent > 50 && closenessPercent <= 85 ? 'bg-amber-500' : ''}
-                ${closenessPercent > 85 ? 'bg-green-500' : ''}`}
-                                style={{ width: `${closenessPercent}%` }}
-                            />
-                        </Box>
-                    </Box>
-
                 </Box>
             )}
 

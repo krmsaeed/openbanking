@@ -1,11 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useSexport default function Register() {
+    const router = useRouter();
+    const [step, setStep] = useState(2);
+    const [loading, setIsLoading] = useState(false);
+
+    // Step data states
+    const [step1Data, setStep1Data] = useState<PersonalInfoFormData | null>(null);m "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registrationFormSchema, type RegistrationFormData } from "@/lib/schemas/common";
+import {
+    personalInfoSchema,
+    birthDatePostalSchema,
+    passwordSchema,
+    otpSchema,
+    type PersonalInfoFormData,
+    type BirthDatePostalFormData,
+    type PasswordFormData,
+    type OtpFormData
+} from "@/lib/schemas/validationSchemas";
 import toast from "react-hot-toast";
 import {
     UserIcon, CheckCircleIcon, CameraIcon, PencilIcon,
@@ -135,8 +150,8 @@ export default function Register() {
             case 3: return "عکس سلفی خود را بگیرید";
             case 4: return "فیلم احراز هویت ضبط کنید";
             case 5: return "رمز عبور خود را تنظیم کنید";
-            case 6: return "کد تایید ارسال شده را وارد کنید";
-            case 7: return "برای صدور گواهی دیجیتال، کد تایید را وارد کنید";
+            case 6: return <span dir="ltr">{"کد تایید ارسال شده را وارد کنید"}</span>;
+            case 7: return <span dir="ltr">{"برای صدور گواهی دیجیتال، کد تایید را وارد کنید"}</span>;
             case 8: return "امضای دیجیتال را تأیید کنید";
             default: return "";
         }
@@ -440,7 +455,7 @@ export default function Register() {
                                             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
                                                 <h3 className="font-medium text-blue-900 mb-2">کد تایید</h3>
                                                 <p className="text-sm text-blue-800">
-                                                    کد تایید ۵ رقمی به شماره {step1Data?.phoneNumber} ارسال شد.
+                                                    <span dir="ltr">کد تایید ۵ رقمی به شماره {step1Data?.phoneNumber} ارسال شد.</span>
                                                 </p>
                                             </div>
                                             <MultiOTPInput
@@ -469,7 +484,7 @@ export default function Register() {
                                             <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-6">
                                                 <h3 className="font-medium text-purple-900 mb-2">صدور گواهی دیجیتال</h3>
                                                 <p className="text-sm text-purple-800">
-                                                    برای صدور گواهی دیجیتال، کد تایید جدید ارسال شد.
+                                                    <span dir="ltr">برای صدور گواهی دیجیتال، کد تایید جدید ارسال شد.</span>
                                                 </p>
                                             </div>
                                             <MultiOTPInput
