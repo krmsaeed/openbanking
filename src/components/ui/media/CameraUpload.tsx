@@ -204,7 +204,6 @@ export function CameraUpload({
                     />
                     <canvas ref={canvasRef} className="hidden" />
 
-                    {/* Recording indicator */}
                     {isRecording && (
                         <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full">
                             <div className={`w-2 h-2 rounded-full bg-white ${isPaused ? '' : 'animate-pulse'}`} />
@@ -214,7 +213,6 @@ export function CameraUpload({
                         </div>
                     )}
 
-                    {/* Close button */}
                     <button
                         onClick={stopCamera}
                         className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70"
@@ -222,7 +220,6 @@ export function CameraUpload({
                         <XMarkIcon className="w-5 h-5" />
                     </button>
 
-                    {/* Mode selector */}
                     {enableVideo && !isRecording && (
                         <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
                             <div className="flex bg-black bg-opacity-50 rounded-full p-1">
@@ -249,7 +246,6 @@ export function CameraUpload({
                     )}
                 </div>
 
-                {/* Controls */}
                 <div className="flex justify-center gap-4 mt-4">
                     {recordingMode === 'photo' && !isRecording && (
                         <Button
@@ -309,7 +305,6 @@ export function CameraUpload({
 
     return (
         <div>
-            {/* File Drop Zone */}
             <div
                 className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${dragOver
                     ? 'border-blue-500 bg-blue-50'
@@ -337,7 +332,6 @@ export function CameraUpload({
                 </div>
             </div>
 
-            {/* Camera Button */}
             <div className="flex justify-center gap-2 mt-4">
                 <Button
                     type="button"
@@ -365,7 +359,6 @@ export function CameraUpload({
                 )}
             </div>
 
-            {/* Selected Files */}
             {files.length > 0 && (
                 <div className="mt-4 space-y-2">
                     <p className="text-sm font-medium">فایل‌های انتخاب شده:</p>

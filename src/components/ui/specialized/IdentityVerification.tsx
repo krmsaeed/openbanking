@@ -2,9 +2,10 @@
 
 import { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
-import { VideoCameraIcon, XMarkIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
+import { VideoCameraIcon, XMarkIcon, SpeakerWaveIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { Button } from "../core/Button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../core/Card";
+import { Box } from "../core";
 
 interface IdentityVerificationProps {
     onComplete: (selfieFile: File | null, videoFile: File | null) => void;
@@ -27,9 +28,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     const verificationTexts = [
-        "این یک متن تستی است",
-        "کد ملی من [کد ملی] است و این درخواست را شخصاً انجام می‌دهم.",
-        "اطلاعات ارائه شده صحیح بوده و مسئولیت آن را می‌پذیرم."
+        "این یک متن تستی است"
     ];
 
     const currentText = verificationTexts[currentTextIndex];
@@ -255,13 +254,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                                         ضبط مجدد
                                     </Button>
 
-                                    <Button
-                                        onClick={handleComplete}
-                                        className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-                                    >
-                                        <VideoCameraIcon className="w-4 h-4" />
-                                        تأیید ویدیو
-                                    </Button>
+
                                 </div>
                             </div>
                         ) : (
@@ -340,15 +333,28 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                                     </div>
                                 </div>
 
-                                <div className="text-center">
+                                <Box className="w-full flex gap-2 items-center">
                                     <Button
-                                        variant="outline"
-                                        onClick={handleCancel}
-                                        className="mx-auto"
+                                        onClick={onCancel}
+                                        variant="destructive"
+                                        className="w-full flex justify-center gapo-3 px-5 py-3 items-center text-white"
                                     >
+                                        <XMarkIcon className="w-5 h-5 text-white" />
                                         انصراف
                                     </Button>
-                                </div>
+
+                                    <Button
+                                        variant="success"
+                                        onClick={handleComplete}
+                                        className="  text-white  gap-3 px-5 py-3 flex items-center justify-center  w-full"
+                                        title="تأیید عکس"
+                                    >
+                                        <CheckIcon className="h-5 w-5" />
+                                        <span className="text-white text-xs font-medium">
+                                            تایید
+                                        </span>
+                                    </Button>
+                                </Box>
                             </div>
                         )}
                     </div>

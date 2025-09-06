@@ -6,7 +6,6 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function convertPersianToEnglish(value: string): string {
-    // پشتیبانی از ارقام فارسی (U+06F0..U+06F9) و عربی (U+0660..U+0669)
     let out = '';
     for (const ch of value) {
         const code = ch.charCodeAt(0);

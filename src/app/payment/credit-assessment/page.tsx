@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CreditCardIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
-import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Loading, Box, Typography } from "@/components/ui";
+import { Button, Card, CardHeader, CardContent, Loading, Box, Typography } from "@/components/ui";
 
 export default function CreditAssessmentPayment() {
     const router = useRouter();

@@ -1,9 +1,9 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, FormField } from "@/components/ui";
-import { loginSchema, type LoginFormData } from "@/lib/schemas/login";
+import { loginFormSchema, type LoginFormData } from "@/lib/schemas/common";
 
 interface LoginFormProps {
     onNext: (data: LoginFormData) => void;
@@ -12,11 +12,11 @@ interface LoginFormProps {
 
 export function LoginForm({ onNext, loading }: LoginFormProps) {
     const {
-        register,
+        control,
         handleSubmit,
         formState: { errors, isValid }
     } = useForm<LoginFormData>({
-        resolver: zodResolver(loginSchema),
+        resolver: zodResolver(loginFormSchema),
         mode: 'onChange'
     });
 
@@ -35,12 +35,19 @@ export function LoginForm({ onNext, loading }: LoginFormProps) {
                     <FormField
                         label="کد ملی"
                         required
-                        error={errors.nationalId?.message}
+                        error={errors.nationalCode?.message}
                     >
-                        <Input
-                            {...register("nationalId")}
-                            placeholder="کد ملی ۱۰ رقمی"
-                            maxLength={10}
+                        <Controller
+                            name="nationalCode"
+                            control={control}
+                            render={({ field }) => (
+                                <Input
+                                    type="text"
+                                    placeholder="کد ملی ۱۰ رقمی"
+                                    maxLength={10}
+                                    {...field}
+                                />
+                            )}
                         />
                     </FormField>
 
@@ -49,10 +56,17 @@ export function LoginForm({ onNext, loading }: LoginFormProps) {
                         required
                         error={errors.phoneNumber?.message}
                     >
-                        <Input
-                            {...register("phoneNumber")}
-                            placeholder="09xxxxxxxxx"
-                            maxLength={11}
+                        <Controller
+                            name="phoneNumber"
+                            control={control}
+                            render={({ field }) => (
+                                <Input
+                                    type="tel"
+                                    placeholder="09xxxxxxxxx"
+                                    maxLength={11}
+                                    {...field}
+                                />
+                            )}
                         />
                     </FormField>
 

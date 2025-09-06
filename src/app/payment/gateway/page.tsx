@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { PaymentForm, PaymentOTPForm } from "@/components/payment";
 import { Box } from "@/components/ui";
 import { type CardFormData } from "@/lib/schemas/payment";
+import { Loading } from "@/components/ui/feedback/Loading";
 
-export default function PaymentGateway() {
+function PaymentGatewayContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const amount = searchParams.get("amount") || "150,000";
@@ -67,5 +68,13 @@ export default function PaymentGateway() {
                 )}
             </Box>
         </Box>
+    );
+}
+
+export default function PaymentGateway() {
+    return (
+        <Suspense fallback={<Loading />}>
+            <PaymentGatewayContent />
+        </Suspense>
     );
 }

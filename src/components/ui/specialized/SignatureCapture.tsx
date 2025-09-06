@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { PencilIcon, TrashIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { Button } from "../core/Button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../core/Card";
+import { Card, CardContent, CardHeader } from "../core/Card";
 import { Box, Typography } from "../core";
 
 interface SignatureCaptureProps {
@@ -116,7 +116,6 @@ export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps
 
             <CardContent>
                 <Box className="space-y-4">
-                    {/* Signature Canvas */}
                     <Box className="border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
                         <canvas
                             ref={canvasRef}
@@ -131,14 +130,12 @@ export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps
                         />
                     </Box>
 
-                    {/* Instructions */}
                     <Box className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                         <Typography variant="caption" className="text-blue-800 text-center block">
                             امضای خود را با ماوس یا انگشت در کادر بالا بکشید
                         </Typography>
                     </Box>
 
-                    {/* Action Buttons */}
                     <Box className="flex justify-between items-center gap-4">
                         <Button
                             variant="outline"

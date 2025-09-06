@@ -71,7 +71,7 @@ export default function Dashboard() {
                             <Box className="w-12 h-12 bg-amber-600 rounded-2xl flex items-center justify-center mb-4">
                                 <DocumentTextIcon className="h-6 w-6 text-white" />
                             </Box>
-                            <CardTitle>
+                            <CardTitle className="text-center">
                                 اعتبارسنجی
                             </CardTitle>
                         </CardHeader>

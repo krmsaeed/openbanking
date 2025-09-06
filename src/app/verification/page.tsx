@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import {
@@ -11,11 +11,10 @@ import {
 import { Button } from "@/components/ui/core/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/core/Card";
 import { Box, Typography } from "@/components/ui";
-import { SelfieCapture } from "@/components/ui/specialized";
 import { Loading } from "@/components/ui/feedback/Loading";
 import Image from "next/image";
 
-export default function Verification() {
+function VerificationContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const isRegister = searchParams?.get('type') === 'register';
@@ -90,7 +89,7 @@ export default function Verification() {
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
             }
-        } catch (err) {
+        } catch {
             toast.error('دسترسی به دوربین امکان‌پذیر نیست');
         }
     };
@@ -311,5 +310,13 @@ export default function Verification() {
                 </Card>
             </Box>
         </Box>
+    );
+}
+
+export default function Verification() {
+    return (
+        <Suspense fallback={<Loading />}>
+            <VerificationContent />
+        </Suspense>
     );
 }

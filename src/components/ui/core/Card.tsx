@@ -10,7 +10,7 @@ const getCardClasses = (variant: 'default' | 'elevated' | 'outline', padding: 'n
     const baseClasses = "rounded-2xl bg-white";
 
     const variantClasses = {
-        default: "shadow-sm border border-gray-200",
+        default: "",
         elevated: "shadow-lg",
         outline: "border-2 border-gray-200",
     };

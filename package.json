@@ -3,16 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3000",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "next start -p 3000",
+    "lint": "eslint",
+    "dev:force": "node -e \"require('child_process').execSync('powershell -ExecutionPolicy Bypass -File .\\\\start-dev.ps1', {stdio: 'inherit'})\""
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.2.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "critters": "^0.0.25",
     "next": "15.5.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",

@@ -76,21 +76,18 @@ export function VirtualKeyboard({
                 <KeyboardIcon className="h-4 w-4" />
             </Button>
 
-            {/* کیبورد مجازی - inline نمایش */}
             <Box className="mt-12">
                 <Card
                     className="p-4 bg-white shadow-lg border border-gray-200 w-full max-w-xs"
                     padding="none"
                 >
                     <Box className="space-y-4">
-                        {/* نمایش مقدار فعلی */}
                         <Box className="bg-gray-50 p-3 rounded-lg text-center font-mono text-lg tracking-wider border-2 border-dashed border-gray-300">
                             <Typography variant="body1" className="font-mono">
                                 {currentValue || "---"}
                             </Typography>
                         </Box>
 
-                        {/* اعداد رندوم شده */}
                         <Box className="grid grid-cols-3 gap-2">
                             {randomizedNumbers.map((number) => (
                                 <Button
@@ -106,9 +103,7 @@ export function VirtualKeyboard({
                             ))}
                         </Box>
 
-                        {/* دکمه‌های عملیات */}
                         <Box className="grid grid-cols-3 gap-2 pt-2 border-t border-gray-200">
-                            {/* دکمه پاک کردن */}
                             <Button
                                 type="button"
                                 variant="outline"
@@ -121,7 +116,6 @@ export function VirtualKeyboard({
 
 
 
-                            {/* دکمه انصراف */}
                             <Button
                                 type="button"
                                 variant="outline"

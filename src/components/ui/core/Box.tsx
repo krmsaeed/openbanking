@@ -2,13 +2,11 @@ import { HTMLAttributes, forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 
 type BoxVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
-type BoxSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 type BoxRadius = 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
 type BoxShadow = 'none' | 'sm' | 'md' | 'lg' | 'xl';
 
 interface BoxProps extends HTMLAttributes<HTMLDivElement> {
     variant?: BoxVariant;
-    size?: BoxSize;
     radius?: BoxRadius;
     shadow?: BoxShadow;
     border?: boolean;
@@ -17,7 +15,6 @@ interface BoxProps extends HTMLAttributes<HTMLDivElement> {
 
 const getBoxClasses = (
     variant: BoxVariant,
-    size: BoxSize,
     radius: BoxRadius,
     shadow: BoxShadow,
     border: boolean
@@ -25,7 +22,7 @@ const getBoxClasses = (
     const baseClasses = "transition-all duration-200";
 
     const variantClasses = {
-        default: "bg-white text-gray-900",
+        default: "bg-transparent text-gray-900",
         primary: "bg-blue-50 text-blue-900 border-blue-200",
         secondary: "bg-gray-50 text-gray-900 border-gray-200",
         success: "bg-green-50 text-green-900 border-green-200",
@@ -34,13 +31,6 @@ const getBoxClasses = (
         info: "bg-cyan-50 text-cyan-900 border-cyan-200",
     };
 
-    const sizeClasses = {
-        xs: "p-2",
-        sm: "p-3",
-        md: "p-4",
-        lg: "p-6",
-        xl: "p-8",
-    };
 
     const radiusClasses = {
         none: "rounded-none",
@@ -64,7 +54,6 @@ const getBoxClasses = (
     return cn(
         baseClasses,
         variantClasses[variant],
-        sizeClasses[size],
         radiusClasses[radius],
         shadowClasses[shadow],
         borderClass
@@ -75,7 +64,6 @@ const Box = forwardRef<HTMLDivElement, BoxProps>(
     ({
         className,
         variant = 'default',
-        size = 'md',
         radius = 'md',
         shadow = 'none',
         border = false,
@@ -86,7 +74,7 @@ const Box = forwardRef<HTMLDivElement, BoxProps>(
         return (
             <Component
                 ref={ref}
-                className={cn(getBoxClasses(variant, size, radius, shadow, border), className)}
+                className={cn(getBoxClasses(variant, radius, shadow, border), className)}
                 {...props}
             >
                 {children}
@@ -98,4 +86,4 @@ const Box = forwardRef<HTMLDivElement, BoxProps>(
 Box.displayName = "Box";
 
 export { Box };
-export type { BoxProps, BoxVariant, BoxSize, BoxRadius, BoxShadow };
+export type { BoxProps, BoxVariant, BoxRadius, BoxShadow };

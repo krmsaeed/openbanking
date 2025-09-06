@@ -1,5 +1,3 @@
-// Utility functions for handling verification data
-
 export interface VerificationData {
     signature: string;
     video: Blob;
@@ -13,7 +11,6 @@ export interface VerificationData {
     };
 }
 
-// تبدیل Base64 به Blob
 export const base64ToBlob = (base64: string, mimeType: string): Blob => {
     const byteCharacters = atob(base64.split(',')[1]);
     const byteNumbers = new Array(byteCharacters.length);
@@ -26,7 +23,6 @@ export const base64ToBlob = (base64: string, mimeType: string): Blob => {
     return new Blob([byteArray], { type: mimeType });
 };
 
-// ارسال داده‌ها به سرور
 export const submitVerificationData = async (data: VerificationData): Promise<{
     success: boolean;
     message: string;
@@ -39,10 +35,8 @@ export const submitVerificationData = async (data: VerificationData): Promise<{
         const signatureBlob = base64ToBlob(data.signature, 'image/png');
         formData.append('signature', signatureBlob, 'signature.png');
 
-        // اضافه کردن ویدیو
         formData.append('video', data.video, 'selfie-video.webm');
 
-        // اضافه کردن metadata
         formData.append('type', data.type);
         formData.append('timestamp', data.timestamp.toString());
 
@@ -50,12 +44,10 @@ export const submitVerificationData = async (data: VerificationData): Promise<{
             formData.append('userInfo', JSON.stringify(data.userInfo));
         }
 
-        // ارسال به API endpoint
         const response = await fetch('/api/verification', {
             method: 'POST',
             body: formData,
             headers: {
-                // از Content-Type header خودداری می‌کنیم تا browser خودکار multipart/form-data تنظیم کند
             }
         });
 
@@ -83,7 +75,6 @@ export const submitVerificationData = async (data: VerificationData): Promise<{
     }
 };
 
-// اعتبارسنجی امضا
 export const validateSignature = (signatureCanvas: HTMLCanvasElement): boolean => {
     const canvas = signatureCanvas;
     const ctx = canvas.getContext('2d');
@@ -93,9 +84,7 @@ export const validateSignature = (signatureCanvas: HTMLCanvasElement): boolean =
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
 
-    // بررسی اینکه آیا امضایی وجود دارد یا نه
     for (let i = 0; i < data.length; i += 4) {
-        // اگر پیکسلی غیر از سفید پیدا شود، یعنی امضا وجود دارد
         if (data[i] !== 255 || data[i + 1] !== 255 || data[i + 2] !== 255) {
             return true;
         }
@@ -104,7 +93,6 @@ export const validateSignature = (signatureCanvas: HTMLCanvasElement): boolean =
     return false;
 };
 
-// اعتبارسنجی ویدیو
 export const validateVideo = (videoBlob: Blob): {
     isValid: boolean;
     duration?: number;
@@ -119,14 +107,12 @@ export const validateVideo = (videoBlob: Blob): {
     };
 };
 
-// تولید ID منحصر به فرد برای هر درخواست
 export const generateReferenceId = (): string => {
     const timestamp = Date.now();
     const random = Math.random().toString(36).substring(2, 8);
     return `VER_${timestamp}_${random}`.toUpperCase();
 };
 
-// فرمت کردن اندازه فایل
 export const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
 
@@ -137,7 +123,6 @@ export const formatFileSize = (bytes: number): string => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
-// بررسی سازگاری مرورگر
 export const checkBrowserSupport = (): {
     mediaRecorder: boolean;
     getUserMedia: boolean;

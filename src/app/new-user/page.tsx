@@ -9,7 +9,6 @@ import { useToast, Box } from "@/components/ui";
 export default function NewUserPage() {
     const [step, setStep] = useState<'userInfo' | 'identity'>('userInfo');
     const [userInfo, setUserInfo] = useState<NewUserFormData | null>(null);
-    const [loading, setLoading] = useState(false);
     const router = useRouter();
     const toast = useToast();
 
@@ -19,23 +18,19 @@ export default function NewUserPage() {
         toast.success('اطلاعات ثبت شد، لطفاً مدارک هویتی را ارسال کنید');
     };
 
-    const handleIdentityComplete = async (selfie: File | null, video: File | null) => {
-        setLoading(true);
+    const handleIdentityComplete = async () => {
         try {
             await new Promise(resolve => setTimeout(resolve, 2000));
             toast.success('ثبت نام با موفقیت انجام شد');
             router.push('/login');
         } catch {
             toast.error('خطا در ثبت نام');
-        } finally {
-            setLoading(false);
         }
     };
 
     const handleBack = () => {
         setStep('userInfo');
     };
-
     return (
         <Box className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
             <Box className="w-full max-w-2xl">

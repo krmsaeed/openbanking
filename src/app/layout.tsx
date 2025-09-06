@@ -49,7 +49,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/images/fav-icon.png"></link>
       </head>
-      <body className={` ${iranYekan.className} flex flex-col items-center  md:gap-12`}>
+      <body className={` ${iranYekan.className} flex flex-col items-center w-full`}>
         <ToastProvider>
           {children}
         </ToastProvider>

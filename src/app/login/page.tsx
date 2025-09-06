@@ -1,26 +1,20 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { PhoneIcon, ArrowRightIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { PageHeader } from "@/components/ui/specialized/PageHeader";
 import { Button } from "@/components/ui/core/Button";
-import { Input } from "@/components/ui/forms/Input";
+import { NationalCodeInput, PhoneNumberInput, OTPInput, type OTPInputRef } from "@/components/ui/forms";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/core/Card";
 import { Box, Typography } from "@/components/ui";
 import { Label } from "@/components/ui/forms/Label";
 import { Loading } from "@/components/ui/feedback/Loading";
-import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { loginFormSchema, type LoginFormData } from "@/lib/schemas/common";
 
-const loginFormSchema = z.object({
-    nationalCode: z.string().length(10, "کد ملی باید ۱۰ رقم باشد").regex(/^\d+$/, "کد ملی باید فقط شامل عدد باشد"),
-    phoneNumber: z.string().regex(/^09\d{9}$/, "شماره موبایل باید با ۰۹ شروع شده و ۱۱ رقم باشد"),
-});
-
-type LoginForm = z.infer<typeof loginFormSchema>;
 export default function Login() {
     const router = useRouter();
     const [step, setStep] = useState(1);
@@ -30,13 +24,8 @@ export default function Login() {
     const [timer, setTimer] = useState(0);
     const [canResend, setCanResend] = useState(false);
 
-    const otpInputs = useRef<(HTMLInputElement | null)[]>([]);
-    const {
-
-        handleSubmit,
-        control,
-        formState: { errors },
-    } = useForm<LoginForm>({
+    const otpInputs = useRef<(OTPInputRef | null)[]>([]);
+    const { handleSubmit, control } = useForm<LoginFormData>({
         resolver: zodResolver(loginFormSchema),
         mode: "onBlur",
     });
@@ -55,8 +44,10 @@ export default function Login() {
         }
     }, [timer]);
 
-    const handlePhoneSubmit = async () => {
-        setLoading(true)
+    const handlePhoneSubmit = async (data: LoginFormData) => {
+        setLoading(true);
+        // Save the phone number entered in step 1 so we can display it in step 2
+        if (data?.phoneNumber) setPhoneNumber(data.phoneNumber);
         setTimeout(() => {
             setStep(2);
             setTimer(120);
@@ -121,165 +112,116 @@ export default function Login() {
 
     if (step === 1) {
         return (
-            <Box className="min-h-screen  flex items-center justify-center p-4">
-                <Box className="max-w-md w-full">
-
-                    <Link
-                        href="/"
-                        className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-8 transition-colors"
-                    >
-                        <ArrowRightIcon className="w-4 h-4 ml-2" />
-                        بازگشت
-                    </Link>
-
-                    <Card padding="lg">
-                        <CardHeader>
-                            <Box className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                <PhoneIcon className="h-6 w-6 text-white" />
-                            </Box>
-
-                            <CardTitle className="text-center">
-                                ورود به حساب
-                            </CardTitle>
-                            <CardDescription className="text-center">
-                                شماره تلفن همراه خود را وارد کنید
-                            </CardDescription>
-                        </CardHeader>
-
-                        <CardContent>
-                            <form onSubmit={handleSubmit(handlePhoneSubmit)} className="space-y-6">
-                                <Controller
-                                    name="phoneNumber"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Input
-                                            {...field}
-                                            label="شماره تلفن همراه"
-                                            type="tel"
-                                            placeholder="0912*******"
-                                            className="text-center"
-                                            maxLength={11}
-                                        />
-                                    )}
-                                />
-                                <Controller
-                                    name="nationalCode"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Input
-                                            {...field}
-                                            label="کد ملی"
-                                            type="tel"
-                                            placeholder="کد ملی را وارد کن"
-                                            className="text-center"
-                                            maxLength={10}
-                                        />
-                                    )}
-                                />
-                                <Button
-                                    type="submit"
-                                    size="lg"
-                                    disabled={loading || !phoneNumber}
-                                    className="w-full"
-                                >
-                                    {loading ? (
-                                        <Loading size="sm" className="ml-2" />
-                                    ) : null}
-                                    دریافت کد تأیید
-                                </Button>
-                            </form>
-                        </CardContent>
-                    </Card>
-                </Box>
-            </Box>
-        );
-    }
-
-    return (
-        <Box className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-            <Box className="max-w-md w-full">
-
-                <Button
-                    variant="ghost"
-                    onClick={() => setStep(1)}
-                    className="mb-8"
-                >
-                    <ArrowRightIcon className="w-4 h-4 ml-2" />
-                    تغییر شماره
-                </Button>
-
-                <Card padding="lg">
+            <PageHeader>
+                <Card padding="none">
                     <CardHeader>
-                        <Box className="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <Box className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                             <PhoneIcon className="h-6 w-6 text-white" />
                         </Box>
 
-                        <Typography variant="subtitle1" className="text-center">
-                            کد تأیید
-                        </Typography>
-                        <Typography variant="body2" color="muted" className="text-center">
-                            کد ارسال شده به {phoneNumber} را وارد کنید
-                        </Typography>
+                        <CardTitle className="text-center">
+                            ورود به حساب
+                        </CardTitle>
+                        <CardDescription className="text-center">
+                            شماره تلفن همراه خود را وارد کنید
+                        </CardDescription>
                     </CardHeader>
 
                     <CardContent>
-                        <form onSubmit={handleOtpSubmit} className="space-y-6">
-                            <Box>
-                                <Label className="block text-sm font-medium text-gray-700 mb-4 text-center">
-                                    کد ۵ رقمی
-                                </Label>
-
-                                <Box className="otp-container flex justify-center space-x-3">
-                                    {[...Array(5)].map((_, index) => (
-                                        <input
-                                            key={index}
-                                            ref={(el) => {
-                                                otpInputs.current[index] = el;
-                                            }}
-                                            type="text"
-                                            inputMode="numeric"
-                                            value={otp[index] || ""}
-                                            onChange={(e) => handleOtpChange(index, e.target.value)}
-                                            onKeyDown={(e) => handleKeyDown(index, e)}
-                                            className="otp-input w-12 h-12 text-center text-lg font-bold border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                            maxLength={1}
-                                        />
-                                    ))}
-                                </Box>
-                            </Box>
-
-                            <Box className="text-center">
-                                {timer > 0 ? (
-                                    <Box className="flex items-center justify-center text-gray-600">
-                                        <ClockIcon className="w-4 h-4 ml-2" />
-                                        <Typography as="span">ارسال مجدد در {formatTime(timer)}</Typography>
-                                    </Box>
-                                ) : (
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        onClick={resendOtp}
-                                    >
-                                        ارسال مجدد کد
-                                    </Button>
-                                )}
-                            </Box>
-
+                        <form onSubmit={handleSubmit(handlePhoneSubmit)} className="space-y-6">
+                            <PhoneNumberInput control={control} />
+                            <NationalCodeInput control={control} />
                             <Button
                                 type="submit"
                                 size="lg"
-                                disabled={loading || otp.length !== 5}
+                                disabled={loading}
                                 className="w-full"
                             >
                                 {loading ? (
                                     <Loading size="sm" className="ml-2" />
                                 ) : null}
-                                تأیید و ورود
+                                دریافت کد تأیید
                             </Button>
                         </form>
                     </CardContent>
                 </Card>
-            </Box>
-        </Box>
+            </PageHeader>
+        );
+    }
+
+    return (
+        <PageHeader backText="تغییر شماره" onBack={() => setStep(1)}>
+            <Card padding="none">
+                <CardHeader>
+                    <Box className="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <PhoneIcon className="h-6 w-6 text-white" />
+
+                    </Box>
+
+                    <Typography variant="subtitle1" className="text-center">
+                        کد تأیید
+                    </Typography>
+                    <Typography variant="body2" color="muted" className="text-center">
+                        کد ارسال شده به {phoneNumber} را وارد کنید
+                    </Typography>
+                </CardHeader>
+
+                <CardContent>
+                    <form onSubmit={handleOtpSubmit} className="space-y-6">
+                        <Box>
+                            <Label className="block text-sm font-medium text-gray-700 mb-4 text-center">
+                                کد ۵ رقمی
+                            </Label>
+
+                            <Box className="otp-container flex justify-center space-x-3">
+                                {[...Array(5)].map((_, index) => (
+                                    <OTPInput
+                                        key={index}
+                                        ref={(el) => {
+                                            otpInputs.current[index] = el;
+                                        }}
+                                        value={otp[index] || ""}
+                                        onChange={(value) => handleOtpChange(index, value)}
+                                        onKeyDown={(e) => handleKeyDown(index, e)}
+                                        className="otp-input"
+                                    />
+                                ))}
+                            </Box>
+                        </Box>
+
+                        <Box className="text-center">
+                            {timer > 0 ? (
+                                <Box className="flex items-center justify-center text-gray-600">
+                                    <ClockIcon className="w-4 h-4 ml-2" />
+                                    <Typography as="span">ارسال مجدد در {formatTime(timer)}</Typography>
+                                </Box>
+                            ) : (
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={resendOtp}
+                                    disabled={!canResend}
+                                >
+                                    ارسال مجدد کد
+                                </Button>
+                            )}
+                        </Box>
+
+                        <Button
+                            type="submit"
+                            size="lg"
+                            disabled={loading || otp.length !== 5}
+                            className="w-full"
+                        >
+                            {loading ? (
+                                <Loading size="sm" className="ml-2" />
+                            ) : null}
+                            تأیید و ورود
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
+        </PageHeader>
+
     );
 }

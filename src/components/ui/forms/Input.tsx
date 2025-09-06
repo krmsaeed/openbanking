@@ -10,6 +10,8 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>
     label?: string;
     error?: string;
     helper?: string;
+    adornment?: React.ReactNode;
+    required?: boolean;
 }
 
 const getInputClasses = (variant: InputVariant, size: InputSize) => {
@@ -31,18 +33,27 @@ const getInputClasses = (variant: InputVariant, size: InputSize) => {
 };
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-    ({ className, variant = 'default', size = 'default', label, error, helper, onChange, ...props }, ref) => {
+    ({ className, variant = 'default', size = 'default', label, error, helper, adornment, required, onChange, ...props }, ref) => {
         const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            // تبدیل خودکار اعداد فارسی به انگلیسی بدون ساختن event جدید
-            const convertedValue = convertPersianToEnglish(e.target.value);
+            const originalValue = e.target.value;
+            const convertedValue = convertPersianToEnglish(originalValue);
+            if (convertedValue !== originalValue) {
+                const newEvent = {
+                    ...e,
+                    target: {
+                        ...e.target,
+                        value: convertedValue
+                    },
+                    currentTarget: {
+                        ...e.currentTarget,
+                        value: convertedValue
+                    }
+                } as React.ChangeEvent<HTMLInputElement>;
 
-            if (convertedValue !== e.target.value) {
-                // مقدار event.target/currentTarget را به مقدار تبدیل‌شده تغییر بده
-                (e.target as HTMLInputElement).value = convertedValue;
-                (e.currentTarget as HTMLInputElement).value = convertedValue;
+                onChange?.(newEvent);
+            } else {
+                onChange?.(e);
             }
-
-            onChange?.(e);
         };
 
         return (
@@ -50,14 +61,22 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 {label && (
                     <label className="text-sm font-medium text-gray-700">
                         {label}
+                        {required && <span className="text-red-500 mr-1">*</span>}
                     </label>
                 )}
-                <input
-                    className={cn(getInputClasses(variant, size), className)}
-                    ref={ref}
-                    onChange={handleChange}
-                    {...props}
-                />
+                <div className="relative">
+                    <input
+                        className={cn(getInputClasses(variant, size), className, adornment)}
+                        ref={ref}
+                        onChange={handleChange}
+                        {...props}
+                    />
+                    {adornment && (
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center text-gray-400">
+                            {adornment}
+                        </span>
+                    )}
+                </div>
                 {error && (
                     <p className="text-xs text-red-600">{error}</p>
                 )}
@@ -69,5 +88,4 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     }
 )
 Input.displayName = "Input"
-
 export { Input }

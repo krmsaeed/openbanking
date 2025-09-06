@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Loading } from "@/components/ui";
 import { Box, Typography } from "@/components/ui";
-import { FinancialInfoStep, IdentityFilesStep, JobFilesStep, ProgressSteps } from "@/components/credit-assessment";
+
+const FinancialInfoStep = lazy(() => import("@/components/credit-assessment").then(module => ({ default: module.FinancialInfoStep })));
+const IdentityFilesStep = lazy(() => import("@/components/credit-assessment").then(module => ({ default: module.IdentityFilesStep })));
+const JobFilesStep = lazy(() => import("@/components/credit-assessment").then(module => ({ default: module.JobFilesStep })));
+const ProgressSteps = lazy(() => import("@/components/credit-assessment").then(module => ({ default: module.ProgressSteps })));
 
 export default function CreditAssessment() {
     const router = useRouter();
@@ -49,29 +53,37 @@ export default function CreditAssessment() {
         <Box className="min-h-screen p-6">
             <Box className="max-w-4xl mx-auto">
                 <Box className="text-center mb-8">
-                    <Typography variant="h1" className="text-4xl font-bold text-gray-900 mb-4">اعتبارسنجی</Typography>
-                    <Typography variant="body1" color="secondary">برای دریافت وام، لطفاً مراحل زیر را تکمیل کنید</Typography>
-                    <ProgressSteps currentStep={step} />
+                    <Typography variant="h3" className="text-4xl font-bold text-gray-900 mb-4 text-center">اعتبارسنجی</Typography>
+                    <Typography variant="body1" color="secondary" className="text-center">برای دریافت وام، لطفاً مراحل زیر را تکمیل کنید</Typography>
+                    <Suspense fallback={<Loading />}>
+                        <ProgressSteps currentStep={step} />
+                    </Suspense>
                 </Box>
 
                 {step === 1 && (
-                    <FinancialInfoStep onNext={handleStep1Submit} />
+                    <Suspense fallback={<Loading />}>
+                        <FinancialInfoStep onNext={handleStep1Submit} />
+                    </Suspense>
                 )}
 
                 {step === 2 && (
-                    <IdentityFilesStep
-                        onNext={handleStep2Submit}
-                        onPrevious={() => setStep(1)}
-                        loading={loading}
-                    />
+                    <Suspense fallback={<Loading />}>
+                        <IdentityFilesStep
+                            onNext={handleStep2Submit}
+                            onPrevious={() => setStep(1)}
+                            loading={loading}
+                        />
+                    </Suspense>
                 )}
 
                 {step === 3 && (
-                    <JobFilesStep
-                        onNext={handleStep3Submit}
-                        onPrevious={() => setStep(2)}
-                        loading={loading}
-                    />
+                    <Suspense fallback={<Loading />}>
+                        <JobFilesStep
+                            onNext={handleStep3Submit}
+                            onPrevious={() => setStep(2)}
+                            loading={loading}
+                        />
+                    </Suspense>
                 )}
             </Box>
         </Box>

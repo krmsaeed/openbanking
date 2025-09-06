@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { CameraIcon, ArrowPathIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Button } from "../core/Button";
 import { Card, CardContent, CardHeader } from "../core/Card";
@@ -49,7 +49,7 @@ export function SelfieCapture({
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
             }
-        } catch (err) {
+        } catch {
             setError('دسترسی به دوربین امکان‌پذیر نیست. لطفاً مجوز دوربین را بدهید.');
         } finally {
             setLoading(false);
@@ -57,13 +57,13 @@ export function SelfieCapture({
     };
 
     // متوقف کردن دوربین
-    const stopCamera = () => {
+    const stopCamera = useCallback(() => {
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
             setStream(null);
         }
         setCameraStarted(false);
-    };
+    }, [stream]);
 
     // گرفتن عکس از ویدیو
     const capturePhoto = () => {
@@ -117,7 +117,7 @@ export function SelfieCapture({
         return () => {
             stopCamera();
         };
-    }, []);
+    }, [stopCamera]);
 
     return (
         <Card padding="lg" className="w-full max-w-md mx-auto">
@@ -133,7 +133,6 @@ export function SelfieCapture({
 
             <CardContent>
                 <Box className="space-y-6">
-                    {/* نمایش خطا */}
                     {error && (
                         <Box className="bg-red-50 border border-red-200 rounded-lg p-3">
                             <Typography variant="caption" className="text-red-800 text-center block">
@@ -142,7 +141,6 @@ export function SelfieCapture({
                         </Box>
                     )}
 
-                    {/* حالت شروع */}
                     {!cameraStarted && !selfieImage && (
                         <Box className="text-center space-y-4">
                             <Box className="border-2 border-dashed border-gray-300 rounded-xl p-12 bg-gray-50">
@@ -162,7 +160,6 @@ export function SelfieCapture({
                         </Box>
                     )}
 
-                    {/* نمایش ویدیو */}
                     {cameraStarted && stream && !selfieImage && (
                         <Box className="space-y-4">
                             <Box className="relative">
@@ -172,9 +169,8 @@ export function SelfieCapture({
                                     playsInline
                                     muted
                                     className="w-full rounded-xl border border-gray-300 bg-black"
-                                    style={{ transform: 'scaleX(-1)' }} // Mirror effect
+                                    style={{ transform: 'scaleX(-1)' }}
                                 />
-                                {/* راهنمای قرار دادن صورت */}
                                 <Box className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                     <Box className="w-48 h-60 border-2 border-white border-dashed rounded-full opacity-50"></Box>
                                 </Box>
@@ -192,14 +188,13 @@ export function SelfieCapture({
                                     لغو
                                 </Button>
                                 <Button onClick={capturePhoto} className="flex-1 bg-green-600 hover:bg-green-700">
-                                    <CameraIcon className="w-5 w-5 ml-2" />
+                                    <CameraIcon className="w-5 h-5 ml-2" />
                                     عکس بگیر
                                 </Button>
                             </Box>
                         </Box>
                     )}
 
-                    {/* نمایش عکس گرفته شده */}
                     {selfieImage && (
                         <Box className="space-y-4">
                             <Box className="relative">
@@ -209,7 +204,7 @@ export function SelfieCapture({
                                     width={400}
                                     height={300}
                                     className="w-full rounded-xl border border-gray-300"
-                                    style={{ transform: 'scaleX(-1)' }} // Mirror effect
+                                    style={{ transform: 'scaleX(-1)' }}
                                 />
                             </Box>
 
@@ -232,7 +227,6 @@ export function SelfieCapture({
                         </Box>
                     )}
 
-                    {/* دکمه انصراف */}
                     <Box className="text-center pt-4 border-t border-gray-200">
                         <Button variant="ghost" onClick={onCancel}>
                             انصراف و بازگشت
@@ -241,7 +235,6 @@ export function SelfieCapture({
                 </Box>
             </CardContent>
 
-            {/* Canvas مخفی برای پردازش عکس */}
             <canvas ref={canvasRef} className="hidden" />
         </Card>
     );

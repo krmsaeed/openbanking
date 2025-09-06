@@ -2,11 +2,12 @@ import Link from "next/link";
 import { BuildingLibraryIcon, UserPlusIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/core/Button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/core/Card";
+import { Box } from "@/components/ui";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-      <div className="max-w-md w-full space-y-8">
+    <Box className="min-h-screen flex items-center justify-center p-6 w-full">
+      <div className="w-full max-w-lg space-y-8  border border-gray-100 shadow-md rounded-2xl p-6">
 
         <Card padding="lg">
           <CardHeader>
@@ -24,14 +25,14 @@ export default function Home() {
 
           <CardContent className="flex flex-col gap-4 w-full">
             <Link href="/login" className="">
-              <Button size="lg" className="w-full">
+              <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                 <BuildingLibraryIcon className="w-4 h-4 ml-2" />
                 ورود به حساب
               </Button>
             </Link>
 
             <Link href="/register">
-              <Button variant="outline" size="lg" className="w-full">
+              <Button variant="success" size="lg" className="w-full">
                 <UserPlusIcon className="w-4 h-4 ml-2" />
                 ایجاد حساب جدید
               </Button>
@@ -45,6 +46,6 @@ export default function Home() {
           </p>
         </div>
       </div>
-    </div>
+    </Box>
   );
 }
