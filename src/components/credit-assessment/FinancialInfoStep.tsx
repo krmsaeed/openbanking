@@ -1,9 +1,11 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, Control, FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BanknotesIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { Button, Input, Card, CardContent, CardHeader, CardTitle, CardDescription, FormField, Select } from "@/components/ui";
+import ControlledInput from "@/components/ui/forms/ControlledInput";
+import ControlledSelect from "@/components/ui/forms/ControlledSelect";
 import { financialInfoSchema, type FinancialInfoFormData } from "@/lib/schemas/creditAssessment";
 
 interface FinancialInfoStepProps {
@@ -39,17 +41,7 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                             required
                             error={errors.monthlyIncome?.message}
                         >
-                            <Controller
-                                name="monthlyIncome"
-                                control={control}
-                                render={({ field, fieldState }) => (
-                                    <Input
-                                        {...field}
-                                        placeholder="مثال: 15000000"
-                                        error={fieldState.error?.message}
-                                    />
-                                )}
-                            />
+                            <ControlledInput name="monthlyIncome" control={control as unknown as Control<FieldValues>} placeholder="مثال: 15000000" />
                         </FormField>
 
                         <FormField
@@ -183,21 +175,15 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                             label="هدف از دریافت وام"
                             error={errors.loanPurpose?.message}
                         >
-                            <Controller
-                                name="loanPurpose"
-                                control={control}
-                                render={({ field }) => (
-                                    <Select {...field}>
-                                        <option value="">انتخاب کنید</option>
-                                        <option value="home">خرید خانه</option>
-                                        <option value="car">خرید خودرو</option>
-                                        <option value="business">کسب‌وکار</option>
-                                        <option value="education">تحصیل</option>
-                                        <option value="medical">درمان</option>
-                                        <option value="other">سایر</option>
-                                    </Select>
-                                )}
-                            />
+                            <ControlledSelect name="loanPurpose" control={control as unknown as Control<FieldValues>}>
+                                <option value="">انتخاب کنید</option>
+                                <option value="home">خرید خانه</option>
+                                <option value="car">خرید خودرو</option>
+                                <option value="business">کسب‌وکار</option>
+                                <option value="education">تحصیل</option>
+                                <option value="medical">درمان</option>
+                                <option value="other">سایر</option>
+                            </ControlledSelect>
                         </FormField>
                     </div>
 
