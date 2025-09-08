@@ -1,26 +1,11 @@
 "use client";
-
-import { useSexport default function Register() {
-    const router = useRouter();
-    const [step, setStep] = useState(2);
-    const [loading, setIsLoading] = useState(false);
-
-    // Step data states
-    const [step1Data, setStep1Data] = useState<PersonalInfoFormData | null>(null);m "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-    personalInfoSchema,
-    birthDatePostalSchema,
-    passwordSchema,
-    otpSchema,
-    type PersonalInfoFormData,
-    type BirthDatePostalFormData,
-    type PasswordFormData,
-    type OtpFormData
-} from "@/lib/schemas/validationSchemas";
+import { registrationFormSchema, type RegistrationFormData } from "@/lib/schemas/common";
+import { z } from "zod";
 import toast from "react-hot-toast";
 import {
     UserIcon, CheckCircleIcon, CameraIcon, PencilIcon,
@@ -37,12 +22,17 @@ import { Loading } from "@/components/ui/feedback/Loading";
 const personalInfoSchema = registrationFormSchema;
 type PersonalInfoForm = RegistrationFormData;
 
+const step2Schema = z.object({
+    birthDate: z.string().min(1, "تاریخ تولد الزامی است"),
+    postalCode: z.string().length(10, "کد پستی باید 10 رقم باشد").regex(/^\d+$/, "کد پستی باید فقط شامل اعداد باشد"),
+});
+type Step2Form = z.infer<typeof step2Schema>;
+
 export default function Register() {
     const router = useRouter();
-    const [step, setStep] = useState(2);
+    const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
 
-    // Step data states
     const [step1Data, setStep1Data] = useState<RegistrationFormData | null>(null);
     const [step2Data, setStep2Data] = useState<{ birthDate: string; postalCode: string } | null>(null);
     const [showNationalCardTemplate, setShowNationalCardTemplate] = useState(false);
@@ -52,51 +42,50 @@ export default function Register() {
     const [otp2, setOtp2] = useState<string>('');
 
     const {
-        control,
-        handleSubmit,
-        formState: { errors },
+        control: step1Control,
+        handleSubmit: handleStep1Submit,
+        formState: { errors: step1Errors },
     } = useForm<PersonalInfoForm>({
         resolver: zodResolver(personalInfoSchema),
         mode: "onBlur",
     });
 
-    // Step 1: Personal Info
+    const {
+        control: step2Control,
+        handleSubmit: handleStep2FormSubmit,
+        formState: { errors: step2Errors },
+    } = useForm<Step2Form>({
+        resolver: zodResolver(step2Schema),
+        mode: "onChange",
+    });
+
     const onPersonalInfoSubmit = (data: PersonalInfoForm) => {
-        console.log("Form data:", data);
-        console.log("Registration data saved:", data);
         setStep1Data(data);
         toast.success("اطلاعات شخصی ثبت شد");
         setStep(2);
     };
 
-    // Step 2: Birth Date & Postal Code
-    const handleStep2Submit = (data: { birthDate: string; postalCode: string }) => {
+    const handleStep2Submit = (data: Step2Form) => {
         setStep2Data(data);
         setShowNationalCardTemplate(true);
         toast.success("تاریخ تولد و کد پستی ثبت شد");
+        return data;
     };
 
-    // Handle National Card Template Confirmation
     const handleNationalCardConfirm = () => {
         setShowNationalCardTemplate(false);
         setStep(3);
     };
 
-    // Step 3: Selfie Photo
     const handleSelfiePhoto = (file: File) => {
-        console.log('Selfie photo captured:', file);
         toast.success("عکس سلفی ثبت شد");
         setStep(4);
     };
 
-    // Step 4: Video Recording
     const handleVideoRecording = (file: File) => {
-        console.log('Video recorded:', file);
         toast.success("فیلم احراز هویت ثبت شد");
         setStep(5);
     };
-
-    // Step 5: Set Password
     const handlePasswordSubmit = () => {
         if (password !== confirmPassword) {
             toast.error("رمز عبور و تایید آن باید یکسان باشد");
@@ -110,7 +99,6 @@ export default function Register() {
         setStep(6);
     };
 
-    // Step 6: First OTP
     const handleOtp1Submit = () => {
         setLoading(true);
         setTimeout(() => {
@@ -120,7 +108,6 @@ export default function Register() {
         }, 2000);
     };
 
-    // Step 7: Second OTP for Digital Certificate
     const handleOtp2Submit = () => {
         setLoading(true);
         setTimeout(() => {
@@ -129,8 +116,6 @@ export default function Register() {
             setStep(8);
         }, 2000);
     };
-
-    // Step 8: Final Digital Signature
     const handleDigitalSignature = () => {
         setLoading(true);
         setTimeout(() => {
@@ -209,7 +194,6 @@ export default function Register() {
                                     default: return "";
                                 }
                             };
-
                             return (
                                 <div key={stepNumber} className="relative flex items-center">
                                     <div className="flex items-center w-full">
@@ -275,31 +259,31 @@ export default function Register() {
 
                                 <CardContent>
                                     {step === 1 && (
-                                        <form onSubmit={handleSubmit(onPersonalInfoSubmit)} className="space-y-6">
+                                        <form onSubmit={handleStep1Submit(onPersonalInfoSubmit)} className="space-y-6">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <Controller
                                                     name="firstName"
-                                                    control={control}
+                                                    control={step1Control}
                                                     render={({ field }) => (
                                                         <Input
                                                             {...field}
                                                             label="نام"
                                                             placeholder="نام را وارد کنید"
                                                             required
-                                                            error={errors.firstName?.message}
+                                                            error={step1Errors.firstName?.message}
                                                         />
                                                     )}
                                                 />
                                                 <Controller
                                                     name="lastName"
-                                                    control={control}
+                                                    control={step1Control}
                                                     render={({ field }) => (
                                                         <Input
                                                             {...field}
                                                             label="نام خانوادگی"
                                                             placeholder="نام خانوادگی را وارد کنید"
                                                             required
-                                                            error={errors.lastName?.message}
+                                                            error={step1Errors.lastName?.message}
                                                         />
                                                     )}
                                                 />
@@ -307,7 +291,7 @@ export default function Register() {
 
                                             <Controller
                                                 name="nationalCode"
-                                                control={control}
+                                                control={step1Control}
                                                 render={({ field }) => (
                                                     <Input
                                                         {...field}
@@ -315,7 +299,7 @@ export default function Register() {
                                                         placeholder="0123456789"
                                                         maxLength={10}
                                                         required
-                                                        error={errors?.nationalCode?.message}
+                                                        error={step1Errors.nationalCode?.message}
                                                         type="tel"
                                                         dir="ltr"
                                                         className="text-center"
@@ -325,7 +309,7 @@ export default function Register() {
 
                                             <Controller
                                                 name="phoneNumber"
-                                                control={control}
+                                                control={step1Control}
                                                 render={({ field }) => (
                                                     <Input
                                                         {...field}
@@ -336,14 +320,14 @@ export default function Register() {
                                                         className="text-center"
                                                         dir="ltr"
                                                         required
-                                                        error={errors.phoneNumber?.message}
+                                                        error={step1Errors.phoneNumber?.message}
                                                     />
                                                 )}
                                             />
 
                                             <Controller
                                                 name="email"
-                                                control={control}
+                                                control={step1Control}
                                                 render={({ field }) => (
                                                     <Input
                                                         {...field}
@@ -352,7 +336,7 @@ export default function Register() {
                                                         placeholder="example@gmail.com"
                                                         dir="ltr"
                                                         className="text-center"
-                                                        error={errors.email?.message}
+                                                        error={step1Errors.email?.message}
                                                     />
                                                 )}
                                             />
@@ -364,36 +348,57 @@ export default function Register() {
                                     )}
 
                                     {step === 2 && !showNationalCardTemplate && (
-                                        <div className="">
-                                            <PersianCalendar
-                                                label="تاریخ تولد"
-                                                placeholder="تاریخ تولد را انتخاب کنید"
-                                                value={step2Data?.birthDate || ''}
-                                                onChange={(value) => setStep2Data(prev => ({ ...prev, birthDate: value, postalCode: prev?.postalCode || '' }))}
-                                                required
-                                                className="w-full"
-                                            />
+                                        <form onSubmit={handleStep2FormSubmit(handleStep2Submit)} className="space-y-6">
+                                            <div>
+                                                <Controller
+                                                    name="birthDate"
+                                                    control={step2Control}
+                                                    defaultValue=""
+                                                    render={({ field }) => (
+                                                        <PersianCalendar
+                                                            label="تاریخ تولد"
+                                                            placeholder="تاریخ تولد را انتخاب کنید"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            required
+                                                            className="w-full"
+                                                        />
+                                                    )}
+                                                />
+                                                {step2Errors.birthDate?.message && (
+                                                    <p className="mt-1 text-sm text-red-500">
+                                                        {step2Errors.birthDate.message}
+                                                    </p>
+                                                )}
+                                            </div>
 
-                                            <Input
-                                                label="کد پستی"
-                                                placeholder="1234567890"
-                                                value={step2Data?.postalCode || ''}
-                                                onChange={(e) => setStep2Data(prev => ({ ...prev, postalCode: e.target.value, birthDate: prev?.birthDate || '' }))}
-                                                maxLength={10}
-                                                type="tel"
-                                                dir="ltr"
-                                                className="text-center"
-                                                required
+                                            <Controller
+                                                name="postalCode"
+                                                control={step2Control}
+                                                defaultValue=""
+                                                render={({ field }) => (
+                                                    <Input
+                                                        {...field}
+                                                        label="کد پستی"
+                                                        placeholder="1234567890"
+                                                        maxLength={10}
+                                                        type="tel"
+                                                        dir="ltr"
+                                                        className="text-center"
+                                                        required
+                                                        error={step2Errors.postalCode?.message}
+                                                    />
+                                                )}
                                             />
 
                                             <Button
-                                                onClick={() => step2Data?.birthDate && step2Data?.postalCode ? handleStep2Submit(step2Data) : toast.error("لطفاً تمام فیلدها را پر کنید")}
+                                                type="submit"
                                                 size="lg"
                                                 className="w-full mt-8"
                                             >
                                                 ادامه
                                             </Button>
-                                        </div>
+                                        </form>
                                     )}
 
                                     {step === 2 && showNationalCardTemplate && (

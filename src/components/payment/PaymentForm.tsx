@@ -408,7 +408,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
 
 
 
-                    <Box variant="secondary" size="md" className="rounded-lg">
+                    <Box variant="secondary" className="rounded-lg">
                         <Box className="flex items-center justify-between mb-2">
                             <Typography variant="body2" weight="medium" color="secondary">
                                 کد امنیتی *

@@ -32,7 +32,6 @@ export function MultiOTPInput({ length, value, onChange, disabled, className }: 
         const newValue = newDigits.join('');
         onChange(newValue);
 
-        // Move to next input if digit was entered
         if (digit && index < length - 1) {
             inputRefs.current[index + 1]?.focus();
         }
@@ -49,7 +48,7 @@ export function MultiOTPInput({ length, value, onChange, disabled, className }: 
     };
 
     return (
-        <Box className={`flex gap-2 justify-center ${className || ''}`}>
+        <Box className={`flex gap-2 justify-center ${className || ''}`} dir='ltr'>
             {digits.map((digit, index) => (
                 <OTPInput
                     key={index}
@@ -58,8 +57,8 @@ export function MultiOTPInput({ length, value, onChange, disabled, className }: 
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyDown(index, e)}
                     disabled={disabled}
                     autoFocus={index === 0}
-                    ref={(el: any) => {
-                        inputRefs.current[index] = el as HTMLInputElement;
+                    ref={(el: HTMLInputElement | null) => {
+                        inputRefs.current[index] = el;
                     }}
                 />
             ))}

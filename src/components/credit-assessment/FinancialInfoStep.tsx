@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BanknotesIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { Button, Input, Card, CardContent, CardHeader, CardTitle, CardDescription, FormField, Select } from "@/components/ui";
@@ -12,7 +12,7 @@ interface FinancialInfoStepProps {
 
 export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
     const {
-        register,
+        control,
         handleSubmit,
         formState: { errors, isValid }
     } = useForm<FinancialInfoFormData>({
@@ -39,9 +39,16 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                             required
                             error={errors.monthlyIncome?.message}
                         >
-                            <Input
-                                {...register("monthlyIncome")}
-                                placeholder="مثال: 15000000"
+                            <Controller
+                                name="monthlyIncome"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <Input
+                                        {...field}
+                                        placeholder="مثال: 15000000"
+                                        error={fieldState.error?.message}
+                                    />
+                                )}
                             />
                         </FormField>
 
@@ -49,9 +56,16 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                             label="سایر درآمدها (تومان)"
                             error={errors.otherIncome?.message}
                         >
-                            <Input
-                                {...register("otherIncome")}
-                                placeholder="مثال: 5000000"
+                            <Controller
+                                name="otherIncome"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <Input
+                                        {...field}
+                                        placeholder="مثال: 5000000"
+                                        error={fieldState.error?.message}
+                                    />
+                                )}
                             />
                         </FormField>
 
@@ -59,9 +73,16 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                             label="مخارج ماهانه (تومان)"
                             error={errors.monthlyExpenses?.message}
                         >
-                            <Input
-                                {...register("monthlyExpenses")}
-                                placeholder="مثال: 8000000"
+                            <Controller
+                                name="monthlyExpenses"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <Input
+                                        {...field}
+                                        placeholder="مثال: 8000000"
+                                        error={fieldState.error?.message}
+                                    />
+                                )}
                             />
                         </FormField>
 
@@ -70,24 +91,37 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                             required
                             error={errors.workExperience?.message}
                         >
-                            <Select {...register("workExperience")}>
-                                <option value="">انتخاب کنید</option>
-                                <option value="0">کمتر از یک سال</option>
-                                <option value="1">۱ سال</option>
-                                <option value="2">۲ سال</option>
-                                <option value="3">۳ سال</option>
-                                <option value="5">۵ سال</option>
-                                <option value="10">بیشتر از ۱۰ سال</option>
-                            </Select>
+                            <Controller
+                                name="workExperience"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select {...field}>
+                                        <option value="">انتخاب کنید</option>
+                                        <option value="0">کمتر از یک سال</option>
+                                        <option value="1">۱ سال</option>
+                                        <option value="2">۲ سال</option>
+                                        <option value="3">۳ سال</option>
+                                        <option value="5">۵ سال</option>
+                                        <option value="10">بیشتر از ۱۰ سال</option>
+                                    </Select>
+                                )}
+                            />
                         </FormField>
 
                         <FormField
                             label="عنوان شغلی"
                             error={errors.jobTitle?.message}
                         >
-                            <Input
-                                {...register("jobTitle")}
-                                placeholder="مثال: مهندس نرم‌افزار"
+                            <Controller
+                                name="jobTitle"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <Input
+                                        {...field}
+                                        placeholder="مثال: مهندس نرم‌افزار"
+                                        error={fieldState.error?.message}
+                                    />
+                                )}
                             />
                         </FormField>
 
@@ -95,9 +129,16 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                             label="نام شرکت"
                             error={errors.companyName?.message}
                         >
-                            <Input
-                                {...register("companyName")}
-                                placeholder="نام شرکت محل کار"
+                            <Controller
+                                name="companyName"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <Input
+                                        {...field}
+                                        placeholder="نام شرکت محل کار"
+                                        error={fieldState.error?.message}
+                                    />
+                                )}
                             />
                         </FormField>
                     </div>
@@ -106,9 +147,16 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                         label="آدرس محل کار"
                         error={errors.workAddress?.message}
                     >
-                        <Input
-                            {...register("workAddress")}
-                            placeholder="آدرس کامل محل کار"
+                        <Controller
+                            name="workAddress"
+                            control={control}
+                            render={({ field, fieldState }) => (
+                                <Input
+                                    {...field}
+                                    placeholder="آدرس کامل محل کار"
+                                    error={fieldState.error?.message}
+                                />
+                            )}
                         />
                     </FormField>
 
@@ -118,9 +166,16 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                             required
                             error={errors.requestedAmount?.message}
                         >
-                            <Input
-                                {...register("requestedAmount")}
-                                placeholder="مثال: 50000000"
+                            <Controller
+                                name="requestedAmount"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <Input
+                                        {...field}
+                                        placeholder="مثال: 50000000"
+                                        error={fieldState.error?.message}
+                                    />
+                                )}
                             />
                         </FormField>
 
@@ -128,15 +183,21 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                             label="هدف از دریافت وام"
                             error={errors.loanPurpose?.message}
                         >
-                            <Select {...register("loanPurpose")}>
-                                <option value="">انتخاب کنید</option>
-                                <option value="home">خرید خانه</option>
-                                <option value="car">خرید خودرو</option>
-                                <option value="business">کسب‌وکار</option>
-                                <option value="education">تحصیل</option>
-                                <option value="medical">درمان</option>
-                                <option value="other">سایر</option>
-                            </Select>
+                            <Controller
+                                name="loanPurpose"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select {...field}>
+                                        <option value="">انتخاب کنید</option>
+                                        <option value="home">خرید خانه</option>
+                                        <option value="car">خرید خودرو</option>
+                                        <option value="business">کسب‌وکار</option>
+                                        <option value="education">تحصیل</option>
+                                        <option value="medical">درمان</option>
+                                        <option value="other">سایر</option>
+                                    </Select>
+                                )}
+                            />
                         </FormField>
                     </div>
 

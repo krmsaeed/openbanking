@@ -33,13 +33,9 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
     }, []);
 
     useEffect(() => {
-        if (lastBoxSkin !== null || targetSkin !== null) {
-            console.debug('calibration', { lastBoxSkin, targetSkin });
-        }
         void setTargetSkin;
     }, [lastBoxSkin, targetSkin, setTargetSkin]);
 
-    // Advanced face detection based on circular face shape and symmetry
     const MIN_EYE_RATIO = 0.03;
     const MAX_OBSTRUCTION = 0.08;
 
@@ -48,9 +44,7 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
 
         const video = videoRef.current;
 
-        // Check if video is actually playing
         if (video.readyState < 2 || video.paused) {
-            console.log('Video not ready for face detection:', video.readyState, video.paused);
             return;
         }
 
@@ -64,18 +58,14 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
             canvas.height = video.videoHeight || 480;
 
             if (canvas.width === 0 || canvas.height === 0) {
-                console.log('Invalid video dimensions');
                 return;
             }
 
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Focus on central circular area for face detection
             const faceX = Math.floor(canvas.width * 0.5);
-            const faceY = Math.floor(canvas.height * 0.4); // Slightly higher for face position
-            const faceRadius = Math.min(canvas.width, canvas.height) * 0.15; // 15% of smallest dimension
-
-            // Sample circular region for advanced analysis
+            const faceY = Math.floor(canvas.height * 0.4);
+            const faceRadius = Math.min(canvas.width, canvas.height) * 0.15;
             const circularData = context.getImageData(
                 faceX - faceRadius,
                 faceY - faceRadius,
@@ -295,14 +285,12 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
     const startCamera = useCallback(async () => {
         setIsLoading(true);
         setError(null);
-        console.log('Starting camera...');
 
         try {
             if (stream) {
                 stream.getTracks().forEach(track => track.stop());
             }
 
-            console.log('Requesting camera access...');
             const mediaStream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     facingMode: 'user',
@@ -313,32 +301,23 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
             });
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
-
                 setStream(mediaStream);
-                console.log('Stream set immediately for video visibility');
 
                 const video = videoRef.current;
 
                 const handleCanPlay = () => {
-                    console.log('Video can play, starting playback...');
-                    video.play()
-                        .then(() => {
-                            console.log('Video playback started successfully');
-                        })
-                        .catch(err => {
-                            console.error('Error starting video playback:', err);
-                        });
+                    video.play().catch(() => {
+                        // Error handling is done in the catch block below
+                    });
                 };
 
                 if (video.readyState >= 3) {
-
                     handleCanPlay();
                 } else {
                     video.addEventListener('canplay', handleCanPlay, { once: true });
                 }
             }
         } catch (err) {
-            console.error('Error accessing camera:', err);
             if (err instanceof Error) {
                 const errorMessage = err.name === 'NotAllowedError'
                     ? 'دسترسی به دوربین رد شد. لطفاً دسترسی را اجازه دهید.'
@@ -349,7 +328,6 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
             }
         } finally {
             setIsLoading(false);
-            console.log('Camera setup complete, isLoading set to false');
         }
     }, [stream]);
 
@@ -357,7 +335,6 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
         if (stream) {
             stream.getTracks().forEach(track => {
                 track.stop();
-                console.log('Camera track stopped:', track.kind);
             });
             setStream(null);
         }
@@ -394,8 +371,6 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
     const capturePhoto = useCallback(() => {
 
         if (!videoRef.current || !canvasRef.current || !stream) {
-            console.error('Missing required elements for photo capture');
-            console.error('Video:', !!videoRef.current, 'Canvas:', !!canvasRef.current, 'Stream:', !!stream);
             return;
         }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IdentificationIcon, ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription, FormField } from "@/components/ui";
@@ -20,6 +20,7 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
     const [birthCertificate, setBirthCertificate] = useState<File[]>([]);
 
     const {
+        control,
         handleSubmit,
         setValue,
         trigger,
@@ -33,26 +34,19 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
         if (!files) return;
         const fileArray = Array.from(files);
 
-        if (fieldName === 'nationalCardFront') {
-            setNationalCardFront(fileArray);
-        } else if (fieldName === 'nationalCardBack') {
-            setNationalCardBack(fileArray);
-        } else if (fieldName === 'birthCertificate') {
-            setBirthCertificate(fileArray);
-        }
+        if (fieldName === 'nationalCardFront') setNationalCardFront(fileArray);
+        if (fieldName === 'nationalCardBack') setNationalCardBack(fileArray);
+        if (fieldName === 'birthCertificate') setBirthCertificate(fileArray);
 
         setValue(fieldName, fileArray);
         trigger(fieldName);
     };
 
     const handleRemoveFile = (fieldName: keyof IdentityFilesFormData) => {
-        if (fieldName === 'nationalCardFront') {
-            setNationalCardFront([]);
-        } else if (fieldName === 'nationalCardBack') {
-            setNationalCardBack([]);
-        } else if (fieldName === 'birthCertificate') {
-            setBirthCertificate([]);
-        }
+        if (fieldName === 'nationalCardFront') setNationalCardFront([]);
+        if (fieldName === 'nationalCardBack') setNationalCardBack([]);
+        if (fieldName === 'birthCertificate') setBirthCertificate([]);
+
         setValue(fieldName, []);
         trigger(fieldName);
     };
@@ -75,12 +69,23 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                         required
                         error={errors.nationalCardFront?.message}
                     >
-                        <SimpleFileUpload
-                            files={nationalCardFront}
-                            onFileSelect={(files) => handleFileSelect('nationalCardFront', files)}
-                            onRemoveFile={() => handleRemoveFile('nationalCardFront')}
-                            label="تصویر جلوی کارت ملی را اینجا بکشید"
-                            id="national-card-front"
+                        <Controller
+                            name="nationalCardFront"
+                            control={control}
+                            render={({ fieldState }) => (
+                                <>
+                                    <SimpleFileUpload
+                                        files={nationalCardFront}
+                                        onFileSelect={(files) => handleFileSelect('nationalCardFront', files)}
+                                        onRemoveFile={() => handleRemoveFile('nationalCardFront')}
+                                        label="تصویر جلوی کارت ملی را اینجا بکشید"
+                                        id="national-card-front"
+                                    />
+                                    {fieldState.error && (
+                                        <p className="text-xs text-red-500 mt-1">{String(fieldState.error.message)}</p>
+                                    )}
+                                </>
+                            )}
                         />
                     </FormField>
 
@@ -89,12 +94,23 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                         required
                         error={errors.nationalCardBack?.message}
                     >
-                        <SimpleFileUpload
-                            files={nationalCardBack}
-                            onFileSelect={(files) => handleFileSelect('nationalCardBack', files)}
-                            onRemoveFile={() => handleRemoveFile('nationalCardBack')}
-                            label="تصویر پشت کارت ملی را اینجا بکشید"
-                            id="national-card-back"
+                        <Controller
+                            name="nationalCardBack"
+                            control={control}
+                            render={({ fieldState }) => (
+                                <>
+                                    <SimpleFileUpload
+                                        files={nationalCardBack}
+                                        onFileSelect={(files) => handleFileSelect('nationalCardBack', files)}
+                                        onRemoveFile={() => handleRemoveFile('nationalCardBack')}
+                                        label="تصویر پشت کارت ملی را اینجا بکشید"
+                                        id="national-card-back"
+                                    />
+                                    {fieldState.error && (
+                                        <p className="text-xs text-red-500 mt-1">{String(fieldState.error.message)}</p>
+                                    )}
+                                </>
+                            )}
                         />
                     </FormField>
 
@@ -103,12 +119,23 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                         required
                         error={errors.birthCertificate?.message}
                     >
-                        <SimpleFileUpload
-                            files={birthCertificate}
-                            onFileSelect={(files) => handleFileSelect('birthCertificate', files)}
-                            onRemoveFile={() => handleRemoveFile('birthCertificate')}
-                            label="تصویر شناسنامه را اینجا بکشید"
-                            id="birth-certificate"
+                        <Controller
+                            name="birthCertificate"
+                            control={control}
+                            render={({ fieldState }) => (
+                                <>
+                                    <SimpleFileUpload
+                                        files={birthCertificate}
+                                        onFileSelect={(files) => handleFileSelect('birthCertificate', files)}
+                                        onRemoveFile={() => handleRemoveFile('birthCertificate')}
+                                        label="تصویر شناسنامه را اینجا بکشید"
+                                        id="birth-certificate"
+                                    />
+                                    {fieldState.error && (
+                                        <p className="text-xs text-red-500 mt-1">{String(fieldState.error.message)}</p>
+                                    )}
+                                </>
+                            )}
                         />
                     </FormField>
 

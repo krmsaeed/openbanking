@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BriefcaseIcon, ArrowRightIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription, FormField } from "@/components/ui";
@@ -18,6 +18,7 @@ export function JobFilesStep({ onNext, onPrevious, loading }: JobFilesStepProps)
     const [salarySlips, setSalarySlips] = useState<File[]>([]);
 
     const {
+        control,
         handleSubmit,
         setValue,
         trigger,
@@ -60,12 +61,23 @@ export function JobFilesStep({ onNext, onPrevious, loading }: JobFilesStepProps)
                         description="حداقل یک فیش حقوقی"
                         error={errors.salarySlips?.message}
                     >
-                        <SimpleFileUpload
-                            files={salarySlips}
-                            onFileSelect={handleFileSelect}
-                            onRemoveFile={handleRemoveFile}
-                            label="فیش‌های حقوقی را اینجا بکشید"
-                            multiple
+                        <Controller
+                            name="salarySlips"
+                            control={control}
+                            render={({ fieldState }) => (
+                                <>
+                                    <SimpleFileUpload
+                                        files={salarySlips}
+                                        onFileSelect={handleFileSelect}
+                                        onRemoveFile={handleRemoveFile}
+                                        label="فیش‌های حقوقی را اینجا بکشید"
+                                        multiple
+                                    />
+                                    {fieldState.error && (
+                                        <p className="text-xs text-red-500 mt-1">{String(fieldState.error.message)}</p>
+                                    )}
+                                </>
+                            )}
                         />
                     </FormField>
 

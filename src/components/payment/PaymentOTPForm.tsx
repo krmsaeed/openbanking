@@ -59,10 +59,9 @@ export function PaymentOTPForm({ cardNumber, onVerify, onBack, onResend, loading
             inputRefs.current[index + 1]?.focus();
         }
 
-        // لاگ فوری وقتی هر ۶ رقم تکمیل شد
         const currentOtp = inputRefs.current.map((el) => el?.value || '').join('');
         if (currentOtp.length === 6) {
-            console.log('OTP:', currentOtp);
+            // Let the validation handle it
         }
     };
 
@@ -87,8 +86,6 @@ export function PaymentOTPForm({ cardNumber, onVerify, onBack, onResend, loading
             <CardContent>
                 <form
                     onSubmit={handleSubmit(() => {
-                        const otp = (digits as (string | undefined)[]).map(d => d || '').join('');
-                        console.log('OTP:', otp);
                         onVerify();
                     })}
                     className="space-y-6"

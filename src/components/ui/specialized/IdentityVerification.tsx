@@ -75,8 +75,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                 streamRef.current = stream;
                 setCameraActive(true);
             }
-        } catch (error) {
-            console.error('Error accessing camera:', error);
+        } catch (_) {
             toast.error('دسترسی به دوربین امکان‌پذیر نیست');
         }
     };

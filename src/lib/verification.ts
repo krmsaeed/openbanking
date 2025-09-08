@@ -31,7 +31,6 @@ export const submitVerificationData = async (data: VerificationData): Promise<{
     try {
         const formData = new FormData();
 
-        // اضافه کردن امضا
         const signatureBlob = base64ToBlob(data.signature, 'image/png');
         formData.append('signature', signatureBlob, 'signature.png');
 
@@ -66,8 +65,7 @@ export const submitVerificationData = async (data: VerificationData): Promise<{
             };
         }
 
-    } catch (error) {
-        console.error('Error submitting verification data:', error);
+    } catch (_) {
         return {
             success: false,
             message: 'خطا در ارتباط با سرور'
@@ -98,8 +96,8 @@ export const validateVideo = (videoBlob: Blob): {
     duration?: number;
     size: number;
 } => {
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    const minSize = 100 * 1024; // 100KB
+    const maxSize = 10 * 1024 * 1024;
+    const minSize = 100 * 1024;
 
     return {
         isValid: videoBlob.size >= minSize && videoBlob.size <= maxSize,

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
-import { VideoCameraIcon, XMarkIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
+import { VideoCameraIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Button } from "../ui/core/Button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../ui/core/Card";
 
@@ -75,8 +75,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                 streamRef.current = stream;
                 setCameraActive(true);
             }
-        } catch (error) {
-            console.error('Error accessing camera:', error);
+        } catch (_) {
             toast.error('دسترسی به دوربین امکان‌پذیر نیست');
         }
     };

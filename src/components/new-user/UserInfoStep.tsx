@@ -109,7 +109,7 @@ export function UserInfoStep({ onNext }: UserInfoStepProps) {
                         )}
                     </FormField>
 
-                    <Box variant="info" size="md" radius="lg" border>
+                    <Box variant="info" radius="lg" border>
                         <Typography variant="h6" weight="medium" color="info">مرحله بعد: احراز هویت</Typography>
                         <Box className="space-y-1">
                             <Typography variant="body2" color="info">• ضبط ویدیو با خواندن متن تأیید</Typography>
