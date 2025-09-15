@@ -115,7 +115,7 @@ export default function Login() {
             <PageHeader>
                 <Card padding="none">
                     <CardHeader>
-                        <Box className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <Box className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
                             <PhoneIcon className="h-6 w-6 text-white" />
                         </Box>
 

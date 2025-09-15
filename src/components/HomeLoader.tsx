@@ -72,17 +72,17 @@ export default function HomeLoader({ delay = 2000 }: { delay?: number }) {
                 </div>
                 <div className="flex gap-2">
                     <button className="px-4 py-2 rounded bg-gray-100" onClick={() => router.push('/')}>برگشت</button>
-                    <button className="px-4 py-2 rounded bg-blue-600 text-white" onClick={() => router.push('/register')}>رفتن به ثبت‌نام</button>
+                    <button className="px-4 py-2 rounded bg-primary text-white" onClick={() => router.push('/register')}>رفتن به ثبت‌نام</button>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="w-full max-w-lg flex flex-col items-center justify-center gap-6 p-8 rounded-2xl shadow-lg bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div className="w-full max-w-lg flex flex-col items-center justify-center gap-6 p-8 rounded-2xl shadow-lg bg-gradient-to-r from-primary-50 to-indigo-50">
             <div className="flex items-center justify-center w-32 h-32 rounded-3xl bg-white shadow-md">
                 <div className="animate-spin-slow">
-                    <BuildingLibraryIcon className="h-10 w-10 text-blue-600" />
+                    <BuildingLibraryIcon className="h-10 w-10 text-primary" />
                 </div>
             </div>
 
@@ -92,7 +92,7 @@ export default function HomeLoader({ delay = 2000 }: { delay?: number }) {
             </div>
 
             <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-blue-600 animate-pulse" />
+                <span className="w-3 h-3 rounded-full bg-primary animate-pulse" />
                 <span className="w-3 h-3 rounded-full bg-indigo-500 animate-pulse delay-75" />
                 <span className="w-3 h-3 rounded-full bg-purple-500 animate-pulse delay-150" />
             </div>

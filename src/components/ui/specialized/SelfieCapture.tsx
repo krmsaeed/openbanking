@@ -123,7 +123,7 @@ export function SelfieCapture({
         <Card padding="lg" className="w-full max-w-md mx-auto">
             <CardHeader>
                 <Box className="text-center">
-                    <Box className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Box className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
                         <CameraIcon className="w-8 h-8 text-white" />
                     </Box>
                     <Typography variant="h6" className="mb-2">{title}</Typography>
@@ -176,8 +176,8 @@ export function SelfieCapture({
                                 </Box>
                             </Box>
 
-                            <Box className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                <Typography variant="caption" className="text-blue-800 text-center block">
+                            <Box className="bg-primary-50 border border-primary-200 rounded-lg p-3">
+                                <Typography variant="caption" className="text-primary-800 text-center block">
                                     صورت خود را داخل دایره قرار دهید و روی دکمه عکس کلیک کنید
                                 </Typography>
                             </Box>

@@ -75,7 +75,7 @@ export function VirtualKeyboard({
                 variant="ghost"
                 size="sm"
                 onClick={onToggle}
-                className="absolute left-2 top-1/2 -translate-y-1/2 p-1 h-8 w-8 text-blue-500 hover:text-blue-700 z-10"
+                className="absolute left-2 top-1/2 -translate-y-1/2 p-1 h-8 w-8 text-primary-500 hover:text-primary-700 z-10"
                 tabIndex={-1}
             >
                 <KeyboardIcon className="h-4 w-4" />
@@ -100,7 +100,7 @@ export function VirtualKeyboard({
                                     type="button"
                                     variant="outline"
                                     onClick={() => handleNumberClick(number)}
-                                    className="h-12 text-lg font-bold hover:bg-blue-50 hover:border-blue-300"
+                                    className="h-12 text-lg font-bold hover:bg-primary-50 hover:border-primary-300"
                                     disabled={currentValue.length >= maxLength}
                                 >
                                     {number}

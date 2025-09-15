@@ -91,7 +91,7 @@ const getTableRowClasses = (
 
     const variantClasses = {
         default: "bg-white hover:bg-gray-50",
-        selected: "bg-blue-50 border-blue-200 hover:bg-blue-100",
+        selected: "bg-primary-50 border-primary-200 hover:bg-primary-100",
         success: "bg-green-50 border-green-200 hover:bg-green-100",
         warning: "bg-yellow-50 border-yellow-200 hover:bg-yellow-100",
         error: "bg-red-50 border-red-200 hover:bg-red-100",

@@ -250,7 +250,7 @@ export function CameraUpload({
                     {recordingMode === 'photo' && !isRecording && (
                         <Button
                             onClick={takePhoto}
-                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                            className="flex items-center gap-2 bg-primary hover:bg-primary-700"
                         >
                             <CameraIcon className="w-5 h-5" />
                             گرفتن عکس
@@ -307,7 +307,7 @@ export function CameraUpload({
         <div>
             <div
                 className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${dragOver
-                    ? 'border-blue-500 bg-blue-50'
+                    ? 'border-primary-500 bg-primary-50'
                     : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                     }`}
                 onDrop={handleDrop}
@@ -366,7 +366,7 @@ export function CameraUpload({
                         <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                             <div className="flex items-center gap-2">
                                 {file.type.startsWith('image/') && (
-                                    <CameraIcon className="w-4 h-4 text-blue-600" />
+                                    <CameraIcon className="w-4 h-4 text-primary" />
                                 )}
                                 {file.type.startsWith('video/') && (
                                     <VideoCameraIcon className="w-4 h-4 text-red-600" />

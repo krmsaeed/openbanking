@@ -46,7 +46,7 @@ export function JobFilesStep({ onNext, onPrevious, loading }: JobFilesStepProps)
         <Card padding="lg">
             <CardHeader>
                 <CardTitle className="flex items-center gap-3">
-                    <BriefcaseIcon className="w-6 h-6 text-blue-600" />
+                    <BriefcaseIcon className="w-6 h-6 text-primary" />
                     مدارک شغلی
                 </CardTitle>
                 <CardDescription>

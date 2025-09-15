@@ -252,9 +252,9 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                     onClick={() => !isDisabled && handleDateSelect(day)}
                     disabled={isDisabled}
                     className={`h-8 w-8 text-sm rounded-full flex items-center justify-center transition-colors ${isSelected
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-primary text-white'
                         : isToday
-                            ? 'bg-blue-100 text-blue-600 font-medium'
+                            ? 'bg-primary-100 text-primary font-medium'
                             : isDisabled
                                 ? 'text-gray-300 cursor-not-allowed'
                                 : 'hover:bg-gray-100 text-gray-700'

@@ -106,7 +106,7 @@ export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps
         <Card padding="lg">
             <CardHeader className="">
                 <Typography variant="h6" className="flex mb-2 font-bold text-center">
-                    <PencilIcon className="w-6 h-6 text-blue-600" />
+                    <PencilIcon className="w-6 h-6 text-primary" />
                     ثبت امضای الکترونیک
                 </Typography>
 
@@ -128,8 +128,8 @@ export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps
                         />
                     </Box>
 
-                    <Box className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                        <Typography variant="caption" className="text-blue-800 text-center block">
+                    <Box className="bg-primary-50 border border-primary-200 rounded-lg p-3">
+                        <Typography variant="caption" className="text-primary-800 text-center block">
                             امضای خود را با ماوس یا انگشت در کادر بالا بکشید
                         </Typography>
                     </Box>

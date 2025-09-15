@@ -17,7 +17,7 @@ const Loading = ({ size = 'md', variant = 'spinner', className }: LoadingProps) 
         return (
             <div
                 className={cn(
-                    'animate-spin rounded-full border-2 border-gray-300 border-t-blue-600',
+                    'animate-spin rounded-full border-2 border-gray-300 border-t-primary',
                     sizeClasses[size],
                     className
                 )}
@@ -28,9 +28,9 @@ const Loading = ({ size = 'md', variant = 'spinner', className }: LoadingProps) 
     if (variant === 'dots') {
         return (
             <div className={cn('flex space-x-1', className)}>
-                <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
         );
     }

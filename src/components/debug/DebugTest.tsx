@@ -50,7 +50,7 @@ export default function DebugTest() {
 
                 <Button
                     onClick={incrementCounter}
-                    className="bg-blue-600 hover:bg-blue-700 mb-4"
+                    className="bg-primary hover:bg-primary-700 mb-4"
                 >
                     افزایش شمارنده
                 </Button>

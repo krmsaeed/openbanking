@@ -20,7 +20,7 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
     const [isLoading, setIsLoading] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [faceDetected, setFaceDetected] = useState(false);
-    const [faceConfidence, setFaceConfidence] = useState(0);
+    // faceConfidence removed (unused) — kept camera flow minimal
     const [faceTooFar, setFaceTooFar] = useState(false);
     const [closenessPercent, setClosenessPercent] = useState(0);
     const [lastBoxSkin, setLastBoxSkin] = useState<number | null>(null);
@@ -249,7 +249,7 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
             );
 
             // Conservative thresholds that must pass in addition to the computed confidence.
-            const requiredCloseness = 85;
+            // requiredCloseness removed (unused)
 
             // require closeness for detection (user must come nearer)
             // use the per-frame computed closeness percent when available; otherwise fall back to centerBoxClose
@@ -266,7 +266,7 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
 
 
             setFaceDetected(detected);
-            setFaceConfidence(confidence);
+            // face confidence tracking removed
             setFaceTooFar(!centerBoxClose);
             setObstructionRatio(obstructionRatio); // New state update
             setEyeFeatureRatio(eyeRatio); // New state update
@@ -458,13 +458,13 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
     if (error) {
         return (
             <Box className="max-w-md mx-auto text-center space-y-4">
-                <Box className="bg-red-50 border border-red-200 rounded-xl p-6">
-                    <CameraIcon className="h-12 w-12 text-red-400 mx-auto mb-4" />
-                    <Typography variant="h3" className="text-lg font-semibold text-red-800 mb-2">خطا در دسترسی به دوربین</Typography>
-                    <Typography variant="body1" className="text-red-700 text-sm mb-4">{error}</Typography>
+                <Box className="bg-error-50 border border-error-200 rounded-xl p-6">
+                    <CameraIcon className="h-12 w-12 text-error-400 mx-auto mb-4" />
+                    <Typography variant="h3" className="text-lg font-semibold text-error-800 mb-2">خطا در دسترسی به دوربین</Typography>
+                    <Typography variant="body1" className="text-error-700 text-sm mb-4">{error}</Typography>
                     <Box className="space-y-2">
-                        <Typography variant="body1" className="text-xs text-red-600">لطفاً:</Typography>
-                        <ul className="text-xs text-red-600 list-disc list-inside text-right">
+                        <Typography variant="body1" className="text-xs text-error-600">لطفاً:</Typography>
+                        <ul className="text-xs text-error-600 list-disc list-inside text-right">
                             <li>دسترسی دوربین را در تنظیمات مرورگر فعال کنید</li>
                             <li>از https استفاده کنید</li>
                             <li>دوربین توسط برنامه دیگری استفاده نشود</li>
@@ -475,7 +475,7 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                             تلاش مجدد
                         </Button>
                         {onCancel && (
-                            <Button onClick={onCancel} size="sm" variant="ghost">
+                            <Button onClick={onCancel} size="sm" variant="destructive">
                                 انصراف
                             </Button>
                         )}
@@ -524,10 +524,10 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                             className="transition-all duration-300"
                             stroke={
                                 closenessPercent <= 50
-                                    ? '#EF4444'  // red-500
+                                    ? 'var(--color-error-500)'
                                     : closenessPercent <= 85
-                                        ? '#F59E0B'  // amber-500
-                                        : '#22C55E'  // green-500
+                                        ? 'var(--color-warning-500)'
+                                        : 'var(--color-success-500)'
                             }
                             strokeWidth="4"
                             fill="none"
@@ -558,7 +558,7 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                 {!stream && !capturedPhoto && !isLoading ? (
                     <Box className="absolute inset-0 -bottom-16 bg-gray-900 flex flex-col items-center justify-center text-white space-y-2 z-20">
                         <CameraIcon className="h-16 w-16 text-gray-400" />
-                        <Button onClick={startCamera} className="bg-blue-600 hover:bg-blue-700">
+                        <Button onClick={startCamera} className="bg-primary hover:bg-primary-700">
                             <CameraIcon className="h-5 w-5 ml-2" />
                             روشن کردن دوربین
                         </Button>
@@ -599,7 +599,7 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                 <Box className="flex justify-center gap-4">
                     <Button
                         onClick={retakePhoto}
-                        className="w-fu  px-5 py-3 flex items-center justify-center bg-blue-400 hover:bg-blue-500"
+                        className="w-fu  px-5 py-3 flex items-center justify-center bg-primary-300 hover:bg-primary-500"
                         title="گرفتن عکس جدید"
                     >
                         <ArrowPathIcon className="h-6 w-6 text-white" />
@@ -653,10 +653,10 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
             )}
 
             {/* Instructions */}
-            <Box className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                <Typography variant="body1" className="font-semibold text-blue-900 mb-2 text-center">راهنمای عکس‌برداری:</Typography>
+            <Box className="bg-primary-50 border border-primary-200 rounded-xl p-4">
+                <Typography variant="body1" className="font-semibold text-primary-900 mb-2 text-center">راهنمای عکس‌برداری:</Typography>
                 {!capturedPhoto ? (
-                    <ul className="text-sm text-blue-800 space-y-1">
+                    <ul className="text-sm text-primary-800 space-y-1">
                         <li>• صورت خود را کاملاً در قاب قرار دهید</li>
                         <li>• از نور کافی استفاده کنید</li>
                         <li>• عینک آفتابی نداشته باشید</li>
@@ -665,7 +665,7 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                         <li>• روی دکمه سبز کلیک کنید تا عکس بگیرید</li>
                     </ul>
                 ) : (
-                    <ul className="text-sm text-blue-800 space-y-1">
+                    <ul className="text-sm text-error-800 space-y-1">
                         <li>• عکس خود را بررسی کنید</li>
                         <li>• اگر عکس مناسب است، روی «تایید» کلیک کنید</li>
                         <li>• برای گرفتن عکس جدید، روی «عکس جدید» کلیک کنید</li>
@@ -683,9 +683,9 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                     انصراف
                 </Button>
                 <Button
-                    variant="success"
+                    variant="primary"
                     onClick={confirmPhoto}
-                    className="  text-white  gap-3 px-5 py-3 flex items-center justify-center  w-full"
+                    className="  text-white  gap-3 px-5 py-3 flex items-center justify-center  w-full bg-primary"
                     title="تأیید عکس"
                 >
                     <CheckIcon className="h-5 w-5" />

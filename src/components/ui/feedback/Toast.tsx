@@ -25,17 +25,17 @@ export const useToast = () => {
 
 const CustomToast: React.FC<{ t: Toast; type: 'success' | 'error' | 'warning' | 'info' }> = ({ t, type }) => {
     const icons = {
-        success: <CheckCircleIcon className="w-5 h-5 text-green-500" />,
-        error: <XCircleIcon className="w-5 h-5 text-red-500" />,
-        warning: <ExclamationTriangleIcon className="w-5 h-5 text-amber-500" />,
-        info: <InformationCircleIcon className="w-5 h-5 text-blue-500" />,
+        success: <CheckCircleIcon className="w-5 h-5 text-[var(--color-success-500)]" />,
+        error: <XCircleIcon className="w-5 h-5 text-[var(--color-error-500)]" />,
+        warning: <ExclamationTriangleIcon className="w-5 h-5 text-[var(--color-warning-500)]" />,
+        info: <InformationCircleIcon className="w-5 h-5 text-[var(--color-info-500)]" />,
     };
 
     const colors = {
-        success: 'border-green-200 bg-green-50',
-        error: 'border-red-200 bg-red-50',
-        warning: 'border-amber-200 bg-amber-50',
-        info: 'border-blue-200 bg-blue-50',
+        success: 'border-[var(--color-success-100)] bg-[var(--color-success-50)]',
+        error: 'border-[var(--color-error-100)] bg-[var(--color-error-50)]',
+        warning: 'border-[var(--color-warning-100)] bg-[var(--color-warning-50)]',
+        info: 'border-[var(--color-info-100)] bg-[var(--color-info-50)]',
     };
 
     return (
@@ -92,9 +92,9 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return toast.loading(message, {
             style: {
                 borderRadius: '12px',
-                background: '#f9fafb',
-                color: '#111827',
-                border: '1px solid #e5e7eb',
+                background: 'var(--color-bg)',
+                color: 'var(--color-text)',
+                border: `1px solid var(--color-primary-100)`,
                 fontFamily: 'var(--font-vazirmatn), "Tahoma", sans-serif',
             },
             ...options,

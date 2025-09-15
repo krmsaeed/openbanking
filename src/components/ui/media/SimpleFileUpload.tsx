@@ -88,7 +88,7 @@ export function SimpleFileUpload({
             {files.length === 0 && (
                 <Box
                     className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${dragOver
-                        ? 'border-blue-500 bg-blue-50'
+                        ? 'border-primary-500 bg-primary-50'
                         : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                         }`}
                     onDrop={handleDrop}
@@ -131,7 +131,7 @@ export function SimpleFileUpload({
                                                 onClick={handleClickUpload}
                                                 size="sm"
                                                 variant="outline"
-                                                className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-blue-600 transition-colors border-0"
+                                                className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-primary-700 transition-colors border-0"
                                                 title="تغییر عکس"
                                             >
                                                 <CloudArrowUpIcon className="w-4 h-4" />

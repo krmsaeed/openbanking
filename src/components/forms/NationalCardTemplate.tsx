@@ -104,7 +104,7 @@ export function NationalCardTemplate({
                             type="checkbox"
                             checked={confirmed}
                             onChange={(e) => setConfirmed(e.target.checked)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            className="rounded border-gray-300 text-primary focus:ring-primary"
                         />
                         <Typography variant="body1" className="text-sm text-gray-700">
                             اطلاعات نمایش داده شده با کارت ملی من مطابقت دارد

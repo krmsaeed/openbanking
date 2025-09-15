@@ -1,26 +1,25 @@
 import { ButtonHTMLAttributes, forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 
-type ButtonVariant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | 'success';
+type ButtonVariant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | 'success' | 'primary';
 type ButtonSize = 'default' | 'sm' | 'lg' | 'icon';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: ButtonVariant;
     size?: ButtonSize;
-    as?: React.ElementType;
 }
 
-const getButtonClasses = (variant: ButtonVariant, size: ButtonSize, as?: React.ElementType) => {
-    const baseClasses = "cursor-pointer hover:scale-105 transform transition-all duration-100 ease-in-out shadow-md inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95";
+const getButtonClasses = (variant: ButtonVariant, size: ButtonSize) => {
+    const baseClasses = "cursor-pointer hover:scale-105 transform transition-all duration-100 ease-in-out shadow-md inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95";
 
     const variantClasses = {
         default: "bg-gray-500 text-white hover:bg-gray-600 ",
         destructive: "bg-red-600 text-white hover:bg-red-700",
-        primary: "bg-purple-600 text-white hover:bg-purple-700",
+        primary: "bg-primary text-white hover:bg-primary-700",
         outline: "border border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900",
         secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200",
         ghost: "hover:bg-gray-100 hover:text-gray-900",
-        link: "text-blue-600 underline-offset-4 hover:underline",
+        link: "text-primary underline-offset-4 hover:underline",
         success: "bg-green-600 text-white hover:bg-green-700",
     };
 
@@ -38,10 +37,10 @@ const getButtonClasses = (variant: ButtonVariant, size: ButtonSize, as?: React.E
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant = 'default', size = 'default', as, ...props }, ref) => {
+    ({ className, variant = 'default', size = 'default', ...props }, ref) => {
         return (
             <button
-                className={cn(getButtonClasses(variant, size, as), className)}
+                className={cn(getButtonClasses(variant, size), className)}
                 ref={ref}
                 {...props}
             />

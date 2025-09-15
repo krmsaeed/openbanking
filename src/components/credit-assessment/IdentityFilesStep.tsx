@@ -55,7 +55,7 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
         <Card padding="lg">
             <CardHeader>
                 <CardTitle className="flex items-center gap-3">
-                    <IdentificationIcon className="w-6 h-6 text-blue-600" />
+                    <IdentificationIcon className="w-6 h-6 text-primary" />
                     مدارک شناسایی
                 </CardTitle>
                 <CardDescription>
@@ -82,12 +82,13 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                                         id="national-card-front"
                                     />
                                     {fieldState.error && (
-                                        <p className="text-xs text-red-500 mt-1">{String(fieldState.error.message)}</p>
+                                        <p className="text-xs text-error-500 mt-1">{String(fieldState.error.message)}</p>
                                     )}
                                 </>
                             )}
                         />
                     </FormField>
+
 
                     <FormField
                         label="تصویر پشت کارت ملی"
@@ -107,7 +108,7 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                                         id="national-card-back"
                                     />
                                     {fieldState.error && (
-                                        <p className="text-xs text-red-500 mt-1">{String(fieldState.error.message)}</p>
+                                        <p className="text-xs text-error-500 mt-1">{String(fieldState.error.message)}</p>
                                     )}
                                 </>
                             )}
@@ -132,7 +133,7 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                                         id="birth-certificate"
                                     />
                                     {fieldState.error && (
-                                        <p className="text-xs text-red-500 mt-1">{String(fieldState.error.message)}</p>
+                                        <p className="text-xs text-error-500 mt-1">{String(fieldState.error.message)}</p>
                                     )}
                                 </>
                             )}
@@ -142,7 +143,7 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                     <div className="flex justify-between">
                         <Button
                             type="button"
-                            variant="outline"
+                            variant="destructive"
                             onClick={onPrevious}
                             className="flex items-center gap-2"
                         >
@@ -151,7 +152,8 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                         </Button>
                         <Button
                             type="submit"
-                            className="flex items-center gap-2"
+                            variant="primary"
+                            className="flex items-center gap-2 bg-primary text-white"
                             disabled={loading}
                         >
                             {loading ? 'در حال پردازش...' : 'مرحله بعد'}

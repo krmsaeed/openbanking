@@ -34,17 +34,17 @@ export function ProgressSteps({ currentStep }: ProgressStepsProps) {
                 {steps.map((item, index) => (
                     <div key={item.number} className="flex items-center flex-shrink-0">
                         <div className={`flex items-center justify-center w-10 h-10 rounded-full ${currentStep >= item.number
-                            ? 'bg-blue-600 text-white'
+                            ? 'bg-primary text-white'
                             : 'bg-gray-200 text-gray-500'
                             }`}>
                             <item.icon className="w-5 h-5" />
                         </div>
-                        <span className={`mr-2 text-xs font-medium whitespace-nowrap ${currentStep >= item.number ? 'text-blue-600' : 'text-gray-500'
+                        <span className={`mr-2 text-xs font-medium whitespace-nowrap ${currentStep >= item.number ? 'text-primary' : 'text-gray-500'
                             }`}>
                             {item.title}
                         </span>
                         {index < steps.length - 1 && (
-                            <div className={`w-6 h-0.5 mx-3 ${currentStep > item.number ? 'bg-blue-600' : 'bg-gray-200'
+                            <div className={`w-6 h-0.5 mx-3 ${currentStep > item.number ? 'bg-primary' : 'bg-gray-200'
                                 }`} />
                         )}
                     </div>

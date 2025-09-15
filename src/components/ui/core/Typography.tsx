@@ -66,7 +66,7 @@ const getTypographyClasses = (
 
     const colorClasses = {
         default: "text-gray-900",
-        primary: "text-blue-600",
+        primary: "text-primary",
         secondary: "text-gray-600",
         success: "text-green-600",
         warning: "text-yellow-600",

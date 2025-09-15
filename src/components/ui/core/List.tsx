@@ -70,7 +70,7 @@ const getListItemClasses = (
 
     const variantClasses = {
         default: "text-gray-900",
-        primary: "text-blue-800",
+        primary: "text-primary-800",
         secondary: "text-gray-600",
         success: "text-green-800",
         warning: "text-yellow-800",

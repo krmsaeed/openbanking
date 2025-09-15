@@ -258,7 +258,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                             </div>
                         ) : (
                             <div className="space-y-4">
-                                <div className="border-2 border-dashed border-blue-300 rounded-lg p-4 bg-blue-50">
+                                <div className="border-2 border-dashed border-primary-300 rounded-lg p-4 bg-primary-50">
                                     <div className="relative bg-black rounded-lg overflow-hidden mb-4">
                                         <video
                                             ref={videoRef}
@@ -279,9 +279,9 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                                         )}
                                     </div>
 
-                                    <div className="mb-4 p-3 bg-white border-2 border-blue-200 rounded-lg">
+                                    <div className="mb-4 p-3 bg-white border-2 border-primary-200 rounded-lg">
                                         <div className="flex items-center justify-between mb-2">
-                                            <h4 className="font-medium text-blue-900">متن زیر را بخوانید:</h4>
+                                            <h4 className="font-medium text-primary-900">متن زیر را بخوانید:</h4>
                                             <Button
                                                 variant="outline"
                                                 size="sm"
@@ -296,7 +296,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                                             {currentText}
                                         </p>
                                         <div className="flex justify-between items-center mt-2">
-                                            <span className="text-sm text-blue-600 font-medium">
+                                            <span className="text-sm text-primary font-medium">
                                                 متن {currentTextIndex + 1} از {verificationTexts.length}
                                             </span>
                                             {currentTextIndex < verificationTexts.length - 1 && (
