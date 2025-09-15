@@ -17,6 +17,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/core/Button";
 import { Input } from "@/components/ui/forms";
+import { convertPersianToEnglish } from '@/lib/utils';
 import { PersianCalendar, MultiOTPInput, NationalCardTemplate, CameraSelfie } from "@/components/forms";
 import { VideoRecorder } from "@/components/new-user";
 import { SignatureCapture } from "../../components/ui/specialized/SignatureCapture";
@@ -77,8 +78,8 @@ export default function Register() {
                     }
                 }
                 if (mobile) {
-                    // basic cleaning: remove non-digits
-                    const cleanedMobile = (mobile || '').replace(/\D/g, '');
+                    // normalize Persian digits then remove non-digits
+                    const cleanedMobile = convertPersianToEnglish(mobile || '').replace(/\D/g, '');
                     if (cleanedMobile.length >= 10) {
                         setStep1Value('phoneNumber', cleanedMobile);
                     }
@@ -285,10 +286,10 @@ export default function Register() {
             return 'bg-green-600';
         }
         const colors = [
-            'bg-blue-600', 'bg-indigo-600', 'bg-yellow-600',
+            'bg-primary', 'bg-indigo-600', 'bg-yellow-600',
             'bg-red-600', 'bg-purple-600', 'bg-pink-600', 'bg-orange-600', 'bg-gray-600'
         ];
-        return colors[step - 1] || 'bg-blue-600';
+        return colors[step - 1] || 'bg-primary';
     };
 
     return (
@@ -450,9 +451,9 @@ export default function Register() {
                                                 </form>
                                             ) : (
                                                 <div className="space-y-4">
-                                                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-2">
-                                                        <h3 className="font-medium text-blue-900 mb-2">کد تایید</h3>
-                                                        <p className="text-sm text-blue-800">
+                                                    <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 mb-2">
+                                                        <h3 className="font-medium text-primary-900 mb-2">کد تایید</h3>
+                                                        <p className="text-sm text-primary-800">
                                                             <span dir="ltr">کد تایید ۵ رقمی به شماره {step1Data?.phoneNumber} ارسال شد.</span>
                                                         </p>
                                                     </div>
@@ -652,7 +653,7 @@ export default function Register() {
                                                 قبلاً ثبت نام کرده‌اید؟{" "}
                                                 <Link
                                                     href="/login"
-                                                    className="text-blue-600 hover:text-blue-700 font-medium"
+                                                    className="text-primary hover:text-primary-700 font-medium"
                                                 >
                                                     وارد شوید
                                                 </Link>

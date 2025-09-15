@@ -2,8 +2,11 @@
 
 import React, { useEffect } from 'react';
 
+import { convertPersianToEnglish } from '@/lib/utils';
+
 export function cleanNationalId(input: string): string {
-    return (input || '').replace(/\D/g, '').trim();
+    const normalized = convertPersianToEnglish(input || '');
+    return normalized.replace(/\D/g, '').trim();
 }
 
 // implement Iranian national code checksum validation

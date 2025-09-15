@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, Box } from "@/components/ui";
+import { convertPersianToEnglish } from '@/lib/utils';
 import { otpFormSchema, type PaymentOtpFormData } from "@/lib/schemas/payment";
 import { useOtpTimer } from '@/hooks/useOtpTimer';
 
@@ -38,7 +39,8 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
     // timer handled by useOtpTimer
 
     const handleDigitChange = (rawValue: string, index: number) => {
-        const value = rawValue.replace(/\D/g, '').slice(0, 1);
+        const normalized = convertPersianToEnglish(rawValue || '');
+        const value = normalized.replace(/\D/g, '').slice(0, 1);
         const fieldName = `digit${index + 1}` as keyof PaymentOtpFormData;
         setValue(fieldName, value, { shouldValidate: true, shouldDirty: true });
 
@@ -112,7 +114,7 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
                                         onResend();
                                         reset(120);
                                     }}
-                                    className="text-blue-600"
+                                    className="text-primary"
                                     style={{ background: 'transparent', border: 'none', padding: 0, minWidth: 140 }}
                                     aria-label="ارسال مجدد رمز"
                                 >

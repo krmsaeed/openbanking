@@ -47,7 +47,7 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
                 onChange={handleChange}
                 onKeyDown={onKeyDown}
                 className={cn(
-                    "w-12 h-12 text-center text-lg font-bold border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors",
+                    "w-12 h-12 text-center text-lg font-bold border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-colors",
                     className
                 )}
                 maxLength={maxLength}

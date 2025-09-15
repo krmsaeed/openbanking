@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, FormField, Box, Typography } from "@/components/ui";
+import { convertPersianToEnglish } from '@/lib/utils';
 import { cardFormSchema, type CardFormData } from "@/lib/schemas/payment";
 
 interface PaymentFormProps {
@@ -114,7 +115,8 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
     }, 500);
 
     const handleCvvChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value.replace(/\D/g, '');
+        const normalized = convertPersianToEnglish(e.target.value || '');
+        const value = normalized.replace(/\D/g, '');
         setValue('cvv2', value, { shouldValidate: true, shouldDirty: true });
 
         if (value.length === 3) {
@@ -137,7 +139,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
     }, [setValue, startTransition, debouncedCvvFocus, cancelCvvDebounce]);
 
     const handleMonthChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, '');
+        let value = convertPersianToEnglish(e.target.value || '').replace(/\D/g, '');
 
         if (value.length === 1) {
             const firstDigit = parseInt(value);
@@ -181,7 +183,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
     }, [setValue, startTransition]);
 
     const handleYearChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value.replace(/\D/g, '');
+        const value = convertPersianToEnglish(e.target.value || '').replace(/\D/g, '');
         setValue('expiryYear', value, { shouldValidate: true, shouldDirty: true });
 
         if (value.length === 2) {
@@ -198,7 +200,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
     };
 
     const handleCaptchaChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setValue('captchaInput', e.target.value, { shouldValidate: true, shouldDirty: true });
+        setValue('captchaInput', convertPersianToEnglish(e.target.value || ''), { shouldValidate: true, shouldDirty: true });
     }, [setValue]);
 
     const handleMonthFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
