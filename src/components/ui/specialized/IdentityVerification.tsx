@@ -95,7 +95,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
 
             mediaRecorder.onstop = () => {
                 const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
-                const file = new File([blob], `verification_video_${Date.now()}.webm`, { type: 'video/webm' });
+                const file = new File([blob], `verification_video_${window !== undefined && Date.now()}.webm`, { type: 'video/webm' });
 
                 const url = URL.createObjectURL(blob);
                 setVideoPreviewUrl(url);

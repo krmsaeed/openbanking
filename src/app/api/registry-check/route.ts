@@ -11,8 +11,6 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // شبیه‌سازی بررسی ثبت احوال
-        // در پروژه واقعی، اینجا API ثبت احوال فراخوانی میشه
         const mockResponse = {
             isValid: true,
             firstName: 'علی',

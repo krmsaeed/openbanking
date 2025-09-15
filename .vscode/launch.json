@@ -14,15 +14,15 @@
             },
             "preLaunchTask": "Kill Port 3000"
         },
-        {
-            "name": "Next.js: debug frontend",
-            "type": "chrome",
-            "request": "launch",
-            "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}",
-            "sourceMapPathOverrides": {
-                "webpack://_N_E/*": "${webRoot}/*"
-            }
-        }
+        // {
+        //     "name": "Next.js: debug frontend",
+        //     "type": "chrome",
+        //     "request": "launch",
+        //     "url": "http://localhost:3000",
+        //     "webRoot": "${workspaceFolder}",
+        //     "sourceMapPathOverrides": {
+        //         "webpack://_N_E/*": "${webRoot}/*"
+        //     }
+        // }
     ]
 }

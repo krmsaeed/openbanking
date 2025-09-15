@@ -106,7 +106,7 @@ export const validateVideo = (videoBlob: Blob): {
 };
 
 export const generateReferenceId = (): string => {
-    const timestamp = Date.now();
+    const timestamp = window !== undefined && Date.now();
     const random = Math.random().toString(36).substring(2, 8);
     return `VER_${timestamp}_${random}`.toUpperCase();
 };

@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const referenceId = `VER_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`.toUpperCase();
+        const referenceId = `VER_${window !== undefined && Date.now()}_${Math.random().toString(36).substring(2, 8)}`.toUpperCase();
 
         const uploadDir = path.join(process.cwd(), 'uploads', referenceId);
 

@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registrationFormSchema, type RegistrationFormData } from "@/lib/schemas/common";
 import { z } from "zod";
 import toast from "react-hot-toast";
+import { verificationService } from "@/services/verification";
 import {
     UserIcon, CheckCircleIcon, CameraIcon, PencilIcon,
     CalendarIcon, EyeIcon, LockClosedIcon,
@@ -16,6 +17,7 @@ import { Button } from "@/components/ui/core/Button";
 import { Input } from "@/components/ui/forms";
 import { PersianCalendar, MultiOTPInput, NationalCardTemplate, CameraSelfie } from "@/components/forms";
 import { VideoRecorder } from "@/components/new-user";
+import { SignatureCapture } from "../../components/ui/specialized/SignatureCapture";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/core/Card";
 import { Loading } from "@/components/ui/feedback/Loading";
 
@@ -30,7 +32,7 @@ type Step2Form = z.infer<typeof step2Schema>;
 
 export default function Register() {
     const router = useRouter();
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useState(4);
     const [loading, setLoading] = useState(false);
 
     const [step1Data, setStep1Data] = useState<RegistrationFormData | null>(null);
@@ -40,6 +42,10 @@ export default function Register() {
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [otp1, setOtp1] = useState<string>('');
     const [otp2, setOtp2] = useState<string>('');
+    const [videoSample, setVideoSample] = useState<File | undefined>(undefined);
+    const [signatureSample, setSignatureSample] = useState<File | undefined>(undefined);
+    const [selfieSample, setSelfieSample] = useState<File | undefined>(undefined);
+    const [showSignatureCapture, setShowSignatureCapture] = useState(false);
 
     const {
         control: step1Control,
@@ -78,14 +84,27 @@ export default function Register() {
     };
 
     const handleSelfiePhoto = (file: File) => {
+        // store selfie for later submission
+        setSelfieSample(file);
         toast.success("عکس سلفی ثبت شد");
         setStep(4);
     };
 
     const handleVideoRecording = (file: File) => {
-        toast.success("فیلم احراز هویت ثبت شد");
+        setVideoSample(file);
+        setShowSignatureCapture(true);
+        toast.success("فیلم احراز هویت ثبت شد؛");
+    };
+
+    const handleSignatureComplete = (file: File) => {
+        setSignatureSample(file);
+        setShowSignatureCapture(false);
+        toast.success('نمونه امضای شما ثبت شد');
         setStep(5);
     };
+
+    void videoSample;
+    void signatureSample;
     const handlePasswordSubmit = () => {
         if (password !== confirmPassword) {
             toast.error("رمز عبور و تایید آن باید یکسان باشد");
@@ -116,16 +135,44 @@ export default function Register() {
             setStep(8);
         }, 2000);
     };
-    const handleDigitalSignature = () => {
+    const handleDigitalSignature = async () => {
         setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
+        try {
+            if (signatureSample && videoSample) {
+                const payload: Parameters<typeof verificationService.submitVerification>[0] = {
+                    signature: signatureSample,
+                    video: videoSample,
+                    selfie: selfieSample,
+                    type: 'register',
+                    userInfo: {
+                        email: step1Data?.email,
+                        phone: step1Data?.phoneNumber,
+                        name: `${step1Data?.firstName || ''} ${step1Data?.lastName || ''}`,
+                    }
+                };
+
+                toast.success('در حال ارسال نمونه امضا و ویدیو برای احراز هویت');
+                const resp = await verificationService.submitVerification(payload);
+                if (!resp.success) {
+                    toast.error(resp.message || 'خطا در ارسال اطلاعات احراز هویت');
+                    setLoading(false);
+                    return;
+                } else {
+                    toast.success('نمونه امضا و ویدیو با موفقیت ارسال شد');
+                }
+            }
+
             toast.success("امضای دیجیتال تأیید شد");
             setTimeout(() => {
                 toast.success("ثبت‌نام با موفقیت انجام شد! خوش آمدید!");
                 router.push("/dashboard");
             }, 1500);
-        }, 2000);
+        } catch (err) {
+            console.error('Verification submit error:', err);
+            toast.error('خطا در ارسال اطلاعات احراز هویت');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const getStepDescription = () => {
@@ -134,10 +181,11 @@ export default function Register() {
             case 2: return showNationalCardTemplate ? "اطلاعات کارت ملی خود را بررسی کنید" : "تاریخ تولد و کد پستی را وارد کنید";
             case 3: return "عکس سلفی خود را بگیرید";
             case 4: return "فیلم احراز هویت ضبط کنید";
-            case 5: return "رمز عبور خود را تنظیم کنید";
-            case 6: return <span dir="ltr">{"کد تایید ارسال شده را وارد کنید"}</span>;
-            case 7: return <span dir="ltr">{"برای صدور گواهی دیجیتال، کد تایید را وارد کنید"}</span>;
-            case 8: return "امضای دیجیتال را تأیید کنید";
+            case 5: return "امضای دیجیتال را ثبت کنید";
+            case 6: return "رمز عبور خود را تنظیم کنید";
+            case 7: return <span dir="ltr">{"کد تایید ارسال شده را وارد کنید"}</span>;
+            case 8: return <span dir="ltr">{"برای صدور گواهی دیجیتال، کد تایید را وارد کنید"}</span>;
+            case 9: return "امضای دیجیتال را تأیید کنید";
             default: return "";
         }
     };
@@ -174,6 +222,7 @@ export default function Register() {
                                     case 3: return <EyeIcon className="h-5 w-5" />;
                                     case 4: return <CameraIcon className="h-5 w-5" />;
                                     case 5: return <LockClosedIcon className="h-5 w-5" />;
+                                    case 5: return <LockClosedIcon className="h-5 w-5" />;
                                     case 6: return <KeyIcon className="h-5 w-5" />;
                                     case 7: return <DocumentCheckIcon className="h-5 w-5" />;
                                     case 8: return <PencilIcon className="h-5 w-5" />;
@@ -187,10 +236,11 @@ export default function Register() {
                                     case 2: return "تاریخ تولد و کد پستی";
                                     case 3: return "عکس سلفی";
                                     case 4: return "فیلم احراز هویت";
-                                    case 5: return "تنظیم رمز عبور";
+                                    case 4: return "امضای دیجیتال";
                                     case 6: return "کد تایید";
                                     case 7: return "گواهی دیجیتال";
                                     case 8: return "امضای دیجیتال";
+                                    case 9: return "تنظیم رمز عبور";
                                     default: return "";
                                 }
                             };
@@ -428,10 +478,20 @@ export default function Register() {
                                                 onComplete={handleVideoRecording}
                                                 onCancel={() => setStep(3)}
                                             />
+
                                         </div>
                                     )}
 
                                     {step === 5 && (
+                                        <div className="space-y-6">
+                                            <SignatureCapture
+                                                onComplete={handleSignatureComplete}
+                                                onCancel={() => setShowSignatureCapture(false)}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {step === 6 && !showSignatureCapture && (
                                         <div className="space-y-6">
                                             <Input
                                                 label="رمز عبور"
@@ -455,7 +515,7 @@ export default function Register() {
                                         </div>
                                     )}
 
-                                    {step === 6 && (
+                                    {step === 7 && (
                                         <div className="space-y-6">
                                             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
                                                 <h3 className="font-medium text-blue-900 mb-2">کد تایید</h3>
@@ -484,7 +544,7 @@ export default function Register() {
                                         </div>
                                     )}
 
-                                    {step === 7 && (
+                                    {step === 8 && (
                                         <div className="space-y-6">
                                             <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-6">
                                                 <h3 className="font-medium text-purple-900 mb-2">صدور گواهی دیجیتال</h3>
@@ -513,7 +573,7 @@ export default function Register() {
                                         </div>
                                     )}
 
-                                    {step === 8 && (
+                                    {step === 9 && (
                                         <div className="space-y-6">
                                             <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
                                                 <h3 className="font-medium text-green-900 mb-2">امضای دیجیتال</h3>

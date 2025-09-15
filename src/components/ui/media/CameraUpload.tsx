@@ -105,7 +105,7 @@ export function CameraUpload({
 
                 canvas.toBlob((blob) => {
                     if (blob) {
-                        const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+                        const file = new File([blob], `photo_${window !== undefined && Date.now()}.jpg`, { type: 'image/jpeg' });
                         const fileList = new DataTransfer();
                         fileList.items.add(file);
                         onFileSelect(fileList.files);

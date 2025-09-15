@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import Image from "next/image";
 import { DocumentIcon, XMarkIcon, CloudArrowUpIcon } from "@heroicons/react/24/outline";
 import { Button } from "../core/Button";
@@ -26,7 +26,8 @@ export function SimpleFileUpload({
 }: SimpleFileUploadProps) {
     const [dragOver, setDragOver] = useState(false);
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-    const inputId = id || `file-input-${Math.random().toString(36).substring(2)}`;
+    const reactId = useId();
+    const inputId = id || `file-input-${reactId.replace(":", "-")}`;
 
     useEffect(() => {
         const urls = files.map(file => isImageFile(file) ? URL.createObjectURL(file) : '');

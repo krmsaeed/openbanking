@@ -1,3 +1,4 @@
+"use client";
 import { apiClient, ApiResponse } from './api';
 
 export interface UserInfo {
@@ -11,6 +12,8 @@ export interface UserInfo {
 export interface VerificationData {
     signature: string | File;
     video: File;
+    selfie?: File;
+    national_card?: File;
     type: 'login' | 'register';
     userInfo?: UserInfo;
 }
@@ -32,7 +35,9 @@ export interface VerificationStatus {
 class VerificationService {
     async submitVerification(data: VerificationData): Promise<ApiResponse<VerificationResponse>> {
         const formData = new FormData();
-
+        // Ensure we generate a numeric timestamp. This service is a client service, so
+        // `Date.now()` is safe to call here. Avoid incorrect `window !== 'undefined'` checks.
+        const timestamp = Date.now();
         if (typeof data.signature === 'string') {
             formData.append('signature', data.signature);
         } else {
@@ -40,8 +45,14 @@ class VerificationService {
         }
 
         formData.append('video', data.video);
+        if (data.selfie) {
+            formData.append('selfie', data.selfie);
+        }
+        if (data.national_card) {
+            formData.append('national_card', data.national_card);
+        }
         formData.append('type', data.type);
-        formData.append('timestamp', Date.now().toString());
+        formData.append('timestamp', timestamp.toString());
 
         if (data.userInfo) {
             formData.append('userInfo', JSON.stringify(data.userInfo));

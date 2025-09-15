@@ -157,8 +157,8 @@ export default function Dashboard() {
                         </Box>
 
                         <Box>
-                            <Typography variant="h6" className="font-medium text-gray-900 mb-3">
-                                مراحل تکمیل شده:
+                            <Typography variant="h6" className="font-medium text-gray-900 mb-3 text-center">
+                                مراحل تکمیل شده
                             </Typography>
                             <Box className="space-y-2">
                                 {[
