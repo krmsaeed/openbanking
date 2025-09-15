@@ -61,7 +61,6 @@ function PaymentGatewayContent() {
                     <PaymentOTPForm
                         cardNumber={cardNumber}
                         onVerify={handleOTPVerify}
-                        onBack={() => setStep(1)}
                         onResend={handleResendOTP}
                         loading={loading}
                     />

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { PhoneIcon, ArrowRightIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { PhoneIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { PageHeader } from "@/components/ui/specialized/PageHeader";
 import { Button } from "@/components/ui/core/Button";
 import { NationalCodeInput, PhoneNumberInput, OTPInput, type OTPInputRef } from "@/components/ui/forms";

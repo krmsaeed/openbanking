@@ -1,22 +1,21 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, Box, Typography } from "@/components/ui";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, Box } from "@/components/ui";
 import { otpFormSchema, type PaymentOtpFormData } from "@/lib/schemas/payment";
+import { useOtpTimer } from '@/hooks/useOtpTimer';
 
 interface PaymentOTPFormProps {
     cardNumber: string;
     onVerify: () => void;
-    onBack: () => void;
     onResend: () => void;
     loading?: boolean;
 }
 
-export function PaymentOTPForm({ cardNumber, onVerify, onBack, onResend, loading }: PaymentOTPFormProps) {
-    const [timer, setTimer] = useState(120);
+export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: PaymentOTPFormProps) {
+    const { secondsLeft, reset, formatTime } = useOtpTimer(120);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
     const {
@@ -36,19 +35,7 @@ export function PaymentOTPForm({ cardNumber, onVerify, onBack, onResend, loading
         inputRefs.current[0]?.focus();
     }, []);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setTimer(prev => {
-                if (prev <= 1) {
-                    clearInterval(interval);
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
+    // timer handled by useOtpTimer
 
     const handleDigitChange = (rawValue: string, index: number) => {
         const value = rawValue.replace(/\D/g, '').slice(0, 1);
@@ -65,11 +52,7 @@ export function PaymentOTPForm({ cardNumber, onVerify, onBack, onResend, loading
         }
     };
 
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
+    // formatTime provided by useOtpTimer
 
     const maskedCardNumber = cardNumber.replace(/\d(?=\d{4})/g, '*');
 
@@ -111,36 +94,33 @@ export function PaymentOTPForm({ cardNumber, onVerify, onBack, onResend, loading
                         ))}
                     </Box>
 
-                    <Box className="text-center">
-                        {timer > 0 ? (
-                            <Typography variant="body2" color="secondary">
-                                ارسال مجدد رمز در {formatTime(timer)}
-                            </Typography>
-                        ) : (
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                onClick={() => {
-                                    onResend();
-                                    setTimer(120);
-                                }}
-                                className="text-blue-600 hover:text-blue-700"
-                            >
-                                ارسال مجدد رمز
-                            </Button>
-                        )}
-                    </Box>
+                    {/* resend/timer moved into buttons row for stable layout */}
 
-                    <Box className="flex gap-4">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={onBack}
-                            className="flex-1"
-                        >
-                            <ArrowRightIcon className="w-4 h-4 ml-2" />
-                            بازگشت
-                        </Button>
+                    <Box className="flex gap-4 items-center">
+                        <div className="flex-1 flex items-center justify-center">
+                            {secondsLeft > 0 ? (
+                                <div
+                                    className="text-sm text-gray-500"
+                                    style={{ minWidth: 140, fontVariantNumeric: 'tabular-nums', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace' }}
+                                >
+                                    ارسال مجدد رمز در {formatTime()}
+                                </div>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        onResend();
+                                        reset(120);
+                                    }}
+                                    className="text-blue-600"
+                                    style={{ background: 'transparent', border: 'none', padding: 0, minWidth: 140 }}
+                                    aria-label="ارسال مجدد رمز"
+                                >
+                                    {/* link-like appearance: no bg/border, simple text; no hover-bg/scale */}
+                                    ارسال مجدد رمز
+                                </button>
+                            )}
+                        </div>
                         <Button
                             type="submit"
                             className="flex-1 bg-green-600 hover:bg-green-700"

@@ -38,6 +38,7 @@ interface PersianCalendarProps {
     disabled?: boolean;
     className?: string;
     icon?: React.ReactNode;
+    maxDate?: Date;
 }
 
 // Persian month names
@@ -147,21 +148,18 @@ const getFirstDayOfPersianMonth = (year: number, month: number): number => {
     return (date.getDay() + 1) % 7; // Convert to Persian week (Saturday = 0)
 };
 
-export default function PersianCalendar({ value, onChange, placeholder, label, required, disabled, className }: PersianCalendarProps) {
+export default function PersianCalendar({ value, onChange, placeholder, label, required, disabled, className, maxDate }: PersianCalendarProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [displayValue, setDisplayValue] = useState(value || '');
     const calendarRef = useRef<HTMLDivElement>(null);
 
-    // Current date
     const today = new Date();
     const [todayPersian] = gregorianToPersian(today.getFullYear(), today.getMonth() + 1, today.getDate());
 
-    // Calendar state
     const [currentYear, setCurrentYear] = useState(todayPersian);
     const [currentMonth, setCurrentMonth] = useState(1);
     const [selectedDate, setSelectedDate] = useState<{ year: number, month: number, day: number } | null>(null);
 
-    // Parse existing value
     useEffect(() => {
         if (value) {
             const parts = value.split('/');
@@ -178,7 +176,6 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
         }
     }, [value]);
 
-    // Close calendar when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
@@ -192,7 +189,6 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
         }
     }, [isOpen]);
 
-    // Handle date selection
     const handleDateSelect = (day: number) => {
         const newDate = { year: currentYear, month: currentMonth, day };
         setSelectedDate(newDate);
@@ -202,7 +198,6 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
         setIsOpen(false);
     };
 
-    // Navigate months
     const navigateMonth = (direction: 'prev' | 'next') => {
         if (direction === 'next') {
             if (currentMonth === 12) {
@@ -221,33 +216,48 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
         }
     };
 
-    // Generate calendar days
     const generateCalendarDays = () => {
         const daysInMonth = getPersianMonthDays(currentYear, currentMonth);
         const firstDay = getFirstDayOfPersianMonth(currentYear, currentMonth);
         const days = [];
 
-        // Empty cells for previous month
+        let maxPersianYear = Infinity, maxPersianMonth = Infinity, maxPersianDay = Infinity;
+        if (maxDate) {
+            const [mYear, mMonth, mDay] = gregorianToPersian(maxDate.getFullYear(), maxDate.getMonth() + 1, maxDate.getDate());
+            maxPersianYear = mYear;
+            maxPersianMonth = mMonth;
+            maxPersianDay = mDay;
+        }
+
         for (let i = 0; i < firstDay; i++) {
             days.push(<Box key={`empty-${i}`} className="h-8 w-8"></Box>);
         }
 
-        // Days of current month
         for (let day = 1; day <= daysInMonth; day++) {
             const isSelected = selectedDate?.year === currentYear &&
                 selectedDate?.month === currentMonth &&
                 selectedDate?.day === day;
             const isToday = currentYear === todayPersian && currentMonth === 1 && day === today.getDate();
 
+            let isDisabled = false;
+            if (maxDate) {
+                if (currentYear > maxPersianYear) isDisabled = true;
+                else if (currentYear === maxPersianYear && currentMonth > maxPersianMonth) isDisabled = true;
+                else if (currentYear === maxPersianYear && currentMonth === maxPersianMonth && day > maxPersianDay) isDisabled = true;
+            }
+
             days.push(
                 <button
                     key={day}
-                    onClick={() => handleDateSelect(day)}
+                    onClick={() => !isDisabled && handleDateSelect(day)}
+                    disabled={isDisabled}
                     className={`h-8 w-8 text-sm rounded-full flex items-center justify-center transition-colors ${isSelected
                         ? 'bg-blue-600 text-white'
                         : isToday
                             ? 'bg-blue-100 text-blue-600 font-medium'
-                            : 'hover:bg-gray-100 text-gray-700'
+                            : isDisabled
+                                ? 'text-gray-300 cursor-not-allowed'
+                                : 'hover:bg-gray-100 text-gray-700'
                         }`}
                 >
                     {convertToPersianDigits(day.toString())}

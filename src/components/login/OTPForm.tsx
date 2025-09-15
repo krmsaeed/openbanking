@@ -1,22 +1,21 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, Box, Typography } from "@/components/ui";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, Box } from "@/components/ui";
 import { otpSchema, type LoginOtpFormData } from "@/lib/schemas/login";
+import { useOtpTimer } from '@/hooks/useOtpTimer';
 
 interface OTPFormProps {
     phoneNumber: string;
     onVerify: (otp: string) => void;
-    onBack: () => void;
     onResend: () => void;
     loading?: boolean;
 }
 
-export function OTPForm({ phoneNumber, onVerify, onBack, onResend, loading }: OTPFormProps) {
-    const [timer, setTimer] = useState(120);
+export function OTPForm({ phoneNumber, onVerify, onResend, loading }: OTPFormProps) {
+    const { secondsLeft, reset, formatTime } = useOtpTimer(120);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
     const {
@@ -32,19 +31,7 @@ export function OTPForm({ phoneNumber, onVerify, onBack, onResend, loading }: OT
 
     const otpValue = watch('otp');
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setTimer(prev => {
-                if (prev <= 1) {
-                    clearInterval(interval);
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
+    // useOtpTimer starts automatically on mount
 
     const handleOtpChange = (value: string, index: number) => {
         const newOtp = (otpValue || '').split('');
@@ -57,11 +44,7 @@ export function OTPForm({ phoneNumber, onVerify, onBack, onResend, loading }: OT
         setValue('otp', newOtp.join(''));
     };
 
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
+    // formatting provided by hook: formatTime()
 
     return (
         <Card padding="lg">
@@ -96,36 +79,25 @@ export function OTPForm({ phoneNumber, onVerify, onBack, onResend, loading }: OT
                         ))}
                     </Box>
 
-                    <Box className="text-center">
-                        {timer > 0 ? (
-                            <Typography variant="body2" color="secondary">
-                                ارسال مجدد کد در {formatTime(timer)}
-                            </Typography>
-                        ) : (
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                onClick={() => {
-                                    onResend();
-                                    setTimer(120);
-                                }}
-                                className="text-blue-600 hover:text-blue-700"
-                            >
-                                ارسال مجدد کد
-                            </Button>
-                        )}
-                    </Box>
+                    {/* Left button below acts as resend (shows countdown until enabled) */}
 
                     <Box className="flex gap-4">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={onBack}
-                            className="flex-1"
-                        >
-                            <ArrowRightIcon className="w-4 h-4 ml-2" />
-                            بازگشت
-                        </Button>
+                        {secondsLeft > 0 ? (
+                            <div className="flex-1 text-gray-600 text-sm text-center" style={{ minWidth: 140, fontVariantNumeric: 'tabular-nums', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace' }}>
+                                {formatTime()}
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => { onResend(); reset(120); }}
+                                className={`flex-1 text-blue-600 focus:outline-none px-0 py-0 text-sm`}
+                                style={{ background: 'transparent', border: 'none', padding: 0, minWidth: 140, display: 'inline-flex', justifyContent: 'center', alignItems: 'center' }}
+                            >
+                                <span style={{ fontVariantNumeric: 'tabular-nums', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace' }}>
+                                    ارسال مجدد
+                                </span>
+                            </button>
+                        )}
                         <Button
                             type="submit"
                             className="flex-1"
