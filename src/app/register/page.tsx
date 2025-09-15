@@ -64,45 +64,38 @@ export default function Register() {
         resolver: zodResolver(step2Schema),
         mode: "onChange",
     });
-
-    const onPersonalInfoSubmit = (data: PersonalInfoForm) => {
-        setStep1Data(data);
-        toast.success("اطلاعات شخصی ثبت شد");
-        setStep(2);
-    };
-
     const handleStep2Submit = (data: Step2Form) => {
         setStep2Data(data);
         setShowNationalCardTemplate(true);
         toast.success("تاریخ تولد و کد پستی ثبت شد");
         return data;
     };
-
+    const onPersonalInfoSubmit = (data: PersonalInfoForm) => {
+        setStep1Data(data);
+        toast.success("اطلاعات شخصی ثبت شد");
+        setStep(2);
+    };
     const handleNationalCardConfirm = () => {
         setShowNationalCardTemplate(false);
         setStep(3);
     };
-
     const handleSelfiePhoto = (file: File) => {
-        // store selfie for later submission
         setSelfieSample(file);
         toast.success("عکس سلفی ثبت شد");
         setStep(4);
     };
-
     const handleVideoRecording = (file: File) => {
         setVideoSample(file);
         setShowSignatureCapture(true);
         toast.success("فیلم احراز هویت ثبت شد؛");
+        setStep(5);
     };
-
     const handleSignatureComplete = (file: File) => {
         setSignatureSample(file);
         setShowSignatureCapture(false);
         toast.success('نمونه امضای شما ثبت شد');
-        setStep(5);
+        setStep(6);
     };
-
     void videoSample;
     void signatureSample;
     const handlePasswordSubmit = () => {
@@ -115,7 +108,7 @@ export default function Register() {
             return;
         }
         toast.success("رمز عبور تنظیم شد");
-        setStep(6);
+        setStep(7);
     };
 
     const handleOtp1Submit = () => {
@@ -123,7 +116,7 @@ export default function Register() {
         setTimeout(() => {
             setLoading(false);
             toast.success("کد تایید اول تأیید شد");
-            setStep(7);
+            setStep(8);
         }, 2000);
     };
 
@@ -132,7 +125,7 @@ export default function Register() {
         setTimeout(() => {
             setLoading(false);
             toast.success("گواهی دیجیتال صادر شد");
-            setStep(8);
+            setStep(9);
         }, 2000);
     };
     const handleDigitalSignature = async () => {
@@ -385,7 +378,7 @@ export default function Register() {
                                                         type="email"
                                                         placeholder="example@gmail.com"
                                                         dir="ltr"
-                                                        className="text-center"
+                                                        className="text-left"
                                                         error={step1Errors.email?.message}
                                                     />
                                                 )}

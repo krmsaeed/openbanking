@@ -104,14 +104,12 @@ export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps
 
     return (
         <Card padding="lg">
-            <CardHeader>
-                <Typography variant="h6" className="flex items-center gap-3">
+            <CardHeader className="">
+                <Typography variant="h6" className="flex mb-2 font-bold text-center">
                     <PencilIcon className="w-6 h-6 text-blue-600" />
                     ثبت امضای الکترونیک
                 </Typography>
-                <Typography variant="body2" color="secondary">
-                    لطفاً امضای خود را در کادر زیر بکشید
-                </Typography>
+
             </CardHeader>
 
             <CardContent>
