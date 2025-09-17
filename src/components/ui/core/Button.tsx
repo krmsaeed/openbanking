@@ -1,10 +1,14 @@
-import { ButtonHTMLAttributes, forwardRef } from 'react';
+import { ButtonHTMLAttributes, AnchorHTMLAttributes, forwardRef } from 'react';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 type ButtonVariant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | 'success' | 'primary';
 type ButtonSize = 'default' | 'sm' | 'lg' | 'icon';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+    as?: 'button' | 'link';
+    href?: string;
+    download?: boolean;
     variant?: ButtonVariant;
     size?: ButtonSize;
 }
@@ -65,17 +69,27 @@ const isActionLabel = (children: unknown) => {
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant, size = 'default', children, type, ...props }, ref) => {
+    ({ as = 'button', className, variant, size = 'default', children, type, href, download, ...props }, ref) => {
         let resolvedVariant: ButtonVariant = variant as ButtonVariant || 'default';
         if (!variant) {
             if (type === 'submit') resolvedVariant = 'primary';
             else if (isActionLabel(children)) resolvedVariant = 'primary';
         }
 
+        const classNames = cn(getButtonClasses(resolvedVariant, size), className);
+
+        if (as === 'link') {
+            return (
+                <Link href={href || '#'}>
+                    {children}
+                </Link>
+            );
+        }
+
         return (
             <button
                 type={type}
-                className={cn(getButtonClasses(resolvedVariant, size), className)}
+                className={classNames}
                 ref={ref}
                 {...props}
             >

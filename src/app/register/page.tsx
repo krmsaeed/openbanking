@@ -20,12 +20,9 @@ import SignatureStep from '@/components/register/SignatureStep';
 import CertificateStep from '@/components/register/CertificateStep';
 import PasswordStep from '@/components/register/PasswordStep';
 // Input not used directly in this file
-import { authService } from '@/services/auth';
-import { Button } from "@/components/ui/core/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/core/Card";
-import { Loading } from '@/components/ui/feedback/Loading';
-import { Box, Typography } from "@/components/ui";
-import Image from 'next/image';
+import { Box } from "@/components/ui";
+import FinalConfirmation from '@/components/register/FinalConfirmation';
 import NationalCardScanner from "@/components/register/NationalCardScanner";
 
 // Combined registration schema: nationalCode, phoneNumber, birthDate, postalCode
@@ -73,7 +70,6 @@ export default function Register() {
     const [step2Data, setStep2Data] = useState<{ birthDate: string; postalCode: string } | null>(null);
     const [showNationalCardTemplate, setShowNationalCardTemplate] = useState(false);
     const [showOtp1, setShowOtp1] = useState(false);
-    const [loadingOtp1, setLoadingOtp1] = useState(false);
     const [videoSample, setVideoSample] = useState<File | undefined>(undefined);
     const [signatureSample, setSignatureSample] = useState<File | undefined>(undefined);
     const [selfieSample, setSelfieSample] = useState<File | undefined>(undefined);
@@ -157,28 +153,7 @@ export default function Register() {
     };
 
     // Extracted: send OTP to the registered phone number (invoked by user action)
-    const handleSendOtp = async () => {
-        const phone = step1Data?.phoneNumber;
-        if (!phone) {
-            setError('phoneNumber', { type: 'manual', message: 'شماره همراه موجود نیست' });
-            return;
-        }
-
-        try {
-            setLoadingOtp1(true);
-            const resp = await authService.sendOtp(phone);
-            if (resp && resp.success) {
-                toast.success('کد تایید به شماره همراه ارسال شد');
-            } else {
-                toast('کد تایید ارسال شد (شبیه‌سازی)');
-            }
-        } catch (err) {
-            console.error('sendOtp error', err);
-            setError('otp', { type: 'manual', message: 'ارسال کد ناموفق بود' });
-        } finally {
-            setLoadingOtp1(false);
-        }
-    };
+    // send OTP function intentionally omitted here (handled elsewhere) to avoid automatic sends
 
     const handleNationalCardConfirm = () => {
         setShowNationalCardTemplate(false);
@@ -264,7 +239,10 @@ export default function Register() {
         }
     };
 
-    function handleNationalCardScanComplete(file: File, branch: string): void {
+    function handleNationalCardScanComplete(_file: File, _branch: string): void {
+        // mark parameters as used to satisfy linters (actual handling may be implemented later)
+        void _file;
+        void _branch;
         // For now, just show a toast and move to the next step (selfie)
         toast.success("تصویر کارت ملی و شعبه ثبت شد");
         setShowNationalCardTemplate(false);
@@ -298,7 +276,7 @@ export default function Register() {
                                                         control={control}
                                                         defaultValue={''}
                                                         render={({ field }) => (
-                                                            <CertificateStep otp={field.value ?? ''} setOtp={field.onChange} onIssue={() => ((field.value ?? '').length === 5 ? handleVerifyOtpAfterPersonal() : setError('otp', { type: 'manual', message: 'کد تایید را کامل وارد کنید' }))} loading={loadingOtp1} />
+                                                            <CertificateStep otp={field.value ?? ''} setOtp={field.onChange} onIssue={() => ((field.value ?? '').length === 5 ? handleVerifyOtpAfterPersonal() : setError('otp', { type: 'manual', message: 'کد تایید را کامل وارد کنید' }))} loading={loading} />
                                                         )}
                                                     />
                                                 </div>
@@ -358,31 +336,7 @@ export default function Register() {
                                     )}
 
                                     {step === 8 && (
-                                        <Box className="space-y-6">
-                                            <Box className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
-                                                <Typography variant="h3" className="font-medium text-green-900 mb-2 text-center">امضای دیجیتال</Typography>
-                                                <Typography variant="body1" className="text-sm text-green-800 text-center">گواهی دیجیتال شما با موفقیت صادر شد. در این مرحله می‌توانید قرارداد بانکی را دانلود کنید.</Typography>
-                                            </Box>
-
-                                            <Box className="bg-white border rounded p-4 text-right">
-                                                <Typography variant="body2" className="text-sm text-right">قرارداد بانکی</Typography>
-                                                <Typography variant="body2" className="text-sm mt-2 text-right">لطفا فایل قرارداد را دانلود و نگهداری کنید.</Typography>
-
-                                                <div className="mt-4 flex justify-center">
-                                                    <div className="w-80 h-56 overflow-hidden rounded border">
-                                                        <Image src={'/bank-contract-preview.jpg'} alt="contract preview" width={640} height={420} style={{ objectFit: 'contain' }} />
-                                                    </div>
-                                                </div>
-
-                                                <div className="mt-4 flex gap-2 justify-center">
-                                                    <a href={'/bank-contract-preview.jpg'} download className="inline-flex items-center justify-center px-4 py-2 bg-primary-600 text-white rounded">دانلود تصویر قرارداد</a>
-                                                    <a href={'/bank-contract.pdf'} download className="inline-flex items-center justify-center px-4 py-2 bg-secondary text-white rounded">دانلود قرارداد (PDF)</a>
-                                                </div>
-                                            </Box>
-
-                                            <Button onClick={handleDigitalSignature} size="lg" className="w-full" disabled={loading}>{loading && (<Loading size="sm" className="ml-1" />)} تایید امضای دیجیتال</Button>
-
-                                        </Box>
+                                        <FinalConfirmation onConfirm={handleDigitalSignature} loading={loading} />
                                     )}
 
                                 </CardContent>
