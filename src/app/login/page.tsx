@@ -72,7 +72,7 @@ export default function Login() {
                 router.push("/not-eligible");
                 toast.error("متأسفانه واجد شرایط دریافت تسهیلات نیستید");
             } else {
-                router.push("/dashboard");
+                router.push("/");
                 toast.success("ورود موفقیت‌آمیز بود");
             }
         }, 2000);

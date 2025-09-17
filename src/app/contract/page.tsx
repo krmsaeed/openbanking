@@ -38,7 +38,7 @@ export default function ContractPage() {
     };
 
     const handleReject = () => {
-        router.push('/dashboard');
+        router.push('/');
     };
 
     const handlePrint = () => {

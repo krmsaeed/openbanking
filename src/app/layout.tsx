@@ -45,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fa-IR">
+    <html lang="fa-IR" className="dark">
       <head>
         <link rel="icon" href="/images/fav-icon.png"></link>
       </head>

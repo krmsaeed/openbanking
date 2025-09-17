@@ -1,37 +1,68 @@
 "use client";
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { Controller } from 'react-hook-form';
+// Link removed: unused
 import { useRouter } from "next/navigation";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginFormSchema, type LoginFormData } from "@/lib/schemas/common";
+import type { LoginFormData } from "@/lib/schemas/common";
 import { z } from "zod";
 import toast from "react-hot-toast";
 import { verificationService } from "@/services/verification";
-import { authService } from '@/services/auth';
-import { useOtpTimer } from '@/hooks/useOtpTimer';
-import {
-    UserIcon, CheckCircleIcon, CameraIcon, PencilIcon,
-    CalendarIcon, EyeIcon, LockClosedIcon,
-    DocumentCheckIcon, KeyIcon
-} from "@heroicons/react/24/outline";
-import { Button } from "@/components/ui/core/Button";
-import { Input } from "@/components/ui/forms";
 import { convertPersianToEnglish } from '@/lib/utils';
-import { PersianCalendar, MultiOTPInput, NationalCardTemplate, CameraSelfie } from "@/components/forms";
-import { VideoRecorder } from "@/components/new-user";
-import { SignatureCapture } from "../../components/ui/specialized/SignatureCapture";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/core/Card";
-import { Loading } from "@/components/ui/feedback/Loading";
+import Sidebar from '@/components/register/Sidebar';
+import PersonalInfoForm from '@/components/register/PersonalInfoForm';
+import NationalCardPreview from '@/components/register/NationalCardPreview';
+// NationalCardScanner removed from final step (not used here)
+import SelfieStep from '@/components/register/SelfieStep';
+import VideoStep from '@/components/register/VideoStep';
+import SignatureStep from '@/components/register/SignatureStep';
+import CertificateStep from '@/components/register/CertificateStep';
+import PasswordStep from '@/components/register/PasswordStep';
+// Input not used directly in this file
+import { authService } from '@/services/auth';
+import { Button } from "@/components/ui/core/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/core/Card";
+import { Loading } from '@/components/ui/feedback/Loading';
+import { Box, Typography } from "@/components/ui";
+import Image from 'next/image';
+import NationalCardScanner from "@/components/register/NationalCardScanner";
 
-const personalInfoSchema = loginFormSchema;
-type PersonalInfoForm = LoginFormData;
-
-const step2Schema = z.object({
-    birthDate: z.string().min(1, "تاریخ تولد الزامی است"),
-    postalCode: z.string().length(10, "کد پستی باید 10 رقم باشد").regex(/^\d+$/, "کد پستی باید فقط شامل اعداد باشد"),
+// Combined registration schema: nationalCode, phoneNumber, birthDate, postalCode
+const registrationSchema = z.object({
+    nationalCode: z.string("کد ملی الزامی است").length(10, "کد ملی باید 10 رقم باشد").regex(/^\d+$/, "کد ملی باید فقط شامل اعداد باشد"),
+    phoneNumber: z.string("شماره همراه الزامی است").min(10, "شماره همراه نامعتبر است").regex(/^\d+$/, "شماره همراه باید فقط شامل اعداد باشد"),
+    birthDate: z.string("تاریخ تولد الزامی است").min(1, "تاریخ تولد الزامی است"),
+    postalCode: z.string("کد پستی الزامی است").length(10, "کد پستی باید 10 رقم باشد").regex(/^\d+$/, "کد پستی باید فقط شامل اعداد باشد"),
 });
-type Step2Form = z.infer<typeof step2Schema>;
+
+// Extended schema includes optional password fields and validates them when present
+const extendedRegistrationSchema = registrationSchema.extend({
+    password: z.string().optional(),
+    confirmPassword: z.string().optional(),
+    otp: z.string().optional(),
+    certOtp: z.string().optional(),
+}).superRefine((data, ctx) => {
+    // If either password field is provided, enforce rules
+    const pw = data.password;
+    const cpw = data.confirmPassword;
+    if ((pw !== undefined && pw !== '') || (cpw !== undefined && cpw !== '')) {
+        if (!pw || pw.length < 8) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['password'], message: 'طول رمز باید حداقل 8 کاراکتر باشد' });
+        }
+        if (pw !== cpw) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['confirmPassword'], message: 'رمز و تاییدیه مطابقت ندارند' });
+        }
+    }
+});
+
+type RegistrationForm = z.infer<typeof registrationSchema>;
+type ExtendedRegistrationForm = RegistrationForm & {
+    otp?: string;
+    certOtp?: string;
+    password?: string;
+    confirmPassword?: string;
+};
 
 export default function Register() {
     const router = useRouter();
@@ -41,81 +72,119 @@ export default function Register() {
     const [step1Data, setStep1Data] = useState<LoginFormData | null>(null);
     const [step2Data, setStep2Data] = useState<{ birthDate: string; postalCode: string } | null>(null);
     const [showNationalCardTemplate, setShowNationalCardTemplate] = useState(false);
-    const [password, setPassword] = useState<string>('');
-    const [confirmPassword, setConfirmPassword] = useState<string>('');
-    const [otp1, setOtp1] = useState<string>('');
-    const [otp2, setOtp2] = useState<string>('');
-    const [showOtpInline, setShowOtpInline] = useState(false);
+    const [showOtp1, setShowOtp1] = useState(false);
+    const [loadingOtp1, setLoadingOtp1] = useState(false);
     const [videoSample, setVideoSample] = useState<File | undefined>(undefined);
     const [signatureSample, setSignatureSample] = useState<File | undefined>(undefined);
     const [selfieSample, setSelfieSample] = useState<File | undefined>(undefined);
-    const [showSignatureCapture, setShowSignatureCapture] = useState(false);
+    const [passwordSet, setPasswordSet] = useState(false);
 
     const {
-        control: step1Control,
-        handleSubmit: handleStep1Submit,
-        formState: { errors: step1Errors },
-        setValue: setStep1Value,
-    } = useForm<PersonalInfoForm>({
-        resolver: zodResolver(personalInfoSchema),
+        control,
+        handleSubmit: handleRegisterSubmit,
+        formState: { errors: registerErrors },
+        setValue,
+        getValues,
+        watch,
+        trigger,
+        setError,
+    } = useForm<ExtendedRegistrationForm>({
+        resolver: zodResolver(extendedRegistrationSchema),
         mode: "onBlur",
     });
 
-    // Prefill nationalCode and phoneNumber from URL search params if present and valid
+    // helper wrapper so child components can call setError with plain string names
+    const setErrorAny = (name: string, error: { type: string; message?: string }) => {
+        // single cast boundary for react-hook-form setError
+        (setError as unknown as (n: string, e: { type: string; message?: string }) => void)(name, error);
+    };
+
     useEffect(() => {
         try {
             const params = new URLSearchParams(window.location.search);
             const nationalId = params.get('nationalId') || params.get('nationalCode') || params.get('nid');
             const mobile = params.get('mobile') || params.get('phone') || params.get('msisdn');
             if (!nationalId && !mobile) return;
-            // dynamic import of validator to avoid SSR issues
             void (async () => {
                 const { cleanNationalId, isValidNationalId } = await import('@/components/NationalIdValidator');
                 if (nationalId) {
                     const cleaned = cleanNationalId(nationalId);
                     if (isValidNationalId(cleaned)) {
-                        setStep1Value('nationalCode', cleaned);
+                        setValue('nationalCode', cleaned);
                     }
                 }
                 if (mobile) {
-                    // normalize Persian digits then remove non-digits
                     const cleanedMobile = convertPersianToEnglish(mobile || '').replace(/\D/g, '');
                     if (cleanedMobile.length >= 10) {
-                        setStep1Value('phoneNumber', cleanedMobile);
+                        setValue('phoneNumber', cleanedMobile);
                     }
                 }
             })();
-        } catch {
-            // ignore - this only aids UX when params are present
-            // console.warn('prefill failed', err);
+        } catch (err) {
+            console.warn('prefill failed', err);
         }
-    }, [setStep1Value]);
+    }, [setValue]);
 
-    const {
-        control: step2Control,
-        handleSubmit: handleStep2FormSubmit,
-        formState: { errors: step2Errors },
-    } = useForm<Step2Form>({
-        resolver: zodResolver(step2Schema),
-        mode: "onChange",
-    });
-    const handleStep2Submit = (data: Step2Form) => {
-        setStep2Data(data);
+    const onRegisterSubmit = async (data: RegistrationForm) => {
+        setStep1Data({ nationalCode: data.nationalCode, phoneNumber: data.phoneNumber });
+        setStep2Data({ birthDate: data.birthDate, postalCode: data.postalCode });
+        toast.success("اطلاعات ثبت شد");
+
+        // Show inline OTP UI (do NOT auto-send request). User must click ارسال to request code.
+        setShowOtp1(true);
+        // initialize otp/password fields in the form
+        setValue('otp', '');
+        setValue('certOtp', '');
+        setValue('password', '');
+        setValue('confirmPassword', '');
+    };
+
+    const handleVerifyOtpAfterPersonal = async () => {
+        const phone = step1Data?.phoneNumber;
+        const otpVal = getValues('otp') as string | undefined;
+        if (!phone) {
+            setError('phoneNumber', { type: 'manual', message: 'شماره همراه موجود نیست' });
+            return;
+        }
+        if (!otpVal || otpVal.length < 5) {
+            setError('otp', { type: 'manual', message: 'کد تایید را کامل وارد کنید' });
+            return;
+        }
+        // show the national card preview when moving to step 2 so the preview component
+        // receives the collected data (nationalCode, birthDate)
         setShowNationalCardTemplate(true);
-        toast.success("تاریخ تولد و کد پستی ثبت شد");
-        return data;
+        setStep(2);
     };
-    const onPersonalInfoSubmit = (data: PersonalInfoForm) => {
-        setStep1Data(data);
-        toast.success("اطلاعات شخصی ثبت شد");
-        toast.success("کد تایید ارسال شد");
-        // Show OTP inline (do not use a separate OTP step)
-        setShowOtpInline(true);
+
+    // Extracted: send OTP to the registered phone number (invoked by user action)
+    const handleSendOtp = async () => {
+        const phone = step1Data?.phoneNumber;
+        if (!phone) {
+            setError('phoneNumber', { type: 'manual', message: 'شماره همراه موجود نیست' });
+            return;
+        }
+
+        try {
+            setLoadingOtp1(true);
+            const resp = await authService.sendOtp(phone);
+            if (resp && resp.success) {
+                toast.success('کد تایید به شماره همراه ارسال شد');
+            } else {
+                toast('کد تایید ارسال شد (شبیه‌سازی)');
+            }
+        } catch (err) {
+            console.error('sendOtp error', err);
+            setError('otp', { type: 'manual', message: 'ارسال کد ناموفق بود' });
+        } finally {
+            setLoadingOtp1(false);
+        }
     };
+
     const handleNationalCardConfirm = () => {
         setShowNationalCardTemplate(false);
         setStep(3);
     };
+    // scanned card/branch state removed - final step now shows downloadable contract instead
     const handleSelfiePhoto = (file: File) => {
         setSelfieSample(file);
         toast.success("عکس سلفی ثبت شد");
@@ -123,110 +192,24 @@ export default function Register() {
     };
     const handleVideoRecording = (file: File) => {
         setVideoSample(file);
-        setShowSignatureCapture(true);
         toast.success("فیلم احراز هویت ثبت شد؛");
         setStep(5);
     };
     const handleSignatureComplete = (file: File) => {
         setSignatureSample(file);
-        setShowSignatureCapture(false);
         toast.success('نمونه امضای شما ثبت شد');
         setStep(6);
     };
-    void videoSample;
-    void signatureSample;
-    const handlePasswordSubmit = () => {
-        if (password !== confirmPassword) {
-            toast.error("رمز عبور و تایید آن باید یکسان باشد");
-            return;
-        }
-        if (password.length < 8) {
-            toast.error("رمز عبور باید حداقل ۸ کاراکتر باشد");
-            return;
-        }
-        toast.success("رمز عبور تنظیم شد");
-        setStep(7);
-    };
-
-    const handleOtp1Submit = () => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            toast.success("کد تایید اول تأیید شد");
-            // OTP verified — proceed to next logical step (birth/postal)
-            setShowOtpInline(false);
-            setStep(2);
-        }, 1200);
-    };
-
-    function InlineOtpControls() {
-        const { isExpired, reset, formatTime } = useOtpTimer(2);
-
-        const resend = async () => {
-            if (!step1Data?.phoneNumber) {
-                // silently fail (or show inline error elsewhere)
-                return;
-            }
-            try {
-                setLoading(true);
-                const resp = await authService.sendOtp(step1Data.phoneNumber);
-                if (resp && resp.success) {
-                    reset(120);
-                } else {
-                    // handle failure silently; could set an inline error state
-                }
-            } catch (err) {
-                console.error('resend otp error', err);
-                // handle silently
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        return (
-            <div>
-                <div className="flex gap-2 items-center">
-                    <Button
-                        onClick={() => otp1.length === 5 ? handleOtp1Submit() : toast.error("کد تایید را کامل وارد کنید")}
-                        size="lg"
-                        className="flex-1"
-                        disabled={loading}
-                    >
-                        تایید کد
-                    </Button>
-                    {isExpired ? (
-                        <Button
-                            onClick={() => void resend()}
-                            type="button"
-                            className={`flex-1 text-white focus:outline-none px-0 py-0 text-md`}
-                        >
-                            <span >
-                                ارسال مجدد
-                            </span>
-                        </Button>
-                    ) : (
-                        <div className="flex-1 text-primary-600 text-md text-center font-bold" >
-                            {formatTime()}
-                        </div>
-                    )}
-                </div>
-                {loading && (
-                    <div className="flex justify-center py-4">
-                        <Loading size="sm" />
-                    </div>
-                )}
-            </div>
-        );
-    }
 
     const handleOtp2Submit = () => {
         setLoading(true);
         setTimeout(() => {
             setLoading(false);
             toast.success("گواهی دیجیتال صادر شد");
-            setStep(9);
+            setStep(8);
         }, 2000);
     };
+
     const handleDigitalSignature = async () => {
         setLoading(true);
         try {
@@ -247,6 +230,7 @@ export default function Register() {
                 if (!resp.success) {
                     toast.error(resp.message || 'خطا در ارسال اطلاعات احراز هویت');
                     setLoading(false);
+                    router.push("/");
                     return;
                 } else {
                     toast.success('نمونه امضا و ویدیو با موفقیت ارسال شد');
@@ -256,7 +240,7 @@ export default function Register() {
             toast.success("امضای دیجیتال تأیید شد");
             setTimeout(() => {
                 toast.success("ثبت‌نام با موفقیت انجام شد! خوش آمدید!");
-                router.push("/dashboard");
+                router.push("/");
             }, 1500);
         } catch (err) {
             console.error('Verification submit error:', err);
@@ -268,404 +252,152 @@ export default function Register() {
 
     const getStepDescription = () => {
         switch (step) {
-            case 1: return "اطلاعات شخصی خود را وارد کنید";
-            case 2: return showNationalCardTemplate ? "اطلاعات کارت ملی خود را بررسی کنید" : "تاریخ تولد و کد پستی را وارد کنید";
-            case 3: return "عکس سلفی خود را بگیرید";
-            case 4: return "فیلم احراز هویت ضبط کنید";
-            case 5: return "امضای دیجیتال را ثبت کنید";
-            case 6: return "رمز عبور خود را تنظیم کنید";
-            case 7: return <span dir="ltr">{"کد تایید ارسال شده را وارد کنید"}</span>;
-            case 8: return <span dir="ltr">{"برای صدور گواهی دیجیتال، کد تایید را وارد کنید"}</span>;
-            case 9: return "امضای دیجیتال را تأیید کنید";
+            case 1: return "اطلاعات شخصی";
+            case 2: return "بررسی اطلاعات کارت ملی";
+            case 3: return "فیلم احراز هویت";
+            case 4: return "عکس سلفی";
+            case 5: return "ثبت امضای دیجیتال";
+            case 6: return "اسکن کارت و تعیین شعبه ";
+            case 7: return <span dir="ltr">{"ارسال کد تایید"}</span>;
+            case 8: return "پیش نمایش قرارداد";
             default: return "";
         }
     };
 
-    const getStepColor = () => {
-        if (step === 2 && showNationalCardTemplate) {
-            return 'bg-green-600';
-        }
-        const colors = [
-            'bg-primary', 'bg-indigo-600', 'bg-yellow-600',
-            'bg-red-600', 'bg-purple-600', 'bg-pink-600', 'bg-orange-600', 'bg-gray-600'
-        ];
-        return colors[step - 1] || 'bg-primary';
-    };
+    function handleNationalCardScanComplete(file: File, branch: string): void {
+        // For now, just show a toast and move to the next step (selfie)
+        toast.success("تصویر کارت ملی و شعبه ثبت شد");
+        setShowNationalCardTemplate(false);
+        setStep(7);
+    }
 
     return (
-        <div className="my-8 p-6  flex justify-center  gap-4 ">
+        <Box className="my-6 p-4 flex flex-col md:flex-row items-start md:justify-center gap-6">
 
-            <div className="flex-shrink-0 w-64">
+            <Box className="flex-shrink-0 w-full md:w-64">
+                <Sidebar step={step} onSelect={setStep} />
+            </Box>
 
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-6 text-center">
-                        مراحل ثبت‌نام
-                    </h3>
-                    <div className="space-y-4">
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((stepNumber) => {
-                            const isCompleted = stepNumber < step;
-                            const isCurrent = stepNumber === step;
-
-                            const getStepIconByNumber = (num: number) => {
-                                switch (num) {
-                                    case 1: return <UserIcon className="h-5 w-5" />;
-                                    case 2: return <CalendarIcon className="h-5 w-5" />;
-                                    case 3: return <EyeIcon className="h-5 w-5" />;
-                                    case 4: return <CameraIcon className="h-5 w-5" />;
-                                    case 5: return <LockClosedIcon className="h-5 w-5" />;
-                                    case 5: return <LockClosedIcon className="h-5 w-5" />;
-                                    case 6: return <KeyIcon className="h-5 w-5" />;
-                                    case 7: return <DocumentCheckIcon className="h-5 w-5" />;
-                                    case 8: return <PencilIcon className="h-5 w-5" />;
-                                    default: return <UserIcon className="h-5 w-5" />;
-                                }
-                            };
-
-                            const getStepTitle = (num: number) => {
-                                switch (num) {
-                                    case 1: return "اطلاعات شخصی";
-                                    case 2: return "تاریخ تولد و کد پستی";
-                                    case 3: return "عکس سلفی";
-                                    case 4: return "فیلم احراز هویت";
-                                    case 4: return "امضای دیجیتال";
-                                    case 6: return "کد تایید";
-                                    case 7: return "گواهی دیجیتال";
-                                    case 8: return "امضای دیجیتال";
-                                    case 9: return "تنظیم رمز عبور";
-                                    default: return "";
-                                }
-                            };
-                            return (
-                                <div key={stepNumber} className="relative flex items-center">
-                                    <div className="flex items-center w-full">
-                                        <div
-                                            className={`
-                                                        w-12 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 flex-shrink-0 relative z-10
-                                                        ${isCompleted
-                                                    ? 'bg-green-600 text-white'
-                                                    : isCurrent
-                                                        ? `${getStepColor()} text-white shadow-lg ring-4 ring-opacity-20 ${getStepColor().replace('bg-', 'ring-')}`
-                                                        : 'bg-gray-200 text-gray-500'
-                                                }
-                                                    `}
-                                        >
-                                            {isCompleted ? (
-                                                <CheckCircleIcon className="h-6 w-6" />
-                                            ) : (
-                                                getStepIconByNumber(stepNumber)
-                                            )}
-                                        </div>
-                                        <div className="mr-4 flex-1">
-                                            <div
-                                                className={`
-                                                            text-sm font-medium transition-colors duration-300
-                                                            ${isCompleted || isCurrent ? 'text-gray-900' : 'text-gray-500'}
-                                                        `}
-                                            >
-                                                {getStepTitle(stepNumber)}
-                                            </div>
-                                            <div className="text-xs text-gray-400 mt-1">
-                                                مرحله {stepNumber}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {stepNumber < 8 && (
-                                        <div
-                                            className={`
-                                                        absolute right-6 top-12 w-0.5 h-8 transition-all duration-300 z-0
-                                                        ${isCompleted ? 'bg-green-600' : 'bg-gray-200'}
-                                                    `}
-                                        />
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            </div>
-            <div className="rounded-lg shadow-md border border-gray-100">
-                <div className="max-w-6xl w-full mx-auto">
-
-                    <div className="flex gap-8">
-                        <div className="flex-1">
-                            <Card padding="lg">
+            <Box className="rounded-lg shadow-md border border-gray-100 w-full">
+                <Box className="max-w-9xl w-full mx-auto px-2">
+                    <Box className="flex flex-col md:flex-row gap-3">
+                        <Box className="w-full">
+                            <Card padding="sm" className="min-w-96">
                                 <CardHeader>
-                                    <CardTitle className="text-center">
-                                        ثبت نام در بانک اقتصاد نوین
-                                    </CardTitle>
-                                    <CardDescription className="text-center">
-                                        {getStepDescription()}
-                                    </CardDescription>
+                                    <CardTitle className="text-center">{getStepDescription()}</CardTitle>
                                 </CardHeader>
-
-                                <CardContent>
+                                <CardContent >
                                     {step === 1 && (
-                                        <div className="space-y-6">
-                                            {!showOtpInline ? (
-                                                <form onSubmit={handleStep1Submit(onPersonalInfoSubmit)} className="space-y-6">
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        {/* name fields removed — prefill from URL if available */}
-                                                        <div />
-                                                        <div />
-                                                    </div>
+                                        <>
+                                            {!showOtp1 && <PersonalInfoForm control={control} errors={registerErrors} onSubmit={handleRegisterSubmit(onRegisterSubmit)} />}
 
+                                            {/* Inline OTP after personal info (no new step) */}
+                                            {showOtp1 && (
+                                                <div className="mt-4">
                                                     <Controller
-                                                        name="nationalCode"
-                                                        control={step1Control}
+                                                        name="otp"
+                                                        control={control}
+                                                        defaultValue={''}
                                                         render={({ field }) => (
-                                                            <Input
-                                                                {...field}
-                                                                label="کد ملی"
-                                                                placeholder="0123456789"
-                                                                maxLength={10}
-                                                                required
-                                                                error={step1Errors.nationalCode?.message}
-                                                                type="tel"
-                                                                dir="ltr"
-                                                                className="text-center"
-                                                            />
+                                                            <>
+                                                                <div className="flex items-center gap-2 mb-2">
+                                                                    <Button onClick={handleSendOtp} variant="outline">ارسال کد</Button>
+                                                                </div>
+                                                                <CertificateStep otp={field.value ?? ''} setOtp={field.onChange} onIssue={() => ((field.value ?? '').length === 5 ? handleVerifyOtpAfterPersonal() : setError('otp', { type: 'manual', message: 'کد تایید را کامل وارد کنید' }))} loading={loadingOtp1} />
+                                                                {registerErrors.otp?.message && (<p className="mt-2 text-sm text-red-600">{registerErrors.otp?.message}</p>)}
+                                                            </>
                                                         )}
                                                     />
-
-                                                    <Controller
-                                                        name="phoneNumber"
-                                                        control={step1Control}
-                                                        render={({ field }) => (
-                                                            <Input
-                                                                {...field}
-                                                                label="شماره تلفن همراه"
-                                                                type="tel"
-                                                                placeholder="09123456789"
-                                                                maxLength={11}
-                                                                className="text-center"
-                                                                dir="ltr"
-                                                                required
-                                                                error={step1Errors.phoneNumber?.message}
-                                                            />
-                                                        )}
-                                                    />
-
-                                                    <Button type="submit" size="lg" className="w-full mt-8">
-                                                        دریافت پیامک
-                                                    </Button>
-                                                </form>
-                                            ) : (
-                                                <div className="space-y-4">
-                                                    <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 mb-2">
-                                                        <h3 className="font-medium text-primary-900 mb-2">کد تایید</h3>
-                                                        <p className="text-sm text-primary-800">
-                                                            <span dir="ltr">کد تایید ۵ رقمی به شماره {step1Data?.phoneNumber} ارسال شد.</span>
-                                                        </p>
-                                                    </div>
-                                                    <MultiOTPInput
-                                                        value={otp1}
-                                                        onChange={setOtp1}
-                                                        length={5}
-                                                    />
-                                                    <InlineOtpControls />
-                                                    {loading && (
-                                                        <div className="flex justify-center py-4">
-                                                            <Loading size="sm" />
-                                                        </div>
-                                                    )}
                                                 </div>
                                             )}
-                                        </div>
+                                        </>
                                     )}
 
-                                    {step === 2 && !showNationalCardTemplate && (
-                                        <form onSubmit={handleStep2FormSubmit(handleStep2Submit)} className="space-y-6">
-                                            <div>
-                                                <Controller
-                                                    name="birthDate"
-                                                    control={step2Control}
-                                                    defaultValue=""
-                                                    render={({ field }) => (
-                                                        <PersianCalendar
-                                                            label="تاریخ تولد"
-                                                            placeholder="تاریخ تولد را انتخاب کنید"
-                                                            value={field.value}
-                                                            onChange={field.onChange}
-                                                            required
-                                                            className="w-full"
-                                                            maxDate={new Date()}
-                                                        />
-                                                    )}
-                                                />
-                                                {step2Errors.birthDate?.message && (
-                                                    <p className="mt-1 text-sm text-red-500">
-                                                        {step2Errors.birthDate.message}
-                                                    </p>
-                                                )}
-                                            </div>
-
-                                            <Controller
-                                                name="postalCode"
-                                                control={step2Control}
-                                                defaultValue=""
-                                                render={({ field }) => (
-                                                    <Input
-                                                        {...field}
-                                                        label="کد پستی"
-                                                        placeholder="1234567890"
-                                                        maxLength={10}
-                                                        type="tel"
-                                                        dir="ltr"
-                                                        className="text-center"
-                                                        required
-                                                        error={step2Errors.postalCode?.message}
-                                                    />
-                                                )}
-                                            />
-
-                                            <Button
-                                                type="submit"
-                                                size="lg"
-                                                className="w-full mt-8"
-                                            >
-                                                ادامه
-                                            </Button>
-                                        </form>
-                                    )}
-
-                                    {step === 2 && showNationalCardTemplate && (
-                                        <div className="space-y-6">
-                                            <NationalCardTemplate
-                                                firstName={''}
-                                                lastName={''}
-                                                nationalCode={step1Data?.nationalCode || ''}
-                                                birthDate={step2Data?.birthDate || ''}
-                                                onConfirm={handleNationalCardConfirm}
-                                            />
-                                        </div>
+                                    {step === 2 && (
+                                        <NationalCardPreview
+                                            nationalCode={step1Data?.nationalCode || (getValues('nationalCode') as string) || ''}
+                                            birthDate={step2Data?.birthDate || (getValues('birthDate') as string) || ''}
+                                            show={showNationalCardTemplate}
+                                            onConfirm={handleNationalCardConfirm}
+                                            onBack={() => { if (showNationalCardTemplate) setShowNationalCardTemplate(false); setStep(1); }}
+                                        />
                                     )}
 
                                     {step === 3 && (
-                                        <div className="space-y-6">
-                                            <CameraSelfie
-                                                onPhotoCapture={handleSelfiePhoto}
-                                                onCancel={() => setStep(2)}
-                                            />
-                                        </div>
+                                        <SelfieStep onPhotoCapture={handleSelfiePhoto} onBack={() => setStep(2)} />
                                     )}
 
                                     {step === 4 && (
-                                        <div className="space-y-6">
-                                            <VideoRecorder
-                                                onComplete={handleVideoRecording}
-                                                onCancel={() => setStep(3)}
-                                            />
-
-                                        </div>
+                                        <VideoStep onComplete={handleVideoRecording} onBack={() => setStep(3)} />
                                     )}
 
                                     {step === 5 && (
-                                        <div className="space-y-6">
-                                            <SignatureCapture
-                                                onComplete={handleSignatureComplete}
-                                                onCancel={() => setShowSignatureCapture(false)}
-                                            />
-                                        </div>
+                                        <SignatureStep onComplete={handleSignatureComplete} onCancel={() => { }} />
                                     )}
 
-                                    {step === 6 && !showSignatureCapture && (
-                                        <div className="space-y-6">
-                                            <Input
-                                                label="رمز عبور"
-                                                type="password"
-                                                value={password}
-                                                onChange={(e) => setPassword(e.target.value)}
-                                                placeholder="رمز عبور را وارد کنید"
-                                                required
+                                    {step === 6 && <NationalCardScanner onComplete={handleNationalCardScanComplete} onBack={() => setStep(5)} />}
+                                    {step === 7 && (
+                                        <>
+                                            <PasswordStep
+                                                password={watch('password') || ''}
+                                                confirmPassword={watch('confirmPassword') || ''}
+                                                onPasswordChange={(v) => setValue('password', v)}
+                                                onConfirmChange={(v) => setValue('confirmPassword', v)}
+                                                trigger={trigger as unknown as (names?: string | string[]) => Promise<boolean>}
+                                                setError={setErrorAny}
+                                                resetPasswords={() => { setValue('password', ''); setValue('confirmPassword', ''); }}
+                                                passwordSet={passwordSet}
+                                                setPasswordSet={setPasswordSet}
                                             />
-                                            <Input
-                                                label="تایید رمز عبور"
-                                                type="password"
-                                                value={confirmPassword}
-                                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                                placeholder="رمز عبور را مجدداً وارد کنید"
-                                                required
-                                            />
-                                            <Button onClick={handlePasswordSubmit} size="lg" className="w-full">
-                                                ادامه
-                                            </Button>
-                                        </div>
+
+                                            {/* When passwordSet is true, render the CertificateStep for certOtp here */}
+                                            {passwordSet && (
+                                                <Controller
+                                                    name="certOtp"
+                                                    control={control}
+                                                    defaultValue={''}
+                                                    render={({ field }) => (
+                                                        <CertificateStep otp={field.value ?? ''} setOtp={field.onChange} onIssue={() => ((field.value ?? '').length === 5 ? handleOtp2Submit() : setError('certOtp', { type: 'manual', message: 'کد تایید را کامل وارد کنید' }))} loading={loading} />
+                                                    )}
+                                                />
+                                            )}
+                                        </>
                                     )}
-
-
 
                                     {step === 8 && (
-                                        <div className="space-y-6">
-                                            <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-6">
-                                                <h3 className="font-medium text-purple-900 mb-2">صدور گواهی دیجیتال</h3>
-                                                <p className="text-sm text-purple-800">
-                                                    <span dir="ltr">برای صدور گواهی دیجیتال، کد تایید جدید ارسال شد.</span>
-                                                </p>
-                                            </div>
-                                            <MultiOTPInput
-                                                value={otp2}
-                                                onChange={setOtp2}
-                                                length={5}
-                                            />
-                                            <Button
-                                                onClick={() => otp2.length === 5 ? handleOtp2Submit() : toast.error("کد تایید را کامل وارد کنید")}
-                                                size="lg"
-                                                className="w-full"
-                                                disabled={loading}
-                                            >
-                                                صدور گواهی
-                                            </Button>
-                                            {loading && (
-                                                <div className="flex justify-center py-4">
-                                                    <Loading size="sm" />
+                                        <Box className="space-y-6">
+                                            <Box className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+                                                <Typography variant="h3" className="font-medium text-green-900 mb-2 text-center">امضای دیجیتال</Typography>
+                                                <Typography variant="body1" className="text-sm text-green-800 text-center">گواهی دیجیتال شما با موفقیت صادر شد. در این مرحله می‌توانید قرارداد بانکی را دانلود کنید.</Typography>
+                                            </Box>
+
+                                            <Box className="bg-white border rounded p-4 text-right">
+                                                <Typography variant="body2" className="text-sm text-right">قرارداد بانکی</Typography>
+                                                <Typography variant="body2" className="text-sm mt-2 text-right">لطفا فایل قرارداد را دانلود و نگهداری کنید.</Typography>
+
+                                                <div className="mt-4 flex justify-center">
+                                                    <div className="w-80 h-56 overflow-hidden rounded border">
+                                                        <Image src={'/bank-contract-preview.jpg'} alt="contract preview" width={640} height={420} style={{ objectFit: 'contain' }} />
+                                                    </div>
                                                 </div>
-                                            )}
-                                        </div>
+
+                                                <div className="mt-4 flex gap-2 justify-center">
+                                                    <a href={'/bank-contract-preview.jpg'} download className="inline-flex items-center justify-center px-4 py-2 bg-primary-600 text-white rounded">دانلود تصویر قرارداد</a>
+                                                    <a href={'/bank-contract.pdf'} download className="inline-flex items-center justify-center px-4 py-2 bg-secondary text-white rounded">دانلود قرارداد (PDF)</a>
+                                                </div>
+                                            </Box>
+
+                                            <Button onClick={handleDigitalSignature} size="lg" className="w-full" disabled={loading}>{loading && (<Loading size="sm" className="ml-1" />)} تایید امضای دیجیتال</Button>
+
+                                        </Box>
                                     )}
 
-                                    {step === 9 && (
-                                        <div className="space-y-6">
-                                            <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
-                                                <h3 className="font-medium text-green-900 mb-2">امضای دیجیتال</h3>
-                                                <p className="text-sm text-green-800">
-                                                    گواهی دیجیتال شما با موفقیت صادر شد. برای تکمیل فرآیند، امضای دیجیتال را تأیید کنید.
-                                                </p>
-                                            </div>
-                                            <Button
-                                                onClick={handleDigitalSignature}
-                                                size="lg"
-                                                className="w-full"
-                                                disabled={loading}
-                                            >
-                                                تایید امضای دیجیتال
-                                            </Button>
-                                            {loading && (
-                                                <div className="flex justify-center py-4">
-                                                    <Loading size="sm" />
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {step === 1 && (
-                                        <div className="text-center mt-6">
-                                            <p className="text-sm text-gray-600">
-                                                قبلاً ثبت نام کرده‌اید؟{" "}
-                                                <Link
-                                                    href="/login"
-                                                    className="text-primary hover:text-primary-700 font-medium"
-                                                >
-                                                    وارد شوید
-                                                </Link>
-                                            </p>
-                                        </div>
-                                    )}
                                 </CardContent>
                             </Card>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        </Box>
+                    </Box>
+                </Box>
+            </Box>
+        </Box>
     );
 }

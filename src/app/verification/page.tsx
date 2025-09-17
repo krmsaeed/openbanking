@@ -125,7 +125,7 @@ function VerificationContent() {
         } else if (step === 2 && selfieImage) {
             setLoading(true);
             setTimeout(() => {
-                router.push(isRegister ? "/dashboard" : "/");
+                router.push(isRegister ? "/" : "/");
             }, 3000);
         } else {
             toast.error(step === 1 ? "لطفاً امضای خود را ثبت کنید" : "لطفاً عکس سلفی بگیرید");
@@ -234,7 +234,7 @@ function VerificationContent() {
                                         disabled={!signatureImage}
                                         className="flex-1"
                                     >
-                                        تأیید امضا
+                                        تایید امضا
                                     </Button>
                                 </Box>
                             </Box>

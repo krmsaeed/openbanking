@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -6,6 +7,7 @@ const nextConfig: NextConfig = {
         minimumCacheTTL: 60,
         dangerouslyAllowSVG: false,
     },
+    // swcMinify: false,
     compiler: {
         removeConsole: process.env.NODE_ENV === 'production',
     },
@@ -13,7 +15,6 @@ const nextConfig: NextConfig = {
         optimizeCss: true,
         optimizePackageImports: ['@heroicons/react'],
     },
-    // Server configuration for port 3000
     serverRuntimeConfig: {
         port: 3000,
     },
@@ -21,5 +22,6 @@ const nextConfig: NextConfig = {
         PORT: "3000",
     },
 };
+
 
 export default nextConfig;

@@ -1,5 +1,4 @@
 @import "tailwindcss";
-
 * {
   box-sizing: border-box;
 }
@@ -141,41 +140,42 @@
 }
 
 :root.dark {
+  /* Keep numeric ordering: 50 = lightest, 900 = darkest. These values are tuned for dark UI but preserve the scale direction. */
   --color-primary: #6c4ae2;
-  --color-primary-50: #0f1722;
-  --color-primary-100: #111827;
-  --color-primary-200: #172033;
-  --color-primary-300: #233047;
-  --color-primary-400: #32406b;
-  --color-primary-500: #6c4ae2;
-  --color-primary-600: #8b6ff3;
-  --color-primary-700: #9b82ff;
-  --color-primary-800: #b9aaff;
-  --color-primary-900: #e9e6ff;
+  --color-primary-50: #e9e6ff;
+  --color-primary-100: #b9aaff;
+  --color-primary-200: #9b82ff;
+  --color-primary-300: #8b6ff3;
+  --color-primary-400: #6c4ae2;
+  --color-primary-500: #5240b1;
+  --color-primary-600: #412f8a;
+  --color-primary-700: #2f2260;
+  --color-primary-800: #1e1638;
+  --color-primary-900: #0f0b18;
 
   --color-secondary: #9b86ff;
-  --color-secondary-50: #0b1220;
-  --color-secondary-100: #0f1722;
-  --color-secondary-200: #182033;
-  --color-secondary-300: #252f53;
-  --color-secondary-400: #3b2d6b;
-  --color-secondary-500: #9b86ff;
-  --color-secondary-600: #b79cff;
-  --color-secondary-700: #d2c8ff;
-  --color-secondary-800: #e9e6ff;
-  --color-secondary-900: #f6f5ff;
+  --color-secondary-50: #f6f5ff;
+  --color-secondary-100: #e9e6ff;
+  --color-secondary-200: #d2c8ff;
+  --color-secondary-300: #b79cff;
+  --color-secondary-400: #9b86ff;
+  --color-secondary-500: #7a62e0;
+  --color-secondary-600: #5a3fae;
+  --color-secondary-700: #3b2d6b;
+  --color-secondary-800: #231942;
+  --color-secondary-900: #120a1e;
 
   --color-accent: #08a6a6;
-  --color-accent-50: #071718;
-  --color-accent-100: #062022;
-  --color-accent-200: #053a36;
-  --color-accent-300: #095a57;
-  --color-accent-400: #0b6e6e;
-  --color-accent-500: #08a6a6;
-  --color-accent-600: #49d8d8;
-  --color-accent-700: #8feaea;
-  --color-accent-800: #bff5f4;
-  --color-accent-900: #eafcfb;
+  --color-accent-50: #eafcfb;
+  --color-accent-100: #bff5f4;
+  --color-accent-200: #8feaea;
+  --color-accent-300: #49d8d8;
+  --color-accent-400: #08a6a6;
+  --color-accent-500: #076f6f;
+  --color-accent-600: #055454;
+  --color-accent-700: #043a3a;
+  --color-accent-800: #021f1f;
+  --color-accent-900: #010808;
 
   --color-teal: var(--color-accent);
   --color-teal-50: var(--color-accent-50);
@@ -190,16 +190,16 @@
   --color-teal-900: var(--color-accent-900);
 
   --color-accent2: #ff8a3d;
-  --color-accent2-50: #1a0f07;
-  --color-accent2-100: #27130b;
-  --color-accent2-200: #3b1d0f;
-  --color-accent2-300: #5a3017;
-  --color-accent2-400: #7a3f1f;
+  --color-accent2-50: #fffaf6;
+  --color-accent2-100: #fff0e6;
+  --color-accent2-200: #ffd9bf;
+  --color-accent2-300: #ffbb8a;
+  --color-accent2-400: #ffa15c;
   --color-accent2-500: #ff8a3d;
-  --color-accent2-600: #ffb88a;
-  --color-accent2-700: #ffd9bf;
-  --color-accent2-800: #fff0e6;
-  --color-accent2-900: #fffaf6;
+  --color-accent2-600: #c55a23;
+  --color-accent2-700: #92421a;
+  --color-accent2-800: #652e10;
+  --color-accent2-900: #3a1908;
 
   --color-cta: var(--color-accent2);
   --color-cta-50: var(--color-accent2-50);
@@ -214,52 +214,52 @@
   --color-cta-900: var(--color-accent2-900);
 
   --color-success: #22c55e;
-  --color-success-50: #062016;
-  --color-success-100: #073422;
-  --color-success-200: #0a4d33;
-  --color-success-300: #0f6b46;
-  --color-success-400: #1aa05f;
-  --color-success-500: #22c55e;
-  --color-success-600: #56d78a;
-  --color-success-700: #9fe6b8;
-  --color-success-800: #dff6e9;
-  --color-success-900: #f7fff8;
+  --color-success-50: #f7fff8;
+  --color-success-100: #dff6e9;
+  --color-success-200: #9fe6b8;
+  --color-success-300: #56d78a;
+  --color-success-400: #22c55e;
+  --color-success-500: #17803f;
+  --color-success-600: #125f30;
+  --color-success-700: #0c3e20;
+  --color-success-800: #081f10;
+  --color-success-900: #040a06;
 
   --color-info: #3b82f6;
-  --color-info-50: #071022;
-  --color-info-100: #0b1830;
-  --color-info-200: #112643;
-  --color-info-300: #1a3b60;
-  --color-info-400: #2a5788;
+  --color-info-50: #f8fbff;
+  --color-info-100: #eaf7ff;
+  --color-info-200: #cfe9ff;
+  --color-info-300: #9bc7ff;
+  --color-info-400: #61a9ff;
   --color-info-500: #3b82f6;
-  --color-info-600: #9bc7ff;
-  --color-info-700: #cfe9ff;
-  --color-info-800: #eaf7ff;
-  --color-info-900: #f8fbff;
+  --color-info-600: #2759b0;
+  --color-info-700: #1d4388;
+  --color-info-800: #122c60;
+  --color-info-900: #081630;
 
   --color-warning: #f59e0b;
-  --color-warning-50: #1b1206;
-  --color-warning-100: #271606;
-  --color-warning-200: #3b2207;
-  --color-warning-300: #5a330b;
-  --color-warning-400: #7a4a13;
+  --color-warning-50: #fffdf5;
+  --color-warning-100: #fff6e6;
+  --color-warning-200: #ffe8bf;
+  --color-warning-300: #ffd480;
+  --color-warning-400: #ffc055;
   --color-warning-500: #f59e0b;
-  --color-warning-600: #ffd480;
-  --color-warning-700: #ffe8bf;
-  --color-warning-800: #fff6e6;
-  --color-warning-900: #fffdf5;
+  --color-warning-600: #a36406;
+  --color-warning-700: #764604;
+  --color-warning-800: #4c2e02;
+  --color-warning-900: #2a1701;
 
   --color-error: #ef4444;
-  --color-error-50: #1a0f0f;
-  --color-error-100: #231010;
-  --color-error-200: #341313;
-  --color-error-300: #4b1a1a;
-  --color-error-400: #6b2626;
-  --color-error-500: #ef4444;
-  --color-error-600: #ff8a8a;
-  --color-error-700: #ffb1b1;
-  --color-error-800: #ffd6d6;
-  --color-error-900: #fff5f5;
+  --color-error-50: #fff5f5;
+  --color-error-100: #ffd6d6;
+  --color-error-200: #ffb1b1;
+  --color-error-300: #ff8a8a;
+  --color-error-400: #ef4444;
+  --color-error-500: #ad2f2f;
+  --color-error-600: #8b2323;
+  --color-error-700: #601616;
+  --color-error-800: #300b0b;
+  --color-error-900: #150404;
 
   --color-text: #e6eef8;
   --color-bg: #0b1220;
@@ -398,6 +398,361 @@ button,
 textarea,
 select {
   outline: none !important;
+}
+
+/* Semantic utility classes mapped to CSS variables
+   These provide Tailwind-like class names (bg-primary, text-primary, border-primary, etc.)
+   that reference the color palette defined above. This fixes usages of classes like
+   `bg-primary` when Tailwind theme wasn't extended for semantic tokens.
+*/
+:root {
+  /* background helpers */
+  --_s-50: 50; /* helper placeholder */
+}
+
+/* Generate simple semantic utilities for common usages */
+.bg-primary {
+  background-color: var(--color-primary-500) !important;
+}
+.bg-primary-50 {
+  background-color: var(--color-primary-50) !important;
+}
+.bg-primary-100 {
+  background-color: var(--color-primary-100) !important;
+}
+.bg-primary-200 {
+  background-color: var(--color-primary-200) !important;
+}
+.bg-primary-300 {
+  background-color: var(--color-primary-300) !important;
+}
+.bg-primary-400 {
+  background-color: var(--color-primary-400) !important;
+}
+.bg-primary-500 {
+  background-color: var(--color-primary-500) !important;
+}
+.bg-primary-600 {
+  background-color: var(--color-primary-600) !important;
+}
+.bg-primary-700 {
+  background-color: var(--color-primary-700) !important;
+}
+.bg-primary-800 {
+  background-color: var(--color-primary-800) !important;
+}
+.bg-primary-900 {
+  background-color: var(--color-primary-900) !important;
+}
+
+.text-primary {
+  color: var(--color-primary-500) !important;
+}
+.text-primary-50 {
+  color: var(--color-primary-50) !important;
+}
+.text-primary-100 {
+  color: var(--color-primary-100) !important;
+}
+.text-primary-200 {
+  color: var(--color-primary-200) !important;
+}
+.text-primary-300 {
+  color: var(--color-primary-300) !important;
+}
+.text-primary-400 {
+  color: var(--color-primary-400) !important;
+}
+.text-primary-500 {
+  color: var(--color-primary-500) !important;
+}
+.text-primary-600 {
+  color: var(--color-primary-600) !important;
+}
+.text-primary-700 {
+  color: var(--color-primary-700) !important;
+}
+.text-primary-800 {
+  color: var(--color-primary-800) !important;
+}
+.text-primary-900 {
+  color: var(--color-primary-900) !important;
+}
+
+.border-primary {
+  border-color: var(--color-primary-500) !important;
+}
+.ring-primary {
+  --tw-ring-color: var(--color-primary-500);
+}
+
+/* Repeat for secondary */
+.bg-secondary {
+  background-color: var(--color-secondary-500) !important;
+}
+.text-secondary {
+  color: var(--color-secondary-500) !important;
+}
+.border-secondary {
+  border-color: var(--color-secondary-500) !important;
+}
+
+/* Teal / accent */
+.bg-teal {
+  background-color: var(--color-teal-500) !important;
+}
+.text-teal {
+  color: var(--color-teal-500) !important;
+}
+.border-teal {
+  border-color: var(--color-teal-500) !important;
+}
+
+/* CTA / accent2 */
+.bg-cta {
+  background-color: var(--color-cta-500) !important;
+}
+.text-cta {
+  color: var(--color-cta-500) !important;
+}
+.border-cta {
+  border-color: var(--color-cta-500) !important;
+}
+
+/* Status colors */
+.bg-success {
+  background-color: var(--color-success-500) !important;
+}
+.text-success {
+  color: var(--color-success-500) !important;
+}
+.border-success {
+  border-color: var(--color-success-500) !important;
+}
+
+.bg-info {
+  background-color: var(--color-info-500) !important;
+}
+.text-info {
+  color: var(--color-info-500) !important;
+}
+.border-info {
+  border-color: var(--color-info-500) !important;
+}
+
+.bg-warning {
+  background-color: var(--color-warning-500) !important;
+}
+.text-warning {
+  color: var(--color-warning-500) !important;
+}
+.border-warning {
+  border-color: var(--color-warning-500) !important;
+}
+
+.bg-error {
+  background-color: var(--color-error-500) !important;
+}
+.text-error {
+  color: var(--color-error-500) !important;
+}
+.border-error {
+  border-color: var(--color-error-500) !important;
+}
+
+/* Generic text/bg helpers */
+.text-body {
+  color: var(--color-text) !important;
+}
+.bg-body {
+  background-color: var(--color-bg) !important;
+}
+
+/* Hover helpers (useful for buttons) */
+.hover\:bg-primary:hover {
+  background-color: var(--color-primary-600) !important;
+}
+.hover\:bg-secondary:hover {
+  background-color: var(--color-secondary-600) !important;
+}
+.hover\:bg-cta:hover {
+  background-color: var(--color-cta-600) !important;
+}
+.hover\:text-primary:hover {
+  color: var(--color-primary-600) !important;
+}
+
+/* Utility for gradients */
+.from-primary {
+  --tw-gradient-from: var(--color-primary-500);
+}
+.to-primary {
+  --tw-gradient-to: var(--color-primary-700);
+}
+
+/* Map common Tailwind palette utility classes to semantic variables
+  This ensures existing class names (bg-blue-600, text-red-600, bg-green-600, etc.)
+  match the project's palette without changing component code.
+*/
+
+/* blue -> info */
+.bg-blue-50 {
+  background-color: var(--color-info-50) !important;
+}
+.bg-blue-100 {
+  background-color: var(--color-info-100) !important;
+}
+.bg-blue-200 {
+  background-color: var(--color-info-200) !important;
+}
+.bg-blue-300 {
+  background-color: var(--color-info-300) !important;
+}
+.bg-blue-400 {
+  background-color: var(--color-info-400) !important;
+}
+.bg-blue-500 {
+  background-color: var(--color-info-500) !important;
+}
+.bg-blue-600 {
+  background-color: var(--color-info-600) !important;
+}
+.bg-blue-700 {
+  background-color: var(--color-info-700) !important;
+}
+.bg-blue-800 {
+  background-color: var(--color-info-800) !important;
+}
+.bg-blue-900 {
+  background-color: var(--color-info-900) !important;
+}
+.text-blue-600 {
+  color: var(--color-info-600) !important;
+}
+.text-blue-500 {
+  color: var(--color-info-500) !important;
+}
+
+/* red -> error */
+.bg-red-50 {
+  background-color: var(--color-error-50) !important;
+}
+.bg-red-100 {
+  background-color: var(--color-error-100) !important;
+}
+.bg-red-200 {
+  background-color: var(--color-error-200) !important;
+}
+.bg-red-300 {
+  background-color: var(--color-error-300) !important;
+}
+.bg-red-400 {
+  background-color: var(--color-error-400) !important;
+}
+.bg-red-500 {
+  background-color: var(--color-error-500) !important;
+}
+.bg-red-600 {
+  background-color: var(--color-error-600) !important;
+}
+.bg-red-700 {
+  background-color: var(--color-error-700) !important;
+}
+.bg-red-800 {
+  background-color: var(--color-error-800) !important;
+}
+.bg-red-900 {
+  background-color: var(--color-error-900) !important;
+}
+.text-red-600 {
+  color: var(--color-error-600) !important;
+}
+
+/* green -> success */
+.bg-green-50 {
+  background-color: var(--color-success-50) !important;
+}
+.bg-green-100 {
+  background-color: var(--color-success-100) !important;
+}
+.bg-green-200 {
+  background-color: var(--color-success-200) !important;
+}
+.bg-green-300 {
+  background-color: var(--color-success-300) !important;
+}
+.bg-green-400 {
+  background-color: var(--color-success-400) !important;
+}
+.bg-green-500 {
+  background-color: var(--color-success-500) !important;
+}
+.bg-green-600 {
+  background-color: var(--color-success-600) !important;
+}
+.bg-green-700 {
+  background-color: var(--color-success-700) !important;
+}
+.bg-green-800 {
+  background-color: var(--color-success-800) !important;
+}
+.bg-green-900 {
+  background-color: var(--color-success-900) !important;
+}
+.text-green-600 {
+  color: var(--color-success-600) !important;
+}
+
+/* yellow -> warning */
+.bg-yellow-50 {
+  background-color: var(--color-warning-50) !important;
+}
+.bg-yellow-100 {
+  background-color: var(--color-warning-100) !important;
+}
+.bg-yellow-200 {
+  background-color: var(--color-warning-200) !important;
+}
+.bg-yellow-300 {
+  background-color: var(--color-warning-300) !important;
+}
+.bg-yellow-400 {
+  background-color: var(--color-warning-400) !important;
+}
+.bg-yellow-500 {
+  background-color: var(--color-warning-500) !important;
+}
+.bg-yellow-600 {
+  background-color: var(--color-warning-600) !important;
+}
+.bg-yellow-700 {
+  background-color: var(--color-warning-700) !important;
+}
+.bg-yellow-800 {
+  background-color: var(--color-warning-800) !important;
+}
+.bg-yellow-900 {
+  background-color: var(--color-warning-900) !important;
+}
+.text-yellow-600 {
+  color: var(--color-warning-600) !important;
+}
+
+/* gray -> neutral text/background */
+.text-gray-600 {
+  color: #4b5563 !important;
+}
+.text-gray-500 {
+  color: #6b7280 !important;
+}
+.bg-gray-200 {
+  background-color: #e5e7eb !important;
+}
+.bg-gray-100 {
+  background-color: #f3f4f6 !important;
+}
+.bg-gray-50 {
+  background-color: #f9fafb !important;
 }
 
 input:focus,
@@ -562,4 +917,28 @@ input[data-form-type="other"]::-webkit-contacts-auto-fill-button {
   pointer-events: none;
   position: absolute;
   right: 0;
+}
+
+.connector {
+  position: relative;
+  display: block;
+}
+.connector::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 100%;
+  height: 23px;
+  width: 2px;
+
+  border-radius: 1px;
+  background-color: var(--color-primary-100);
+  transition: background-color 200ms ease;
+}
+.connector-primary::after {
+  background-color: var(--color-primary-500);
+}
+.connector-gray::after {
+  background-color: #e5e7eb; /* same as bg-gray-200 */
 }

@@ -52,7 +52,7 @@ export default function CreditAssessment() {
     return (
         <Box className="min-h-screen p-6">
             <Box className="max-w-4xl mx-auto">
-                <Box className="text-center mb-8">
+                <Box className="relative text-center mb-8">
                     <Typography variant="h3" className="text-4xl font-bold text-gray-900 mb-4 text-center">اعتبارسنجی</Typography>
                     <Typography variant="body1" color="secondary" className="text-center">برای دریافت وام، لطفاً مراحل زیر را تکمیل کنید</Typography>
                     <Suspense fallback={<Loading />}>

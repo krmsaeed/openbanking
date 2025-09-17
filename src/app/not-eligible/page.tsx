@@ -62,14 +62,14 @@ export default function NotEligiblePage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-xl text-blue-700">
+                            <CardTitle className="text-xl text-primary-700">
                                 راه‌کارهای پیشنهادی
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Box className="space-y-4">
                                 {nextSteps.map((step, index) => (
-                                    <Box key={index} className="border-r-3 border-blue-500 pr-4 rounded-none ">
+                                    <Box key={index} className="border-r-3 border-primary-500 pr-4 rounded-none ">
                                         <Typography variant="h6" className="font-semibold text-gray-900 mb-1 text-right">
                                             {step.title}
                                         </Typography>
@@ -119,7 +119,7 @@ export default function NotEligiblePage() {
                         </Button>
                     </Link>
 
-                    <Link href="/dashboard">
+                    <Link href="/">
                         <Button
                             size="lg"
                             className="w-full sm:w-auto"

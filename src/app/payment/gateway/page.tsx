@@ -34,7 +34,7 @@ function PaymentGatewayContent() {
         setLoading(true);
         try {
             toast.success("پرداخت با موفقیت انجام شد!");
-            router.push("/dashboard");
+            router.push("/");
         } catch {
             toast.error("رمز دوم صحیح نیست");
         } finally {

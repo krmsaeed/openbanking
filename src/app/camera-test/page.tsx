@@ -78,7 +78,7 @@ export default function CameraTest() {
                 <div className="mb-8">
                     <Button
                         variant="ghost"
-                        onClick={() => router.push('/dashboard')}
+                        onClick={() => router.push('/')}
                         className="mb-4"
                     >
                         <ArrowRightIcon className="w-4 h-4 ml-2" />
@@ -86,8 +86,8 @@ export default function CameraTest() {
                     </Button>
 
                     <div className="text-center">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">تست دوربین و ویدیو</h1>
-                        <p className="text-gray-600">امکان گرفتن عکس و ضبط ویدیو از طریق دوربین</p>
+                        <h1 className="text-3xl font-bold text-gray-300 mb-2">تست دوربین و ویدیو</h1>
+                        <p className="text-gray-800">امکان گرفتن عکس و ضبط ویدیو از طریق دوربین</p>
                     </div>
                 </div>
 
