@@ -19,7 +19,7 @@ export default function CertificateStep({ otp, setOtp, onIssue, loading }: Props
                 <p className="text-sm text-purple-800 text-center"><span dir='ltr'>. کد تایید جدید ارسال شد</span></p>
             </div>
             <MultiOTPInput value={otp} onChange={setOtp} length={5} />
-            <Button onClick={onIssue} variant='primary' size="lg" className="w-full" disabled={loading}>{loading && (<Loading size="sm" className='ml-1' />)} تایید
+            <Button onClick={onIssue} variant='primary' size="lg" className="w-full" disabled={otp.length < 5}>{loading && (<Loading size="sm" className='ml-1' />)} تایید
             </Button>
 
         </div>

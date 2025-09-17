@@ -254,11 +254,11 @@ export default function Register() {
         switch (step) {
             case 1: return "اطلاعات شخصی";
             case 2: return "بررسی اطلاعات کارت ملی";
-            case 3: return "فیلم احراز هویت";
-            case 4: return "عکس سلفی";
+            case 3: return "عکس سلفی";
+            case 4: return "فیلم احراز هویت";
             case 5: return "ثبت امضای دیجیتال";
             case 6: return "اسکن کارت و تعیین شعبه ";
-            case 7: return <span dir="ltr">{"ارسال کد تایید"}</span>;
+            case 7: return <span dir="ltr">{passwordSet ? "ارسال کد تایید" : "ایجاد رمز عبور"}</span>;
             case 8: return "پیش نمایش قرارداد";
             default: return "";
         }
@@ -291,7 +291,6 @@ export default function Register() {
                                         <>
                                             {!showOtp1 && <PersonalInfoForm control={control} errors={registerErrors} onSubmit={handleRegisterSubmit(onRegisterSubmit)} />}
 
-                                            {/* Inline OTP after personal info (no new step) */}
                                             {showOtp1 && (
                                                 <div className="mt-4">
                                                     <Controller
@@ -299,13 +298,7 @@ export default function Register() {
                                                         control={control}
                                                         defaultValue={''}
                                                         render={({ field }) => (
-                                                            <>
-                                                                <div className="flex items-center gap-2 mb-2">
-                                                                    <Button onClick={handleSendOtp} variant="outline">ارسال کد</Button>
-                                                                </div>
-                                                                <CertificateStep otp={field.value ?? ''} setOtp={field.onChange} onIssue={() => ((field.value ?? '').length === 5 ? handleVerifyOtpAfterPersonal() : setError('otp', { type: 'manual', message: 'کد تایید را کامل وارد کنید' }))} loading={loadingOtp1} />
-                                                                {registerErrors.otp?.message && (<p className="mt-2 text-sm text-red-600">{registerErrors.otp?.message}</p>)}
-                                                            </>
+                                                            <CertificateStep otp={field.value ?? ''} setOtp={field.onChange} onIssue={() => ((field.value ?? '').length === 5 ? handleVerifyOtpAfterPersonal() : setError('otp', { type: 'manual', message: 'کد تایید را کامل وارد کنید' }))} loading={loadingOtp1} />
                                                         )}
                                                     />
                                                 </div>
