@@ -1,5 +1,6 @@
 import { InputHTMLAttributes, forwardRef } from 'react';
 import { cn, convertPersianToEnglish } from '@/lib/utils';
+import { Box } from '../core';
 
 type InputVariant = 'default' | 'error' | 'success';
 type InputSize = 'default' | 'sm' | 'lg';
@@ -25,8 +26,11 @@ const getInputClasses = (variant: InputVariant, size: InputSize) => {
 
     const sizeClasses = {
         default: "h-10",
+        xs: " h-6 text-xs",
         sm: "h-8 text-xs",
+        md: "h-10 text-sm",
         lg: "h-12 text-base",
+        xl: "h-16 text-lg",
     };
 
     return `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]}`;
@@ -57,14 +61,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         };
 
         return (
-            <div className="space-y-2">
+            <Box className="space-y-2">
                 {label && (
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium text-gray-700 mb-2">
                         {label}
                         {required && <span className="text-red-500 mr-1">*</span>}
                     </label>
                 )}
-                <div className="relative">
+                <Box className="relative mt-2">
                     <input
                         className={cn(getInputClasses(variant, size), className, adornment)}
                         ref={ref}
@@ -76,14 +80,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                             {adornment}
                         </span>
                     )}
-                </div>
+                </Box>
                 {error && (
                     <p className="text-xs text-red-600">{error}</p>
                 )}
                 {helper && !error && (
                     <p className="text-xs text-gray-500">{helper}</p>
                 )}
-            </div>
+            </Box>
         )
     }
 )

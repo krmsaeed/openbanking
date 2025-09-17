@@ -132,7 +132,6 @@ export function SimpleFileUpload({
                                                 size="sm"
                                                 variant="outline"
                                                 className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-primary-700 transition-colors border-0"
-                                                title="تغییر عکس"
                                             >
                                                 <CloudArrowUpIcon className="w-4 h-4" />
                                             </Button>
@@ -142,7 +141,6 @@ export function SimpleFileUpload({
                                                 size="sm"
                                                 variant="outline"
                                                 className="bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 transition-colors border-0"
-                                                title="حذف فایل"
                                             >
                                                 <XMarkIcon className="w-4 h-4" />
                                             </Button>
@@ -174,7 +172,6 @@ export function SimpleFileUpload({
                                             variant="ghost"
                                             size="sm"
                                             className="text-red-500 hover:text-red-700 p-1"
-                                            title="حذف فایل"
                                         >
                                             <XMarkIcon className="w-4 h-4" />
                                         </Button>

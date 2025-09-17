@@ -24,10 +24,10 @@ export const NationalCodeInput = <T extends FieldValues = FieldValues>({
     label = "کد ملی",
 }: NationalCodeInputProps<T>) => {
     return (
-        <Controller
+        <Controller<T>
             name={name}
             control={control}
-            render={({ field, fieldState: { error } }) => (
+            render={({ field, fieldState }) => (
                 <Input
                     {...field}
                     label={label}
@@ -35,7 +35,7 @@ export const NationalCodeInput = <T extends FieldValues = FieldValues>({
                     placeholder={placeholder}
                     className={className}
                     maxLength={10}
-                    error={error?.message}
+                    error={fieldState?.error?.message}
                     inputMode="numeric"
                 />
             )}
@@ -52,10 +52,10 @@ export const PhoneNumberInput = <T extends FieldValues = FieldValues>({
     label = "شماره تلفن همراه",
 }: PhoneNumberInputProps<T>) => {
     return (
-        <Controller
+        <Controller<T>
             name={name}
             control={control}
-            render={({ field, fieldState: { error } }) => (
+            render={({ field, fieldState }) => (
                 <Input
                     {...field}
                     label={label}
@@ -63,7 +63,7 @@ export const PhoneNumberInput = <T extends FieldValues = FieldValues>({
                     placeholder={placeholder}
                     className={className}
                     maxLength={11}
-                    error={error?.message}
+                    error={fieldState?.error?.message}
                     inputMode="numeric"
                 />
             )}

@@ -1,17 +1,18 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { PencilIcon, TrashIcon, CheckIcon } from "@heroicons/react/24/outline";
+import { TrashIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Button } from "../core/Button";
-import { Card, CardContent, CardHeader } from "../core/Card";
+import { Card, CardContent } from "../core/Card";
 import { Box, Typography } from "../core";
 
 interface SignatureCaptureProps {
     onComplete: (signatureFile: File) => void;
     onCancel: () => void;
+    onStepChange?: (step: number) => void;
 }
 
-export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps) {
+export function SignatureCapture({ onComplete, onCancel, onStepChange }: SignatureCaptureProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [hasSignature, setHasSignature] = useState(false);
@@ -21,7 +22,7 @@ export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps
         if (!canvas) return;
 
         const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * 2; // For high DPI
+        canvas.width = rect.width * 2;
         canvas.height = rect.height * 2;
 
         const ctx = canvas.getContext('2d');
@@ -30,7 +31,7 @@ export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
             ctx.strokeStyle = '#1f2937';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
         }
     }, []);
 
@@ -98,26 +99,28 @@ export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps
             if (blob) {
                 const file = new File([blob], `signature_${Date.now()}.png`, { type: 'image/png' });
                 onComplete(file);
+                try {
+                    if (typeof onStepChange === 'function') {
+                        // advance to next step (parent decides numbering)
+                        onStepChange(6);
+                    }
+                } catch (e) {
+                    console.error('onStepChange callback failed', e);
+                }
             }
         }, 'image/png');
     };
 
     return (
         <Card padding="lg">
-            <CardHeader className="">
-                <Typography variant="h6" className="flex mb-2 font-bold text-center">
-                    <PencilIcon className="w-6 h-6 text-primary" />
-                    ثبت امضای الکترونیک
-                </Typography>
 
-            </CardHeader>
 
             <CardContent>
                 <Box className="space-y-4">
-                    <Box className="border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
+                    <Box className="border-2 border-dashed border-gray-300 rounded-lg p-1 bg-gray-50 w-80 h-96">
                         <canvas
                             ref={canvasRef}
-                            className="w-full h-40 bg-white border border-gray-200 rounded cursor-crosshair touch-none"
+                            className="w-full  h-full bg-white border border-gray-200 rounded cursor-crosshair touch-none"
                             onMouseDown={startDrawing}
                             onMouseMove={draw}
                             onMouseUp={stopDrawing}
@@ -125,43 +128,49 @@ export function SignatureCapture({ onComplete, onCancel }: SignatureCaptureProps
                             onTouchStart={startDrawing}
                             onTouchMove={draw}
                             onTouchEnd={stopDrawing}
+                            height={568}
                         />
                     </Box>
 
-                    <Box className="bg-primary-50 border border-primary-200 rounded-lg p-3">
-                        <Typography variant="caption" className="text-primary-800 text-center block">
+                    <Box className="bg-gray-100  rounded-lg p-3">
+                        <Typography variant="caption" className="text-gray-800 text-center block font-bold">
                             امضای خود را با ماوس یا انگشت در کادر بالا بکشید
                         </Typography>
                     </Box>
-
-                    <Box className="flex justify-between items-center gap-4">
+                    <Box className=" w-full">
                         <Button
                             variant="outline"
-                            onClick={onCancel}
-                            className="flex items-center gap-2"
+                            onClick={clearSignature}
+                            disabled={!hasSignature}
+                            className="flex items-center gap-2 mx-auto"
                         >
-                            بازگشت
+                            <TrashIcon className="w-4 h-4" />
+                            پاک کردن
                         </Button>
+                    </Box>
+                    <Box className="flex justify-between items-center gap-4">
 
-                        <Box className="flex gap-2">
+                        <Box className="w-full flex gap-2 items-center">
                             <Button
-                                variant="outline"
-                                onClick={clearSignature}
-                                disabled={!hasSignature}
-                                className="flex items-center gap-2"
+                                onClick={onCancel}
+                                variant="destructive"
+                                className="w-full flex justify-center gapo-3 px-5 py-3 items-center text-white"
                             >
-                                <TrashIcon className="w-4 h-4" />
-                                پاک کردن
+                                <XMarkIcon className="w-5 h-5 text-white" />
+                                بازگشت
                             </Button>
-
                             <Button
+                                variant="primary"
                                 onClick={saveSignature}
                                 disabled={!hasSignature}
-                                className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                                className="  text-white gap-3 px-5 py-3 flex items-center justify-center  w-full bg-primary-600 hover:bg-primary-700"
                             >
-                                <CheckIcon className="w-4 h-4" />
-                                تأیید امضا
+                                <CheckIcon className="h-5 w-5" />
+                                <Typography variant="body1" className="text-white text-xs font-medium">
+                                    تایید
+                                </Typography>
                             </Button>
+
                         </Box>
                     </Box>
                 </Box>

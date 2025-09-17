@@ -1,4 +1,5 @@
-import { forwardRef } from "react";
+"use client";
+import React, { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
@@ -24,20 +25,220 @@ const selectVariants = cva(
     }
 );
 
+export interface OptionItem {
+    value: string;
+    label: React.ReactNode;
+}
+
 export interface SelectProps
-    extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'size'>,
-    VariantProps<typeof selectVariants> { }
+    extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'size' | 'value'>,
+    VariantProps<typeof selectVariants> {
+    options?: OptionItem[];
+    autocomplete?: boolean;
+    value?: string | null;
+    onValueChange?: (value: string | null) => void;
+    onSearch?: (query: string) => Promise<OptionItem[]> | void;
+    placeholder?: string;
+    allowClear?: boolean;
+    debounceMs?: number;
+}
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-    ({ className, variant, size, children, ...props }, ref) => {
+    ({ className, variant, size, children, options = [], autocomplete, value = null, onValueChange, placeholder = '', allowClear = false, onSearch, debounceMs: propDebounceMs, onChange, ...props }, ref) => {
+        // Always initialize hook state (hooks must be top-level)
+        const [isOpen, setIsOpen] = useState(false);
+        const [query, setQuery] = useState('');
+        const [debouncedQuery, setDebouncedQuery] = useState('');
+        const [highlight, setHighlight] = useState<number>(-1);
+        const containerRef = useRef<HTMLDivElement | null>(null);
+        const inputRef = useRef<HTMLInputElement | null>(null);
+        const [asyncOptions, setAsyncOptions] = useState<OptionItem[] | null>(null);
+        const [loading, setLoading] = useState(false);
+        const reqIdRef = useRef(0);
+        const [localSelectedLabel, setLocalSelectedLabel] = useState<React.ReactNode | null>(null);
+
+        // derive selected label will be computed after currentOptions so it includes async results
+
+        // debounce query for filtering (useful for large lists or async search)
+        const actualDebounceMs = typeof propDebounceMs === 'number' ? propDebounceMs : 300;
+        useEffect(() => {
+            const t = setTimeout(() => setDebouncedQuery(query), actualDebounceMs);
+            return () => clearTimeout(t);
+        }, [query, actualDebounceMs]);
+
+        // when debouncedQuery changes, optionally call onSearch and manage asyncOptions
+        useEffect(() => {
+            let mounted = true;
+            if (typeof onSearch === 'function') {
+                const id = ++reqIdRef.current;
+                setLoading(true);
+                Promise.resolve(onSearch(debouncedQuery)).then((res) => {
+                    if (!mounted) return;
+                    if (id !== reqIdRef.current) return; // stale
+                    if (Array.isArray(res)) {
+                        setAsyncOptions(res);
+                    }
+                    setLoading(false);
+                }).catch(() => {
+                    if (id === reqIdRef.current) setLoading(false);
+                });
+            } else {
+                // clear asyncOptions when not using remote search
+                setAsyncOptions(null);
+            }
+            return () => { mounted = false; };
+        }, [debouncedQuery, onSearch]);
+
+        // filtered options based on debounced query and asyncOptions when available
+        const currentOptions = asyncOptions ?? options;
+        const selectedFromCurrent = useMemo(() => currentOptions.find((o) => o.value === value)?.label ?? '', [currentOptions, value]);
+        const effectiveLabel = localSelectedLabel ?? selectedFromCurrent;
+        const selectedText = typeof effectiveLabel === 'string' || typeof effectiveLabel === 'number' ? String(effectiveLabel) : '';
+        const hasNodeLabel = !!effectiveLabel && !selectedText;
+
+        const filtered = useMemo(() => {
+            const q = debouncedQuery.trim().toLowerCase();
+            if (!q) return currentOptions;
+            return currentOptions.filter((o) => String(o.label).toLowerCase().includes(q) || o.value.toLowerCase().includes(q));
+        }, [currentOptions, debouncedQuery]);
+
+        useEffect(() => {
+            const onClick = (e: MouseEvent) => {
+                if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+                    setIsOpen(false);
+                    setHighlight(-1);
+                }
+            };
+            document.addEventListener('click', onClick);
+            return () => document.removeEventListener('click', onClick);
+        }, []);
+
+        useEffect(() => {
+            // when options change or filtered changes, keep highlight in range
+            if (!isOpen) return;
+            setHighlight((h) => Math.max(-1, Math.min(h, filtered.length - 1)));
+        }, [filtered, isOpen]);
+
+        const open = () => { setIsOpen(true); setHighlight(-1); };
+        const close = () => { setIsOpen(false); setHighlight(-1); };
+
+        const selectValue = (val: string) => {
+            onValueChange?.(val);
+            // notify native onChange (useful when Controller spreads field)
+            try {
+                if (typeof onChange === 'function') (onChange as (...args: unknown[]) => void)(val);
+            } catch {
+                // ignore
+            }
+            // try to show the selected label immediately (in case parent is slow to update value)
+            const sel = currentOptions.find((o) => o.value === val);
+            if (sel) setLocalSelectedLabel(sel.label);
+            setQuery('');
+            setDebouncedQuery('');
+            close();
+        };
+
+        // clear localSelectedLabel when controlled value changes (parent took over)
+        useEffect(() => {
+            setLocalSelectedLabel(null);
+        }, [value]);
+
+        const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                setIsOpen(true);
+                setHighlight((h) => Math.min(filtered.length - 1, h + 1));
+                return;
+            }
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                setHighlight((h) => Math.max(-1, h - 1));
+                return;
+            }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (isOpen) {
+                    const item = filtered[highlight >= 0 ? highlight : 0];
+                    if (item) selectValue(item.value);
+                } else {
+                    setIsOpen(true);
+                }
+                return;
+            }
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                close();
+                return;
+            }
+        };
+
+        // If autocomplete mode is not requested, render native select (preserve existing behavior)
+        if (!autocomplete) {
+            return (
+                <select
+                    className={cn(selectVariants({ variant, size, className }), `outline-none focus:outline-none`)}
+                    ref={ref}
+                    {...props}
+                >
+                    {children}
+                </select>
+            );
+        }
+
+        const listboxId = `select-listbox-${String(Math.abs(JSON.stringify(options).length))}`;
+        const inputValue = isOpen ? query : selectedText;
+
         return (
-            <select
-                className={cn(selectVariants({ variant, size, className }))}
-                ref={ref}
-                {...props}
-            >
-                {children}
-            </select>
+            <div ref={containerRef} className={cn('relative', className)} role="combobox" aria-expanded={isOpen} aria-controls={listboxId} aria-haspopup="listbox">
+                <div className={cn(selectVariants({ variant, size }), 'flex items-center gap-2')}>
+                    <div className="relative flex-1">
+                        <input
+                            ref={inputRef}
+                            className="flex-1 bg-transparent outline-none"
+                            placeholder={isOpen ? (placeholder || 'انتخاب...') : ''}
+                            value={inputValue}
+                            onChange={(e) => { setQuery(e.target.value); setIsOpen(true); }}
+                            onFocus={() => { open(); }}
+                            onClick={() => { setIsOpen(true); }}
+                            onKeyDown={onKeyDown}
+                            aria-autocomplete="list"
+                            aria-controls={listboxId}
+                        />
+                        {/* If selected label is a ReactNode (not plain string), show it when closed */}
+                        {!isOpen && hasNodeLabel && (
+                            <div className="pointer-events-none absolute inset-0 flex items-center pl-3 text-sm text-gray-700">{effectiveLabel}</div>
+                        )}
+                    </div>
+                    {allowClear && value && (
+                        <button aria-label="clear" onClick={() => { setQuery(''); onValueChange?.(null); }} className="text-gray-500 hover:text-gray-700">×</button>
+                    )}
+                </div>
+
+                {isOpen && (
+                    <ul id={listboxId} role="listbox" className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-xl border bg-white py-1 shadow-lg" tabIndex={-1}>
+                        {loading && (
+                            <li className="px-3 py-2 text-sm text-gray-500">در حال جستجو...</li>
+                        )}
+                        {!loading && filtered.length === 0 && (
+                            <li className="px-3 py-2 text-sm text-gray-500">هیچ موردی یافت نشد</li>
+                        )}
+                        {filtered.map((o, idx) => (
+                            <li
+                                key={o.value}
+                                role="option"
+                                aria-selected={value === o.value}
+                                className={cn('cursor-pointer px-3 py-2 text-sm', {
+                                    'bg-primary/10': idx === highlight,
+                                })}
+                                onMouseEnter={() => setHighlight(idx)}
+                                onMouseDown={(e) => { e.preventDefault(); selectValue(o.value); }}
+                            >
+                                {o.label}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
         );
     }
 );

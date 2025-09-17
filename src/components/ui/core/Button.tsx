@@ -36,14 +36,51 @@ const getButtonClasses = (variant: ButtonVariant, size: ButtonSize) => {
     return `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]}`;
 };
 
+const actionLabels = [
+    'ادامه', 'تایید', 'ثبت', 'ارسال', 'صدور', 'تأیید', 'تایید و ارسال', 'تأیید و ادامه'
+];
+
+const isActionLabel = (children: unknown) => {
+    if (!children) return false;
+    if (typeof children === 'string') {
+        return actionLabels.includes(children.trim());
+    }
+    try {
+        if (Array.isArray(children)) {
+            const first = children[0];
+            if (typeof first === 'string') {
+                return actionLabels.includes(first.trim());
+            }
+            if (typeof first === 'object' && first !== null && 'props' in first) {
+                const text = (first as { props?: { children?: unknown } }).props?.children;
+                if (typeof text === 'string') return actionLabels.includes(text.trim());
+            }
+        } else if (typeof children === 'object' && children !== null && 'props' in children) {
+            const text = (children as { props?: { children?: unknown } }).props?.children;
+            if (typeof text === 'string') return actionLabels.includes(text.trim());
+        }
+    } catch {
+    }
+    return false;
+};
+
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant = 'default', size = 'default', ...props }, ref) => {
+    ({ className, variant, size = 'default', children, type, ...props }, ref) => {
+        let resolvedVariant: ButtonVariant = variant as ButtonVariant || 'default';
+        if (!variant) {
+            if (type === 'submit') resolvedVariant = 'primary';
+            else if (isActionLabel(children)) resolvedVariant = 'primary';
+        }
+
         return (
             <button
-                className={cn(getButtonClasses(variant, size), className)}
+                type={type}
+                className={cn(getButtonClasses(resolvedVariant, size), className)}
                 ref={ref}
                 {...props}
-            />
+            >
+                {children}
+            </button>
         )
     }
 )

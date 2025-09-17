@@ -241,7 +241,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                                     </video>
                                 </div>
 
-                                <p className="text-green-600 font-medium">✓ ویدیو احراز هویت ضبط شد</p>
+
 
                                 <div className="flex justify-center gap-3">
                                     <Button
@@ -346,7 +346,6 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                                         variant="success"
                                         onClick={handleComplete}
                                         className="  text-white  gap-3 px-5 py-3 flex items-center justify-center  w-full"
-                                        title="تأیید عکس"
                                     >
                                         <CheckIcon className="h-5 w-5" />
                                         <span className="text-white text-xs font-medium">
