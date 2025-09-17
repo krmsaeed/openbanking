@@ -39,6 +39,7 @@ interface PersianCalendarProps {
     className?: string;
     icon?: React.ReactNode;
     maxDate?: Date;
+    error?: string | undefined;
 }
 
 // Persian month names
@@ -148,7 +149,7 @@ const getFirstDayOfPersianMonth = (year: number, month: number): number => {
     return (date.getDay() + 1) % 7; // Convert to Persian week (Saturday = 0)
 };
 
-export default function PersianCalendar({ value, onChange, placeholder, label, required, disabled, className, maxDate }: PersianCalendarProps) {
+export default function PersianCalendar({ value, onChange, placeholder, label, required, disabled, className, maxDate, error }: PersianCalendarProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [displayValue, setDisplayValue] = useState(value || '');
     const calendarRef = useRef<HTMLDivElement>(null);
@@ -252,9 +253,9 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                     onClick={() => !isDisabled && handleDateSelect(day)}
                     disabled={isDisabled}
                     className={`h-8 w-8 text-sm rounded-full flex items-center justify-center transition-colors ${isSelected
-                        ? 'bg-primary text-white'
+                        ? 'bg-primary-500 text-white'
                         : isToday
-                            ? 'bg-primary-100 text-primary font-medium'
+                            ? 'border border-primary-300  text-gray-500  font-medium '
                             : isDisabled
                                 ? 'text-gray-300 cursor-not-allowed'
                                 : 'hover:bg-gray-100 text-gray-700'
@@ -280,9 +281,10 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                     placeholder={placeholder}
                     disabled={disabled}
                     className={` ${className ?? ""}`}
+                    error={error}
                     readOnly
                     required={required}
-                    adornment={<CalendarIcon className="h-5 w-5 " />}
+                    adornment={<CalendarIcon onClick={() => setIsOpen(true)} className="h-5 w-5 cursor-pointer" />}
                 />
             </Box>
 

@@ -2,9 +2,10 @@
 
 import { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
-import { VideoCameraIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, VideoCameraIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Button } from "../ui/core/Button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../ui/core/Card";
+import { Card, CardContent } from "../ui/core/Card";
+import { Box, Typography } from "../ui";
 
 interface VideoRecorderProps {
     onComplete: (file: File) => void;
@@ -16,7 +17,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
     const [recordingTime, setRecordingTime] = useState(0);
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
-    const [currentTextIndex, setCurrentTextIndex] = useState(0);
+    // removed unused currentTextIndex
     const [cameraActive, setCameraActive] = useState(false);
 
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -28,10 +29,9 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
 
     const verificationTexts = [
         "این یک متن تستی است",
-
     ];
 
-    const currentText = verificationTexts[currentTextIndex];
+    const currentText = verificationTexts;
 
     useEffect(() => {
         if (recordingTime > 0) {
@@ -75,7 +75,8 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                 streamRef.current = stream;
                 setCameraActive(true);
             }
-        } catch (_) {
+        } catch (err) {
+            console.warn('camera access failed', err);
             toast.error('دسترسی به دوربین امکان‌پذیر نیست');
         }
     };
@@ -179,63 +180,24 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
             setVideoPreviewUrl(null);
         }
 
-        setCurrentTextIndex(0);
+        // reset any local prompts
 
         toast.success('آماده برای ضبط مجدد');
     };
 
-    const handleCancel = () => {
-        if (mediaRecorderRef.current && isRecording) {
-            mediaRecorderRef.current.stop();
-            setIsRecording(false);
-        }
+    // handleCancel removed; component uses onCancel prop directly where needed
 
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => track.stop());
-            streamRef.current = null;
-        }
 
-        if (videoRef.current) {
-            videoRef.current.srcObject = null;
-        }
-
-        if (timerRef.current) {
-            clearTimeout(timerRef.current);
-            timerRef.current = null;
-        }
-
-        setCameraActive(false);
-        navigator.mediaDevices.getUserMedia({ video: false, audio: false });
-        onCancel();
-    };
-
-    const speakText = () => {
-        if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(currentText);
-            utterance.lang = 'fa-IR';
-            utterance.rate = 0.8;
-            speechSynthesis.speak(utterance);
-        }
-    };
 
     return (
         <div className="space-y-6">
             <Card padding="lg">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-3">
-                        <VideoCameraIcon className="w-6 h-6 text-red-600" />
-                        ضبط ویدیو احراز هویت
-                    </CardTitle>
-                    <CardDescription>
-                        متن نمایش داده شده را با صدای بلند بخوانید
-                    </CardDescription>
-                </CardHeader>
+
                 <CardContent>
                     <div className="text-center">
                         {videoFile && videoPreviewUrl ? (
-                            <div className="space-y-4">
-                                <div className="border-2 border-green-200 rounded-lg p-4 bg-green-50">
-                                    <h4 className="font-medium text-green-800 mb-3">پیش‌نمایش ویدیو ضبط شده:</h4>
+                            <div className="space-y-4 w-full">
+                                <div className="rounded-lg p-1 bg-gray-200 w-full">
                                     <video
                                         src={videoPreviewUrl}
                                         controls
@@ -258,18 +220,33 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                         ضبط مجدد
                                     </Button>
 
-                                    <Button
-                                        onClick={handleComplete}
-                                        className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-                                    >
-                                        <VideoCameraIcon className="w-4 h-4" />
-                                        تأیید ویدیو
-                                    </Button>
+
                                 </div>
+                                <Box className="w-full flex gap-2 items-center">
+                                    <Button
+                                        onClick={onCancel}
+                                        variant="destructive"
+                                        className="w-full flex justify-center gapo-3 px-5 py-3 items-center text-white"
+                                    >
+                                        <XMarkIcon className="w-5 h-5 text-white" />
+                                        بازگشت
+                                    </Button>
+                                    <Button
+                                        variant="primary"
+                                        onClick={handleComplete}
+                                        className="  text-white gap-3 px-5 py-3 flex items-center justify-center  w-full bg-primary-600 hover:bg-primary-700"
+                                    >
+                                        <CheckIcon className="h-5 w-5" />
+                                        <Typography variant="body1" className="text-white text-xs font-medium">
+                                            تایید
+                                        </Typography>
+                                    </Button>
+
+                                </Box>
                             </div>
                         ) : (
                             <div className="space-y-4">
-                                <div className="border-2 border-dashed border-blue-300 rounded-lg p-4 bg-blue-50">
+                                <div className="border-2 border-dashed border-blue-300 rounded-lg p-4 bg-gray-100">
                                     <div className="relative bg-black rounded-lg overflow-hidden mb-4">
                                         <video
                                             ref={videoRef}
@@ -290,17 +267,29 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                         )}
                                     </div>
 
-                                    <div className="mb-4 p-3 bg-white border-2 border-blue-200 rounded-lg">
-                                        <p className="text-base text-gray-800 leading-relaxed text-center">
+                                    <div className="mb-4 p-3 bg-gray-100 border-2 border-blue-300 rounded-lg">
+                                        {!isRecording && <div className="text-right space-y-2">
+                                            <p className="text-sm font-medium text-gray-800">راهنمای ضبط ویدیو</p>
+                                            <ul className="text-sm text-gray-700 list-disc list-inside leading-relaxed">
+                                                <li className="font-bold text-primary-600">
+                                                    متن نمایش داده‌شده را واضح بخوانید
+                                                </li>
+                                                <li>طول ویدیو: حدود 30 ثانیه .</li>
+                                                <li> صورت  در مرکز قاب قرار گیرد،.</li>
+                                                <li>  از نور پشت سر پرهیز کنید.</li>
+                                                <li> در محیطی کم‌صدا صحبت کنید .</li>
+                                            </ul>
+                                        </div>}
+                                        {isRecording && <p className="text-base text-gray-800 leading-relaxed text-center mt-2">
                                             {currentText}
-                                        </p>
+                                        </p>}
                                     </div>
 
                                     <div className="flex justify-center gap-3">
                                         {!isRecording ? (
                                             <Button
                                                 onClick={startVideoRecording}
-                                                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-6 py-3"
+                                                className="flex items-center gap-2 bg-secondary hover:bg-secondary-600 px-6 py-3"
                                             >
                                                 <VideoCameraIcon className="w-5 h-5" />
                                                 شروع ضبط
@@ -308,7 +297,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                         ) : (
                                             <Button
                                                 onClick={stopVideoRecording}
-                                                className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-6 py-3"
+                                                className="flex items-center gap-2 bg-gray-300 hover:bg-gray-700 px-6 py-3"
                                             >
                                                 <XMarkIcon className="w-5 h-5" />
                                                 پایان ضبط
@@ -317,15 +306,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                     </div>
                                 </div>
 
-                                <div className="text-center">
-                                    <Button
-                                        variant="outline"
-                                        onClick={handleCancel}
-                                        className="mx-auto"
-                                    >
-                                        انصراف
-                                    </Button>
-                                </div>
+
                             </div>
                         )}
                     </div>

@@ -599,8 +599,7 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                 <Box className="flex justify-center gap-4">
                     <Button
                         onClick={retakePhoto}
-                        className="w-fu  px-5 py-3 flex items-center justify-center bg-primary-300 hover:bg-primary-500"
-                        title="گرفتن عکس جدید"
+                        className="w-fu  px-5 py-3 flex items-center justify-center bg-success hover:bg-primary-300"
                     >
                         <ArrowPathIcon className="h-6 w-6 text-white" />
                         <Typography variant="body1" className=" text-xs font-medium text-white">
@@ -640,7 +639,7 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                         disabled={closenessPercent !== 100 || obstructionRatio >= 0.15} // Disable if obstructionRatio is too high
                         className={`w-20 h-20 rounded-full border-4 transition-all duration-300 ${closenessPercent === 100 && obstructionRatio < 0.15
                             ? 'bg-green-500 border-green-600 hover:bg-green-600 shadow-lg hover:shadow-xl active:scale-95'
-                            : 'bg-gray-300 border-gray-400 cursor-not-allowed opacity-50'
+                            : 'bg-gray-300  cursor-not-allowed opacity-50'
                             }`}
                         title={closenessPercent === 100 && obstructionRatio < 0.15 ? 'عکس بگیرید' : 'ابتدا نزدیکی را به 100٪ برسانید و مطمئن شوید که هیچ مانعی وجود ندارد'}
                     >
@@ -653,10 +652,10 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
             )}
 
             {/* Instructions */}
-            <Box className="bg-primary-50 border border-primary-200 rounded-xl p-4">
-                <Typography variant="body1" className="font-semibold text-primary-900 mb-2 text-center">راهنمای عکس‌برداری:</Typography>
+            <Box className="bg-gray-100  rounded-xl p-4">
+                <Typography variant="body1" className="font-semibold text-gray-900 mb-2 text-center">راهنمای عکس‌برداری:</Typography>
                 {!capturedPhoto ? (
-                    <ul className="text-sm text-primary-800 space-y-1">
+                    <ul className="text-sm text-gray-800 space-y-1">
                         <li>• صورت خود را کاملاً در قاب قرار دهید</li>
                         <li>• از نور کافی استفاده کنید</li>
                         <li>• عینک آفتابی نداشته باشید</li>
@@ -686,7 +685,6 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                     variant="primary"
                     onClick={confirmPhoto}
                     className="  text-white  gap-3 px-5 py-3 flex items-center justify-center  w-full bg-primary"
-                    title="تأیید عکس"
                 >
                     <CheckIcon className="h-5 w-5" />
                     <Typography variant="body1" className="text-white text-xs font-medium">

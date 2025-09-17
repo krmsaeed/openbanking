@@ -14,17 +14,9 @@ export default function HomeLoader({ delay = 2000 }: { delay?: number }) {
             const nationalId = params.get('nationalId');
 
             // use centralized validator
-            const { isValidNationalId, cleanNationalId } = await import('@/components/NationalIdValidator');
-            if (!nationalId) {
-                setError('کد ملی پیدا نشد. لینک را بررسی کنید.');
-                return;
-            }
 
-            const cleaned = cleanNationalId(nationalId);
-            if (!isValidNationalId(cleaned)) {
-                setError('کد ملی نامعتبر است — لطفاً کد ملی را بررسی کنید.');
-                return;
-            }
+
+
 
             try {
                 // check registry
