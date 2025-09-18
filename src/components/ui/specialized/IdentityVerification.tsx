@@ -180,32 +180,6 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
 
         toast.success('آماده برای ضبط مجدد');
     };
-
-    const handleCancel = () => {
-        if (mediaRecorderRef.current && isRecording) {
-            mediaRecorderRef.current.stop();
-            setIsRecording(false);
-        }
-
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => track.stop());
-            streamRef.current = null;
-        }
-
-        if (videoRef.current) {
-            videoRef.current.srcObject = null;
-        }
-
-        if (timerRef.current) {
-            clearTimeout(timerRef.current);
-            timerRef.current = null;
-        }
-
-        setCameraActive(false);
-        navigator.mediaDevices.getUserMedia({ video: false, audio: false });
-        onCancel();
-    };
-
     const speakText = () => {
         if ('speechSynthesis' in window) {
             const utterance = new SpeechSynthesisUtterance(currentText);

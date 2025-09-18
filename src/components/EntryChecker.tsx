@@ -11,8 +11,6 @@ export default function EntryChecker() {
         (async () => {
             const params = new URLSearchParams(window.location.search);
             const nationalId = params.get("nationalId");
-            const mobile = params.get("mobile");
-            console.log("کد ملی:", nationalId, "شماره موبایل:", mobile);
 
             if (!nationalId) return;
 
@@ -36,25 +34,20 @@ export default function EntryChecker() {
                 const json = await res.json();
 
                 if (!res.ok || !json.success) {
-                    // not in registry -> go to registration/verification
                     router.push("/register");
                     return;
                 }
 
-                // registry says valid; try to detect existing bank accounts
                 try {
                     const accountsResp = await bankingService.getAccounts();
                     if (accountsResp && accountsResp.success && accountsResp.data && accountsResp.data.length > 0) {
-                        // user has accounts: consider them verified and redirect to credit assessment
                         router.push("/credit-assessment");
                         return;
                     }
                 } catch (err) {
-                    // if banking service fails, fall back to registration path
                     console.error("bankingService error", err);
                 }
 
-                // default: go to registration flow
                 router.push("/register");
             } catch (err) {
                 console.error("EntryChecker error:", err);
