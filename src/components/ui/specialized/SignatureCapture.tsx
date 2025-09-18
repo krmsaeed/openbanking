@@ -112,7 +112,7 @@ export function SignatureCapture({ onComplete, onCancel, onStepChange }: Signatu
     };
 
     return (
-        <Card padding="lg">
+        <Card padding="sm">
 
 
             <CardContent>

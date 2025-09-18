@@ -71,7 +71,7 @@ export default function FinalConfirmation({ onConfirm, loading = false }: Props)
 
             <Button variant='primary' onClick={() => accepted && onConfirm()} size="lg" className="w-full" disabled={!accepted || loading}>
                 {loading && (<Loading size="sm" className="ml-1" />)}
-                تایید امضای دیجیتال
+                تایید
             </Button>
 
         </Box>

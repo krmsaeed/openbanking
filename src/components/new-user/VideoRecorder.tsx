@@ -207,8 +207,13 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                         مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
                                     </video>
                                 </div>
-
-                                <p className="text-green-600 font-medium">✓ ویدیو احراز هویت ضبط شد</p>
+                                <Box className="bg-gray-100  rounded-xl p-4">
+                                    <ul className="text-sm text-error-800 space-y-1">
+                                        <li> فیلم ضبط شده خود را بررسی کنید</li>
+                                        <li> اگر فیلم مناسب است، روی «تایید» کلیک کنید</li>
+                                        <li> برای رکورد جدید، روی «ضبط مجدد» کلیک کنید</li>
+                                    </ul>
+                                </Box>
 
                                 <div className="flex justify-center gap-3">
                                     <Button

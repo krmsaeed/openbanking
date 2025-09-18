@@ -89,9 +89,7 @@ export default function Register() {
         mode: "onBlur",
     });
 
-    // helper wrapper so child components can call setError with plain string names
     const setErrorAny = (name: string, error: { type: string; message?: string }) => {
-        // single cast boundary for react-hook-form setError
         (setError as unknown as (n: string, e: { type: string; message?: string }) => void)(name, error);
     };
 
@@ -126,9 +124,7 @@ export default function Register() {
         setStep2Data({ birthDate: data.birthDate, postalCode: data.postalCode });
         toast.success("اطلاعات ثبت شد");
 
-        // Show inline OTP UI (do NOT auto-send request). User must click ارسال to request code.
         setShowOtp1(true);
-        // initialize otp/password fields in the form
         setValue('otp', '');
         setValue('certOtp', '');
         setValue('password', '');
@@ -157,7 +153,7 @@ export default function Register() {
 
     const handleNationalCardConfirm = () => {
         setShowNationalCardTemplate(false);
-        setStep(3);
+        setStep(8);
     };
     // scanned card/branch state removed - final step now shows downloadable contract instead
     const handleSelfiePhoto = (file: File) => {
@@ -181,7 +177,7 @@ export default function Register() {
         setTimeout(() => {
             setLoading(false);
             toast.success("گواهی دیجیتال صادر شد");
-            setStep(8);
+            setStep(7);
         }, 2000);
     };
 
@@ -232,8 +228,8 @@ export default function Register() {
             case 3: return "عکس سلفی";
             case 4: return "فیلم احراز هویت";
             case 5: return "ثبت امضای دیجیتال";
-            case 6: return "اسکن کارت و تعیین شعبه ";
-            case 7: return <span dir="ltr">{passwordSet ? "ارسال کد تایید" : "ایجاد رمز عبور"}</span>;
+            case 6: return <span dir="ltr">{passwordSet ? "ارسال کد تایید" : "ایجاد رمز عبور"}</span>;
+            case 7: return "اسکن کارت و تعیین شعبه ";
             case 8: return "پیش نمایش قرارداد";
             default: return "";
         }
@@ -246,7 +242,7 @@ export default function Register() {
         // For now, just show a toast and move to the next step (selfie)
         toast.success("تصویر کارت ملی و شعبه ثبت شد");
         setShowNationalCardTemplate(false);
-        setStep(7);
+        setStep(8);
     }
 
     return (
@@ -306,8 +302,7 @@ export default function Register() {
                                         <SignatureStep onComplete={handleSignatureComplete} onCancel={() => { }} />
                                     )}
 
-                                    {step === 6 && <NationalCardScanner onComplete={handleNationalCardScanComplete} onBack={() => setStep(5)} />}
-                                    {step === 7 && (
+                                    {step === 6 && (
                                         <>
                                             <PasswordStep
                                                 password={watch('password') || ''}
@@ -334,6 +329,7 @@ export default function Register() {
                                             )}
                                         </>
                                     )}
+                                    {step === 7 && <NationalCardScanner onComplete={handleNationalCardScanComplete} onBack={() => setStep(6)} />}
 
                                     {step === 8 && (
                                         <FinalConfirmation onConfirm={handleDigitalSignature} loading={loading} />
