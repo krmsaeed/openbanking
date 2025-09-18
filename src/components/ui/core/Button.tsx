@@ -69,7 +69,7 @@ const isActionLabel = (children: unknown) => {
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ as = 'button', className, variant, size = 'default', children, type, href, download, ...props }, ref) => {
+    ({ as = 'button', className, variant, size = 'default', children, type, href, ...props }, ref) => {
         let resolvedVariant: ButtonVariant = variant as ButtonVariant || 'default';
         if (!variant) {
             if (type === 'submit') resolvedVariant = 'primary';
@@ -99,4 +99,20 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 )
 Button.displayName = "Button"
 
-export { Button }
+// Conservative LinkButton: keeps styling but uses Next.js Link for navigation/download
+interface LinkButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+    href: string;
+    className?: string;
+    children?: React.ReactNode;
+}
+
+function LinkButton({ href, className, children, ...props }: LinkButtonProps) {
+    const classNames = cn(getButtonClasses('default', 'default'), className);
+    return (
+        <Link href={href}>
+            <a className={classNames} {...props}>{children}</a>
+        </Link>
+    );
+}
+
+export { Button, LinkButton }

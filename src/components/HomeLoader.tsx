@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, memo } from "react";
 import { useRouter } from "next/navigation";
 import { BuildingLibraryIcon } from "@heroicons/react/24/outline";
 
-export default function HomeLoader({ delay = 2000 }: { delay?: number }) {
+function HomeLoader({ delay = 2000 }: { delay?: number }) {
     const router = useRouter();
-    const [error, setError] = useState<string | null>(null);
+    // no local error state required; errors are logged and user is redirected
+    const error: string | null = null;
 
     useEffect(() => {
         async function checkAndRedirect() {
@@ -91,3 +92,5 @@ export default function HomeLoader({ delay = 2000 }: { delay?: number }) {
         </div>
     );
 }
+
+export default memo(HomeLoader);

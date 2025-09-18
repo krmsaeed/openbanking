@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, memo } from "react";
 import { Button } from "./core/Button";
 import { Card } from "./core/Card";
 import { Box, Typography } from "./core";
@@ -25,7 +25,7 @@ interface VirtualKeyboardProps {
     currentValue?: string;
 }
 
-export function VirtualKeyboard({
+function VirtualKeyboardImpl({
     isVisible,
     onToggle,
     onInput,
@@ -136,3 +136,5 @@ export function VirtualKeyboard({
         </Box>
     );
 }
+
+export const VirtualKeyboard = memo(VirtualKeyboardImpl);
