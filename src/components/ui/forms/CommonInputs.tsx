@@ -1,3 +1,4 @@
+"use client";
 import { Control, Controller, FieldValues, FieldPath } from "react-hook-form";
 import { Input } from "../forms/Input";
 
