@@ -2,54 +2,40 @@
 
 import { useEffect, memo } from "react";
 import { useRouter } from "next/navigation";
-import { BuildingLibraryIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import Image from "next/image";
 
 function HomeLoader({ delay = 2000 }: { delay?: number }) {
     const router = useRouter();
-    // no local error state required; errors are logged and user is redirected
     const error: string | null = null;
 
     useEffect(() => {
+
         async function checkAndRedirect() {
             const params = new URLSearchParams(window.location.search);
             const nationalId = params.get('nationalId');
-
-            // use centralized validator
-
-
-
-
-            try {
-                // check registry
-                const regRes = await fetch('/api/registry-check', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nationalId }),
-                });
-                const regJson = await regRes.json();
-
-                if (!regRes.ok || !regJson.success) {
-                    router.push('/register');
-                    return;
-                }
-
-                // if registry ok, check bank accounts
-                const { bankingService } = await import('@/services/banking');
-                try {
-                    const accountsResp = await bankingService.getAccounts();
-                    if (accountsResp && accountsResp.success && accountsResp.data && accountsResp.data.length > 0) {
-                        router.push('/credit-assessment');
-                        return;
-                    }
-                } catch (err) {
-                    console.error('bankingService error', err);
-                }
-
-                // default route
+            if (!nationalId) {
                 router.push('/register');
+                return;
+            }
+            try {
+                // Keep routing logic the same; adjust if your BPMS returns a different shape
+                await axios.post('/api/bpms/send-message', { code: nationalId })
+                    .then(response => {
+                        console.log('BPMS response:', response);
+                        if (response.data && response.data.success) {
+                            // router.push('/credit-assessment');
+                        } else {
+                            // router.push('/register');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error sending message:', error);
+                        // router.push('/register');
+                    });
             } catch (err) {
                 console.error('HomeLoader check error', err);
-                router.push('/register');
+                // router.push('/register');
             }
         }
 
@@ -75,18 +61,23 @@ function HomeLoader({ delay = 2000 }: { delay?: number }) {
         <div className="w-full max-w-lg flex flex-col items-center justify-center gap-6 p-8 rounded-2xl shadow-lg bg-gradient-to-r from-primary-50 to-indigo-50">
             <div className="flex items-center justify-center w-32 h-32 rounded-3xl bg-white shadow-md">
                 <div className="animate-spin-slow">
-                    <BuildingLibraryIcon className="h-10 w-10 text-primary" />
+                    <Image src="/icons/EnBankNewVerticalLogo_100x100 (1).png"
+                        alt="Logo"
+                        width={100}
+                        height={100}
+                        className="text-primary w-[32rem] p-2"
+                    />
                 </div>
             </div>
 
             <div className="text-center">
                 <h3 className="text-lg font-semibold">در حال بررسی اطلاعات شما...</h3>
-                <p className="text-sm text-gray-500">لطفا چند لحظه صبر کنید — به صفحه ثبت‌نام منتقل می‌شوید</p>
+                <p className="text-sm text-gray-500">لطفا چند لحظه صبر کنید </p>
             </div>
 
             <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-primary animate-pulse" />
-                <span className="w-3 h-3 rounded-full bg-indigo-500 animate-pulse delay-75" />
+                <span className="w-3 h-3 rounded-full bg-primary animate-pulse delay-75" />
+                <span className="w-3 h-3 rounded-full bg-indigo-500 animate-pulse delay-100" />
                 <span className="w-3 h-3 rounded-full bg-purple-500 animate-pulse delay-150" />
             </div>
         </div>

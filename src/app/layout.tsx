@@ -21,11 +21,6 @@ const iranYekan = localFont({
       style: "normal",
     },
     {
-      path: "../assets/fonts/iranyekan/IRANYekanWebMedium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-    {
       path: "../assets/fonts/iranyekan/IRANYekanWebBold.woff2",
       weight: "700",
       style: "normal",
@@ -45,11 +40,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fa-IR" className="dark">
+    <html lang="fa-IR" className="dark" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/images/fav-icon.png"></link>
+        <link rel="icon" href="/icons/favicon.ico"></link>
       </head>
-      <body className={` ${iranYekan.className} flex flex-col items-center w-full`} suppressHydrationWarning={true}>
+      <body className={` ${iranYekan.className} flex flex-col items-center w-full`} >
         <ToastProvider>
           {children}
         </ToastProvider>

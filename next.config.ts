@@ -1,4 +1,5 @@
 /// <reference types="node" />
+import { Server } from "http";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -15,12 +16,17 @@ const nextConfig: NextConfig = {
         optimizeCss: true,
         optimizePackageImports: ['@heroicons/react'],
     },
-    serverRuntimeConfig: {
-        port: 3000,
-    },
     env: {
-        PORT: "3000",
-    },
+        BASE_URL: "http://192.168.91.112:9999"
+    }
+    // serverRuntimeConfig: {
+    //     server:{
+    //         "/api": {
+    //             "basePath": "http://192.168.91.112:9999"
+    //         }
+    //     },
+    //     port: 3000,
+    // },
 };
 
 
