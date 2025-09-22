@@ -430,7 +430,6 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                         </button>
                     </Box>
 
-                    {/* Week days */}
                     <Box className="grid grid-cols-7 gap-1 mb-2">
                         {PERSIAN_DAYS.map((day, index) => (
                             <Box key={index} className="h-8 w-8 flex items-center justify-center text-xs font-medium text-gray-500">
@@ -439,7 +438,6 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                         ))}
                     </Box>
 
-                    {/* Calendar grid */}
                     <Box className="grid grid-cols-7 gap-1">
                         {generateCalendarDays()}
                     </Box>

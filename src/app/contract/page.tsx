@@ -190,7 +190,7 @@ export default function ContractPage() {
 
                 <Card className="mb-6">
                     <CardContent className="pt-6">
-                        <div className="flex items-start space-x-3 space-x-reverse">
+                        <div className="flex items-start space-x-3 space-x-reverse gap-2">
                             <input
                                 type="checkbox"
                                 id="agreement"
@@ -212,7 +212,7 @@ export default function ContractPage() {
                         variant="outline"
                         size="lg"
                         onClick={handleReject}
-                        className="flex items-center"
+                        className="flex items-center bg-red-600 text-white"
                     >
                         <XCircleIcon className="h-5 w-5 ml-2" />
                         عدم تأیید قرارداد
@@ -222,14 +222,14 @@ export default function ContractPage() {
                         size="lg"
                         onClick={handleAccept}
                         disabled={!agreed || loading}
-                        className="flex items-center"
+                        className="flex items-center bg-secondary"
                     >
                         {loading ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white ml-2"></div>
+                            <div className="animate-spin rounded-full h-4 w-4  ml-2"></div>
                         ) : (
                             <CheckCircleIcon className="h-5 w-5 ml-2" />
                         )}
-                        {loading ? 'در حال پردازش...' : 'تأیید و ادامه'}
+                        {loading ? 'در حال پردازش...' : 'ثبت نهایی'}
                     </Button>
                 </div>
 
