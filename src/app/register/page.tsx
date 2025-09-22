@@ -22,7 +22,6 @@ import PasswordStep from '@/components/register/PasswordStep';
 // Input not used directly in this file
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/core/Card";
 import { Box } from "@/components/ui";
-import FinalConfirmation from '@/components/register/FinalConfirmation';
 import NationalCardScanner from "@/components/register/NationalCardScanner";
 import ContractPage from "../contract/page";
 

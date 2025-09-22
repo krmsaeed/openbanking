@@ -152,13 +152,20 @@ const getFirstDayOfPersianMonth = (year: number, month: number): number => {
 export default function PersianCalendar({ value, onChange, placeholder, label, required, disabled, className, maxDate, error }: PersianCalendarProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [displayValue, setDisplayValue] = useState(value || '');
+    const [showMonthOverlay, setShowMonthOverlay] = useState(false);
+    const [showYearOverlay, setShowYearOverlay] = useState(false);
     const calendarRef = useRef<HTMLDivElement>(null);
+    const yearListRef = useRef<HTMLDivElement | null>(null);
+    const monthOverlayRef = useRef<HTMLDivElement | null>(null);
+    const yearOverlayRef = useRef<HTMLDivElement | null>(null);
+    const monthToggleRef = useRef<HTMLButtonElement | null>(null);
+    const yearToggleRef = useRef<HTMLButtonElement | null>(null);
 
     const today = new Date();
-    const [todayPersian] = gregorianToPersian(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    const [todayPersianYear, todayPersianMonth, todayPersianDay] = gregorianToPersian(today.getFullYear(), today.getMonth() + 1, today.getDate());
 
-    const [currentYear, setCurrentYear] = useState(todayPersian);
-    const [currentMonth, setCurrentMonth] = useState(1);
+    const [currentYear, setCurrentYear] = useState(todayPersianYear);
+    const [currentMonth, setCurrentMonth] = useState(todayPersianMonth);
     const [selectedDate, setSelectedDate] = useState<{ year: number, month: number, day: number } | null>(null);
 
     useEffect(() => {
@@ -179,8 +186,31 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+            const target = event.target as Node;
+            // If click outside entire calendar, close everything
+            if (calendarRef.current && !calendarRef.current.contains(target)) {
                 setIsOpen(false);
+                setShowMonthOverlay(false);
+                setShowYearOverlay(false);
+                return;
+            }
+
+            // Click is inside calendar: if click is outside month overlay and not on month toggle, close month overlay
+            if (showMonthOverlay) {
+                const insideMonthOverlay = monthOverlayRef.current && monthOverlayRef.current.contains(target);
+                const onMonthToggle = monthToggleRef.current && monthToggleRef.current.contains(target);
+                if (!insideMonthOverlay && !onMonthToggle) {
+                    setShowMonthOverlay(false);
+                }
+            }
+
+            // Similarly for year overlay
+            if (showYearOverlay) {
+                const insideYearOverlay = yearOverlayRef.current && yearOverlayRef.current.contains(target);
+                const onYearToggle = yearToggleRef.current && yearToggleRef.current.contains(target);
+                if (!insideYearOverlay && !onYearToggle) {
+                    setShowYearOverlay(false);
+                }
             }
         };
 
@@ -188,7 +218,24 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
             document.addEventListener('mousedown', handleClickOutside);
             return () => document.removeEventListener('mousedown', handleClickOutside);
         }
-    }, [isOpen]);
+    }, [isOpen, showMonthOverlay, showYearOverlay]);
+
+    // Year range and scrolling: limit years and scroll to highlighted (selected or current) year
+    const MIN_YEAR = 1300;
+    const MAX_YEAR = 1450;
+
+    useEffect(() => {
+        if (showYearOverlay && yearListRef.current) {
+            const node = yearListRef.current;
+            const highlighted = (selectedDate?.year ?? currentYear);
+            const clamped = Math.min(Math.max(highlighted, MIN_YEAR), MAX_YEAR);
+            const index = clamped - MIN_YEAR;
+            const child = node.children[index] as HTMLElement | undefined;
+            if (child) {
+                node.scrollTop = Math.max(0, child.offsetTop - node.clientHeight / 2 + child.clientHeight / 2);
+            }
+        }
+    }, [showYearOverlay, currentYear, selectedDate]);
 
     const handleDateSelect = (day: number) => {
         const newDate = { year: currentYear, month: currentMonth, day };
@@ -238,7 +285,7 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
             const isSelected = selectedDate?.year === currentYear &&
                 selectedDate?.month === currentMonth &&
                 selectedDate?.day === day;
-            const isToday = currentYear === todayPersian && currentMonth === 1 && day === today.getDate();
+            const isToday = currentYear === todayPersianYear && currentMonth === todayPersianMonth && day === todayPersianDay;
 
             let isDisabled = false;
             if (maxDate) {
@@ -249,13 +296,14 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
 
             days.push(
                 <button
+                    type="button"
                     key={day}
                     onClick={() => !isDisabled && handleDateSelect(day)}
                     disabled={isDisabled}
                     className={`h-8 w-8 text-sm rounded-full flex items-center justify-center transition-colors ${isSelected
-                        ? 'bg-primary-500 text-white'
+                        ? 'bg-secondary text-white'
                         : isToday
-                            ? 'border border-primary-300  text-gray-500  font-medium '
+                            ? 'border border-secondary text-secondary'
                             : isDisabled
                                 ? 'text-gray-300 cursor-not-allowed'
                                 : 'hover:bg-gray-100 text-gray-700'
@@ -268,7 +316,6 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
 
         return days;
     };
-
     return (
         <Box className="relative" ref={calendarRef}>
             <Box className="mb-4">
@@ -287,13 +334,12 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                     adornment={<CalendarIcon onClick={() => setIsOpen(true)} className="h-5 w-5 cursor-pointer" />}
                 />
             </Box>
-
-            {/* Calendar Dropdown */}
             {isOpen && (
                 <Box className="p-4 absolute top-full left-0 right-0 mt-2 bg-white border border-gray-300 rounded-xl shadow-lg  z-50">
                     {/* Header */}
                     <Box className="flex items-center justify-between">
                         <button
+                            type="button"
                             onClick={() => navigateMonth('prev')}
                             className=" rounded-full hover:bg-gray-100 transition-colors"
                         >
@@ -301,12 +347,82 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                         </button>
 
                         <Box className="text-center my-4">
-                            <Typography variant="body1" className="font-semibold text-gray-800">
-                                {PERSIAN_MONTHS[currentMonth - 1]} {convertToPersianDigits(currentYear.toString())}
-                            </Typography>
+                            <div className="inline-flex items-center gap-2" >
+                                <button
+                                    type="button"
+                                    ref={monthToggleRef}
+                                    onClick={() => setShowMonthOverlay((s: boolean) => !s)}
+                                    className="px-2 py-1 rounded-md border border-gray-200 bg-white"
+                                    aria-haspopup="true"
+                                    aria-expanded={showMonthOverlay}
+                                >
+                                    <Typography variant="body1" className="font-semibold text-gray-800">
+                                        {PERSIAN_MONTHS[currentMonth - 1]}
+                                    </Typography>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    ref={yearToggleRef}
+                                    onClick={() => setShowYearOverlay((s: boolean) => !s)}
+                                    className="px-2 py-1 rounded-md border border-gray-200 bg-white"
+                                    aria-haspopup="true"
+                                    aria-expanded={showYearOverlay}
+                                >
+                                    <Typography variant="body1" className="font-semibold text-gray-800">
+                                        {convertToPersianDigits(currentYear.toString())}
+                                    </Typography>
+                                </button>
+
+
+
+                                {showMonthOverlay && (
+                                    <div className="absolute z-50 top-16 right-0 mt-2 w-full flex justify-center ">
+                                        <div ref={monthOverlayRef} className="bg-white border border-gray-200 rounded-lg shadow-lg p-3" style={{ width: 360, maxWidth: '90%' }}>
+                                            <div className="grid grid-cols-3 gap-2">
+                                                {PERSIAN_MONTHS.map((m, idx) => (
+                                                    <button
+                                                        type="button"
+                                                        key={m}
+                                                        onClick={() => { setCurrentMonth(idx + 1); setShowMonthOverlay(false); }}
+                                                        className={`px-2 py-1 rounded ${currentMonth === idx + 1 ? 'bg-secondary text-white' : 'hover:bg-gray-100'}`}
+                                                    >
+                                                        {m}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {showYearOverlay && (
+                                    <div className="absolute  top-16 right-0 z-50 mt-2 w-full flex justify-center">
+                                        <div ref={yearOverlayRef} className="bg-white border border-gray-200 rounded-lg shadow-lg p-3" style={{ width: 240, maxWidth: '90%' }}>
+                                            <div ref={yearListRef} className="h-56 overflow-auto pr-2  grid grid-cols-3 gap-4">
+                                                {Array.from({ length: (MAX_YEAR - MIN_YEAR) + 1 }).map((_, i) => {
+                                                    const y = MIN_YEAR + i;
+                                                    const highlightedYear = selectedDate?.year ?? currentYear;
+                                                    const isHighlighted = highlightedYear === y;
+                                                    return (
+                                                        <button
+                                                            type="button"
+                                                            key={y}
+                                                            onClick={() => { setCurrentYear(y); setShowYearOverlay(false); }}
+                                                            className={`w-full text-right px-3 py-1 rounded ${isHighlighted ? 'bg-secondary text-white' : 'hover:bg-gray-50'}`}
+                                                        >
+                                                            {convertToPersianDigits(y.toString())}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </Box>
 
                         <button
+                            type="button"
                             onClick={() => navigateMonth('next')}
                             className="p-1 rounded-full hover:bg-gray-100 transition-colors"
                         >
@@ -327,6 +443,22 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                     <Box className="grid grid-cols-7 gap-1">
                         {generateCalendarDays()}
                     </Box>
+
+                    <div className="mt-3 flex justify-end">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setCurrentYear(todayPersianYear);
+                                setCurrentMonth(todayPersianMonth);
+                                setSelectedDate({ year: todayPersianYear, month: todayPersianMonth, day: todayPersianDay });
+                                const formattedDate = `${convertToPersianDigits(todayPersianYear.toString())}/${convertToPersianDigits(todayPersianMonth.toString().padStart(2, '0'))}/${convertToPersianDigits(todayPersianDay.toString().padStart(2, '0'))}`;
+                                setDisplayValue(formattedDate);
+                            }}
+                            className="px-3 py-2 rounded-md border border-gray-200 bg-white text-sm"
+                        >
+                            امروز
+                        </button>
+                    </div>
 
 
                 </Box>
