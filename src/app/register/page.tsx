@@ -24,6 +24,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/core/C
 import { Box } from "@/components/ui";
 import FinalConfirmation from '@/components/register/FinalConfirmation';
 import NationalCardScanner from "@/components/register/NationalCardScanner";
+import ContractPage from "../contract/page";
 
 // Combined registration schema: nationalCode, phoneNumber, birthDate, postalCode
 const registrationSchema = z.object({
@@ -153,7 +154,7 @@ export default function Register() {
 
     const handleNationalCardConfirm = () => {
         setShowNationalCardTemplate(false);
-        setStep(8);
+        setStep(3);
     };
     // scanned card/branch state removed - final step now shows downloadable contract instead
     const handleSelfiePhoto = (file: File) => {
@@ -332,7 +333,7 @@ export default function Register() {
                                     {step === 7 && <NationalCardScanner onComplete={handleNationalCardScanComplete} onBack={() => setStep(6)} />}
 
                                     {step === 8 && (
-                                        <FinalConfirmation onConfirm={handleDigitalSignature} loading={loading} />
+                                        <ContractPage />
                                     )}
 
                                 </CardContent>
