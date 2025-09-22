@@ -41,7 +41,7 @@ export function useOtpTimer(initialSeconds = 120): UseOtpTimer {
     }, [start, initialSeconds]);
 
     useEffect(() => {
-        // start automatically
+        
         start(initialSeconds);
         return () => clear();
     }, [start, initialSeconds, clear]);

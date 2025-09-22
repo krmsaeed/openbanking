@@ -28,7 +28,11 @@ yarn.lock
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+yarn.lock
+.yarnrc.yml
 .pnpm-debug.log*
+
+package-lock.json
 
 # env files (can opt-in for committing if needed)
 .env*
@@ -43,6 +47,5 @@ next-env.d.ts
 .github
 .lsp
 .qodo
-.yarnrc.yml
 .yarn
 .vscode

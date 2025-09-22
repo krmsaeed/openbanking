@@ -1,14 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Controller } from 'react-hook-form';
-// Link removed: unused
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { LoginFormData } from "@/lib/schemas/common";
 import { z } from "zod";
 import toast from "react-hot-toast";
-import { verificationService } from "@/services/verification";
 import { convertPersianToEnglish } from '@/lib/utils';
 import Sidebar from '@/components/register/Sidebar';
 import PersonalInfoForm from '@/components/register/PersonalInfoForm';
@@ -62,7 +59,6 @@ type ExtendedRegistrationForm = RegistrationForm & {
 };
 
 export default function Register() {
-    const router = useRouter();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
 
@@ -180,47 +176,6 @@ export default function Register() {
             setStep(7);
         }, 2000);
     };
-
-    const handleDigitalSignature = async () => {
-        setLoading(true);
-        try {
-            if (signatureSample && videoSample) {
-                const payload: Parameters<typeof verificationService.submitVerification>[0] = {
-                    signature: signatureSample,
-                    video: videoSample,
-                    selfie: selfieSample,
-                    type: 'register',
-                    userInfo: {
-                        phone: step1Data?.phoneNumber,
-                        name: '',
-                    }
-                };
-
-                toast.success('در حال ارسال نمونه امضا و ویدیو برای احراز هویت');
-                const resp = await verificationService.submitVerification(payload);
-                if (!resp.success) {
-                    toast.error(resp.message || 'خطا در ارسال اطلاعات احراز هویت');
-                    setLoading(false);
-                    router.push("/");
-                    return;
-                } else {
-                    toast.success('نمونه امضا و ویدیو با موفقیت ارسال شد');
-                }
-            }
-
-            toast.success("امضای دیجیتال تأیید شد");
-            setTimeout(() => {
-                toast.success("ثبت‌نام با موفقیت انجام شد! خوش آمدید!");
-                router.push("/");
-            }, 1500);
-        } catch (err) {
-            console.error('Verification submit error:', err);
-            toast.error('خطا در ارسال اطلاعات احراز هویت');
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const getStepDescription = () => {
         switch (step) {
             case 1: return "اطلاعات شخصی";

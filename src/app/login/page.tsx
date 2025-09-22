@@ -46,7 +46,7 @@ export default function Login() {
 
     const handlePhoneSubmit = async (data: LoginFormData) => {
         setLoading(true);
-        // Save the phone number entered in step 1 so we can display it in step 2
+        
         if (data?.phoneNumber) setPhoneNumber(data.phoneNumber);
         setTimeout(() => {
             setStep(2);

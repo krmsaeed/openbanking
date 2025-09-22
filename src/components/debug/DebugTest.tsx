@@ -5,21 +5,18 @@ import { Button } from "@/components/ui/core/Button";
 import { Box } from "@/components/ui/core/Box";
 import { Typography } from "@/components/ui/core/Typography";
 
-/**
- * This component is for testing the debugger functionality
- */
 export default function DebugTest() {
     const [count, setCount] = useState(0);
     const [message, setMessage] = useState<string | null>(null);
 
-    // This function is good for setting breakpoints
+    
     function incrementCounter() {
-        // You can set a breakpoint on the next line
+        
         const newCount = count + 1;
         console.log("Counter incremented to:", newCount);
         setCount(newCount);
 
-        // This conditional is good for testing breakpoints with conditions
+        
         if (newCount % 5 === 0) {
             setMessage(`تبریک! شما به ${newCount} رسیدید!`);
         } else {
@@ -27,10 +24,10 @@ export default function DebugTest() {
         }
     }
 
-    // Effects are good for testing async debugging
+    
     useEffect(() => {
         const timer = setTimeout(() => {
-            // You can set a breakpoint here too
+            
             console.log("Initial timer fired");
         }, 2000);
 

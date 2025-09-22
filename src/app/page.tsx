@@ -1,4 +1,4 @@
-// ...existing code...
+
 import { Box } from "@/components/ui";
 import HomeLoader from "@/components/HomeLoader";
 

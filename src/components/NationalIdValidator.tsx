@@ -9,12 +9,12 @@ export function cleanNationalId(input: string): string {
     return normalized.replace(/\D/g, '').trim();
 }
 
-// implement Iranian national code checksum validation
+
 export function isValidNationalId(code: string): boolean {
     if (!code) return false;
     const v = cleanNationalId(code);
     if (v.length !== 10) return false;
-    // reject repetitive numbers like 0000000000, 1111111111, etc.
+    
     if (/^(\d)\1{9}$/.test(v)) return false;
 
     const digits = v.split('').map((d) => parseInt(d, 10));

@@ -99,7 +99,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 )
 Button.displayName = "Button"
 
-// Conservative LinkButton: keeps styling but uses Next.js Link for navigation/download
+
 interface LinkButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
     href: string;
     className?: string;

@@ -14,7 +14,7 @@ export default function EntryChecker() {
 
             if (!nationalId) return;
 
-            // validate national id centrally
+            
             const { isValidNationalId, cleanNationalId } = await import('@/components/NationalIdValidator');
             const cleaned = cleanNationalId(nationalId);
             if (!isValidNationalId(cleaned)) {
@@ -24,7 +24,7 @@ export default function EntryChecker() {
 
 
             try {
-                // call registry-check API
+                
                 const res = await fetch("/api/registry-check", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

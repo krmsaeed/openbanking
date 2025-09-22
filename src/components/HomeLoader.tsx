@@ -19,23 +19,23 @@ function HomeLoader({ delay = 2000 }: { delay?: number }) {
                 return;
             }
             try {
-                // Keep routing logic the same; adjust if your BPMS returns a different shape
+                
                 await axios.post('/api/bpms/send-message', { code: nationalId })
                     .then(response => {
                         console.log('BPMS response:', response);
                         if (response.data && response.data.success) {
-                            // router.push('/credit-assessment');
+                            
                         } else {
-                            // router.push('/register');
+                            
                         }
                     })
                     .catch(error => {
                         console.error('Error sending message:', error);
-                        // router.push('/register');
+                        
                     });
             } catch (err) {
                 console.error('HomeLoader check error', err);
-                // router.push('/register');
+                
             }
         }
 

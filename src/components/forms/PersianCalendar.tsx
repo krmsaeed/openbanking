@@ -5,7 +5,7 @@ import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/reac
 import { Box, Typography } from "../ui/core";
 import { Input } from "../ui";
 
-// Local conversion functions
+
 const convertToPersianDigits = (str: string): string => {
     const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
     return str.replace(/\d/g, (digit) => persianDigits[parseInt(digit)]);
@@ -42,16 +42,16 @@ interface PersianCalendarProps {
     error?: string | undefined;
 }
 
-// Persian month names
+
 const PERSIAN_MONTHS = [
     'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
     'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
 ];
 
-// Persian day names
+
 const PERSIAN_DAYS = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
 
-// Leap year calculation for Persian calendar
+
 const isPersianLeapYear = (year: number): boolean => {
     const breaks = [-14, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84, 87, 90, 93, 96, 99, 102, 105, 108, 111, 114, 117, 120, 123, 126, 129, 132, 135, 138, 141, 144, 147, 150, 153, 156, 159, 162, 165, 168, 171, 174, 177, 180, 183, 186, 189, 192, 195, 198, 201, 204, 207, 210, 213, 216, 219, 222, 225, 228, 231, 234, 237, 240, 243, 246, 249, 252, 255, 258, 261, 264, 267, 270, 273, 276, 279, 282, 285, 288, 291, 294, 297, 300];
 
@@ -76,14 +76,14 @@ const isPersianLeapYear = (year: number): boolean => {
     return ((leap + 1) % 33) % 4 === 1;
 };
 
-// Get number of days in a Persian month
+
 const getPersianMonthDays = (year: number, month: number): number => {
     if (month <= 6) return 31;
     if (month <= 11) return 30;
     return isPersianLeapYear(year) ? 30 : 29;
 };
 
-// Convert Gregorian to Persian
+
 const gregorianToPersian = (gYear: number, gMonth: number, gDay: number): [number, number, number] => {
     const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
     let jy = gYear <= 1600 ? 0 : 979;
@@ -103,7 +103,7 @@ const gregorianToPersian = (gYear: number, gMonth: number, gDay: number): [numbe
     return [jy, jp, jd];
 };
 
-// Convert Persian to Gregorian
+
 const persianToGregorian = (jYear: number, jMonth: number, jDay: number): [number, number, number] => {
     let jy = jYear - 979;
     let jp = 0;
@@ -142,11 +142,11 @@ const persianToGregorian = (jYear: number, jMonth: number, jDay: number): [numbe
     return [gy, gm, gd];
 };
 
-// Get first day of week for Persian month
+
 const getFirstDayOfPersianMonth = (year: number, month: number): number => {
     const [gy, gm, gd] = persianToGregorian(year, month, 1);
     const date = new Date(gy, gm - 1, gd);
-    return (date.getDay() + 1) % 7; // Convert to Persian week (Saturday = 0)
+    return (date.getDay() + 1) % 7;
 };
 
 export default function PersianCalendar({ value, onChange, placeholder, label, required, disabled, className, maxDate, error }: PersianCalendarProps) {
@@ -187,7 +187,7 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as Node;
-            // If click outside entire calendar, close everything
+
             if (calendarRef.current && !calendarRef.current.contains(target)) {
                 setIsOpen(false);
                 setShowMonthOverlay(false);
@@ -195,7 +195,7 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                 return;
             }
 
-            // Click is inside calendar: if click is outside month overlay and not on month toggle, close month overlay
+
             if (showMonthOverlay) {
                 const insideMonthOverlay = monthOverlayRef.current && monthOverlayRef.current.contains(target);
                 const onMonthToggle = monthToggleRef.current && monthToggleRef.current.contains(target);
@@ -204,7 +204,7 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                 }
             }
 
-            // Similarly for year overlay
+
             if (showYearOverlay) {
                 const insideYearOverlay = yearOverlayRef.current && yearOverlayRef.current.contains(target);
                 const onYearToggle = yearToggleRef.current && yearToggleRef.current.contains(target);
@@ -220,7 +220,7 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
         }
     }, [isOpen, showMonthOverlay, showYearOverlay]);
 
-    // Year range and scrolling: limit years and scroll to highlighted (selected or current) year
+
     const MIN_YEAR = 1300;
     const MAX_YEAR = 1450;
 

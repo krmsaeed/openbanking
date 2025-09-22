@@ -58,14 +58,14 @@ export const birthDateSchema = z
     .string("تاریخ تولد اجباری است")
     .min(1, "تاریخ تولد را انتخاب کنید")
     .refine((val) => {
-        // expect val like YYYY/MM/DD possibly with Persian digits
+        
         const persianToEnglish = (s: string) => {
             const persianNumbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
             let out = s;
             for (let i = 0; i < persianNumbers.length; i++) {
                 out = out.replace(new RegExp(persianNumbers[i], 'g'), String(i));
             }
-            // also replace Arabic-Indic digits
+            
             const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
             for (let i = 0; i < arabicNumbers.length; i++) {
                 out = out.replace(new RegExp(arabicNumbers[i], 'g'), String(i));
@@ -81,17 +81,17 @@ export const birthDateSchema = z
         const jd = parseInt(parts[2], 10);
         if (![jy, jm, jd].every(n => Number.isFinite(n))) return false;
 
-        // convert Persian (Jalali) to Gregorian — simple approximation for future-date check
+        
         const persianToGregorian = (jYear: number, jMonth: number, jDay: number): [number, number, number] => {
             const today = new Date();
-            const approxYear = today.getFullYear() - (1400 - jYear); // rough approximation
+            const approxYear = today.getFullYear() - (1400 - jYear); 
             return [approxYear, jMonth, jDay];
         };
 
         try {
             const [gy] = persianToGregorian(jy, jm, jd);
             const today = new Date();
-            // crude check: if converted year > current year +1 reject; else allow
+            
             if (gy > today.getFullYear() + 1) return false;
             return true;
         } catch {
@@ -104,11 +104,11 @@ export const postalCodeSchema = z
     .length(10, "کد پستی باید ۱۰ رقم باشد")
     .regex(/^\d+$/, "کد پستی باید فقط شامل عدد باشد")
     .refine((val) => {
-        // reject repeated digits e.g., 0000000000 or 1111111111
+        
         if (/^(\d)\1{9}$/.test(val)) return false;
-        // reject some known invalid patterns (starting with 0000)
+        
         if (/^0000/.test(val)) return false;
-        // optionally additional heuristic: area code (first 5 digits) can't be all zeros
+        
         const area = val.slice(0, 5);
         if (/^0+$/.test(area)) return false;
         return true;

@@ -56,8 +56,8 @@ export function PhotoUpload({
                 <div
                     onClick={() => fileInputRef.current?.click()}
                     className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${error
-                            ? 'border-red-300 bg-red-50 hover:border-red-400'
-                            : 'border-gray-300 bg-gray-50 hover:border-gray-400'
+                        ? 'border-red-300 bg-red-50 hover:border-red-400'
+                        : 'border-gray-300 bg-gray-50 hover:border-gray-400'
                         }`}
                 >
                     <PhotoIcon className="h-12 w-12 mx-auto text-gray-400 mb-4" />

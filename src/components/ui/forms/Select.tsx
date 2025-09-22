@@ -45,7 +45,7 @@ export interface SelectProps
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
     ({ className, variant, size, children, options = [], autocomplete, value = null, onValueChange, placeholder = '', allowClear = false, onSearch, debounceMs: propDebounceMs, onChange, ...props }, ref) => {
-        // Always initialize hook state (hooks must be top-level)
+
         const [isOpen, setIsOpen] = useState(false);
         const [query, setQuery] = useState('');
         const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -57,16 +57,16 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         const reqIdRef = useRef(0);
         const [localSelectedLabel, setLocalSelectedLabel] = useState<React.ReactNode | null>(null);
 
-        // derive selected label will be computed after currentOptions so it includes async results
 
-        // debounce query for filtering (useful for large lists or async search)
+
+
         const actualDebounceMs = typeof propDebounceMs === 'number' ? propDebounceMs : 300;
         useEffect(() => {
             const t = setTimeout(() => setDebouncedQuery(query), actualDebounceMs);
             return () => clearTimeout(t);
         }, [query, actualDebounceMs]);
 
-        // when debouncedQuery changes, optionally call onSearch and manage asyncOptions
+
         useEffect(() => {
             let mounted = true;
             if (typeof onSearch === 'function') {
@@ -74,7 +74,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
                 setLoading(true);
                 Promise.resolve(onSearch(debouncedQuery)).then((res) => {
                     if (!mounted) return;
-                    if (id !== reqIdRef.current) return; // stale
+                    if (id !== reqIdRef.current) return;
                     if (Array.isArray(res)) {
                         setAsyncOptions(res);
                     }
@@ -83,13 +83,13 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
                     if (id === reqIdRef.current) setLoading(false);
                 });
             } else {
-                // clear asyncOptions when not using remote search
+
                 setAsyncOptions(null);
             }
             return () => { mounted = false; };
         }, [debouncedQuery, onSearch]);
 
-        // filtered options based on debounced query and asyncOptions when available
+
         const currentOptions = asyncOptions ?? options;
         const selectedFromCurrent = useMemo(() => currentOptions.find((o) => o.value === value)?.label ?? '', [currentOptions, value]);
         const effectiveLabel = localSelectedLabel ?? selectedFromCurrent;
@@ -114,7 +114,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         }, []);
 
         useEffect(() => {
-            // when options change or filtered changes, keep highlight in range
+
             if (!isOpen) return;
             setHighlight((h) => Math.max(-1, Math.min(h, filtered.length - 1)));
         }, [filtered, isOpen]);
@@ -124,13 +124,13 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
 
         const selectValue = (val: string) => {
             onValueChange?.(val);
-            // notify native onChange (useful when Controller spreads field)
+
             try {
                 if (typeof onChange === 'function') (onChange as (...args: unknown[]) => void)(val);
             } catch {
-                // ignore
+
             }
-            // try to show the selected label immediately (in case parent is slow to update value)
+
             const sel = currentOptions.find((o) => o.value === val);
             if (sel) setLocalSelectedLabel(sel.label);
             setQuery('');
@@ -138,7 +138,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             close();
         };
 
-        // clear localSelectedLabel when controlled value changes (parent took over)
+
         useEffect(() => {
             setLocalSelectedLabel(null);
         }, [value]);
@@ -172,7 +172,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             }
         };
 
-        // If autocomplete mode is not requested, render native select (preserve existing behavior)
+
         if (!autocomplete) {
             return (
                 <select

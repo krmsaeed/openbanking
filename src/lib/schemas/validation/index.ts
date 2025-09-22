@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Step 1: Personal Info Schema
+
 export const personalInfoSchema = z.object({
     firstName: z.string()
         .min(2, "نام باید حداقل ۲ حرف باشد")
@@ -20,7 +20,7 @@ export const personalInfoSchema = z.object({
         .or(z.literal(""))
 });
 
-// Step 2: Birth Date & Postal Code Schema
+
 export const birthDatePostalSchema = z.object({
     birthDate: z.string()
         .min(1, "تاریخ تولد الزامی است")
@@ -30,7 +30,7 @@ export const birthDatePostalSchema = z.object({
         .regex(/^\d+$/, "کد پستی باید فقط شامل اعداد باشد")
 });
 
-// Step 5: Password Schema
+
 export const passwordSchema = z.object({
     password: z.string()
         .min(8, "رمز عبور باید حداقل ۸ کاراکتر باشد")
@@ -44,7 +44,7 @@ export const passwordSchema = z.object({
     path: ["confirmPassword"]
 });
 
-// Step 6 & 7: OTP Schema
+
 export const otpSchema = z.object({
     otp: z.string()
         .length(5, "کد تایید باید ۵ رقم باشد")

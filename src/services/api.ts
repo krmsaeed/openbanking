@@ -22,16 +22,16 @@ class APIClient {
     const inferredSuccess = resp.status >= 200 && resp.status < 300;
 
     if (hasSuccess) {
-      // backend already provided { success, ... }
+      
       return payload as ApiResponse<T>;
     }
 
     if (payload && (typeof payload === 'object' || Array.isArray(payload))) {
-      // pass through object/array members but ensure success exists
+      
       return { success: inferredSuccess, ...(payload as object) } as ApiResponse<T>;
     }
 
-    // primitive payload: place under `data`
+    
     return { success: inferredSuccess, data: payload } as ApiResponse<T>;
   }
 

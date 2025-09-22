@@ -35,8 +35,8 @@ export interface VerificationStatus {
 class VerificationService {
     async submitVerification(data: VerificationData): Promise<ApiResponse<VerificationResponse>> {
         const formData = new FormData();
-        // Ensure we generate a numeric timestamp. This service is a client service, so
-        // `Date.now()` is safe to call here. Avoid incorrect `window !== 'undefined'` checks.
+        
+        
         const timestamp = Date.now();
         if (typeof data.signature === 'string') {
             formData.append('signature', data.signature);

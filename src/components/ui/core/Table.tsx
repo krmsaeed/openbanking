@@ -111,9 +111,9 @@ const getTableCellClasses = (
     const baseClasses = "py-3 px-4 transition-colors duration-200";
 
     const alignClasses = {
-        left: "text-right", // RTL support
+        left: "text-right", 
         center: "text-center",
-        right: "text-left", // RTL support
+        right: "text-left", 
     };
 
     const variantClasses = {
@@ -231,7 +231,7 @@ export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
 
 export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
     ({
-        align = 'right', // RTL default
+        align = 'right', 
         variant = 'default',
         weight = 'normal',
         as = 'td',
@@ -316,7 +316,7 @@ export const TableFooter = forwardRef<HTMLTableSectionElement, TableFooterProps>
     }
 );
 
-// Set display names
+
 Table.displayName = 'Table';
 TableHeader.displayName = 'TableHeader';
 TableBody.displayName = 'TableBody';

@@ -20,7 +20,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
     const streamRef = useRef<MediaStream | null>(null);
     const [capturedUrl, setCapturedUrl] = useState<string | null>(null);
     const [capturedFile, setCapturedFile] = useState<File | null>(null);
-    // branch is stored in react-hook-form; read on confirm
+
 
     const defaultBranches = branches.length
         ? branches.map((b) => ({ label: b, value: b }))
@@ -37,7 +37,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
         formState: { errors }
     } = useForm();
     useEffect(() => {
-        // start/stop helpers so we can restart camera on demand (e.g., Reset/Retake)
+
         let mounted = true;
 
         const startStream = async () => {
@@ -60,7 +60,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
                 try {
                     streamRef.current.getTracks().forEach((t) => t.stop());
                 } catch {
-                    // ignore
+
                 }
                 streamRef.current = null;
             }
@@ -74,7 +74,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
             stopStream();
             if (capturedUrl) URL.revokeObjectURL(capturedUrl);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
     }, []);
 
     const handleCapture = () => {
@@ -114,7 +114,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
         if (capturedUrl) URL.revokeObjectURL(capturedUrl);
         setCapturedFile(f);
         setCapturedUrl(url);
-        // stop camera stream since user provided a file
+
         try {
             if (streamRef.current) {
                 streamRef.current.getTracks().forEach((t) => t.stop());
@@ -122,7 +122,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
             }
             if (videoRef.current) videoRef.current.srcObject = null;
         } catch {
-            // ignore
+
         }
     };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { TrashIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Button } from "../core/Button";
 import { Card, CardContent } from "../core/Card";
@@ -101,7 +101,7 @@ export function SignatureCapture({ onComplete, onCancel, onStepChange }: Signatu
                 onComplete(file);
                 try {
                     if (typeof onStepChange === 'function') {
-                        // advance to next step (parent decides numbering)
+
                         onStepChange(6);
                     }
                 } catch (e) {

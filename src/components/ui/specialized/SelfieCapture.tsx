@@ -29,7 +29,7 @@ export function SelfieCapture({
     const [error, setError] = useState<string | null>(null);
     const [cameraStarted, setCameraStarted] = useState(false);
 
-    // شروع دوربین
+    
     const startCamera = async () => {
         setLoading(true);
         setError(null);
@@ -56,7 +56,7 @@ export function SelfieCapture({
         }
     };
 
-    // متوقف کردن دوربین
+    
     const stopCamera = useCallback(() => {
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
@@ -65,7 +65,7 @@ export function SelfieCapture({
         setCameraStarted(false);
     }, [stream]);
 
-    // گرفتن عکس از ویدیو
+    
     const capturePhoto = () => {
         const video = videoRef.current;
         const canvas = canvasRef.current;
@@ -75,32 +75,32 @@ export function SelfieCapture({
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        // تنظیم اندازه canvas بر اساس ویدیو
+        
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
 
-        // کپی کردن فریم از ویدیو به canvas
+        
         ctx.drawImage(video, 0, 0);
 
-        // تبدیل به base64
+        
         const dataURL = canvas.toDataURL('image/jpeg', 0.8);
         setSelfieImage(dataURL);
 
-        // متوقف کردن دوربین
+        
         stopCamera();
     };
 
-    // عکس دوباره بگیر
+    
     const retakePhoto = () => {
         setSelfieImage(null);
         startCamera();
     };
 
-    // تأیید و ارسال عکس
+    
     const confirmPhoto = () => {
         if (!selfieImage) return;
 
-        // تبدیل base64 به File
+        
         fetch(selfieImage)
             .then(res => res.blob())
             .then(blob => {
@@ -112,7 +112,7 @@ export function SelfieCapture({
             });
     };
 
-    // پاک کردن منابع هنگام unmount
+    
     useEffect(() => {
         return () => {
             stopCamera();
