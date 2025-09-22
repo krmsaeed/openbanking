@@ -33,14 +33,14 @@ export const birthDatePostalSchema = z.object({
 
 export const passwordSchema = z.object({
     password: z.string()
-        .min(8, "رمز عبور باید حداقل ۸ کاراکتر باشد")
+        .min(8, "رمز عبور باید حداقل 8 کاراکتر باشد")
         .regex(/[A-Z]/, "رمز عبور باید شامل حداقل یک حرف بزرگ باشد")
         .regex(/[a-z]/, "رمز عبور باید شامل حداقل یک حرف کوچک باشد")
         .regex(/[0-9]/, "رمز عبور باید شامل حداقل یک عدد باشد")
         .regex(/[^A-Za-z0-9]/, "رمز عبور باید شامل حداقل یک کاراکتر خاص باشد"),
     confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
-    message: "رمز عبور و تکرار آن باید یکسان باشند",
+    message: "رمز عبور و تایید آن باید یکسان باشند",
     path: ["confirmPassword"]
 });
 

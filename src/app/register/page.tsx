@@ -42,10 +42,10 @@ const extendedRegistrationSchema = registrationSchema.extend({
     const cpw = data.confirmPassword;
     if ((pw !== undefined && pw !== '') || (cpw !== undefined && cpw !== '')) {
         if (!pw || pw.length < 8) {
-            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['password'], message: 'طول رمز باید حداقل 8 کاراکتر باشد' });
+            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['password'], message: 'رمز عبور باید حداقل 8 کاراکتر باشد' });
         }
         if (pw !== cpw) {
-            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['confirmPassword'], message: 'رمز و تاییدیه مطابقت ندارند' });
+            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['confirmPassword'], message: 'رمز عبور و تایید آن باید یکسان باشند' });
         }
     }
 });
@@ -66,9 +66,10 @@ export default function Register() {
     const [step2Data, setStep2Data] = useState<{ birthDate: string; postalCode: string } | null>(null);
     const [showNationalCardTemplate, setShowNationalCardTemplate] = useState(false);
     const [showOtp1, setShowOtp1] = useState(false);
-    const [videoSample, setVideoSample] = useState<File | undefined>(undefined);
-    const [signatureSample, setSignatureSample] = useState<File | undefined>(undefined);
-    const [selfieSample, setSelfieSample] = useState<File | undefined>(undefined);
+    // Keep setters (used by handlers) but omit the state variables to avoid unused-var lint
+    const [, setVideoSample] = useState<File | undefined>(undefined);
+    const [, setSignatureSample] = useState<File | undefined>(undefined);
+    const [, setSelfieSample] = useState<File | undefined>(undefined);
     const [passwordSet, setPasswordSet] = useState(false);
 
     const {
@@ -77,8 +78,7 @@ export default function Register() {
         formState: { errors: registerErrors },
         setValue,
         getValues,
-        watch,
-        trigger,
+
         setError,
     } = useForm<ExtendedRegistrationForm>({
         resolver: zodResolver(extendedRegistrationSchema),
@@ -260,11 +260,10 @@ export default function Register() {
                                     {step === 6 && (
                                         <>
                                             <PasswordStep
-                                                password={watch('password') || ''}
-                                                confirmPassword={watch('confirmPassword') || ''}
-                                                onPasswordChange={(v) => setValue('password', v)}
-                                                onConfirmChange={(v) => setValue('confirmPassword', v)}
-                                                trigger={trigger as unknown as (names?: string | string[]) => Promise<boolean>}
+                                                control={control}
+                                                // cast to the generic-compatible function type expected by PasswordStep
+                                                handleSubmit={handleRegisterSubmit as unknown as import('react-hook-form').UseFormHandleSubmit<import('react-hook-form').FieldValues>}
+                                                getValues={getValues as unknown as import('react-hook-form').UseFormGetValues<import('react-hook-form').FieldValues>}
                                                 setError={setErrorAny}
                                                 resetPasswords={() => { setValue('password', ''); setValue('confirmPassword', ''); }}
                                                 passwordSet={passwordSet}
