@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
 import { ToastProvider } from "@/components/ui/feedback/Toast";
+import ThemeProvider from "@/lib/ThemeProvider";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export const metadata: Metadata = {
   title: "پرداخت نوین | هوشمندانه پرداخت کنید...",
@@ -40,14 +42,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fa-IR" className="dark" suppressHydrationWarning>
+    <html lang="fa-IR" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icons/favicon.ico"></link>
       </head>
       <body className={` ${iranYekan.className} flex flex-col items-center w-full`} >
-        <ToastProvider>
-          {children}
-        </ToastProvider>
+        <ThemeProvider>
+          <ToastProvider>
+            <ThemeToggle />
+            {children}
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

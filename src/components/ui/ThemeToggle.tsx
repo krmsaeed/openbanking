@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/core/Button";
 export const ThemeToggle: React.FC = React.memo(() => {
     const [theme, setTheme] = useState<"light" | "dark">(() => {
         if (typeof window === "undefined") return "light";
+        const stored = localStorage.getItem('theme');
+        if (stored === 'dark' || stored === 'light') return stored as "light" | "dark";
         return document.documentElement.classList.contains("dark") ? "dark" : "light";
     });
 
@@ -14,8 +16,12 @@ export const ThemeToggle: React.FC = React.memo(() => {
         if (typeof window === "undefined") return;
         if (theme === "dark") {
             document.documentElement.classList.add("dark");
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
         } else {
             document.documentElement.classList.remove("dark");
+            document.documentElement.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
         }
     }, [theme]);
 
