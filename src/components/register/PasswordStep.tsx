@@ -31,7 +31,6 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
         setPasswordSet(true);
     }
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirm, setShowConfirm] = useState(false);
 
     return (
         <>
