@@ -29,7 +29,6 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
     const [faceDetected, setFaceDetected] = useState(false);
     const [faceTooFar, setFaceTooFar] = useState(false);
     const [eyesCentered, setEyesCentered] = useState(true);
-    const [eyeOffsetPercent, setEyeOffsetPercent] = useState(0);
     const [closenessPercent, setClosenessPercent] = useState(0);
     const [lastBoxSkin, setLastBoxSkin] = useState<number | null>(null);
     const [targetSkin, setTargetSkin] = useState<number | null>(null);
@@ -392,13 +391,10 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                     const avgX = eyeFeatureXSum / eyeFeatureCount;
                     const centerX = faceRadius;
                     const offset = (avgX - centerX) / faceRadius;
-                    const offsetPercent = Math.round(Math.abs(offset) * 100);
                     const centered = Math.abs(offset) <= 0.18;
                     setEyesCentered(centered);
-                    setEyeOffsetPercent(offsetPercent);
                 } else {
                     setEyesCentered(false);
-                    setEyeOffsetPercent(100);
                 }
 
                 gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -608,9 +604,6 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                 darkLowerRatio >= MIN_DARK_HALF_RATIO &&
                 (currentClosenessPercent ?? 0) >= 75
             );
-
-
-
             setFaceDetected(detected);
             setFaceTooFar(!centerBoxClose);
             setObstructionRatio(obstructionRatio);
@@ -620,13 +613,10 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                 const avgX = eyeFeatureXSum / eyeFeatureCount;
                 const centerX = faceRadius;
                 const offset = (avgX - centerX) / faceRadius;
-                const offsetPercent = Math.round(Math.abs(offset) * 100);
                 const centered = Math.abs(offset) <= 0.18;
                 setEyesCentered(centered);
-                setEyeOffsetPercent(offsetPercent);
             } else {
                 setEyesCentered(false);
-                setEyeOffsetPercent(100);
             }
         } catch (error) {
             console.error('Face detection error:', error);
