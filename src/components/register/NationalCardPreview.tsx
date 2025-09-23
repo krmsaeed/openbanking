@@ -7,7 +7,7 @@ interface Props {
     birthDate?: string;
     show: boolean;
     onConfirm: () => void;
-    onBack: () => void;
+    onBack?: () => void;
 }
 
 export default function NationalCardPreview({ nationalCode = '', birthDate = '', show, onConfirm, onBack }: Props) {

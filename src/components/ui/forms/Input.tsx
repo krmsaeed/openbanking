@@ -63,8 +63,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         return (
             <Box className="space-y-2">
                 {label && (
-                    <label className="text-sm font-medium text-gray-700 mb-2">
-                        {label}
+                    <label className="text-sm text-gray-700 flex items-center">
+                        <span>{label}</span>
                         {required && <span className="text-red-500 mr-1">*</span>}
                     </label>
                 )}

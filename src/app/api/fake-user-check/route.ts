@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
         }
 
         return NextResponse.json({ success: false, error: 'missing nationalId or mobile' }, { status: 400 });
-    } catch (_err) {
+    } catch {
         return NextResponse.json({ success: false, error: 'invalid JSON' }, { status: 400 });
     }
 }

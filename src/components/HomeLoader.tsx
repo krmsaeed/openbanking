@@ -19,23 +19,19 @@ function HomeLoader({ delay = 2000 }: { delay?: number }) {
                 return;
             }
             try {
-                
-                await axios.post('/api/bpms/send-message', { code: nationalId })
+
+                await axios.post('/api/bpms/virtual-open-deposit-get-customer-info', { code: nationalId })
                     .then(response => {
                         console.log('BPMS response:', response);
-                        if (response.data && response.data.success) {
-                            
-                        } else {
-                            
-                        }
+
                     })
                     .catch(error => {
                         console.error('Error sending message:', error);
-                        
+
                     });
             } catch (err) {
                 console.error('HomeLoader check error', err);
-                
+
             }
         }
 

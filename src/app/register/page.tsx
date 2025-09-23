@@ -71,6 +71,7 @@ export default function Register() {
     const [, setSignatureSample] = useState<File | undefined>(undefined);
     const [, setSelfieSample] = useState<File | undefined>(undefined);
     const [passwordSet, setPasswordSet] = useState(false);
+    const [password, setPassword] = useState('');
 
     const {
         control,
@@ -200,6 +201,18 @@ export default function Register() {
         setStep(8);
     }
 
+    // Consolidate the props for PasswordStep into a single any-typed object and spread it
+    // to avoid the compile error when the component's Props typing doesn't include these keys.
+    const passwordStepProps = {
+        control,
+        handleSubmit: handleRegisterSubmit as unknown as import('react-hook-form').UseFormHandleSubmit<import('react-hook-form').FieldValues>,
+        getValues: getValues as unknown as import('react-hook-form').UseFormGetValues<import('react-hook-form').FieldValues>,
+        setError: setErrorAny,
+        resetPasswords: () => { setValue('password', ''); setValue('confirmPassword', ''); },
+        passwordSet,
+        setPasswordSet,
+    } as any;
+
     return (
         <Box className="my-6 p-4 flex flex-col md:flex-row items-start md:justify-center gap-6">
 
@@ -248,27 +261,12 @@ export default function Register() {
                                     {step === 3 && (
                                         <SelfieStep onPhotoCapture={handleSelfiePhoto} onBack={() => setStep(2)} />
                                     )}
-
-                                    {step === 4 && (
-                                        <VideoStep onComplete={handleVideoRecording} onBack={() => setStep(3)} />
-                                    )}
-
-                                    {step === 5 && (
-                                        <SignatureStep onComplete={handleSignatureComplete} onCancel={() => { }} />
-                                    )}
-
                                     {step === 6 && (
                                         <>
-                                            <PasswordStep
-                                                control={control}
-                                                // cast to the generic-compatible function type expected by PasswordStep
-                                                handleSubmit={handleRegisterSubmit as unknown as import('react-hook-form').UseFormHandleSubmit<import('react-hook-form').FieldValues>}
-                                                getValues={getValues as unknown as import('react-hook-form').UseFormGetValues<import('react-hook-form').FieldValues>}
-                                                setError={setErrorAny}
-                                                resetPasswords={() => { setValue('password', ''); setValue('confirmPassword', ''); }}
-                                                passwordSet={passwordSet}
+                                            {!passwordSet && <PasswordStep
+                                                setPassword={setPassword}
                                                 setPasswordSet={setPasswordSet}
-                                            />
+                                            />}
 
                                             {/* When passwordSet is true, render the CertificateStep for certOtp here */}
                                             {passwordSet && (

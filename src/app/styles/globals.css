@@ -1,5 +1,5 @@
-@import "./styles/palette.css";
-@import "./styles/utilities.css";
+@import "./palette.css";
+@import "./utilities.css";
 
 @import "tailwindcss";
 
@@ -68,7 +68,7 @@ select {
 }
 
 :root {
-  --_s-50: 50; 
+  --_s-50: 50;
 }
 
 .bg-primary {
@@ -612,24 +612,74 @@ input[data-form-type="other"]::-webkit-contacts-auto-fill-button {
   padding-right: 1rem;
   max-width: 100%;
 }
-@media (min-width: 640px) { .container { max-width: 640px; } }
-@media (min-width: 768px) { .container { max-width: 768px; } }
-@media (min-width: 1024px) { .container { max-width: 1024px; padding-left: 2rem; padding-right: 2rem; } }
-@media (min-width: 1280px) { .container { max-width: 1280px; } }
-@media (min-width: 1536px) { .container { max-width: 1536px; padding-left: 4rem; padding-right: 4rem; } }
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+  }
+}
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
+}
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1536px;
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+}
 
 /* Primary color utilities (پشتیبانی از کلاس‌های استفاده‌شده در PersianCalendar.tsx) */
-.bg-primary-500 { background-color: var(--primary-500) !important; }
-.border-primary-300 { border-color: var(--primary-300) !important; }
-.text-primary-500 { color: var(--primary-500) !important; }
+.bg-primary-500 {
+  background-color: var(--primary-500) !important;
+}
+.border-primary-300 {
+  border-color: var(--primary-300) !important;
+}
+.text-primary-500 {
+  color: var(--primary-500) !important;
+}
 
 /* اگر همچنان نیاز به hover/focus با رنگ‌های primary دارید */
-.hover\:bg-primary-500:hover { background-color: var(--primary-500) !important; }
-.focus\:border-primary-300:focus { border-color: var(--primary-300) !important; }
+.hover\:bg-primary-500:hover {
+  background-color: var(--primary-500) !important;
+}
+.focus\:border-primary-300:focus {
+  border-color: var(--primary-300) !important;
+}
 
 /* small utility for centering month/year pickers if needed */
-.pc-picker { position: absolute; left: 1rem; right: 1rem; top: 4rem; background: white; border: 1px solid rgba(0,0,0,0.06); border-radius: 0.5rem; box-shadow: 0 6px 18px rgba(15,23,42,0.08); z-index: 50; }
+.pc-picker {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  top: 4rem;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 0.5rem;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  z-index: 50;
+}
 
 /* scrollbar for pickers */
-.pc-picker::-webkit-scrollbar { width: 8px; height: 8px; }
-.pc-picker::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 9999px; }
+.pc-picker::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.pc-picker::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 9999px;
+}

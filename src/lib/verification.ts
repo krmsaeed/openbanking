@@ -65,7 +65,7 @@ export const submitVerificationData = async (data: VerificationData): Promise<{
             };
         }
 
-    } catch (_) {
+    } catch {
         return {
             success: false,
             message: 'خطا در ارتباط با سرور'

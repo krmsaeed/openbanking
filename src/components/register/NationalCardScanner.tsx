@@ -75,7 +75,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
             if (capturedUrl) URL.revokeObjectURL(capturedUrl);
         };
 
-    }, []);
+    }, [capturedUrl]);
 
     const handleCapture = () => {
         if (!videoRef.current) return;
