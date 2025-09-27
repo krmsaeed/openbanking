@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import { ToastProvider } from "@/components/ui/feedback/Toast";
 import ThemeProvider from "@/lib/ThemeProvider";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 
 export const metadata: Metadata = {
   title: "پرداخت نوین | هوشمندانه پرداخت کنید...",
@@ -50,6 +51,7 @@ export default function RootLayout({
         <ThemeProvider>
           <ToastProvider>
             <ThemeToggle />
+            <ServiceWorkerRegistrar />
             {children}
           </ToastProvider>
         </ThemeProvider>
