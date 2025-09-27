@@ -1,5 +1,7 @@
 /// <reference types="node" />
+import { Server } from "http";
 import type { NextConfig } from "next";
+import { basename } from "path";
 
 const nextConfig: NextConfig = {
     images: {
@@ -24,9 +26,7 @@ const nextConfig: NextConfig = {
             },
         },
     },
-    // Enable gzip compression
     compress: true,
-    // Optimize bundle splitting
     webpack: (config, { dev, isServer }) => {
         if (!dev && !isServer) {
             config.optimization.splitChunks = {
@@ -63,15 +63,17 @@ const nextConfig: NextConfig = {
     },
     env: {
         BASE_URL: "http://192.168.91.112:9999"
+    },
+
+    async rewrites() {
+        return [
+            {
+                source: '/bpms/:path*',
+                destination: 'http://192.168.91.112:9999/bpms/:path*'
+            }
+        ]
     }
-    // serverRuntimeConfig: {
-    //     server:{
-    //         "/api": {
-    //             "basePath": "http://192.168.91.112:9999"
-    //         }
-    //     },
-    //     port: 3000,
-    // },
+
 };
 
 

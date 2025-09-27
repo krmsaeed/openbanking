@@ -1,7 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
-import { Controller } from 'react-hook-form';
-import { useForm } from "react-hook-form";
+import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
+import { Controller, useForm, type Control, type UseFormHandleSubmit, type UseFormGetValues, type FieldValues } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { LoginFormData } from "@/lib/schemas/common";
 import { z } from "zod";
@@ -202,17 +201,26 @@ export default function Register() {
     }
 
     // Consolidate the props for PasswordStep into a single any-typed object and spread it
-    // to avoid the compile error when the component's Props typing doesn't include these keys.
-    const passwordStepProps = {
+    // Consolidate the props for PasswordStep into a properly typed object to avoid `any`.
+    type PasswordStepProps = {
+        control: Control<ExtendedRegistrationForm>;
+        handleSubmit: UseFormHandleSubmit<FieldValues>;
+        getValues: UseFormGetValues<FieldValues>;
+        setError: (name: string, error: { type: string; message?: string }) => void;
+        resetPasswords: () => void;
+        passwordSet: boolean;
+        setPasswordSet: Dispatch<SetStateAction<boolean>>;
+    };
+
+    const passwordStepProps: PasswordStepProps = {
         control,
-        handleSubmit: handleRegisterSubmit as unknown as import('react-hook-form').UseFormHandleSubmit<import('react-hook-form').FieldValues>,
-        getValues: getValues as unknown as import('react-hook-form').UseFormGetValues<import('react-hook-form').FieldValues>,
+        handleSubmit: handleRegisterSubmit as unknown as UseFormHandleSubmit<FieldValues>,
+        getValues: getValues as unknown as UseFormGetValues<FieldValues>,
         setError: setErrorAny,
         resetPasswords: () => { setValue('password', ''); setValue('confirmPassword', ''); },
         passwordSet,
         setPasswordSet,
-    } as any;
-
+    };
     return (
         <Box className="my-6 p-4 flex flex-col md:flex-row items-start md:justify-center gap-6">
 
@@ -260,6 +268,13 @@ export default function Register() {
 
                                     {step === 3 && (
                                         <SelfieStep onPhotoCapture={handleSelfiePhoto} onBack={() => setStep(2)} />
+                                    )}
+                                    {step === 4 && (
+                                        <VideoStep onComplete={handleVideoRecording} onBack={() => setStep(3)} />
+                                    )}
+
+                                    {step === 5 && (
+                                        <SignatureStep onComplete={handleSignatureComplete} onCancel={() => { }} />
                                     )}
                                     {step === 6 && (
                                         <>
