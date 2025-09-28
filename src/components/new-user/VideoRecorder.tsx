@@ -190,14 +190,14 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
 
 
     return (
-        <div className="space-y-6">
+        <Box className="space-y-6">
             <Card padding="lg">
 
                 <CardContent>
-                    <div className="text-center">
+                    <Box className="text-center">
                         {videoFile && videoPreviewUrl ? (
-                            <div className="space-y-4 w-full">
-                                <div className="rounded-lg p-1 bg-gray-200 w-full">
+                            <Box className="space-y-4 w-full">
+                                <Box className="rounded-lg p-1 bg-gray-200 w-full">
                                     <video
                                         src={videoPreviewUrl}
                                         controls
@@ -206,7 +206,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                     >
                                         مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
                                     </video>
-                                </div>
+                                </Box>
                                 <Box className="bg-gray-100  rounded-xl p-4">
                                     <ul className="text-sm text-error-800 space-y-1">
                                         <li> فیلم ضبط شده خود را بررسی کنید</li>
@@ -215,7 +215,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                     </ul>
                                 </Box>
 
-                                <div className="flex justify-center gap-3">
+                                <Box className="flex justify-center gap-3">
                                     <Button
                                         variant="outline"
                                         onClick={handleRetakeVideo}
@@ -226,7 +226,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                     </Button>
 
 
-                                </div>
+                                </Box>
                                 <Box className="w-full flex gap-2 items-center">
                                     <Button
                                         onClick={onCancel}
@@ -248,11 +248,11 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                     </Button>
 
                                 </Box>
-                            </div>
+                            </Box>
                         ) : (
-                            <div className="space-y-4">
-                                <div className="border-2 border-dashed border-blue-300 rounded-lg p-4 bg-gray-100">
-                                    <div className="relative bg-black rounded-lg overflow-hidden mb-4">
+                            <Box className="space-y-4">
+                                <Box className="border-2 border-dashed border-primary-100 rounded-lg p-4 bg-gray-100">
+                                    <Box className="relative bg-black rounded-lg overflow-hidden mb-4">
                                         <video
                                             ref={videoRef}
                                             autoPlay
@@ -263,17 +263,17 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                         <canvas ref={canvasRef} className="hidden" />
 
                                         {isRecording && (
-                                            <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full">
-                                                <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                                            <Box className="absolute top-4 left-4 flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full">
+                                                <Box className="w-2 h-2 rounded-full bg-white animate-pulse" />
                                                 <span className="text-sm font-medium">
                                                     ضبط: {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
                                                 </span>
-                                            </div>
+                                            </Box>
                                         )}
-                                    </div>
+                                    </Box>
 
-                                    <div className="mb-4 p-3 bg-gray-100 border-2 border-blue-300 rounded-lg">
-                                        {!isRecording && <div className="text-right space-y-2">
+                                    <Box className="mb-4 p-3 bg-gray-100 border-2 border-blue-300 rounded-lg">
+                                        {!isRecording && <Box className="text-right space-y-2">
                                             <p className="text-sm font-medium text-gray-800">راهنمای ضبط ویدیو</p>
                                             <ul className="text-sm text-gray-700 list-disc list-inside leading-relaxed">
                                                 <li className="font-bold text-primary-600">
@@ -284,13 +284,13 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                                 <li>  از نور پشت سر پرهیز کنید.</li>
                                                 <li> در محیطی کم‌صدا صحبت کنید .</li>
                                             </ul>
-                                        </div>}
+                                        </Box>}
                                         {isRecording && <p className="text-base text-gray-800 leading-relaxed text-center mt-2">
                                             {currentText}
                                         </p>}
-                                    </div>
+                                    </Box>
 
-                                    <div className="flex justify-center gap-3">
+                                    <Box className="flex justify-center gap-3">
                                         {!isRecording ? (
                                             <Button
                                                 onClick={startVideoRecording}
@@ -308,15 +308,15 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                                 پایان ضبط
                                             </Button>
                                         )}
-                                    </div>
-                                </div>
+                                    </Box>
+                                </Box>
 
 
-                            </div>
+                            </Box>
                         )}
-                    </div>
+                    </Box>
                 </CardContent>
             </Card>
-        </div>
+        </Box>
     );
 };
