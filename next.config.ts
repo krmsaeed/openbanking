@@ -1,7 +1,5 @@
 /// <reference types="node" />
-import { Server } from "http";
 import type { NextConfig } from "next";
-import { basename } from "path";
 
 const nextConfig: NextConfig = {
     // produce a standalone build (server + minimal node_modules) in .next/standalone

@@ -54,7 +54,7 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                         }}
                         render={({ field }) => (
                             <div className="relative">
-                                <Input {...field} type={showPassword ? 'text' : 'password'} required label="رمز عبور" placeholder="رمز عبور را وارد کنید" error={errors.password?.message} />
+                                <Input {...field} type={showPassword ? 'text' : 'password'} required label="رمز عبور" placeholder="رمز عبور را وارد کنید" error={!!errors.password} />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(s => !s)}
@@ -76,7 +76,7 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                         }}
                         render={({ field }) => (
                             <div className="relative">
-                                <Input {...field} type={showPassword ? 'text' : 'password'} required label="تایید رمز عبور" placeholder="تکرار رمز عبور" error={errors.confirmPassword?.message} />
+                                <Input {...field} type={showPassword ? 'text' : 'password'} required label="تایید رمز عبور" placeholder="تکرار رمز عبور" error={!!errors.confirmPassword} />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(s => !s)}

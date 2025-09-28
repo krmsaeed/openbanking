@@ -10,7 +10,7 @@ import {
     DocumentMagnifyingGlassIcon,
     EnvelopeIcon,
 } from "@heroicons/react/24/outline";
-import { Typography } from '../ui';
+import { Typography, Box } from '../ui';
 
 const STEP_META = [
     { title: "اطلاعات شخصی", icon: UserIcon },
@@ -40,8 +40,8 @@ export default function Sidebar({ step = 1, onSelect }: SidebarProps) {
                     return (
                         <li key={item.title} className="relative min-w-[96px] md:min-w-full flex-shrink-0 md:flex-shrink md:flex md:flex-row items-center md:gap-3 py-2 group md:w-auto">
                             {/* Mobile fancy card: icon above label, scrollable */}
-                            <div className="flex flex-col items-center md:flex-row md:items-center w-full">
-                                <div className="relative flex items-center justify-center">
+                            <Box className="flex flex-col items-center md:flex-row md:items-center w-full">
+                                <Box className="relative flex items-center justify-center">
                                     <span className={`
                                         w-12 h-12 md:w-10 md:h-10 flex items-center justify-center rounded-full border-2 transition-all duration-200 shadow-sm relative z-10
                                         ${index < STEP_META.length - 1 ? (step > index + 1 ? 'md:connector md:connector-primary' : 'md:connector md:connector-gray') : ''}
@@ -54,7 +54,7 @@ export default function Sidebar({ step = 1, onSelect }: SidebarProps) {
                                     {index > 0 && (
                                         <span className={`absolute left-[55px] md:left-0 md:rotate-90 md:-top-[10px] top-1/2 transform -translate-y-1/2  w-10 h-0.5 z-0 ${step > index ? 'bg-primary' : 'bg-gray-200'}`} />
                                     )}
-                                </div>
+                                </Box>
 
                                 <Typography
                                     className={`mt-2 md:mt-0 text-xs md:text-sm font-medium transition-colors duration-150 ${current ? 'text-primary' : 'text-gray-400'} ${completed ? 'text-primary-500' : ''} group-hover:text-primary text-center md:text-right px-2`}
@@ -65,7 +65,7 @@ export default function Sidebar({ step = 1, onSelect }: SidebarProps) {
                                 >
                                     {item.title}
                                 </Typography>
-                            </div>
+                            </Box>
                         </li>
                     );
                 })}

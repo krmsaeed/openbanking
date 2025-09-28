@@ -270,7 +270,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                     <FormField
                         label="شماره کارت"
                         required
-                        error={errors.cardNumber?.message}
+                        error={!!errors.cardNumber}
 
                     >
                         <Input
@@ -293,7 +293,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                     <FormField
                         label="CVV2"
                         required
-                        error={errors.cvv2?.message}
+                        error={!!errors.cvv2}
                     >
                         <Box className="relative">
                             {/* Hidden honeypot field to confuse browsers */}
@@ -330,7 +330,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                         <FormField
                             label="ماه انقضا"
                             required
-                            error={errors.expiryMonth?.message}
+                            error={!!errors.expiryMonth}
                         >
                             {/* Hidden honeypot field for month */}
                             <input
@@ -366,7 +366,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                         <FormField
                             label="سال انقضا"
                             required
-                            error={errors.expiryYear?.message}
+                            error={!!errors.expiryYear}
                         >
                             {/* Hidden honeypot field for year */}
                             <input
