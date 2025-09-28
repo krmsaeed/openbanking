@@ -1,95 +1,122 @@
-import { InputHTMLAttributes, forwardRef } from 'react';
-import { cn, convertPersianToEnglish } from '@/lib/utils';
-import { Box } from '../core';
+import mergeClasses from "@/lib/utils";
+import React, { forwardRef, CSSProperties } from "react";
+import { Box } from "../core";
 
-type InputVariant = 'default' | 'error' | 'success';
-type InputSize = 'default' | 'sm' | 'lg';
 
-interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
-    variant?: InputVariant;
-    size?: InputSize;
+export interface CustomInputProps
+    extends React.InputHTMLAttributes<HTMLInputElement> {
+    autoComplete?: string;
+    autoFocus?: boolean;
+    classes?: string;
     label?: string;
-    error?: string;
-    helper?: string;
-    adornment?: React.ReactNode;
+    color?: string;
+    disableUnderline?: boolean;
+    variant?: string;
+    endAdornment?: React.ReactNode;
+    error?: boolean;
+    fullWidth?: boolean;
+    id?: string;
+    inputComponent?: React.ElementType;
+    inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+    inputRef?: React.Ref<HTMLInputElement>;
+    multiline?: boolean;
+    name?: string;
+    onChange?: React.ChangeEventHandler<HTMLInputElement>;
+    placeholder?: string;
     required?: boolean;
+    rows?: number;
+    startAdornment?: React.ReactNode;
+    sx?: CSSProperties;
+    type?: string;
+    value?: string | number;
 }
 
-const getInputClasses = (variant: InputVariant, size: InputSize) => {
-    const baseClasses = "flex w-full rounded-xl shadow-sm bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
+const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(
+    (props, ref) => {
+        const {
+            autoComplete,
+            autoFocus,
+            classes = "",
+            color = "",
+            defaultValue,
+            disabled,
+            endAdornment,
+            error,
+            fullWidth = false,
+            id,
+            inputComponent: InputComponent = "input",
+            inputProps,
+            multiline,
+            name,
+            onChange,
+            placeholder,
+            required,
+            rows,
+            startAdornment,
+            sx,
+            type = "text",
+            value,
+            style,
+            ...rest
+        } = props;
 
-    const variantClasses = {
-        default: "border-gray-300 focus-visible:ring-blue-500",
-        error: "border-red-500 focus-visible:ring-red-500",
-        success: "border-green-500 focus-visible:ring-green-500",
-    };
-
-    const sizeClasses = {
-        default: "h-10",
-        xs: " h-6 text-xs",
-        sm: "h-8 text-xs",
-        md: "h-10 text-sm",
-        lg: "h-12 text-base",
-        xl: "h-16 text-lg",
-    };
-
-    return `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]}`;
-};
-
-const Input = forwardRef<HTMLInputElement, InputProps>(
-    ({ className, variant = 'default', size = 'default', label, error, helper, adornment, required, onChange, ...props }, ref) => {
-        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            const originalValue = e.target.value;
-            const convertedValue = convertPersianToEnglish(originalValue);
-            if (convertedValue !== originalValue) {
-                const newEvent = {
-                    ...e,
-                    target: {
-                        ...e.target,
-                        value: convertedValue
-                    },
-                    currentTarget: {
-                        ...e.currentTarget,
-                        value: convertedValue
-                    }
-                } as React.ChangeEvent<HTMLInputElement>;
-
-                onChange?.(newEvent);
-            } else {
-                onChange?.(e);
-            }
+        // تنظیم padding براساس وجود adornment
+        const inputStyle: CSSProperties = {
+            paddingLeft: startAdornment ? "1rem" : "0.5rem",
+            paddingRight: endAdornment ? "1rem" : "0.5rem",
+            ...style,
         };
 
         return (
-            <Box className="space-y-2">
-                {label && (
-                    <label className="text-sm text-gray-700 flex items-center">
-                        <span>{label}</span>
-                        {required && <span className="text-red-500 mr-1">*</span>}
-                    </label>
+            <Box
+                className={mergeClasses(
+                    "flex items-center",
+                    fullWidth ? "w-full" : "",
+                    classes,
                 )}
-                <Box className="relative mt-2">
-                    <input
-                        className={cn(getInputClasses(variant, size), className, adornment)}
-                        ref={ref}
-                        onChange={handleChange}
-                        {...props}
-                    />
-                    {adornment && (
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center text-gray-400">
-                            {adornment}
-                        </span>
+                style={sx}
+                {...(() => {
+                    const r: Record<string, unknown> = { ...(rest as Record<string, unknown>) };
+                    if ('variant' in r) delete (r as unknown as Record<string, unknown>).variant;
+                    return r as Record<string, unknown>;
+                })()}
+            >
+                <InputComponent
+                    ref={ref as React.Ref<HTMLInputElement>}
+                    autoComplete={autoComplete}
+                    autoFocus={autoFocus}
+                    className={mergeClasses(
+                        "w-full px-8 focus:border-none focus:outline-none dark:bg-dark-900 dark:text-white",
+                        props.className,
+                        error ? "border-secondary focus:border-secondary" : "",
+                        color,
                     )}
-                </Box>
-                {error && (
-                    <p className="text-xs text-red-600">{error}</p>
+                    defaultValue={defaultValue}
+                    disabled={disabled}
+                    id={id}
+                    name={name}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    required={required}
+                    rows={multiline ? rows : undefined}
+                    style={inputStyle}
+                    type={type}
+                    value={value}
+                    {...inputProps}
+                />
+                {startAdornment && (
+                    <Box className="absolute right-1 top-0 flex items-center pl-1">
+                        {startAdornment}
+                    </Box>
                 )}
-                {helper && !error && (
-                    <p className="text-xs text-gray-500">{helper}</p>
+                {endAdornment && (
+                    <Box className="absolute left-[1rem] top-7 pr-2">{endAdornment}</Box>
                 )}
             </Box>
-        )
-    }
-)
-Input.displayName = "Input"
-export { Input }
+        );
+    },
+);
+
+CustomInput.displayName = "CustomInput";
+
+export default CustomInput;

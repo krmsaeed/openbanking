@@ -1,45 +1,79 @@
-import { forwardRef } from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
 
-const textareaVariants = cva(
-    "flex min-h-[80px] w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm transition-colors placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:cursor-not-allowed disabled:opacity-50 resize-vertical",
-    {
-        variants: {
-            variant: {
-                default: "border-gray-300 focus:ring-primary focus:border-primary",
-                error: "border-red-500 focus:ring-red-500 focus:border-red-500",
-                success: "border-green-500 focus:ring-green-500 focus:border-green-500",
-            },
-            size: {
-                sm: "min-h-[60px] px-2 py-1 text-xs",
-                md: "min-h-[80px] px-3 py-2 text-sm",
-                lg: "min-h-[100px] px-4 py-3 text-base",
-            },
-        },
-        defaultVariants: {
-            variant: "default",
-            size: "md",
-        },
-    }
-);
+import React, { ComponentProps } from "react";
+import { Box, Typography } from "../core";
+import mergeClasses from "@/lib/utils";
 
-export interface TextareaProps
-    extends React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-    VariantProps<typeof textareaVariants> { }
 
-const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-    ({ className, variant, size, ...props }, ref) => {
-        return (
-            <textarea
-                className={cn(textareaVariants({ variant, size, className }))}
-                ref={ref}
+interface CustomTextareaProps extends ComponentProps<"textarea"> {
+    inputComponent?: React.ElementType;
+    inputProps?: React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+    name?: string;
+    onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
+    placeholder?: string;
+    className?: string;
+    label?: string;
+    required?: boolean;
+    error?: string;
+    startDecorator?: React.ReactNode;
+    endDecorator?: React.ReactNode;
+    sx?: React.CSSProperties;
+    value?: string | number;
+}
+
+const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
+    const {
+        inputComponent: InputComponent = "textarea",
+        name,
+        onChange,
+        placeholder,
+        label,
+        required,
+        startDecorator,
+        endDecorator,
+        className,
+        error,
+        sx,
+        value,
+    } = props;
+    return (
+        <Box className={mergeClasses("relative w-full", className)} style={sx}>
+            {startDecorator && (
+                <Box className="absolute left-0">{startDecorator}</Box>
+            )}
+            <Typography
+                variant="span"
+                className="mb-1 block text-right text-[0.9rem] font-medium text-gray-700 dark:text-gray-lightest"
+            >
+                {label}
+                {required && <span className="mr-1 text-secondary">*</span>}
+            </Typography>
+            <InputComponent
                 {...props}
+                name={name}
+                onChange={onChange}
+                placeholder={placeholder}
+                required={required}
+                rows={5}
+                className={mergeClasses(
+                    `block w-full border-b-2 border-gray-lightest bg-white px-4 py-3 focus:border-primary focus:outline-none  dark:border-gray-900 dark:bg-dark sm:text-sm`,
+                    className && className,
+                )}
+                style={{
+                    paddingLeft: startDecorator ? "2rem" : "0.5rem",
+                    paddingRight: endDecorator ? "2rem" : "0.5rem",
+                    resize: "vertical",
+                    ...sx,
+                }}
+                value={value}
             />
-        );
-    }
-);
+            {error && (
+                <Typography variant="span" className=" block text-sm text-secondary">
+                    {error}
+                </Typography>
+            )}
+            {endDecorator && <Box className="absolute right-0">{endDecorator}</Box>}
+        </Box>
+    );
+};
 
-Textarea.displayName = "Textarea";
-
-export { Textarea, textareaVariants };
+export default CustomTextarea;
