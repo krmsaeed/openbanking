@@ -8,11 +8,11 @@
             "name": "Next.js: debug on port 3000",
             "type": "node-terminal",
             "request": "launch",
-            "command": "npm run dev",
+            "command": "yarn dev",
             "env": {
                 "PORT": "3000"
             },
-            "preLaunchTask": "Kill Port 3000"
+            "preLaunchTask": "kill -9 $(fuser -k -n tcp 3000) || true",
         },
         // {
         //     "name": "Next.js: debug frontend",

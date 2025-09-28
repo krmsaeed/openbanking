@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXUS_USER_New: ${NEXUS_USER_New:-}
+        NEXUS_PASS_New: ${NEXUS_PASS_New:-}
+    image: en-bank-pwa:0.0.1
+    ports:
+      - "3000:80" # map host 3000 to container port 80 (Dockerfile exposes 80)
+    environment:
+      - NODE_ENV=production
+      - PORT=80
+      - HOSTNAME=0.0.0.0
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
