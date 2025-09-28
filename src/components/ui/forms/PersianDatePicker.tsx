@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Input } from "./Input";
+import Input from "./Input";
 
 interface PersianDatePickerProps {
     label: string;
@@ -62,7 +62,7 @@ export function PersianDatePicker({
                     value={value ? formatDisplayDate(value) : ''}
                     readOnly
                     required={required}
-                    error={error}
+                    error={!!error}
                     className="cursor-pointer"
                 />
             </div>

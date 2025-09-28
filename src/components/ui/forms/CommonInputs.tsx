@@ -1,6 +1,6 @@
 "use client";
 import { Control, Controller, FieldValues, FieldPath } from "react-hook-form";
-import { Input } from "../forms/Input";
+import Input from "../forms/Input";
 
 interface NationalCodeInputProps<T extends FieldValues = FieldValues> {
     control: Control<T>;
@@ -36,7 +36,7 @@ export const NationalCodeInput = <T extends FieldValues = FieldValues>({
                     placeholder={placeholder}
                     className={className}
                     maxLength={10}
-                    error={fieldState?.error?.message}
+                    error={!!fieldState?.error}
                     inputMode="numeric"
                 />
             )}
@@ -64,7 +64,7 @@ export const PhoneNumberInput = <T extends FieldValues = FieldValues>({
                     placeholder={placeholder}
                     className={className}
                     maxLength={11}
-                    error={fieldState?.error?.message}
+                    error={!!fieldState?.error}
                     inputMode="numeric"
                 />
             )}

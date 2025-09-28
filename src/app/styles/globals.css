@@ -22,11 +22,11 @@ body {
   0%,
   100% {
     opacity: 1;
-    filter: brightness(1) drop-shadow(0 0 20px rgba(34, 197, 94, 0.3));
+    filter: brightness(1) drop-shadow(0 0 20px rgba(var(--overlay-rgb), 0.3));
   }
   50% {
     opacity: 0.7;
-    filter: brightness(1.2) drop-shadow(0 0 30px rgba(34, 197, 94, 0.6));
+    filter: brightness(1.2) drop-shadow(0 0 30px rgba(var(--overlay-rgb), 0.6));
   }
 }
 
@@ -39,7 +39,6 @@ select {
 
 html {
   direction: rtl;
-  font-size: 100%;
 }
 
 body {
@@ -69,6 +68,7 @@ select {
 
 :root {
   --_s-50: 50;
+  font-size: 100%;
 }
 
 .bg-primary {
@@ -400,19 +400,19 @@ select {
 
 /* gray -> neutral text/background */
 .text-gray-600 {
-  color: #4b5563 !important;
+  color: var(--color-muted) !important;
 }
 .text-gray-500 {
-  color: #6b7280 !important;
+  color: var(--color-muted-2) !important;
 }
 .bg-gray-200 {
-  background-color: #e5e7eb !important;
+  background-color: var(--color-bg-soft) !important;
 }
 .bg-gray-100 {
-  background-color: #f3f4f6 !important;
+  background-color: var(--color-bg-100) !important;
 }
 .bg-gray-50 {
-  background-color: #f9fafb !important;
+  background-color: var(--color-bg-50) !important;
 }
 
 input:focus,
@@ -474,18 +474,18 @@ select:focus {
 
 /* File Upload Drag & Drop */
 .file-upload-drag {
-  border: 2px dashed #d1d5db;
+  border: 2px dashed var(--color-bg-soft);
   transition: all 0.2s ease-in-out;
 }
 
 .file-upload-drag:hover {
-  border-color: #3b82f6;
-  background-color: #f8fafc;
+  border-color: var(--color-info-500);
+  background-color: var(--info-50);
 }
 
 .file-upload-drag.drag-over {
-  border-color: #3b82f6;
-  background-color: #eff6ff;
+  border-color: var(--color-info-500);
+  background-color: var(--info-100);
   transform: scale(1.02);
 }
 
@@ -497,7 +497,7 @@ select:focus {
 .form-field-group input:focus + label,
 .form-field-group select:focus + label,
 .form-field-group textarea:focus + label {
-  color: #3b82f6;
+  color: var(--color-info-500);
 }
 
 /* Loading spinner improvements */
@@ -531,7 +531,7 @@ select:focus {
   background: linear-gradient(
     to right,
     transparent 0%,
-    #e5e7eb 50%,
+    var(--color-bg-soft) 50%,
     transparent 100%
   );
 }
@@ -540,7 +540,7 @@ select:focus {
   background: linear-gradient(
     to right,
     transparent 0%,
-    #3b82f6 50%,
+    var(--color-info-500) 50%,
     transparent 100%
   );
 }
@@ -555,7 +555,7 @@ form[autocomplete="off"] input:-webkit-autofill,
 form[autocomplete="off"] input:-webkit-autofill:hover,
 form[autocomplete="off"] input:-webkit-autofill:focus,
 form[autocomplete="off"] input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-box-shadow: 0 0 0 30px var(--color-surface) inset !important;
   -webkit-text-fill-color: inherit !important;
   transition: background-color 5000s ease-in-out 0s;
 }
@@ -600,7 +600,7 @@ input[data-form-type="other"]::-webkit-contacts-auto-fill-button {
   background-color: var(--color-primary-500);
 }
 .connector-gray::after {
-  background-color: #e5e7eb; /* same as bg-gray-200 */
+  background-color: var(--color-bg-soft); /* same as bg-gray-200 */
 }
 
 /* Container utility (اگر قبلاً اضافه نشده) */
@@ -667,10 +667,10 @@ input[data-form-type="other"]::-webkit-contacts-auto-fill-button {
   left: 1rem;
   right: 1rem;
   top: 4rem;
-  background: white;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--card-shadow);
   z-index: 50;
 }
 
@@ -680,6 +680,6 @@ input[data-form-type="other"]::-webkit-contacts-auto-fill-button {
   height: 8px;
 }
 .pc-picker::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
+  background: var(--scrollbar-thumb);
   border-radius: 9999px;
 }

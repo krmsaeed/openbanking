@@ -25,8 +25,8 @@ export function IdentityVerificationStep({ userInfo, onBack, onComplete }: Ident
                 </Button>
 
                 <Box className="text-center mb-6">
-                    <Typography variant="h1" color="default" align="center" className="mb-2">احراز هویت</Typography>
-                    <Typography variant="body1" color="secondary" align="center">
+                    <Typography variant="h1" className="mb-2 text-center">احراز هویت</Typography>
+                    <Typography variant="p" className="text-center text-secondary">
                         برای تأیید هویت خود، لطفاً مراحل زیر را تکمیل کنید
                     </Typography>
                 </Box>
@@ -34,14 +34,14 @@ export function IdentityVerificationStep({ userInfo, onBack, onComplete }: Ident
                 <Card padding="sm" className="mb-6">
                     <CardContent>
                         <Box>
-                            <Typography variant="body2" color="secondary">
-                                <Typography variant="body2" as="span" weight="medium" color="default">نام:</Typography> {userInfo.firstName} {userInfo.lastName}
+                            <Typography variant="p" className="text-secondary">
+                                <Typography variant="span" className="font-medium">نام:</Typography> {userInfo.firstName} {userInfo.lastName}
                             </Typography>
-                            <Typography variant="body2" color="secondary">
-                                <Typography variant="body2" as="span" weight="medium" color="default">کد ملی:</Typography> {userInfo.nationalCode}
+                            <Typography variant="p" className="text-secondary">
+                                <Typography variant="span" className="font-medium">کد ملی:</Typography> {userInfo.nationalCode}
                             </Typography>
-                            <Typography variant="body2" color="secondary">
-                                <Typography variant="body2" as="span" weight="medium" color="default">موبایل:</Typography> {userInfo.mobile}
+                            <Typography variant="p" className="text-secondary">
+                                <Typography variant="span" className="font-medium">موبایل:</Typography> {userInfo.mobile}
                             </Typography>
                         </Box>
                     </CardContent>

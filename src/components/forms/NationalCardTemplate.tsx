@@ -29,11 +29,11 @@ export function NationalCardTemplate({
         <Box className="space-y-6">
             <Box className="relative rounded-2xl p-0 mx-auto max-w-sm shadow-lg overflow-hidden border border-gray-200">
                 <svg className="absolute left-4 top-4 w-28 opacity-10 rotate-6 pointer-events-none" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                    <circle cx="50" cy="50" r="48" stroke="none" fill="#0f5132" />
-                    <path d="M50 18 L58 42 L82 42 L62 56 L70 80 L50 64 L30 80 L38 56 L18 42 L42 42 Z" fill="#ffffff" opacity="0.08" />
+                    <circle cx="50" cy="50" r="48" stroke="none" style={{ fill: 'var(--color-primary-700)' }} />
+                    <path d="M50 18 L58 42 L82 42 L62 56 L70 80 L50 64 L30 80 L38 56 L18 42 L42 42 Z" style={{ fill: 'var(--color-white)' }} opacity={0.08} />
                 </svg>
 
-                <div className="absolute inset-0 bg-[repeating-linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.06) 1px,transparent 1px,transparent 8px)] pointer-events-none" />
+                <div className="absolute inset-0 overlay-stripes" />
 
                 <div className="relative z-10 bg-gradient-to-r from-blue-300 to-blue-200 text-white p-3 px-5">
                     <div className="flex items-center justify-center flex-col ">

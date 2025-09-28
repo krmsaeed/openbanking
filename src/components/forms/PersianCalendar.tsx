@@ -39,7 +39,7 @@ interface PersianCalendarProps {
     className?: string;
     icon?: React.ReactNode;
     maxDate?: Date;
-    error?: string | undefined;
+    error?: string | boolean | undefined;
 }
 
 
@@ -328,10 +328,10 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                     placeholder={placeholder}
                     disabled={disabled}
                     className={` ${className ?? ""}`}
-                    error={error}
+                    error={!!error}
                     readOnly
                     required={required}
-                    adornment={<CalendarIcon onClick={() => setIsOpen(true)} className="h-5 w-5 cursor-pointer" />}
+                    endAdornment={<CalendarIcon onClick={() => setIsOpen(true)} className="h-5 w-5 cursor-pointer" />}
                 />
             </Box>
             {isOpen && (

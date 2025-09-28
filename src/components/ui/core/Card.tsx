@@ -7,7 +7,7 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const getCardClasses = (variant: 'default' | 'elevated' | 'outline', padding: 'none' | 'sm' | 'md' | 'lg') => {
-    const baseClasses = "rounded-2xl bg-white";
+    const baseClasses = "rounded-2xl bg-white"; /* bg-white maps to --color-surface */
 
     const variantClasses = {
         default: "",
@@ -53,7 +53,7 @@ const CardTitle = forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLHeadingEle
     ({ className, ...props }, ref) => (
         <h3
             ref={ref}
-            className={cn("text-2xl font-bold leading-none tracking-tight text-gray-900", className)}
+            className={cn("text-2xl font-bold leading-none tracking-tight text-body", className)}
             {...props}
         />
     )
@@ -64,7 +64,7 @@ const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLPara
     ({ className, ...props }, ref) => (
         <p
             ref={ref}
-            className={cn("text-sm text-gray-600", className)}
+            className={cn("text-sm text-body", className)}
             {...props}
         />
     )

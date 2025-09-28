@@ -35,7 +35,7 @@ export function LoginForm({ onNext, loading }: LoginFormProps) {
                     <FormField
                         label="کد ملی"
                         required
-                        error={errors.nationalCode?.message}
+                        error={!!errors.nationalCode}
                     >
                         <Controller
                             name="nationalCode"
@@ -54,7 +54,7 @@ export function LoginForm({ onNext, loading }: LoginFormProps) {
                     <FormField
                         label="شماره موبایل"
                         required
-                        error={errors.phoneNumber?.message}
+                        error={!!errors.phoneNumber}
                     >
                         <Controller
                             name="phoneNumber"

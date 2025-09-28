@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
-import { Controller, useForm, type Control, type UseFormHandleSubmit, type UseFormGetValues, type FieldValues } from 'react-hook-form';
+import { useState, useEffect } from "react";
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { LoginFormData } from "@/lib/schemas/common";
 import { z } from "zod";
@@ -65,12 +65,11 @@ export default function Register() {
     const [step2Data, setStep2Data] = useState<{ birthDate: string; postalCode: string } | null>(null);
     const [showNationalCardTemplate, setShowNationalCardTemplate] = useState(false);
     const [showOtp1, setShowOtp1] = useState(false);
-    // Keep setters (used by handlers) but omit the state variables to avoid unused-var lint
     const [, setVideoSample] = useState<File | undefined>(undefined);
     const [, setSignatureSample] = useState<File | undefined>(undefined);
     const [, setSelfieSample] = useState<File | undefined>(undefined);
     const [passwordSet, setPasswordSet] = useState(false);
-    const [password, setPassword] = useState('');
+    const [, setPassword] = useState('');
 
     const {
         control,
@@ -85,9 +84,7 @@ export default function Register() {
         mode: "onBlur",
     });
 
-    const setErrorAny = (name: string, error: { type: string; message?: string }) => {
-        (setError as unknown as (n: string, e: { type: string; message?: string }) => void)(name, error);
-    };
+    // setError is already correctly typed; helper removed to avoid unused-var lint
 
     useEffect(() => {
         try {
@@ -138,20 +135,15 @@ export default function Register() {
             setError('otp', { type: 'manual', message: 'کد تایید را کامل وارد کنید' });
             return;
         }
-        // show the national card preview when moving to step 2 so the preview component
-        // receives the collected data (nationalCode, birthDate)
         setShowNationalCardTemplate(true);
         setStep(2);
     };
 
-    // Extracted: send OTP to the registered phone number (invoked by user action)
-    // send OTP function intentionally omitted here (handled elsewhere) to avoid automatic sends
 
     const handleNationalCardConfirm = () => {
         setShowNationalCardTemplate(false);
         setStep(3);
     };
-    // scanned card/branch state removed - final step now shows downloadable contract instead
     const handleSelfiePhoto = (file: File) => {
         setSelfieSample(file);
         toast.success("عکس سلفی ثبت شد");
@@ -191,36 +183,13 @@ export default function Register() {
     };
 
     function handleNationalCardScanComplete(_file: File, _branch: string): void {
-        // mark parameters as used to satisfy linters (actual handling may be implemented later)
         void _file;
         void _branch;
-        // For now, just show a toast and move to the next step (selfie)
         toast.success("تصویر کارت ملی و شعبه ثبت شد");
         setShowNationalCardTemplate(false);
         setStep(8);
     }
 
-    // Consolidate the props for PasswordStep into a single any-typed object and spread it
-    // Consolidate the props for PasswordStep into a properly typed object to avoid `any`.
-    type PasswordStepProps = {
-        control: Control<ExtendedRegistrationForm>;
-        handleSubmit: UseFormHandleSubmit<FieldValues>;
-        getValues: UseFormGetValues<FieldValues>;
-        setError: (name: string, error: { type: string; message?: string }) => void;
-        resetPasswords: () => void;
-        passwordSet: boolean;
-        setPasswordSet: Dispatch<SetStateAction<boolean>>;
-    };
-
-    const passwordStepProps: PasswordStepProps = {
-        control,
-        handleSubmit: handleRegisterSubmit as unknown as UseFormHandleSubmit<FieldValues>,
-        getValues: getValues as unknown as UseFormGetValues<FieldValues>,
-        setError: setErrorAny,
-        resetPasswords: () => { setValue('password', ''); setValue('confirmPassword', ''); },
-        passwordSet,
-        setPasswordSet,
-    };
     return (
         <Box className="my-6 p-4 flex flex-col md:flex-row items-start md:justify-center gap-6">
 
@@ -228,8 +197,8 @@ export default function Register() {
                 <Sidebar step={step} onSelect={setStep} />
             </Box>
 
-            <Box className="rounded-lg shadow-md border border-gray-100 w-full">
-                <Box className="max-w-9xl w-full mx-auto px-2">
+            <Box className="rounded-lg shadow-md  w-full">
+                <Box className="max-w-9xl w-full mx-auto">
                     <Box className="flex flex-col md:flex-row gap-3">
                         <Box className="w-full">
                             <Card padding="sm" className="min-w-96">

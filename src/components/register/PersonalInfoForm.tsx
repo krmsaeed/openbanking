@@ -19,7 +19,7 @@ export default function PersonalInfoForm<T extends FieldValues>({ control, error
                     name={"nationalCode" as Path<T>}
                     control={control}
                     render={({ field }) => (
-                        <Input {...field} label="کد ملی" placeholder="کد ملی را وارد کنید" maxLength={10} required type="tel" dir="ltr" className="text-center" error={typeof errors.nationalCode?.message === 'string' ? errors.nationalCode?.message : undefined} />
+                        <Input {...field} label="کد ملی" placeholder="کد ملی را وارد کنید" maxLength={10} required type="tel" dir="ltr" className="text-center" error={!!errors.nationalCode} />
                     )}
                 />
 
@@ -27,7 +27,7 @@ export default function PersonalInfoForm<T extends FieldValues>({ control, error
                     name={"phoneNumber" as Path<T>}
                     control={control}
                     render={({ field }) => (
-                        <Input {...field} label="شماره تلفن همراه" type="tel" placeholder="09123456789" maxLength={11} className="text-center" dir="ltr" required error={typeof errors.phoneNumber?.message === 'string' ? errors.phoneNumber?.message : undefined} />
+                        <Input {...field} label="شماره تلفن همراه" type="tel" placeholder="09123456789" maxLength={11} className="text-center" dir="ltr" required error={!!errors.phoneNumber} />
                     )}
                 />
 
@@ -35,7 +35,7 @@ export default function PersonalInfoForm<T extends FieldValues>({ control, error
                     name={"birthDate" as Path<T>}
                     control={control}
                     render={({ field }) => (
-                        <PersianCalendar label="تاریخ تولد" placeholder="تاریخ تولد را انتخاب کنید" value={field.value} onChange={field.onChange} required className="w-full" maxDate={new Date()} error={typeof errors.birthDate?.message === 'string' ? errors.birthDate?.message : undefined} />
+                        <PersianCalendar label="تاریخ تولد" placeholder="تاریخ تولد را انتخاب کنید" value={field.value} onChange={field.onChange} required className="w-full" maxDate={new Date()} error={!!errors.birthDate} />
                     )}
                 />
 
@@ -43,7 +43,7 @@ export default function PersonalInfoForm<T extends FieldValues>({ control, error
                     name={"postalCode" as Path<T>}
                     control={control}
                     render={({ field }) => (
-                        <Input {...field} label="کد پستی" placeholder="1234567890" maxLength={10} type="tel" dir="ltr" className="text-center" required error={typeof errors.postalCode?.message === 'string' ? errors.postalCode?.message : undefined} />
+                        <Input {...field} label="کد پستی" placeholder="1234567890" maxLength={10} type="tel" dir="ltr" className="text-center" required error={!!errors.postalCode} />
                     )}
                 />
 

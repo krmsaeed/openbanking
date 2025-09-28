@@ -26,7 +26,7 @@ export function MobileOTPStep({ onNext }: MobileOTPStepProps) {
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit(onNext)} className="space-y-4">
-                    <FormField label="کد تأیید" error={errors.otp?.message}>
+                    <FormField label="کد تأیید" error={!!errors.otp}>
                         <Controller name="otp" control={control} render={({ field }) => (
                             <Input {...field} placeholder="کد ۵ رقمی" />
                         )} />

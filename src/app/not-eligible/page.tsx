@@ -36,7 +36,7 @@ export default function NotEligiblePage() {
                     <Typography variant="h4" className="text-3xl font-bold text-gray-900 mb-2 text-center">
                         عدم واجد شرایط دریافت تسهیلات
                     </Typography>
-                    <Typography variant="body1" color="secondary" className="text-lg text-center">
+                    <Typography variant="p" className="text-lg text-center text-secondary">
                         متأسفانه در حال حاضر شرایط لازم برای دریافت تسهیلات را ندارید
                     </Typography>
                 </Box>
@@ -53,7 +53,7 @@ export default function NotEligiblePage() {
                                 {reasons.map((reason, index) => (
                                     <ListItem key={index} className="flex items-center space-x-2 gap-2 space-x-reverse">
                                         <Box className="p-2 bg-red-500 rounded-full"><XMarkIcon className="w-3.5` h-3.5` font-bold text-white" /></Box>
-                                        <Typography variant="body2" color="secondary">{reason}</Typography>
+                                        <Typography variant="p" className="text-secondary">{reason}</Typography>
                                     </ListItem>
                                 ))}
                             </List>

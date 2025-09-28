@@ -27,13 +27,13 @@ export function BirthPostalStep({ onNext }: BirthPostalStepProps) {
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit(onNext)} className="space-y-4">
-                    <FormField label="تاریخ تولد" error={errors.birthDate?.message}>
+                    <FormField label="تاریخ تولد" error={!!errors.birthDate}>
                         <Controller name="birthDate" control={control} render={({ field }) => (
                             <Input {...field} type="date" />
                         )} />
                     </FormField>
 
-                    <FormField label="کد پستی" error={errors.postalCode?.message}>
+                    <FormField label="کد پستی" error={!!errors.postalCode}>
                         <Controller name="postalCode" control={control} render={({ field }) => (
                             <Input {...field} placeholder="کد پستی ۱۰ رقمی" />
                         )} />
