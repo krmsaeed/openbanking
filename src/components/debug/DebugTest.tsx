@@ -3,20 +3,20 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/core/Button";
 import { Box } from "@/components/ui/core/Box";
-import { Typography } from "@/components/ui/core/Typography";
+import Typography from "@/components/ui/core/Typography";
 
 export default function DebugTest() {
     const [count, setCount] = useState(0);
     const [message, setMessage] = useState<string | null>(null);
 
-    
+
     function incrementCounter() {
-        
+
         const newCount = count + 1;
         console.log("Counter incremented to:", newCount);
         setCount(newCount);
 
-        
+
         if (newCount % 5 === 0) {
             setMessage(`تبریک! شما به ${newCount} رسیدید!`);
         } else {
@@ -24,10 +24,10 @@ export default function DebugTest() {
         }
     }
 
-    
+
     useEffect(() => {
         const timer = setTimeout(() => {
-            
+
             console.log("Initial timer fired");
         }, 2000);
 
