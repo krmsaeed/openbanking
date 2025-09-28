@@ -1,5 +1,5 @@
 /* Color palette variables */
-:root{
+:root {
   --color-primary: #6c4ae2;
   --color-primary-50: #f6f5ff;
   --color-primary-100: #edebff;
@@ -122,9 +122,49 @@
 
   --color-text: #111827;
   --color-bg: #f7fafc;
+  /* Gray scale (light) */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  /* Surface and card tokens (global) */
+  --color-surface: #ffffff;
+  --color-surface-foreground: var(--color-text);
+  --color-border: rgba(0, 0, 0, 0.06);
+  --card-shadow: 0 6px 18px rgba(2, 6, 23, 0.06);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.12);
+  /* muted text and background shades used across components (map to gray scale) */
+  --color-muted: var(--color-gray-600); /* maps to text-gray-600 */
+  --color-muted-2: var(--color-gray-500); /* maps to text-gray-500 */
+  --color-bg-soft: var(--color-gray-200); /* bg-gray-200 */
+  --color-bg-100: var(--color-gray-100); /* bg-gray-100 */
+  --color-bg-50: var(--color-gray-50); /* bg-gray-50 */
+
+  /* shorthand aliases for older CSS that references --primary-500 etc */
+  --primary-50: var(--color-primary-50);
+  --primary-100: var(--color-primary-100);
+  --primary-200: var(--color-primary-200);
+  --primary-300: var(--color-primary-300);
+  --primary-400: var(--color-primary-400);
+  --primary-500: var(--color-primary-500);
+  --primary-600: var(--color-primary-600);
+  --primary-700: var(--color-primary-700);
+  --primary-800: var(--color-primary-800);
+  --primary-900: var(--color-primary-900);
+
+  --cta-500: var(--color-cta-500);
+  --info-500: var(--color-info-500);
+  --info-50: var(--color-info-50);
+  --info-100: var(--color-info-100);
 }
 
-:root.dark{
+:root.dark {
   --color-primary: #6c4ae2;
   --color-primary-50: #e9e6ff;
   --color-primary-100: #b9aaff;
@@ -235,4 +275,45 @@
 
   --color-text: #e6eef8;
   --color-bg: #0b1220;
+
+  /* Gray scale (dark) */
+  --color-gray-50: #121212;
+  --color-gray-100: #1a1a1a;
+  --color-gray-200: #242424;
+  --color-gray-300: #2e2e2e;
+  --color-gray-400: #3b3b3b;
+  --color-gray-500: #4a4a4a;
+  --color-gray-600: #5b5b5b;
+  --color-gray-700: #6c6c6c;
+  --color-gray-800: #7d7d7d;
+  --color-gray-900: #8e8e8e;
+
+  /* surfaces and UI tokens for dark mode */
+  --color-surface: #141418;
+  --color-surface-foreground: var(--color-text);
+  --color-border: rgba(255, 255, 255, 0.06);
+  --card-shadow: 0 8px 24px rgba(2, 6, 23, 0.6);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.12);
+  --color-muted: var(--color-gray-500);
+  --color-muted-2: var(--color-gray-600);
+  --color-bg-soft: var(--color-gray-200);
+  --color-bg-100: var(--color-gray-100);
+  --color-bg-50: var(--color-gray-50);
+
+  /* shorthand aliases for legacy classes in dark mode */
+  --primary-50: var(--color-primary-50);
+  --primary-100: var(--color-primary-100);
+  --primary-200: var(--color-primary-200);
+  --primary-300: var(--color-primary-300);
+  --primary-400: var(--color-primary-400);
+  --primary-500: var(--color-primary-500);
+  --primary-600: var(--color-primary-600);
+  --primary-700: var(--color-primary-700);
+  --primary-800: var(--color-primary-800);
+  --primary-900: var(--color-primary-900);
+
+  --cta-500: var(--color-cta-500);
+  --info-500: var(--color-info-500);
+  --info-50: var(--color-info-50);
+  --info-100: var(--color-info-100);
 }
