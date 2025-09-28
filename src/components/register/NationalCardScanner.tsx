@@ -19,8 +19,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
-    // camera selection: USB-only flow (show USB/external webcams)
-    const [videoDevices, setVideoDevices] = useState<MediaDeviceInfo[]>([]);
+    const [, setVideoDevices] = useState<MediaDeviceInfo[]>([]);
     const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
 
     const refreshDevices = useCallback(async () => {
@@ -124,8 +123,8 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
     }, [selectedDeviceId, isCameraOpen, openDeviceById]);
     const [capturedUrl, setCapturedUrl] = useState<string | null>(null);
     const [capturedFile, setCapturedFile] = useState<File | null>(null);
-    const [ocrText, setOcrText] = useState<string>('');
-    const [ocrFields, setOcrFields] = useState<OcrFields | null>(null);
+    const [, setOcrText] = useState<string>('');
+    const [, setOcrFields] = useState<OcrFields | null>(null);
     const [ocrValid, setOcrValid] = useState<boolean>(false);
     const [ocrLoading, setOcrLoading] = useState<boolean>(false);
 
