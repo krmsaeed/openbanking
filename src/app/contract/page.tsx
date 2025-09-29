@@ -56,14 +56,14 @@ export default function ContractPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-dark-50 py-8">
             <div className="max-w-4xl mx-auto px-4">
                 <div className="text-center mb-8">
-                    <DocumentTextIcon className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                    <DocumentTextIcon className="h-16 w-16 text-primary-600 mx-auto mb-4" />
+                    <h1 className="text-3xl font-bold text-dark mb-2">
                         قرارداد تسهیلات بانکی
                     </h1>
-                    <p className="text-gray-600">
+                    <p className="text-dark">
                         قرارداد فی‌مابین مشتری و بانکاقتصاد نوین
                     </p>
                 </div>
@@ -88,37 +88,37 @@ export default function ContractPage() {
                         <div className="grid md:grid-cols-2 gap-6">
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700">شماره قرارداد</label>
-                                    <p className="text-lg font-bold text-blue-600">{contractDetails.contractNumber}</p>
+                                    <label className="text-sm font-medium text-dark">شماره قرارداد</label>
+                                    <p className="text-lg font-bold text-primary-600">{contractDetails.contractNumber}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700">تاریخ قرارداد</label>
-                                    <p className="text-gray-900">{contractDetails.date}</p>
+                                    <label className="text-sm font-medium text-dark">تاریخ قرارداد</label>
+                                    <p className="text-dark-800">{contractDetails.date}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700">نام مشتری</label>
-                                    <p className="text-gray-900">{contractDetails.customerName}</p>
+                                    <label className="text-sm font-medium text-dark">نام مشتری</label>
+                                    <p className="text-dark-800">{contractDetails.customerName}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700">کد ملی</label>
-                                    <p className="text-gray-900">{contractDetails.nationalId}</p>
+                                    <label className="text-sm font-medium text-dark">کد ملی</label>
+                                    <p className="text-dark-800">{contractDetails.nationalId}</p>
                                 </div>
                             </div>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700">مبلغ تسهیلات</label>
-                                    <p className="text-lg font-bold text-green-600">{contractDetails.facilityAmount} ریال</p>
+                                    <label className="text-sm font-medium text-dark">مبلغ تسهیلات</label>
+                                    <p className="text-lg font-bold text-success">{contractDetails.facilityAmount} ریال</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700">نرخ سود</label>
-                                    <p className="text-gray-900">{contractDetails.interestRate}% سالانه</p>
+                                    <label className="text-sm font-medium text-dark">نرخ سود</label>
+                                    <p className="text-dark-800">{contractDetails.interestRate}% سالانه</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700">مدت بازپرداخت</label>
-                                    <p className="text-gray-900">{contractDetails.duration} ماه</p>
+                                    <label className="text-sm font-medium text-dark">مدت بازپرداخت</label>
+                                    <p className="text-dark-800">{contractDetails.duration} ماه</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700">قسط ماهانه</label>
+                                    <label className="text-sm font-medium text-dark">قسط ماهانه</label>
                                     <p className="text-lg font-bold text-orange-600">{contractDetails.monthlyPayment} ریال</p>
                                 </div>
                             </div>
@@ -133,8 +133,8 @@ export default function ContractPage() {
                     <CardContent>
                         <div className="space-y-6 text-justify leading-relaxed">
                             <div>
-                                <h3 className="font-bold text-gray-900 mb-2">ماده ۱ - موضوع قرارداد</h3>
-                                <p className="text-gray-700">
+                                <h3 className="font-bold text-dark-800 mb-2">ماده ۱ - موضوع قرارداد</h3>
+                                <p className="text-dark">
                                     بانکاقتصاد نوین متعهد می‌شود مبلغ {contractDetails.facilityAmount} ریال را به عنوان تسهیلات
                                     بانکی در اختیار مشتری قرار دهد. این مبلغ باید طی مدت {contractDetails.duration} ماه
                                     به صورت اقساط ماهانه بازپرداخت شود.
@@ -142,8 +142,8 @@ export default function ContractPage() {
                             </div>
 
                             <div>
-                                <h3 className="font-bold text-gray-900 mb-2">ماده ۲ - نحوه بازپرداخت</h3>
-                                <p className="text-gray-700">
+                                <h3 className="font-bold text-dark-800 mb-2">ماده ۲ - نحوه بازپرداخت</h3>
+                                <p className="text-dark">
                                     مشتری متعهد است مبلغ {contractDetails.monthlyPayment} ریال را در هر ماه
                                     تا تاریخ ۵ هر ماه به حساب بانک واریز نماید. در صورت تأخیر در پرداخت،
                                     جریمه تأخیر طبق نرخ‌های مصوب بانک مرکزی محاسبه خواهد شد.
@@ -151,7 +151,7 @@ export default function ContractPage() {
                             </div>
 
                             <div>
-                                <h3 className="font-bold text-gray-900 mb-2">ماده ۳ - نرخ سود</h3>
+                                <h3 className="font-bold text-dark-800 mb-2">ماده ۳ - نرخ سود</h3>
                                 <p className="text-gray-700">
                                     نرخ سود این تسهیلات {contractDetails.interestRate}% در سال بوده که
                                     طبق مقررات بانک مرکزی جمهوری اسلامی ایران تعیین شده است.
@@ -160,7 +160,7 @@ export default function ContractPage() {
                             </div>
 
                             <div>
-                                <h3 className="font-bold text-gray-900 mb-2">ماده ۴ - تضامین</h3>
+                                <h3 className="font-bold text-dark-800 mb-2">ماده ۴ - تضامین</h3>
                                 <p className="text-gray-700">
                                     مشتری متعهد است تضامین لازم شامل اسناد و مدارک مورد نیاز بانک را
                                     ارائه داده و در طول مدت قرارداد حفظ نماید. در صورت کاهش ارزش تضامین،
@@ -169,7 +169,7 @@ export default function ContractPage() {
                             </div>
 
                             <div>
-                                <h3 className="font-bold text-gray-900 mb-2">ماده ۵ - فسخ قرارداد</h3>
+                                <h3 className="font-bold text-dark-800 mb-2">ماده ۵ - فسخ قرارداد</h3>
                                 <p className="text-gray-700">
                                     در صورت عدم رعایت شرایط قرارداد از سوی مشتری، بانک حق فسخ قرارداد
                                     و مطالبه کل مبلغ باقیمانده را دارد. همچنین مشتری می‌تواند در هر زمان
@@ -178,7 +178,7 @@ export default function ContractPage() {
                             </div>
 
                             <div>
-                                <h3 className="font-bold text-gray-900 mb-2">ماده ۶ - حل اختلاف</h3>
+                                <h3 className="font-bold text-dark-800 mb-2">ماده ۶ - حل اختلاف</h3>
                                 <p className="text-gray-700">
                                     کلیه اختلافات ناشی از این قرارداد در مراجع ذی‌صلاح قضایی تهران
                                     قابل رسیدگی است. قوانین جمهوری اسلامی ایران بر این قرارداد حاکم خواهد بود.
@@ -196,9 +196,9 @@ export default function ContractPage() {
                                 id="agreement"
                                 checked={agreed}
                                 onChange={(e) => setAgreed(e.target.checked)}
-                                className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                className=" h-7 w-7 text-primary-500 bg-white rounded-lg"
                             />
-                            <label htmlFor="agreement" className="text-gray-700 leading-relaxed">
+                            <label htmlFor="agreement" className="text-dark leading-relaxed">
                                 با مطالعه کامل متن قرارداد، تمامی شرایط و ضوابط آن را پذیرفته و متعهد به رعایت
                                 آن می‌باشم. اطلاعات ارائه شده صحیح بوده و در صورت عدم صحت،
                                 مسئولیت کامل بر عهده من خواهد بود.

@@ -6,6 +6,8 @@ import { CheckIcon, VideoCameraIcon, XMarkIcon } from "@heroicons/react/24/outli
 import { Button } from "../ui/core/Button";
 import { Card, CardContent } from "../ui/core/Card";
 import { Box, Typography } from "../ui";
+import { useUser } from "@/contexts/UserContext";
+import axios from "axios";
 
 interface VideoRecorderProps {
     onComplete: (file: File) => void;
@@ -13,11 +15,11 @@ interface VideoRecorderProps {
 }
 
 export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCancel }) => {
+    const { setUserData, userData } = useUser()
     const [isRecording, setIsRecording] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
-    // removed unused currentTextIndex
     const [cameraActive, setCameraActive] = useState(false);
 
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -27,11 +29,6 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
     const recordedChunksRef = useRef<Blob[]>([]);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-    const verificationTexts = [
-        "این یک متن تستی است",
-    ];
-
-    const currentText = verificationTexts;
 
     useEffect(() => {
         if (recordingTime > 0) {
@@ -146,7 +143,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
         }
     }, [isRecording]);
 
-    const handleComplete = () => {
+    const handleComplete = async () => {
         if (videoFile) {
             if (streamRef.current) {
                 streamRef.current.getTracks().forEach(track => track.stop());
@@ -157,9 +154,27 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
             if (videoRef.current) {
                 videoRef.current.srcObject = null;
             }
-
+            type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
+            const maybe = (globalThis as unknown as MaybeCrypto);
+            const uuid = maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
+                ? maybe.crypto.randomUUID()
+                : Date.now().toString(36);
+            const videoName = `verification_video_${uuid}.webm`;
+            const video = new File([videoFile], videoName, { type: 'video/webm' });
+            const body = {
+                serviceName: 'virtual-open-deposit',
+                processId: userData.processId,
+                formName: 'ImageInquiry',
+                body: {},
+            };
+            const data = new FormData();
+            data.append('messageDTO', JSON.stringify(body));
+            data.append('files', video);
             setCameraActive(false);
+            await axios.post('/api/bpms/deposit-files', data).then(res => {
 
+                setUserData({ ...userData, step: 4 });
+            });
             onComplete(videoFile);
         }
     };
@@ -215,7 +230,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
 
                                 <Box className="flex justify-center gap-3">
                                     <Button
-                                        variant="outline"
+                                        variant="secondary"
                                         onClick={handleRetakeVideo}
                                         className="flex items-center gap-2"
                                     >
@@ -283,8 +298,8 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                                 <li> در محیطی کم‌صدا صحبت کنید .</li>
                                             </ul>
                                         </Box>}
-                                        {isRecording && <p className="text-base text-gray-800 leading-relaxed text-center mt-2">
-                                            {currentText}
+                                        {isRecording && <p className="text-base text-gray-500 leading-relaxed text-center mt-2">
+                                            {userData?.randomText}
                                         </p>}
                                     </Box>
 

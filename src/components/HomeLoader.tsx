@@ -23,7 +23,7 @@ function HomeLoader() {
             router.push('/register');
             return;
         }
-        await axios.post('/api/bpms/virtual-open-deposit-init', { serviceName: "virtual-open-deposit", body: { code: nationalCode } })
+        await axios.post('/api/bpms/kekyc-user-send-message', { serviceName: "virtual-open-deposit", body: { code: nationalCode } })
             .then((response) => {
                 const res = response.data as ResponseBody;
                 console.log(res)

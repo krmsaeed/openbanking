@@ -96,10 +96,7 @@ export default function Register() {
         }
     }, [setValue]);
 
-    const handleSelfiePhoto = (file: File) => {
-        setUserData({ selfie: file, step: 3 });
-        toast.success("عکس سلفی ثبت شد");
-    };
+
     const handleVideoRecording = (file: File) => {
         setUserData({ video: file, step: 4 });
         toast.success("فیلم احراز هویت ثبت شد؛");
@@ -156,7 +153,7 @@ export default function Register() {
 
                                     )}
                                     {userData.step === 2 && (
-                                        <SelfieStep onPhotoCapture={handleSelfiePhoto} onBack={() => setUserData({ step: 1 })} />
+                                        <SelfieStep />
                                     )}
                                     {userData.step === 3 && (
                                         <VideoStep onComplete={handleVideoRecording} onBack={() => setUserData({ step: 2 })} />

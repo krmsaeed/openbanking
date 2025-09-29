@@ -5,6 +5,8 @@ import { TrashIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Button } from "../core/Button";
 import { Card, CardContent } from "../core/Card";
 import { Box, Typography } from "../core";
+import axios from "axios";
+import { useUser } from "@/contexts/UserContext";
 
 interface SignatureCaptureProps {
     onComplete: (signatureFile: File) => void;
@@ -13,6 +15,8 @@ interface SignatureCaptureProps {
 }
 
 export function SignatureCapture({ onComplete, onCancel, onStepChange }: SignatureCaptureProps) {
+    const { userData, setUserData } = useUser();
+    const [isLoading, setIsLoading] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [hasSignature, setHasSignature] = useState(false);
@@ -91,22 +95,34 @@ export function SignatureCapture({ onComplete, onCancel, onStepChange }: Signatu
         setHasSignature(false);
     };
 
-    const saveSignature = () => {
+    const saveSignature = async () => {
+        setIsLoading(true);
         const canvas = canvasRef.current;
         if (!canvas || !hasSignature) return;
 
-        canvas.toBlob((blob) => {
+        canvas.toBlob(async (blob) => {
             if (blob) {
-                const file = new File([blob], `signature_${Date.now()}.png`, { type: 'image/png' });
-                onComplete(file);
-                try {
-                    if (typeof onStepChange === 'function') {
+                type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
+                const maybe = (globalThis as unknown as MaybeCrypto);
+                const uuid = maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
+                    ? maybe.crypto.randomUUID()
+                    : Date.now().toString(36);
+                const filename = `signature_$${uuid}.png`;
 
-                        onStepChange(6);
-                    }
-                } catch (e) {
-                    console.error('onStepChange callback failed', e);
-                }
+                const file = new File([blob], filename, { type: 'image/jpeg' });
+                const body = {
+                    serviceName: 'virtual-open-deposit',
+                    processId: userData.processId,
+                    formName: 'VideoInquiry',
+                    body: {},
+                };
+                const data = new FormData();
+                data.append('messageDTO', JSON.stringify(body));
+                data.append('files', file);
+
+                await axios.post('/api/bpms/deposit-files', data).then(() => {
+                    setUserData({ ...userData, step: 5 });
+                }).finally(() => setIsLoading(false));
             }
         }, 'image/png');
     };
@@ -152,7 +168,7 @@ export function SignatureCapture({ onComplete, onCancel, onStepChange }: Signatu
 
                         <Box className="w-full flex gap-2 items-center">
                             <Button
-                                onClick={onCancel}
+                                onClick={() => setUserData({ ...userData, step: 4 })}
                                 variant="destructive"
                                 className="w-full flex justify-center gapo-3 px-5 py-3 items-center text-white"
                             >
@@ -162,10 +178,11 @@ export function SignatureCapture({ onComplete, onCancel, onStepChange }: Signatu
                             <Button
                                 variant="primary"
                                 onClick={saveSignature}
-                                disabled={!hasSignature}
+                                disabled={!hasSignature && !isLoading}
+                                loading={isLoading}
                                 className="  text-white gap-3 px-5 py-3 flex items-center justify-center  w-full bg-primary-600 hover:bg-primary-700"
                             >
-                                <CheckIcon className="h-5 w-5" />
+                                {!isLoading && <CheckIcon className="h-5 w-5" />}
                                 <Typography variant="body1" className="text-white text-xs font-medium">
                                     تایید
                                 </Typography>

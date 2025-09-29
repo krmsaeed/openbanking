@@ -13,6 +13,7 @@ interface UserData {
     otp?: string;
     certOtp?: string;
     selfie?: File;
+    randomText?: string | null;
     video?: File;
     signature?: File;
     nationalCard?: File;
@@ -50,6 +51,7 @@ const initialState: UserData = {
     confirmPassword: "",
     otp: "",
     certOtp: "",
+    randomText: null,
     selfie: undefined,
     video: undefined,
     signature: undefined,

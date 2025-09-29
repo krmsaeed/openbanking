@@ -23,10 +23,6 @@ export default function PersonalInfoForm() {
     const { userData, setUserData } = useUser();
     const [showNationalCardTemplate, setShowNationalCardTemplate] = React.useState(false);
 
-    const handleNationalCardConfirm = () => {
-        setShowNationalCardTemplate(false);
-        setUserData({ step: 2 });
-    };
     const { handleSubmit, formState: { errors }, control, getValues } = useForm<PersonalInfoFormData>({
         resolver: zodResolver(PersonalInfoFormData),
         mode: 'all',
@@ -37,7 +33,7 @@ export default function PersonalInfoForm() {
         }
     });
     const onSubmit = async (data: PersonalInfoFormData) => {
-        await axios.post("/api/bpms/kekyc-user-status", {
+        await axios.post("/api/bpms/kekyc-user-send-message", {
             serviceName: 'virtual-open-deposit',
             processId: userData.processId,
             formName: 'CustomerInquiry',
@@ -49,7 +45,7 @@ export default function PersonalInfoForm() {
                 postalCode: data.postalCode
             }
         }).then(response => {
-            console.log(response)
+            console.log("hiiiiiiiiiii", response)
             if (response.data.body.hasActiveCertificate) setUserData({ step: 2 })
             else setUserData({ step: 2 })
         })

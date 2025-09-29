@@ -22,12 +22,9 @@ const STEP_META = [
     { title: "تأیید نهایی", icon: CheckCircleIcon }
 ];
 
-type SidebarProps = {
-    onSelect?: (s: number) => void;
-};
 
-export default function Sidebar({ onSelect }: SidebarProps) {
-    const { userData } = useUser();
+export default function Sidebar() {
+    const { userData, setUserData } = useUser();
     return (
         <nav className="bg-white dark:bg-dark-900 rounded-lg shadow-lg p-4 w-full max-w-md mx-auto h-full" aria-label="مراحل ثبت‌نام">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2 text-center">مراحل ثبت‌ نام</h3>
@@ -58,7 +55,7 @@ export default function Sidebar({ onSelect }: SidebarProps) {
 
                                 <Typography
                                     className={`mt-2 md:mt-0 text-xs md:text-sm font-medium transition-colors duration-150 ${current ? 'text-primary' : 'text-gray-400 dark:text-gray-500'} ${completed ? 'text-primary-500' : ''} group-hover:text-primary text-center md:text-right px-2`}
-                                    onClick={() => onSelect?.(index + 1)}
+                                    onClick={() => setUserData({ step: index + 1 })}
                                     tabIndex={0}
                                     aria-current={current ? 'step' : undefined}
                                     variant='body2'
