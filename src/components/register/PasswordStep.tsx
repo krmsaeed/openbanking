@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/forms';
 import { Button } from '@/components/ui/core/Button';
 import { Box } from '../ui';
 import { Controller, useForm } from 'react-hook-form';
-
-
+import List from '../ui/list';
+import ListItem from '../ui/listItem';
 
 export default function PasswordStep({ setPassword, setPasswordSet }:
     {
@@ -34,14 +34,14 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
 
     return (
         <>
-            <div className="space-y-6">
+            <Box className="space-y-6">
                 <Box className="bg-gray-100  rounded-xl p-4">
-                    <ul className="text-sm text-error-800 space-y-1 text-center">
-                        <li className='text-bold text-lg text-red-500'>در نگهداری رمز عبور خود دقت کنید </li>
-                        <li>رمز عبور باید حداقل 8 کاراکتر باشد</li>
-                        <li>رمز عبور باید شامل حداقل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک کاراکتر ویژه باشد</li>
+                    <List className="text-sm text-error-800 space-y-1 text-center">
+                        <ListItem className='text-bold text-lg text-red-500'>در نگهداری رمز عبور خود دقت کنید </ListItem>
+                        <ListItem>رمز عبور باید حداقل 8 کاراکتر باشد</ListItem>
+                        <ListItem>رمز عبور باید شامل حداقل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک کاراکتر ویژه باشد</ListItem>
 
-                    </ul>
+                    </List>
                 </Box>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <Controller
@@ -53,17 +53,15 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                             pattern: { value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, message: 'رمز عبور باید شامل حداقل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک کاراکتر ویژه باشد' }
                         }}
                         render={({ field }) => (
-                            <div className="relative">
-                                <Input {...field} type={showPassword ? 'text' : 'password'} required label="رمز عبور" placeholder="رمز عبور را وارد کنید" error={!!errors.password} />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(s => !s)}
-                                    className="absolute top-5/12 translate-y-5/12 left-1 flex items-center px-2 text-gray-600"
-                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                                >
-                                    {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
-                                </button>
-                            </div>
+                            <Input {...field}
+                                type={showPassword ? 'text' : 'password'}
+                                label="رمز عبور"
+                                placeholder="رمز عبور را وارد کنید"
+                                required
+                                fullWidth
+                                error={errors.password?.message}
+                                endAdornment={<Box onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}</Box>}
+                            />
                         )}
                     />
 
@@ -75,26 +73,22 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                             validate: (value) => value === getValues('password') || 'رمز عبور و تایید آن باید یکسان نمی‌باشد',
                         }}
                         render={({ field }) => (
-                            <div className="relative">
-                                <Input {...field} type={showPassword ? 'text' : 'password'} required label="تایید رمز عبور" placeholder="تکرار رمز عبور" error={!!errors.confirmPassword} />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(s => !s)}
-                                    className="absolute top-5/12 translate-y-5/12 left-1 flex items-center px-2 text-gray-600"
-                                    aria-label={showPassword ? 'Hide confirm password' : 'Show confirm password'}
-                                >
-                                    {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
-                                </button>
-                            </div>
+                            <Input {...field}
+                                type={showPassword ? 'text' : 'password'}
+                                required
+                                fullWidth
+                                label="تایید رمز عبور" placeholder="تکرار رمز عبور"
+                                error={errors.confirmPassword?.message}
+                                endAdornment={showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                            />
                         )}
                     />
-
-                    <div className="flex gap-2 mt-4">
-                        <Button onClick={() => reset({ password: '', confirmPassword: '' })} variant="ghost" className="w-40">بازنشانی</Button>
+                    <Box className="flex gap-2 mt-4">
+                        <Button onClick={() => reset({ password: '', confirmPassword: '' })} className="w-full bg-error-200">بازنشانی</Button>
                         <Button type="submit" variant="primary" className="w-full">تعیین رمز عبور</Button>
-                    </div>
+                    </Box>
                 </form>
-            </div>
+            </Box>
 
         </>
     );

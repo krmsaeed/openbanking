@@ -32,7 +32,7 @@ const FormField: React.FC<FormFieldProps> = ({
         <Box className="w-full">
             <Typography
                 variant="span"
-                className="mb-1 block text-right text-[0.9rem] font-medium text-gray-700 dark:text-gray-lightest"
+                className="mb-1 block text-right text-[0.9rem] font-medium text-gray-700 dark:text-gray-300"
             >
                 {label}
                 {required && <span className="mr-1 text-secondary">*</span>}
@@ -43,9 +43,6 @@ const FormField: React.FC<FormFieldProps> = ({
                 </Typography>
             )}
 
-            {/* If children are provided (common case), render them. This prevents
-                accidentally passing children into a native <input> element which
-                would trigger SSR/prerender errors. */}
             {children ? (
                 children
             ) : (
@@ -53,16 +50,16 @@ const FormField: React.FC<FormFieldProps> = ({
                     {...(id ? { id } : {})}
                     disabled={disabled}
                     {...(inputProps || {})}
-                    className={`block w-full border-b border-gray-light px-4 py-3 focus:border-primary focus:outline-none dark:border-gray-900 
-           dark:bg-none sm:text-sm
-          ${disabled ? "bg-b-gray-100 cursor-not-allowed" : "bg-white dark:bg-dark"}
-          ${error ? "border-red-500 border" : "border-b border-gray-300"} 
+                    className={`block w-full border-b border-light px-4 py-3  focus:outline-none 
+           bg-gray-800 sm:text-sm
+          ${disabled ? "bg-gray-100 cursor-not-allowed dark:bg-gray-700" : "bg-white dark:bg-gray-800"}
+          ${error ? "border-red-500 border" : "border-b border-gray-300 dark:border-gray-600"} 
           ${className}`}
                 />
             )}
 
             {typeof error === 'string' && error.length > 0 && (
-                <Typography variant="span" className=" block text-sm text-secondary">
+                <Typography variant="span" className=" block text-xs mt-1 text-error">
                     {error}
                 </Typography>
             )}

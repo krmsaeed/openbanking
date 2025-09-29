@@ -1,7 +1,6 @@
+@import "tailwindcss";
 @import "./palette.css";
 @import "./utilities.css";
-
-@import "tailwindcss";
 
 * {
   box-sizing: border-box;
@@ -27,35 +26,6 @@ body {
   50% {
     opacity: 0.7;
     filter: brightness(1.2) drop-shadow(0 0 30px rgba(var(--overlay-rgb), 0.6));
-  }
-}
-
-input,
-button,
-textarea,
-select {
-  outline: none !important;
-}
-
-html {
-  direction: rtl;
-}
-
-body {
-  font-family: var(--font-vazirmatn), "Tahoma", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-    filter: brightness(1) drop-shadow(0 0 20px rgba(34, 197, 94, 0.3));
-  }
-  50% {
-    opacity: 0.7;
-    filter: brightness(1.2) drop-shadow(0 0 30px rgba(34, 197, 94, 0.6));
   }
 }
 
@@ -399,20 +369,65 @@ select {
 }
 
 /* gray -> neutral text/background */
-.text-gray-600 {
-  color: var(--color-muted) !important;
-}
-.text-gray-500 {
-  color: var(--color-muted-2) !important;
-}
-.bg-gray-200 {
-  background-color: var(--color-bg-soft) !important;
+.bg-gray-50 {
+  background-color: var(--color-gray-50) !important;
 }
 .bg-gray-100 {
-  background-color: var(--color-bg-100) !important;
+  background-color: var(--color-gray-100) !important;
 }
-.bg-gray-50 {
-  background-color: var(--color-bg-50) !important;
+.bg-gray-200 {
+  background-color: var(--color-gray-200) !important;
+}
+.bg-gray-300 {
+  background-color: var(--color-gray-300) !important;
+}
+.bg-gray-400 {
+  background-color: var(--color-gray-400) !important;
+}
+.bg-gray-500 {
+  background-color: var(--color-gray-500) !important;
+}
+.bg-gray-600 {
+  background-color: var(--color-gray-600) !important;
+}
+.bg-gray-700 {
+  background-color: var(--color-gray-700) !important;
+}
+.bg-gray-800 {
+  background-color: var(--color-gray-800) !important;
+}
+.bg-gray-900 {
+  background-color: var(--color-gray-900) !important;
+}
+.text-gray-50 {
+  color: var(--color-gray-50) !important;
+}
+.text-gray-100 {
+  color: var(--color-gray-100) !important;
+}
+.text-gray-200 {
+  color: var(--color-gray-200) !important;
+}
+.text-gray-300 {
+  color: var(--color-gray-300) !important;
+}
+.text-gray-400 {
+  color: var(--color-gray-400) !important;
+}
+.text-gray-500 {
+  color: var(--color-gray-500) !important;
+}
+.text-gray-600 {
+  color: var(--color-gray-600) !important;
+}
+.text-gray-700 {
+  color: var(--color-gray-700) !important;
+}
+.text-gray-800 {
+  color: var(--color-gray-800) !important;
+}
+.text-gray-900 {
+  color: var(--color-gray-900) !important;
 }
 
 input:focus,
@@ -480,12 +495,12 @@ select:focus {
 
 .file-upload-drag:hover {
   border-color: var(--color-info-500);
-  background-color: var(--info-50);
+  background-color: var(--color-info-50);
 }
 
 .file-upload-drag.drag-over {
   border-color: var(--color-info-500);
-  background-color: var(--info-100);
+  background-color: var(--color-info-100);
   transform: scale(1.02);
 }
 
@@ -593,17 +608,19 @@ input[data-form-type="other"]::-webkit-contacts-auto-fill-button {
   width: 2px;
 
   border-radius: 1px;
-  background-color: var(--color-primary-100);
+  background-color: var(--color-primary);
   transition: background-color 200ms ease;
 }
 .connector-primary::after {
-  background-color: var(--color-primary-500);
+  background-color: var(--color-primary);
+}
+.dark .connector-primary::after {
+  background-color: var(--color-primary-100);
 }
 .connector-gray::after {
-  background-color: var(--color-bg-soft); /* same as bg-gray-200 */
+  background-color: var(--color-bg-soft);
 }
 
-/* Container utility (اگر قبلاً اضافه نشده) */
 .container {
   width: 100%;
   margin-left: auto;
@@ -653,7 +670,6 @@ input[data-form-type="other"]::-webkit-contacts-auto-fill-button {
   color: var(--primary-500) !important;
 }
 
-/* اگر همچنان نیاز به hover/focus با رنگ‌های primary دارید */
 .hover\:bg-primary-500:hover {
   background-color: var(--primary-500) !important;
 }
@@ -661,7 +677,6 @@ input[data-form-type="other"]::-webkit-contacts-auto-fill-button {
   border-color: var(--primary-300) !important;
 }
 
-/* small utility for centering month/year pickers if needed */
 .pc-picker {
   position: absolute;
   left: 1rem;

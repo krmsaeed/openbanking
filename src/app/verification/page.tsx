@@ -223,7 +223,7 @@ function VerificationContent() {
 
                                 <Box className="flex gap-3">
                                     <Button
-                                        variant="outline"
+                                        variant="secondary"
                                         onClick={clearSignature}
                                         className="flex-1"
                                     >

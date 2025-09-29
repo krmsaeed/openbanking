@@ -5,6 +5,8 @@ import { ToastProvider } from "@/components/ui/feedback/Toast";
 import ThemeProvider from "@/lib/ThemeProvider";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
+import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
+// import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 
 export const metadata: Metadata = {
   title: "پرداخت نوین | هوشمندانه پرداخت کنید...",
@@ -46,12 +48,36 @@ export default function RootLayout({
     <html lang="fa-IR" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icons/favicon.ico"></link>
+        {/* Inline script to apply theme before React hydration to avoid FOUC */}
+        <meta name="color-scheme" content="light dark" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => {
+  try {
+    const stored = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = stored || (prefersDark ? 'dark' : 'light');
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {
+    // ignore
+  }
+})();`,
+          }}
+        />
       </head>
-      <body className={` ${iranYekan.className} flex flex-col items-center w-full`} >
+      <body className={` ${iranYekan.className} flex flex-col items-center w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-white`} >
         <ThemeProvider>
           <ToastProvider>
             <ThemeToggle />
-            <ServiceWorkerRegistrar />
+            {process.env.NODE_ENV === 'development' ? <ServiceWorkerUnregistrar /> : <ServiceWorkerRegistrar />}
             {children}
           </ToastProvider>
         </ThemeProvider>

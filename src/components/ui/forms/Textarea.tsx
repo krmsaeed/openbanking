@@ -42,7 +42,7 @@ const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
             )}
             <Typography
                 variant="span"
-                className="mb-1 block text-right text-[0.9rem] font-medium text-gray-700 dark:text-gray-lightest"
+                className="mb-1 block text-right text-[0.9rem] font-medium text-gray-700 dark:text-gray-300"
             >
                 {label}
                 {required && <span className="mr-1 text-secondary">*</span>}
@@ -55,7 +55,7 @@ const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
                 required={required}
                 rows={5}
                 className={mergeClasses(
-                    `block w-full border-b-2 border-gray-lightest bg-white px-4 py-3 focus:border-primary focus:outline-none  dark:border-gray-900 dark:bg-dark sm:text-sm`,
+                    `block w-full border-b-2 border-gray-300 bg-white px-4 py-3 focus:border-primary focus:outline-none text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white sm:text-sm`,
                     className && className,
                 )}
                 style={{

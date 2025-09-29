@@ -120,7 +120,7 @@ export function SignatureCapture({ onComplete, onCancel, onStepChange }: Signatu
                     <Box className="border-2 border-dashed border-gray-300 rounded-lg p-1 bg-gray-50 w-80 h-96">
                         <canvas
                             ref={canvasRef}
-                            className="w-full  h-full bg-white border border-gray-200 rounded cursor-crosshair touch-none"
+                            className="w-full  h-full bg-gray-50 border border-gray-200 rounded cursor-crosshair touch-none"
                             onMouseDown={startDrawing}
                             onMouseMove={draw}
                             onMouseUp={stopDrawing}
@@ -139,7 +139,7 @@ export function SignatureCapture({ onComplete, onCancel, onStepChange }: Signatu
                     </Box>
                     <Box className=" w-full">
                         <Button
-                            variant="outline"
+                            variant="secondary"
                             onClick={clearSignature}
                             disabled={!hasSignature}
                             className="flex items-center gap-2 mx-auto"

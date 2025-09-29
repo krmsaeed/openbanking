@@ -8,14 +8,11 @@ import toast from "react-hot-toast";
 import { convertPersianToEnglish } from '@/lib/utils';
 import Sidebar from '@/components/register/Sidebar';
 import PersonalInfoForm from '@/components/register/PersonalInfoForm';
-import NationalCardPreview from '@/components/register/NationalCardPreview';
-// NationalCardScanner removed from final step (not used here)
 import SelfieStep from '@/components/register/SelfieStep';
 import VideoStep from '@/components/register/VideoStep';
 import SignatureStep from '@/components/register/SignatureStep';
 import CertificateStep from '@/components/register/CertificateStep';
 import PasswordStep from '@/components/register/PasswordStep';
-// Input not used directly in this file
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/core/Card";
 import { Box } from "@/components/ui";
 import NationalCardScanner from "@/components/register/NationalCardScanner";
@@ -62,9 +59,6 @@ export default function Register() {
     const [loading, setLoading] = useState(false);
 
     const [step1Data, setStep1Data] = useState<LoginFormData | null>(null);
-    const [step2Data, setStep2Data] = useState<{ birthDate: string; postalCode: string } | null>(null);
-    const [showNationalCardTemplate, setShowNationalCardTemplate] = useState(false);
-    const [showOtp1, setShowOtp1] = useState(false);
     const [, setVideoSample] = useState<File | undefined>(undefined);
     const [, setSignatureSample] = useState<File | undefined>(undefined);
     const [, setSelfieSample] = useState<File | undefined>(undefined);
@@ -83,8 +77,6 @@ export default function Register() {
         resolver: zodResolver(extendedRegistrationSchema),
         mode: "onBlur",
     });
-
-    // setError is already correctly typed; helper removed to avoid unused-var lint
 
     useEffect(() => {
         try {
@@ -112,38 +104,6 @@ export default function Register() {
         }
     }, [setValue]);
 
-    const onRegisterSubmit = async (data: RegistrationForm) => {
-        setStep1Data({ nationalCode: data.nationalCode, phoneNumber: data.phoneNumber });
-        setStep2Data({ birthDate: data.birthDate, postalCode: data.postalCode });
-        toast.success("اطلاعات ثبت شد");
-
-        setShowOtp1(true);
-        setValue('otp', '');
-        setValue('certOtp', '');
-        setValue('password', '');
-        setValue('confirmPassword', '');
-    };
-
-    const handleVerifyOtpAfterPersonal = async () => {
-        const phone = step1Data?.phoneNumber;
-        const otpVal = getValues('otp') as string | undefined;
-        if (!phone) {
-            setError('phoneNumber', { type: 'manual', message: 'شماره همراه موجود نیست' });
-            return;
-        }
-        if (!otpVal || otpVal.length < 5) {
-            setError('otp', { type: 'manual', message: 'کد تایید را کامل وارد کنید' });
-            return;
-        }
-        setShowNationalCardTemplate(true);
-        setStep(2);
-    };
-
-
-    const handleNationalCardConfirm = () => {
-        setShowNationalCardTemplate(false);
-        setStep(3);
-    };
     const handleSelfiePhoto = (file: File) => {
         setSelfieSample(file);
         toast.success("عکس سلفی ثبت شد");
@@ -171,13 +131,12 @@ export default function Register() {
     const getStepDescription = () => {
         switch (step) {
             case 1: return "اطلاعات شخصی";
-            case 2: return "بررسی اطلاعات کارت ملی";
-            case 3: return "عکس سلفی";
-            case 4: return "فیلم احراز هویت";
-            case 5: return "ثبت امضای دیجیتال";
-            case 6: return <span dir="ltr">{passwordSet ? "ارسال کد تایید" : "ایجاد رمز عبور"}</span>;
-            case 7: return "اسکن کارت و تعیین شعبه ";
-            case 8: return "پیش نمایش قرارداد";
+            case 2: return "عکس سلفی";
+            case 3: return "فیلم احراز هویت";
+            case 4: return "ثبت امضای دیجیتال";
+            case 5: return "ارسال کد تایید";
+            case 6: return "اسکن کارت و تعیین شعبه ";
+            case 7: return "پیش نمایش قرارداد";
             default: return "";
         }
     };
@@ -186,7 +145,6 @@ export default function Register() {
         void _file;
         void _branch;
         toast.success("تصویر کارت ملی و شعبه ثبت شد");
-        setShowNationalCardTemplate(false);
         setStep(8);
     }
 
@@ -207,45 +165,23 @@ export default function Register() {
                                 </CardHeader>
                                 <CardContent >
                                     {step === 1 && (
-                                        <>
-                                            {!showOtp1 && <PersonalInfoForm control={control} errors={registerErrors} onSubmit={handleRegisterSubmit(onRegisterSubmit)} />}
+                                        <PersonalInfoForm setStep={setStep} />
 
-                                            {showOtp1 && (
-                                                <div className="mt-4">
-                                                    <Controller
-                                                        name="otp"
-                                                        control={control}
-                                                        defaultValue={''}
-                                                        render={({ field }) => (
-                                                            <CertificateStep otp={field.value ?? ''} setOtp={field.onChange} onIssue={() => ((field.value ?? '').length === 5 ? handleVerifyOtpAfterPersonal() : setError('otp', { type: 'manual', message: 'کد تایید را کامل وارد کنید' }))} loading={loading} />
-                                                        )}
-                                                    />
-                                                </div>
-                                            )}
-                                        </>
                                     )}
+
+
 
                                     {step === 2 && (
-                                        <NationalCardPreview
-                                            nationalCode={step1Data?.nationalCode || (getValues('nationalCode') as string) || ''}
-                                            birthDate={step2Data?.birthDate || (getValues('birthDate') as string) || ''}
-                                            show={showNationalCardTemplate}
-                                            onConfirm={handleNationalCardConfirm}
-                                            onBack={() => { if (showNationalCardTemplate) setShowNationalCardTemplate(false); setStep(1); }}
-                                        />
-                                    )}
-
-                                    {step === 3 && (
                                         <SelfieStep onPhotoCapture={handleSelfiePhoto} onBack={() => setStep(2)} />
                                     )}
-                                    {step === 4 && (
+                                    {step === 3 && (
                                         <VideoStep onComplete={handleVideoRecording} onBack={() => setStep(3)} />
                                     )}
 
-                                    {step === 5 && (
+                                    {step === 4 && (
                                         <SignatureStep onComplete={handleSignatureComplete} onCancel={() => { }} />
                                     )}
-                                    {step === 6 && (
+                                    {step === 5 && (
                                         <>
                                             {!passwordSet && <PasswordStep
                                                 setPassword={setPassword}
@@ -265,9 +201,9 @@ export default function Register() {
                                             )}
                                         </>
                                     )}
-                                    {step === 7 && <NationalCardScanner onComplete={handleNationalCardScanComplete} onBack={() => setStep(6)} />}
+                                    {step === 6 && <NationalCardScanner onComplete={handleNationalCardScanComplete} onBack={() => setStep(6)} />}
 
-                                    {step === 8 && (
+                                    {step === 7 && (
                                         <ContractPage />
                                     )}
 

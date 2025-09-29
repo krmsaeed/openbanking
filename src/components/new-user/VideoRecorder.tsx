@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { CheckIcon, VideoCameraIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Button } from "../ui/core/Button";
@@ -38,13 +38,15 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
             timerRef.current = setTimeout(() => {
                 setRecordingTime(recordingTime - 1);
             }, 1000);
+        } else if (recordingTime === 0 && isRecording) {
+            stopVideoRecording();
         }
         return () => {
             if (timerRef.current) {
                 clearTimeout(timerRef.current);
             }
         };
-    }, [recordingTime]);
+    }, [recordingTime, isRecording]);
 
     useEffect(() => {
         if (!videoFile && !isRecording && !streamRef.current && !cameraActive) {
@@ -116,7 +118,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
         }
     };
 
-    const stopVideoRecording = () => {
+    const stopVideoRecording = useCallback(() => {
         navigator.mediaDevices.getUserMedia({ video: false, audio: false });
         if (mediaRecorderRef.current && isRecording) {
             mediaRecorderRef.current.stop();
@@ -142,7 +144,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
             navigator.mediaDevices.getUserMedia({ video: false, audio: false });
             toast.success('ضبط ویدیو متوقف شد و دوربین خاموش شد');
         }
-    };
+    }, [isRecording]);
 
     const handleComplete = () => {
         if (videoFile) {
@@ -184,10 +186,6 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
 
         toast.success('آماده برای ضبط مجدد');
     };
-
-    // handleCancel removed; component uses onCancel prop directly where needed
-
-
 
     return (
         <Box className="space-y-6">

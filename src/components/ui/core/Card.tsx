@@ -7,12 +7,12 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const getCardClasses = (variant: 'default' | 'elevated' | 'outline', padding: 'none' | 'sm' | 'md' | 'lg') => {
-    const baseClasses = "rounded-2xl bg-white"; /* bg-white maps to --color-surface */
+    const baseClasses = "rounded-2xl bg-dark";
 
     const variantClasses = {
         default: "",
         elevated: "shadow-lg",
-        outline: "border-2 border-gray-200",
+        outline: "border-2 border-gray-200 ",
     };
 
     const paddingClasses = {

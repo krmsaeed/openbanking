@@ -927,7 +927,6 @@ export default function CameraSelfie({ onPhotoCapture, onCancel }: CameraSelfieP
                         <ul className="text-xs text-error-600 list-disc list-inside text-right">
                             <li>دسترسی دوربین را در تنظیمات مرورگر فعال کنید</li>
                             <li>از https استفاده کنید</li>
-                            <li>دوربین توسط برنامه دیگری استفاده نشود</li>
                         </ul>
                     </Box>
                     <Box className="flex space-x-3 space-x-reverse mt-4">

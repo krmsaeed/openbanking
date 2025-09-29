@@ -1,54 +1,127 @@
 "use client";
 import React from 'react';
-import { Controller, Control, FieldErrors, FieldValues, Path } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/forms';
 import { PersianCalendar } from '@/components/forms';
 import { Button } from '../ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { isValidNationalId } from '@/components/NationalIdValidator';
+import NationalCardPreview from './NationalCardPreview';
 
-interface Props<T extends FieldValues> {
-    control: Control<T>;
-    errors: FieldErrors<T>;
-    onSubmit: () => void;
-}
 
-export default function PersonalInfoForm<T extends FieldValues>({ control, errors, onSubmit }: Props<T>) {
+const PersonalInfoFormData = z.object({
+    nationalCode: z.string("کد ملی اجباری است")
+        .min(10, 'کد ملی باید 10 رقم باشد')
+        .max(10, 'کد ملی باید 10 رقم باشد')
+        .regex(/^\d{10}$/, 'کد ملی باید 10 رقم عددی باشد')
+        .refine(isValidNationalId, 'کد ملی نامعتبر است'),
+    phoneNumber: z.string("شماره تلفن اجباری است").min(11, 'شماره تلفن باید 11 رقم باشد').max(11, 'شماره تلفن باید 11 رقم باشد').regex(/^09\d{9}$/, 'شماره تلفن باید با 09 شروع شود و فقط شامل اعداد باشد'),
+    birthDate: z.string().min(1, "تاریخ تولد اجباری است"),
+    postalCode: z.string("کد پستی اجباری است").min(10, 'کد پستی باید 10 رقم باشد').max(10, 'کد پستی باید 10 رقم باشد').regex(/^\d+$/, 'کد پستی باید فقط شامل اعداد باشد'),
+});
+type PersonalInfoFormData = z.infer<typeof PersonalInfoFormData>;
+
+export default function PersonalInfoForm({ setStep }:
+    {
+        setStep: (value: number) => void,
+    }) {
+    const [showNationalCardTemplate, setShowNationalCardTemplate] = React.useState(false);
+    const [step1Data, setStep1Data] = React.useState<PersonalInfoFormData | null>(null);
+    const [step2Data, setStep2Data] = React.useState<PersonalInfoFormData | null>(null);
+
+    const handleNationalCardConfirm = () => {
+        setShowNationalCardTemplate(false);
+        setStep(2);
+    };
+    const { handleSubmit, formState: { errors }, control, getValues } = useForm<PersonalInfoFormData>({
+        resolver: zodResolver(PersonalInfoFormData),
+        mode: 'all',
+        defaultValues: {
+            nationalCode: '',
+            phoneNumber: '',
+            birthDate: '', // Default birth date as empty string
+            postalCode: ''
+        }
+    });
+    const onSubmit = () => {
+
+        setShowNationalCardTemplate(true);
+    };
     return (
         <div className="space-y-6">
-            <form onSubmit={onSubmit} className="space-y-3">
+            {showNationalCardTemplate ? null : <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
                 <Controller
-                    name={"nationalCode" as Path<T>}
+                    name="nationalCode"
                     control={control}
                     render={({ field }) => (
-                        <Input {...field} label="کد ملی" placeholder="کد ملی را وارد کنید" maxLength={10} required type="tel" dir="ltr" className="text-center" error={!!errors.nationalCode} />
+                        <Input {...field}
+                            label="کد ملی"
+                            placeholder="کد ملی را وارد کنید"
+                            maxLength={10}
+                            required
+                            className="text-center"
+                            error={errors.nationalCode?.message} />
+                    )}
+                />
+                <Controller
+                    name="phoneNumber"
+                    control={control}
+                    render={({ field }) => (
+                        <Input {...field}
+                            label="شماره تلفن همراه"
+                            placeholder="09123456789"
+                            maxLength={11}
+                            required
+                            className="text-center"
+                            error={errors.phoneNumber?.message} />
                     )}
                 />
 
                 <Controller
-                    name={"phoneNumber" as Path<T>}
+                    name="birthDate"
                     control={control}
                     render={({ field }) => (
-                        <Input {...field} label="شماره تلفن همراه" type="tel" placeholder="09123456789" maxLength={11} className="text-center" dir="ltr" required error={!!errors.phoneNumber} />
+                        <PersianCalendar
+                            {...field}
+                            label="تاریخ تولد"
+                            value={field.value}
+                            placeholder="تاریخ تولد را انتخاب کنید"
+                            className="w-full"
+                            required
+                            maxDate={new Date()}
+                            error={errors?.birthDate?.message}
+                        />
                     )}
                 />
 
                 <Controller
-                    name={"birthDate" as Path<T>}
+                    name="postalCode"
                     control={control}
                     render={({ field }) => (
-                        <PersianCalendar label="تاریخ تولد" placeholder="تاریخ تولد را انتخاب کنید" value={field.value} onChange={field.onChange} required className="w-full" maxDate={new Date()} error={!!errors.birthDate} />
+                        <Input {...field}
+                            label="کد پستی"
+                            placeholder="1234567890"
+                            maxLength={10}
+                            type="text"
+                            className="text-center"
+                            error={errors.postalCode?.message}
+                            required
+                        />
                     )}
                 />
 
-                <Controller
-                    name={"postalCode" as Path<T>}
-                    control={control}
-                    render={({ field }) => (
-                        <Input {...field} label="کد پستی" placeholder="1234567890" maxLength={10} type="tel" dir="ltr" className="text-center" required error={!!errors.postalCode} />
-                    )}
-                />
+                <Button type="submit" disabled={false} className="w-full mt-8 btn bg-primary">ادامه</Button>
+            </form>}
 
-                <Button type="submit" className="w-full mt-8 btn bg-primary">ادامه</Button>
-            </form>
+            {showNationalCardTemplate && <NationalCardPreview
+                nationalCode={getValues('nationalCode') as string || step1Data?.nationalCode || ''}
+                birthDate={getValues('birthDate') as string || step2Data?.birthDate || ''}
+                show={showNationalCardTemplate}
+                onConfirm={handleNationalCardConfirm}
+                onBack={() => { if (showNationalCardTemplate) setShowNationalCardTemplate(false); setStep(1); }}
+            />}
+
         </div>
     );
 }

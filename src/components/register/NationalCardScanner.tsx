@@ -293,16 +293,13 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
 
     return (
         <Box className="space-y-4 ">
-            <Typography variant="body1" className="font-medium text-md text-right">
-                اسکن کارت ملی
-            </Typography>
             <Box className="flex flex-col gap-4">
                 <Box>
-                    <div className="flex gap-2 items-center">
+                    {/* <div className="flex gap-2 items-center">
 
                         <Button variant="ghost" size="sm" onClick={async () => { if (selectedDeviceId) await openDeviceById(selectedDeviceId); else toast('وبکم انتخاب نشده'); }}>باز کردن</Button>
 
-                    </div>
+                    </div> */}
                     <div className="relative bg-black rounded overflow-hidden">
                         {!capturedUrl ? (
                             isCameraOpen ? (
@@ -358,35 +355,36 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
                             </Button>}
                             <input id="national-card-file-input" type="file" accept="image/*" onChange={handleFileFallback} className="hidden" />
 
-                            {capturedUrl && <Button
-                                size="sm"
-                                onClick={async () => {
-                                    if (capturedUrl) {
-                                        URL.revokeObjectURL(capturedUrl);
-                                        setCapturedUrl(null);
-                                        setCapturedFile(null);
-                                    }
-                                    // restart camera for retake
-                                    try {
-                                        if (selectedDeviceId) {
-                                            const s = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: selectedDeviceId } }, audio: false });
-                                            streamRef.current = s;
-                                            if (videoRef.current) videoRef.current.srcObject = s;
-                                        } else {
-                                            toast.error('وبکم انتخاب نشده');
-                                            return;
+                            {capturedUrl &&
+                                <Button
+                                    size="sm"
+                                    onClick={async () => {
+                                        if (capturedUrl) {
+                                            URL.revokeObjectURL(capturedUrl);
+                                            setCapturedUrl(null);
+                                            setCapturedFile(null);
                                         }
-                                    } catch (err) {
-                                        console.warn('failed to restart camera', err);
-                                        toast.error('دوربین بازنشانی نشد');
-                                    }
-                                }}
-                                disabled={ocrLoading}
-                                className={ocrLoading ? 'opacity-60 pointer-events-none bg-secondary-200' : ''}
-                            >
-                                <ArrowPathIcon className="w-5 h-5 ml-2 " />
-                                <span >بازنشانی</span>
-                            </Button>}
+                                        // restart camera for retake
+                                        try {
+                                            if (selectedDeviceId) {
+                                                const s = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: selectedDeviceId } }, audio: false });
+                                                streamRef.current = s;
+                                                if (videoRef.current) videoRef.current.srcObject = s;
+                                            } else {
+                                                toast.error('وبکم انتخاب نشده');
+                                                return;
+                                            }
+                                        } catch (err) {
+                                            console.warn('failed to restart camera', err);
+                                            toast.error('دوربین بازنشانی نشد');
+                                        }
+                                    }}
+                                    disabled={ocrLoading}
+                                    className={ocrLoading ? 'opacity-60 pointer-events-none bg-gray-200' : ''}
+                                >
+                                    <ArrowPathIcon className="w-5 h-5 ml-2 " />
+                                    <span >بازنشانی</span>
+                                </Button>}
                         </div>
                     </div>
 

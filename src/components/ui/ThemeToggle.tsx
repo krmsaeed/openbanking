@@ -16,10 +16,12 @@ export const ThemeToggle: React.FC = React.memo(() => {
         if (typeof window === "undefined") return;
         if (theme === "dark") {
             document.documentElement.classList.add("dark");
+            document.body.classList.add("dark");
             document.documentElement.setAttribute('data-theme', 'dark');
             localStorage.setItem('theme', 'dark');
         } else {
             document.documentElement.classList.remove("dark");
+            document.body.classList.remove("dark");
             document.documentElement.setAttribute('data-theme', 'light');
             localStorage.setItem('theme', 'light');
         }
@@ -31,7 +33,7 @@ export const ThemeToggle: React.FC = React.memo(() => {
 
     return (
         <div style={{ position: "fixed", top: 16, right: 16, zIndex: 60 }}>
-            <Button onClick={toggle} variant="ghost" aria-label="تغییر تم">
+            <Button onClick={toggle} variant="secondary" aria-label="تغییر تم">
                 {theme === "dark" ? (
                     <SunIcon className="w-5 h-5" />
                 ) : (

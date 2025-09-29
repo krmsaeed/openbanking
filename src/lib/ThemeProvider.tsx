@@ -15,9 +15,11 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
+                document.body.classList.add('dark');
                 document.documentElement.setAttribute('data-theme', 'dark');
             } else {
                 document.documentElement.classList.remove('dark');
+                document.body.classList.remove('dark');
                 document.documentElement.setAttribute('data-theme', 'light');
             }
         } catch {

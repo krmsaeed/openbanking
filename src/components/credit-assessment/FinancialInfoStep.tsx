@@ -55,7 +55,7 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                                     <Input
                                         {...field}
                                         placeholder="مثال: 5000000"
-                                        error={!!fieldState.error}
+                                        error={fieldState.error?.message}
                                     />
                                 )}
                             />
@@ -72,7 +72,7 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                                     <Input
                                         {...field}
                                         placeholder="مثال: 8000000"
-                                        error={!!fieldState.error}
+                                        error={fieldState.error?.message}
                                     />
                                 )}
                             />
@@ -111,7 +111,7 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                                     <Input
                                         {...field}
                                         placeholder="مثال: مهندس نرم‌افزار"
-                                        error={!!fieldState.error}
+                                        error={fieldState.error?.message}
                                     />
                                 )}
                             />
@@ -128,7 +128,7 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                                     <Input
                                         {...field}
                                         placeholder="نام شرکت محل کار"
-                                        error={!!fieldState.error}
+                                        error={fieldState.error?.message}
                                     />
                                 )}
                             />
@@ -146,7 +146,7 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                                 <Input
                                     {...field}
                                     placeholder="آدرس کامل محل کار"
-                                    error={!!fieldState.error}
+                                    error={fieldState.error?.message}
                                 />
                             )}
                         />
@@ -165,7 +165,7 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                                     <Input
                                         {...field}
                                         placeholder="مثال: 50000000"
-                                        error={!!fieldState.error}
+                                        error={fieldState.error?.message}
                                     />
                                 )}
                             />

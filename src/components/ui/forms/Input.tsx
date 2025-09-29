@@ -13,7 +13,7 @@ export interface CustomInputProps
     disableUnderline?: boolean;
     variant?: string;
     endAdornment?: React.ReactNode;
-    error?: boolean;
+    error?: string;
     fullWidth?: boolean;
     id?: string;
     inputComponent?: React.ElementType;
@@ -26,7 +26,6 @@ export interface CustomInputProps
     required?: boolean;
     rows?: number;
     startAdornment?: React.ReactNode;
-    sx?: CSSProperties;
     type?: string;
     value?: string | number;
 }
@@ -47,13 +46,14 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(
             inputComponent: InputComponent = "input",
             inputProps,
             multiline,
+            label,
+            maxLength,
             name,
             onChange,
             placeholder,
             required,
             rows,
             startAdornment,
-            sx,
             type = "text",
             value,
             style,
@@ -67,50 +67,78 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(
             ...style,
         };
 
+        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const target = e.currentTarget;
+            if (maxLength && target.value.length >= maxLength) {
+                target.value = target.value.slice(0, maxLength);
+            }
+            onChange?.(e);
+        };
+
+        const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+            const target = e.currentTarget;
+            setTimeout(() => {
+                target.setSelectionRange(target.value.length, target.value.length);
+            }, 0);
+        };
+
         return (
             <Box
                 className={mergeClasses(
-                    "flex items-center",
+                    "flex mb-2 relative flex-col text-start items-start",
                     fullWidth ? "w-full" : "",
                     classes,
                 )}
-                style={sx}
+
                 {...(() => {
                     const r: Record<string, unknown> = { ...(rest as Record<string, unknown>) };
                     if ('variant' in r) delete (r as unknown as Record<string, unknown>).variant;
                     return r as Record<string, unknown>;
                 })()}
             >
-                <InputComponent
-                    ref={ref as React.Ref<HTMLInputElement>}
-                    autoComplete={autoComplete}
-                    autoFocus={autoFocus}
-                    className={mergeClasses(
-                        "w-full px-8 focus:border-none focus:outline-none dark:bg-dark-900 dark:text-white",
-                        props.className,
-                        error ? "border-secondary focus:border-secondary" : "",
-                        color,
-                    )}
-                    defaultValue={defaultValue}
-                    disabled={disabled}
-                    id={id}
-                    name={name}
-                    onChange={onChange}
-                    placeholder={placeholder}
-                    required={required}
-                    rows={multiline ? rows : undefined}
-                    style={inputStyle}
-                    type={type}
-                    value={value}
-                    {...inputProps}
-                />
-                {startAdornment && (
-                    <Box className="absolute right-1 top-0 flex items-center pl-1">
-                        {startAdornment}
+                {label && (
+                    <Box className="pl-1 text-sm text-gray-700 dark:text-gray-300 text-right ">
+                        {label}
+                        {required && <span className="mr-1 text-error">*</span>}
                     </Box>
                 )}
-                {endAdornment && (
-                    <Box className="absolute left-[1rem] top-7 pr-2">{endAdornment}</Box>
+                <Box className="w-full relative">
+                    <InputComponent
+                        ref={ref as React.Ref<HTMLInputElement>}
+                        autoComplete={autoComplete}
+                        autoFocus={autoFocus}
+                        className={mergeClasses(
+                            "w-full px-8 focus:border-none focus:outline-none  text-gray-900  shadow-md p-3 rounded-md",
+                            props.className,
+                            color,
+                        )}
+                        defaultValue={defaultValue}
+                        disabled={disabled}
+                        id={id}
+                        maxLength={maxLength}
+                        name={name}
+                        onChange={handleChange}
+                        onFocus={handleFocus}
+                        placeholder={placeholder}
+                        rows={multiline ? rows : undefined}
+                        style={inputStyle}
+                        type={type}
+                        value={value}
+                        {...inputProps}
+                    />
+                    {startAdornment && (
+                        <Box className="absolute right-1 transform translate-y-1/2 flex items-center pl-1">
+                            {startAdornment}
+                        </Box>
+                    )}
+                    {endAdornment && (
+                        <Box className="absolute left-[1rem] bottom-1/2 transform translate-y-1/2 pr-2">{endAdornment}</Box>
+                    )}
+                </Box>
+                {error && (
+                    <Box className="flex items-center pl-1 text-sm text-error mt-1 w-full">
+                        {error}
+                    </Box>
                 )}
             </Box>
         );

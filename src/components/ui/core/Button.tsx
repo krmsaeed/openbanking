@@ -17,14 +17,14 @@ const getButtonClasses = (variant: ButtonVariant, size: ButtonSize) => {
     const baseClasses = "cursor-pointer hover:scale-105 transform transition-all duration-100 ease-in-out shadow-md inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95";
 
     const variantClasses = {
-        default: "bg-gray-500 text-white hover:bg-gray-600 ",
-        destructive: "bg-red-600 text-white hover:bg-red-700",
-        primary: "bg-primary text-white hover:bg-primary-700",
-        outline: "border border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900",
-        secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200",
-        ghost: "hover:bg-gray-100 hover:text-gray-900",
-        link: "text-primary underline-offset-4 hover:underline",
-        success: "bg-green-600 text-white hover:bg-green-700",
+        default: "bg-gray-500 text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700",
+        destructive: "bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800",
+        primary: "bg-primary text-white hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700",
+        outline: "border border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white",
+        secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600",
+        ghost: "hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:text-white",
+        link: "text-primary underline-offset-4 hover:underline dark:text-primary-400",
+        success: "bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800",
     };
 
     const sizeClasses = {

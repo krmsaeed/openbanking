@@ -20,7 +20,7 @@ function HomeLoader({ delay = 2000 }: { delay?: number }) {
             }
             try {
 
-                await axios.post('/api/bpms/virtual-open-deposit-get-customer-info', { code: nationalId })
+                await axios.post('/api/bpms/virtual-open-deposit-get-customer-info', { serviceName: "virtual-open-deposit", body: { code: nationalId } })
                     .then(response => {
                         console.log('BPMS response:', response);
 
