@@ -1,5 +1,11 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
+const REQUEST_TIMEOUT_MS = 10000; // 10 seconds
+
+const axiosConfig: AxiosRequestConfig = {
+  headers: { 'Content-Type': 'application/json' },
+};
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
@@ -12,7 +18,7 @@ class APIClient {
   constructor() {
     this.client = axios.create({
       baseURL: process.env.NEXT_PUBLIC_API_BASE || '',
-      headers: { 'Content-Type': 'application/json' },
+      ...axiosConfig,
     });
   }
 
@@ -35,24 +41,56 @@ class APIClient {
     return { success: inferredSuccess, data: payload as T } as ApiResponse<T>;
   }
 
-  async get<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const resp = await this.client.get<T>(url, config);
-    return this.wrapResponse<T>(resp);
+  async get<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    try {
+      const response = await this.client.get(url, { ...config, signal: controller.signal });
+      clearTimeout(timeoutId);
+      return this.wrapResponse<T>(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
   }
 
   async post<T = unknown>(url: string, body?: unknown, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const resp = await this.client.post<T>(url, body, config);
-    return this.wrapResponse<T>(resp);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    try {
+      const response = await this.client.post<T>(url, body, { ...config, signal: controller.signal });
+      clearTimeout(timeoutId);
+      return this.wrapResponse<T>(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
   }
 
   async postFormData<T = unknown>(url: string, form: FormData, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const resp = await this.client.post<T>(url, form, { headers: { 'Content-Type': 'multipart/form-data' }, ...config });
-    return this.wrapResponse<T>(resp);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    try {
+      const response = await this.client.post<T>(url, form, { headers: { 'Content-Type': 'multipart/form-data' }, ...config, signal: controller.signal });
+      clearTimeout(timeoutId);
+      return this.wrapResponse<T>(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
   }
 
   async put<T = unknown>(url: string, body?: unknown, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const resp = await this.client.put<T>(url, body, config);
-    return this.wrapResponse<T>(resp);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    try {
+      const response = await this.client.put<T>(url, body, { ...config, signal: controller.signal });
+      clearTimeout(timeoutId);
+      return this.wrapResponse<T>(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
   }
 
   setAuthToken(token: string) {

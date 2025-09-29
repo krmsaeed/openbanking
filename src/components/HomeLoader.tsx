@@ -1,42 +1,51 @@
 "use client";
 
-import { useEffect, memo } from "react";
+import { useEffect, memo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
-
-function HomeLoader({ delay = 2000 }: { delay?: number }) {
+import { useUser } from "@/contexts/UserContext";
+type ResponseBody = {
+    "body": {
+        "isCustomer": boolean
+    },
+    "processId": number
+}
+function HomeLoader() {
     const router = useRouter();
+    const { setUserData } = useUser();
     const error: string | null = null;
 
+    const checkAndRedirect = useCallback(async () => {
+        const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+        const nationalCode = params.get('nationalId');
+        if (!nationalCode) {
+            router.push('/register');
+            return;
+        }
+        await axios.post('/api/bpms/virtual-open-deposit-init', { serviceName: "virtual-open-deposit", body: { code: nationalCode } })
+            .then((response) => {
+                const res = response.data as ResponseBody;
+                console.log(res)
+                if (res.body.isCustomer) {
+                    setUserData({ nationalCode, step: 2, processId: res.processId });
+                    router.push("/register");
+                } else {
+                    setUserData({ nationalCode, processId: res.processId });
+                    router.push("/register");
+                }
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
+            })
+
+
+    }, [router, setUserData]);
     useEffect(() => {
 
-        async function checkAndRedirect() {
-            const params = new URLSearchParams(window.location.search);
-            const nationalId = params.get('nationalId');
-            if (!nationalId) {
-                router.push('/register');
-                return;
-            }
-            try {
-
-                await axios.post('/api/bpms/virtual-open-deposit-get-customer-info', { serviceName: "virtual-open-deposit", body: { code: nationalId } })
-                    .then(response => {
-                        console.log('BPMS response:', response);
-
-                    })
-                    .catch(error => {
-                        console.error('Error sending message:', error);
-
-                    });
-            } catch (err) {
-                console.error('HomeLoader check error', err);
-
-            }
-        }
 
         checkAndRedirect();
-    }, [delay, router]);
+    }, [checkAndRedirect]);
 
     if (error) {
         return (

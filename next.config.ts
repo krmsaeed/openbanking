@@ -65,14 +65,14 @@ const nextConfig: NextConfig = {
         BASE_URL: "http://192.168.91.112:9999"
     },
 
-    async rewrites() {
-        return [
-            {
-                source: '/bpms/:path*',
-                destination: 'http://192.168.91.112:9999/bpms/:path*'
-            }
-        ]
-    }
+    // async rewrites() {
+    //     return [
+    //         {
+    //             source: '/api/:path*',
+    //             destination: 'http://192.168.91.112:9999/bpms/:path*',
+    //         }
+    //     ]
+    // }
 
 };
 

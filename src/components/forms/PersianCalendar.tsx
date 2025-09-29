@@ -40,6 +40,7 @@ interface PersianCalendarProps {
     icon?: React.ReactNode;
     maxDate?: Date;
     error?: string;
+    outputFormat?: 'persian' | 'iso';
 }
 
 
@@ -84,61 +85,50 @@ const getPersianMonthDays = (year: number, month: number): number => {
 };
 
 
-const gregorianToPersian = (gYear: number, gMonth: number, gDay: number): [number, number, number] => {
+const gregorianToPersian = (gy: number, gm: number, gd: number): [number, number, number] => {
     const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-    let jy = gYear <= 1600 ? 0 : 979;
-    gYear -= gYear <= 1600 ? 621 : 1600;
-    const gy2 = gMonth > 2 ? gYear + 1 : gYear;
-    let days = (365 * gYear) + (Math.floor((gy2 + 3) / 4)) - (Math.floor((gy2 + 99) / 100)) + (Math.floor((gy2 + 399) / 400)) - 80 + gDay + g_d_m[gMonth - 1];
-    jy += 33 * Math.floor(days / 12053);
+    let jy = gy <= 1600 ? 0 : 979;
+    gy -= gy <= 1600 ? 621 : 1600;
+    const gy2 = gm > 2 ? gy + 1 : gy;
+    let days = (365 * gy) + ~~((gy2 + 3) / 4) - ~~((gy2 + 99) / 100) + ~~((gy2 + 399) / 400) - 80 + gd + g_d_m[gm - 1];
+    jy += 33 * ~~(days / 12053);
     days %= 12053;
-    jy += 4 * Math.floor(days / 1461);
+    jy += 4 * ~~(days / 1461);
     days %= 1461;
-    if (days >= 366) {
-        jy += Math.floor((days - 1) / 365);
+    if (days > 365) {
+        jy += ~~((days - 1) / 365);
         days = (days - 1) % 365;
     }
-    const jp = days < 186 ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
+    const jm = days < 186 ? 1 + ~~(days / 31) : 7 + ~~((days - 186) / 30);
     const jd = 1 + (days < 186 ? days % 31 : (days - 186) % 30);
-    return [jy, jp, jd];
+    return [jy, jm, jd];
 };
 
 
-const persianToGregorian = (jYear: number, jMonth: number, jDay: number): [number, number, number] => {
-    let jy = jYear - 979;
-    let jp = 0;
-    for (let i = 0; i < jMonth; i++) {
-        jp += getPersianMonthDays(jYear, i + 1);
+const persianToGregorian = (jy: number, jm: number, jd: number): [number, number, number] => {
+    jy += 1595;
+    let days = -355668 + (365 * jy) + ~~(jy / 33) * 8 + ~~(((jy % 33) + 3) / 4) + jd + ((jm < 7) ? (jm - 1) * 31 : ((jm - 7) * 30) + 186);
+    let gy = 400 * ~~(days / 146097);
+    days %= 146097;
+    if (days > 36524) {
+        gy += 100 * ~~(--days / 36524);
+        days %= 36524;
+        if (days >= 365) days++;
     }
-    jp += jDay - 1;
-
-    let gy = 1600 + 400 * Math.floor(jy / 1029983);
-    jy %= 1029983;
-
-    if (jy >= 366) {
-        jy -= 1;
-        gy += Math.floor(jy / 365);
-        jy = jy % 365;
+    gy += 4 * ~~(days / 1461);
+    days %= 1461;
+    if (days > 365) {
+        gy += ~~((days - 1) / 365);
+        days = (days - 1) % 365;
     }
-
-    jp += (365 * jy) + (Math.floor(jy / 33) * 8) + (Math.floor(((jy % 33) + 3) / 4));
-    if ((jy % 33) % 4 !== 0 && (jy % 33) > 4) jp += Math.floor(((jy % 33) + 1) / 4);
-
-    let gm = 0;
-    let gd = 0;
-
+    let gd = days + 1;
     const sal_a = [0, 31, ((gy % 4 === 0 && gy % 100 !== 0) || (gy % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-    for (let i = 0; i < 13; i++) {
-        const v = i < 1 ? 0 : sal_a[i];
-        if (jp < v) {
-            break;
-        }
-        jp -= v;
-        gm++;
+    let gm = 0;
+    for (gm = 0; gm < 13; gm++) {
+        const v = sal_a[gm];
+        if (gd <= v) break;
+        gd -= v;
     }
-    gd = jp + 1;
-
     return [gy, gm, gd];
 };
 
@@ -149,7 +139,7 @@ const getFirstDayOfPersianMonth = (year: number, month: number): number => {
     return (date.getDay() + 1) % 7;
 };
 
-export default function PersianCalendar({ value, onChange, placeholder, label, required, disabled, className, maxDate, error }: PersianCalendarProps) {
+export default function PersianCalendar({ value, onChange, placeholder, label, required, disabled, className, maxDate, error, outputFormat = 'persian' }: PersianCalendarProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [displayValue, setDisplayValue] = useState(value || '');
     const [showMonthOverlay, setShowMonthOverlay] = useState(false);
@@ -170,19 +160,31 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
 
     useEffect(() => {
         if (value) {
-            const parts = value.split('/');
-            if (parts.length === 3) {
-                const year = parseInt(convertToEnglishDigits(parts[0]));
-                const month = parseInt(convertToEnglishDigits(parts[1]));
-                const day = parseInt(convertToEnglishDigits(parts[2]));
-                if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
-                    setSelectedDate({ year, month, day });
-                    setCurrentYear(year);
-                    setCurrentMonth(month);
+            if (outputFormat === 'iso' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
+                const date = new Date(value);
+                const [py, pm, pd] = gregorianToPersian(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
+                const display = `${convertToPersianDigits(py.toString())}/${convertToPersianDigits(pm.toString().padStart(2, '0'))}/${convertToPersianDigits(pd.toString().padStart(2, '0'))}`;
+                setDisplayValue(display);
+                setSelectedDate({ year: py, month: pm, day: pd });
+                setCurrentYear(py);
+                setCurrentMonth(pm);
+            } else {
+                // Assume Persian format
+                const parts = value.split('/');
+                if (parts.length === 3) {
+                    const year = parseInt(convertToEnglishDigits(parts[0]));
+                    const month = parseInt(convertToEnglishDigits(parts[1]));
+                    const day = parseInt(convertToEnglishDigits(parts[2]));
+                    if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+                        setSelectedDate({ year, month, day });
+                        setCurrentYear(year);
+                        setCurrentMonth(month);
+                        setDisplayValue(value);
+                    }
                 }
             }
         }
-    }, [value]);
+    }, [value, outputFormat]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -242,7 +244,14 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
         setSelectedDate(newDate);
         const formattedDate = `${convertToPersianDigits(currentYear.toString())}/${convertToPersianDigits(currentMonth.toString().padStart(2, '0'))}/${convertToPersianDigits(day.toString().padStart(2, '0'))}`;
         setDisplayValue(formattedDate);
-        onChange?.(formattedDate);
+        let outputValue: string;
+        if (outputFormat === 'iso') {
+            const [gy, gm, gd] = persianToGregorian(currentYear, currentMonth, day);
+            outputValue = `${gy.toString().padStart(4, '0')}-${gm.toString().padStart(2, '0')}-${gd.toString().padStart(2, '0')}T00:00:00.000Z`;
+        } else {
+            outputValue = formattedDate;
+        }
+        onChange?.(outputValue);
         setIsOpen(false);
     };
 
@@ -451,6 +460,17 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                                 setSelectedDate({ year: todayPersianYear, month: todayPersianMonth, day: todayPersianDay });
                                 const formattedDate = `${convertToPersianDigits(todayPersianYear.toString())}/${convertToPersianDigits(todayPersianMonth.toString().padStart(2, '0'))}/${convertToPersianDigits(todayPersianDay.toString().padStart(2, '0'))}`;
                                 setDisplayValue(formattedDate);
+                                let outputValue: string;
+                                if (outputFormat === 'iso') {
+                                    // Use UTC components and build ISO string at UTC midnight (ignore local hour)
+                                    const y = today.getUTCFullYear();
+                                    const m = today.getUTCMonth() + 1;
+                                    const d = today.getUTCDate();
+                                    outputValue = `${y.toString().padStart(4, '0')}-${m.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}T00:00:00.000Z`;
+                                } else {
+                                    outputValue = formattedDate;
+                                }
+                                onChange?.(outputValue);
                             }}
                             className="px-3 py-2 rounded-md border border-gray-200 bg-white text-sm"
                         >

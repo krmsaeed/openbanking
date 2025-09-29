@@ -6,11 +6,12 @@ import ThemeProvider from "@/lib/ThemeProvider";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
+import { UserProvider } from '@/contexts/UserContext';
 // import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 
 export const metadata: Metadata = {
   title: "پرداخت نوین | هوشمندانه پرداخت کنید...",
-  description: "بانک پرداخت نوین",
+  description: "بانکاقتصاد نوین",
 };
 
 const iranYekan = localFont({
@@ -48,7 +49,6 @@ export default function RootLayout({
     <html lang="fa-IR" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icons/favicon.ico"></link>
-        {/* Inline script to apply theme before React hydration to avoid FOUC */}
         <meta name="color-scheme" content="light dark" />
         <script
           dangerouslySetInnerHTML={{
@@ -75,11 +75,13 @@ export default function RootLayout({
       </head>
       <body className={` ${iranYekan.className} flex flex-col items-center w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-white`} >
         <ThemeProvider>
-          <ToastProvider>
-            <ThemeToggle />
-            {process.env.NODE_ENV === 'development' ? <ServiceWorkerUnregistrar /> : <ServiceWorkerRegistrar />}
-            {children}
-          </ToastProvider>
+          <UserProvider>
+            <ToastProvider>
+              <ThemeToggle />
+              {process.env.NODE_ENV === 'development' ? <ServiceWorkerUnregistrar /> : <ServiceWorkerRegistrar />}
+              {children}
+            </ToastProvider>
+          </UserProvider>
         </ThemeProvider>
       </body>
     </html>

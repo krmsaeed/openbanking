@@ -64,7 +64,7 @@ export default function ContractPage() {
                         قرارداد تسهیلات بانکی
                     </h1>
                     <p className="text-gray-600">
-                        قرارداد فی‌مابین مشتری و بانک پرداخت نوین
+                        قرارداد فی‌مابین مشتری و بانکاقتصاد نوین
                     </p>
                 </div>
 
@@ -73,11 +73,11 @@ export default function ContractPage() {
                         <CardTitle className="flex items-center justify-between">
                             <span>مشخصات قرارداد</span>
                             <div className="flex gap-2">
-                                <Button variant="outline" size="sm" onClick={handlePrint}>
+                                <Button variant="secondary" size="sm" onClick={handlePrint}>
                                     <PrinterIcon className="h-4 w-4 ml-2" />
                                     چاپ
                                 </Button>
-                                <Button variant="outline" size="sm" onClick={handleDownload}>
+                                <Button variant="secondary" size="sm" onClick={handleDownload}>
                                     <ArrowDownTrayIcon className="h-4 w-4 ml-2" />
                                     دانلود
                                 </Button>
@@ -135,7 +135,7 @@ export default function ContractPage() {
                             <div>
                                 <h3 className="font-bold text-gray-900 mb-2">ماده ۱ - موضوع قرارداد</h3>
                                 <p className="text-gray-700">
-                                    بانک پرداخت نوین متعهد می‌شود مبلغ {contractDetails.facilityAmount} ریال را به عنوان تسهیلات
+                                    بانکاقتصاد نوین متعهد می‌شود مبلغ {contractDetails.facilityAmount} ریال را به عنوان تسهیلات
                                     بانکی در اختیار مشتری قرار دهد. این مبلغ باید طی مدت {contractDetails.duration} ماه
                                     به صورت اقساط ماهانه بازپرداخت شود.
                                 </p>

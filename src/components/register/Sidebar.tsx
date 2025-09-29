@@ -10,6 +10,7 @@ import {
     EnvelopeIcon,
 } from "@heroicons/react/24/outline";
 import { Typography, Box } from '../ui';
+import { useUser } from '@/contexts/UserContext';
 
 const STEP_META = [
     { title: "اطلاعات شخصی", icon: UserIcon },
@@ -22,17 +23,18 @@ const STEP_META = [
 ];
 
 type SidebarProps = {
-    step?: number;
     onSelect?: (s: number) => void;
 };
 
-export default function Sidebar({ step = 1, onSelect }: SidebarProps) {
+export default function Sidebar({ onSelect }: SidebarProps) {
+    const { userData } = useUser();
     return (
         <nav className="bg-white dark:bg-dark-900 rounded-lg shadow-lg p-4 w-full max-w-md mx-auto h-full" aria-label="مراحل ثبت‌نام">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2 text-center">مراحل ثبت‌ نام</h3>
             <ul className="flex flex-row md:flex-col px-1 gap-2 md:gap-3 overflow-auto items-center justify-start md:justify-start md:pl-0 py-2 md:py-0">
                 {STEP_META.map((item, index) => {
                     const Icon = item.icon;
+                    const step = userData?.step ?? 0;
                     const current = step === index + 1;
                     const completed = step > index + 1;
                     return (
@@ -42,7 +44,7 @@ export default function Sidebar({ step = 1, onSelect }: SidebarProps) {
                                 <Box className="relative flex items-center justify-center">
                                     <Typography variant='span' className={`
                                         w-12 h-12 md:w-10 md:h-10 flex items-center justify-center rounded-full border-2 transition-all duration-200 shadow-sm relative z-10
-                                        ${index < STEP_META.length - 1 && (step > index + 1 ? 'md:connector md:connector-primary' : 'md:connector md:connector-gray')}
+                                        ${index < STEP_META.length - 1 && ((userData?.step ?? 0) > index + 1 ? 'md:connector md:connector-primary' : 'md:connector md:connector-gray')}
                                         ${completed && 'bg-primary-100  text-white scale-100'}
                                         ${current ? 'bg-gray-50  border-primary text-primary scale-105' : 'bg-gray-50 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500'}`
                                     }>

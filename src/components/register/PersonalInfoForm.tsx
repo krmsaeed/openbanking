@@ -6,63 +6,65 @@ import { PersianCalendar } from '@/components/forms';
 import { Button } from '../ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { isValidNationalId } from '@/components/NationalIdValidator';
 import NationalCardPreview from './NationalCardPreview';
+import { useUser } from '@/contexts/UserContext';
+import axios from 'axios';
 
 
 const PersonalInfoFormData = z.object({
-    nationalCode: z.string("کد ملی اجباری است")
-        .min(10, 'کد ملی باید 10 رقم باشد')
-        .max(10, 'کد ملی باید 10 رقم باشد')
-        .regex(/^\d{10}$/, 'کد ملی باید 10 رقم عددی باشد')
-        .refine(isValidNationalId, 'کد ملی نامعتبر است'),
+
     phoneNumber: z.string("شماره تلفن اجباری است").min(11, 'شماره تلفن باید 11 رقم باشد').max(11, 'شماره تلفن باید 11 رقم باشد').regex(/^09\d{9}$/, 'شماره تلفن باید با 09 شروع شود و فقط شامل اعداد باشد'),
     birthDate: z.string().min(1, "تاریخ تولد اجباری است"),
     postalCode: z.string("کد پستی اجباری است").min(10, 'کد پستی باید 10 رقم باشد').max(10, 'کد پستی باید 10 رقم باشد').regex(/^\d+$/, 'کد پستی باید فقط شامل اعداد باشد'),
 });
 type PersonalInfoFormData = z.infer<typeof PersonalInfoFormData>;
 
-export default function PersonalInfoForm({ setStep }:
-    {
-        setStep: (value: number) => void,
-    }) {
+export default function PersonalInfoForm() {
+    const { userData, setUserData } = useUser();
     const [showNationalCardTemplate, setShowNationalCardTemplate] = React.useState(false);
-    const [step1Data, setStep1Data] = React.useState<PersonalInfoFormData | null>(null);
-    const [step2Data, setStep2Data] = React.useState<PersonalInfoFormData | null>(null);
 
     const handleNationalCardConfirm = () => {
         setShowNationalCardTemplate(false);
-        setStep(2);
+        setUserData({ step: 2 });
     };
     const { handleSubmit, formState: { errors }, control, getValues } = useForm<PersonalInfoFormData>({
         resolver: zodResolver(PersonalInfoFormData),
         mode: 'all',
         defaultValues: {
-            nationalCode: '',
             phoneNumber: '',
-            birthDate: '', // Default birth date as empty string
+            birthDate: '',
             postalCode: ''
         }
     });
-    const onSubmit = () => {
-
-        setShowNationalCardTemplate(true);
+    const onSubmit = async (data: PersonalInfoFormData) => {
+        await axios.post("/api/bpms/kekyc-user-status", {
+            serviceName: 'virtual-open-deposit',
+            processId: userData.processId,
+            formName: 'CustomerInquiry',
+            body:
+            {
+                code: userData.nationalCode,
+                mobile: data.phoneNumber,
+                birthDate: data.birthDate,
+                postalCode: data.postalCode
+            }
+        }).then(response => {
+            console.log(response)
+            if (response.data.body.hasActiveCertificate) setUserData({ step: 2 })
+            else setUserData({ step: 2 })
+        })
     };
     return (
         <div className="space-y-6">
             {showNationalCardTemplate ? null : <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-                <Controller
-                    name="nationalCode"
-                    control={control}
-                    render={({ field }) => (
-                        <Input {...field}
-                            label="کد ملی"
-                            placeholder="کد ملی را وارد کنید"
-                            maxLength={10}
-                            required
-                            className="text-center"
-                            error={errors.nationalCode?.message} />
-                    )}
+
+                <Input
+                    label="کد ملی"
+                    placeholder="کد ملی را وارد کنید"
+                    required
+                    disabled
+                    value={userData.nationalCode}
+                    className="text-center"
                 />
                 <Controller
                     name="phoneNumber"
@@ -90,6 +92,7 @@ export default function PersonalInfoForm({ setStep }:
                             className="w-full"
                             required
                             maxDate={new Date()}
+                            outputFormat="iso"
                             error={errors?.birthDate?.message}
                         />
                     )}
@@ -111,16 +114,16 @@ export default function PersonalInfoForm({ setStep }:
                     )}
                 />
 
-                <Button type="submit" disabled={false} className="w-full mt-8 btn bg-primary">ادامه</Button>
+                <Button type="submit" className="w-full mt-8 btn bg-primary">ادامه</Button>
             </form>}
-
+            {/* 
             {showNationalCardTemplate && <NationalCardPreview
-                nationalCode={getValues('nationalCode') as string || step1Data?.nationalCode || ''}
-                birthDate={getValues('birthDate') as string || step2Data?.birthDate || ''}
+                nationalCode={userData.nationalCode}
+                birthDate={getValues('birthDate') as string}
                 show={showNationalCardTemplate}
                 onConfirm={handleNationalCardConfirm}
-                onBack={() => { if (showNationalCardTemplate) setShowNationalCardTemplate(false); setStep(1); }}
-            />}
+                onBack={() => { if (showNationalCardTemplate) setShowNationalCardTemplate(false); setUserData({ step: 1 }); }}
+            />} */}
 
         </div>
     );

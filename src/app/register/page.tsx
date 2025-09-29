@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { LoginFormData } from "@/lib/schemas/common";
 import { z } from "zod";
 import toast from "react-hot-toast";
 import { convertPersianToEnglish } from '@/lib/utils';
@@ -17,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/core/C
 import { Box } from "@/components/ui";
 import NationalCardScanner from "@/components/register/NationalCardScanner";
 import ContractPage from "../contract/page";
+import { useUser } from "@/contexts/UserContext";
 
 // Combined registration schema: nationalCode, phoneNumber, birthDate, postalCode
 const registrationSchema = z.object({
@@ -55,23 +55,15 @@ type ExtendedRegistrationForm = RegistrationForm & {
 };
 
 export default function Register() {
-    const [step, setStep] = useState(1);
+    const { userData, setUserData } = useUser();
     const [loading, setLoading] = useState(false);
 
-    const [step1Data, setStep1Data] = useState<LoginFormData | null>(null);
-    const [, setVideoSample] = useState<File | undefined>(undefined);
-    const [, setSignatureSample] = useState<File | undefined>(undefined);
-    const [, setSelfieSample] = useState<File | undefined>(undefined);
     const [passwordSet, setPasswordSet] = useState(false);
     const [, setPassword] = useState('');
 
     const {
         control,
-        handleSubmit: handleRegisterSubmit,
-        formState: { errors: registerErrors },
         setValue,
-        getValues,
-
         setError,
     } = useForm<ExtendedRegistrationForm>({
         resolver: zodResolver(extendedRegistrationSchema),
@@ -105,19 +97,16 @@ export default function Register() {
     }, [setValue]);
 
     const handleSelfiePhoto = (file: File) => {
-        setSelfieSample(file);
+        setUserData({ selfie: file, step: 3 });
         toast.success("عکس سلفی ثبت شد");
-        setStep(4);
     };
     const handleVideoRecording = (file: File) => {
-        setVideoSample(file);
+        setUserData({ video: file, step: 4 });
         toast.success("فیلم احراز هویت ثبت شد؛");
-        setStep(5);
     };
     const handleSignatureComplete = (file: File) => {
-        setSignatureSample(file);
+        setUserData({ signature: file, step: 5 });
         toast.success('نمونه امضای شما ثبت شد');
-        setStep(6);
     };
 
     const handleOtp2Submit = () => {
@@ -125,11 +114,11 @@ export default function Register() {
         setTimeout(() => {
             setLoading(false);
             toast.success("گواهی دیجیتال صادر شد");
-            setStep(7);
+            setUserData({ step: 6 });
         }, 2000);
     };
     const getStepDescription = () => {
-        switch (step) {
+        switch (userData.step) {
             case 1: return "اطلاعات شخصی";
             case 2: return "عکس سلفی";
             case 3: return "فیلم احراز هویت";
@@ -142,17 +131,15 @@ export default function Register() {
     };
 
     function handleNationalCardScanComplete(_file: File, _branch: string): void {
-        void _file;
-        void _branch;
+        setUserData({ nationalCard: _file, branch: _branch, step: 7 });
         toast.success("تصویر کارت ملی و شعبه ثبت شد");
-        setStep(8);
     }
 
     return (
         <Box className="my-6 p-4 flex flex-col md:flex-row items-start md:justify-center gap-6">
 
             <Box className="flex-shrink-0 w-full md:w-64">
-                <Sidebar step={step} onSelect={setStep} />
+                <Sidebar />
             </Box>
 
             <Box className="rounded-lg shadow-md  w-full">
@@ -164,24 +151,21 @@ export default function Register() {
                                     <CardTitle className="text-center">{getStepDescription()}</CardTitle>
                                 </CardHeader>
                                 <CardContent >
-                                    {step === 1 && (
-                                        <PersonalInfoForm setStep={setStep} />
+                                    {userData.step === 1 && (
+                                        <PersonalInfoForm />
 
                                     )}
-
-
-
-                                    {step === 2 && (
-                                        <SelfieStep onPhotoCapture={handleSelfiePhoto} onBack={() => setStep(2)} />
+                                    {userData.step === 2 && (
+                                        <SelfieStep onPhotoCapture={handleSelfiePhoto} onBack={() => setUserData({ step: 1 })} />
                                     )}
-                                    {step === 3 && (
-                                        <VideoStep onComplete={handleVideoRecording} onBack={() => setStep(3)} />
+                                    {userData.step === 3 && (
+                                        <VideoStep onComplete={handleVideoRecording} onBack={() => setUserData({ step: 2 })} />
                                     )}
 
-                                    {step === 4 && (
-                                        <SignatureStep onComplete={handleSignatureComplete} onCancel={() => { }} />
+                                    {userData.step === 4 && (
+                                        <SignatureStep onComplete={handleSignatureComplete} onCancel={() => setUserData({ step: 3 })} />
                                     )}
-                                    {step === 5 && (
+                                    {userData.step === 5 && (
                                         <>
                                             {!passwordSet && <PasswordStep
                                                 setPassword={setPassword}
@@ -201,9 +185,9 @@ export default function Register() {
                                             )}
                                         </>
                                     )}
-                                    {step === 6 && <NationalCardScanner onComplete={handleNationalCardScanComplete} onBack={() => setStep(6)} />}
+                                    {userData.step === 6 && <NationalCardScanner onComplete={handleNationalCardScanComplete} onBack={() => setUserData({ step: 5 })} />}
 
-                                    {step === 7 && (
+                                    {userData.step === 7 && (
                                         <ContractPage />
                                     )}
 
