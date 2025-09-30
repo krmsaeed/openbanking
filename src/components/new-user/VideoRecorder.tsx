@@ -21,6 +21,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
     const [cameraActive, setCameraActive] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -170,10 +171,17 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
             data.append('messageDTO', JSON.stringify(body));
             data.append('files', video);
             setCameraActive(false);
-            await axios.post('/api/bpms/deposit-files', data).then(() => {
+            setIsUploading(true);
+            try {
+                await axios.post('/api/bpms/deposit-files', data);
                 setUserData({ ...userData, step: 4 });
-            });
-            onComplete(videoFile);
+                onComplete(videoFile);
+            } catch (err) {
+                console.error('video upload error', err);
+                toast.error('ارسال ویدیو با خطا مواجه شد');
+            } finally {
+                setIsUploading(false);
+            }
         }
     };
 
@@ -248,11 +256,13 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                     <Button
                                         variant="primary"
                                         onClick={handleComplete}
-                                        className="  text-white gap-3 px-5 py-3 flex items-center justify-center  w-full bg-primary-600 hover:bg-primary-700"
+                                        loading={isUploading}
+                                        disabled={isUploading}
+                                        className="text-white gap-3 px-5 py-3 flex items-center justify-center w-full bg-primary"
                                     >
-                                        <CheckIcon className="h-5 w-5" />
+                                        {!isUploading && <CheckIcon className="h-5 w-5" />}
                                         <Typography variant="body1" className="text-white text-xs font-medium">
-                                            تایید
+                                            {isUploading ? 'در حال ارسال...' : 'تایید'}
                                         </Typography>
                                     </Button>
 

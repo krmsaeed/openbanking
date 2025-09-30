@@ -157,7 +157,7 @@ export function SimpleFileUpload({
                                             <Box className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
                                                 <DocumentIcon className="w-5 h-5 text-gray-500" />
                                             </Box>
-                                            <Box className="min-w-0 flex-1">
+                                            <Box className="flex-1">
                                                 <Typography variant="body2" weight="medium" className="text-gray-900 truncate">
                                                     {file.name}
                                                 </Typography>

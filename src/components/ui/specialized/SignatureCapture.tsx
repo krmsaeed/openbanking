@@ -92,7 +92,10 @@ export function SignatureCapture() {
     const saveSignature = async () => {
         setIsLoading(true);
         const canvas = canvasRef.current;
-        if (!canvas || !hasSignature) return;
+        if (!canvas || !hasSignature) {
+            setIsLoading(false);
+            return;
+        }
 
         canvas.toBlob(async (blob) => {
             if (blob) {
@@ -101,9 +104,9 @@ export function SignatureCapture() {
                 const uuid = maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
                     ? maybe.crypto.randomUUID()
                     : Date.now().toString(36);
-                const filename = `signature_$${uuid}.png`;
+                const filename = `signature_${uuid}.png`;
 
-                const file = new File([blob], filename, { type: 'image/jpeg' });
+                const file = new File([blob], filename, { type: 'image/png' });
                 const body = {
                     serviceName: 'virtual-open-deposit',
                     processId: userData.processId,
@@ -114,9 +117,16 @@ export function SignatureCapture() {
                 data.append('messageDTO', JSON.stringify(body));
                 data.append('files', file);
 
-                await axios.post('/api/bpms/deposit-files', data).then(() => {
+                try {
+                    await axios.post('/api/bpms/deposit-files', data);
                     setUserData({ ...userData, step: 5 });
-                }).finally(() => setIsLoading(false));
+                } catch (e) {
+                    console.error('signature upload failed', e);
+                } finally {
+                    setIsLoading(false);
+                }
+            } else {
+                setIsLoading(false);
             }
         }, 'image/png');
     };
@@ -174,13 +184,13 @@ export function SignatureCapture() {
                             <Button
                                 variant="primary"
                                 onClick={saveSignature}
-                                disabled={!hasSignature && !isLoading}
+                                disabled={!hasSignature || isLoading}
                                 loading={isLoading}
-                                className="  text-white gap-3 px-5 py-3 flex items-center justify-center  w-full bg-primary-600 hover:bg-primary-700"
+                                className="text-white gap-3 px-5 py-3 flex items-center justify-center w-full bg-primary-600 hover:bg-primary-700"
                             >
                                 {!isLoading && <CheckIcon className="h-5 w-5" />}
                                 <Typography variant="body1" className="text-white text-xs font-medium">
-                                    تایید
+                                    {isLoading ? 'در حال ارسال...' : 'تایید'}
                                 </Typography>
                             </Button>
 

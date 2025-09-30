@@ -57,7 +57,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
                 if (id) setSelectedDeviceId(id);
                 else setSelectedDeviceId(deviceId);
             } catch { setSelectedDeviceId(deviceId); }
-            // only persist a preferred USB camera during development where devs may expect this
+
             if (remember && process.env.NODE_ENV === 'development') localStorage.setItem('preferredUsbCameraId', deviceId);
             try { await refreshDevices(); } catch { }
         } catch (e) {
@@ -67,7 +67,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
     }, [refreshDevices]);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
 
-    // whether camera permission was previously granted
+
     const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
 
     const requestCameraPermission = useCallback(async () => {
@@ -136,16 +136,14 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
         formState: { errors }
     } = useForm();
 
-    // start camera stream when component mounts
+
     useEffect(() => {
         const localVideo = videoRef.current;
 
-        // refresh device list (USB-only flow).
+
         refreshDevices();
 
-        // prompt user for camera permission so device labels become available and
-        // we can auto-open the preferred camera. This will show the browser prompt.
-        // We're not forcing open here; openDeviceById will run separately if permission is granted.
+
         (async () => {
             try {
                 await requestCameraPermission();
@@ -164,11 +162,11 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
         };
     }, [refreshDevices, openDeviceById, requestCameraPermission]);
 
-    // When permission is granted, auto-open the selected device (helpful in dev)
+
     useEffect(() => {
         if (!permissionGranted) return;
         if (!selectedDeviceId) return;
-        // prefer auto-open in development only
+
         if (process.env.NODE_ENV === 'development') {
             (async () => {
                 try {
@@ -202,7 +200,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
             setCapturedFile(file);
             setCapturedUrl(url);
 
-            // run OCR and validate
+
             (async () => {
                 setOcrLoading(true);
                 try {
@@ -242,7 +240,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
         setCapturedFile(f);
         setCapturedUrl(url);
 
-        // run OCR and validate on uploaded file
+
         (async () => {
             setOcrLoading(true);
             try {
@@ -287,11 +285,6 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
         <Box className="space-y-4 ">
             <Box className="flex flex-col gap-4">
                 <Box>
-                    {/* <div className="flex gap-2 items-center">
-
-                        <Button variant="ghost" size="sm" onClick={async () => { if (selectedDeviceId) await openDeviceById(selectedDeviceId); else toast('وبکم انتخاب نشده'); }}>باز کردن</Button>
-
-                    </div> */}
                     <div className="relative bg-black rounded overflow-hidden">
                         {!capturedUrl ? (
                             isCameraOpen ? (
@@ -340,9 +333,9 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
                                 onClick={handleCapture}
                                 size="sm"
                                 disabled={ocrLoading}
-                                className={`${!canCapture ? 'opacity-50 pointer-events-none' : ''} ${ocrLoading ? 'opacity-60 pointer-events-none' : ''}`}
+                                loading={ocrLoading}
+                                className={`${!canCapture ? 'opacity-50 pointer-events-none' : ''}`}
                             >
-
                                 <span className="flex items-center gap-2 justify-center"><CameraIcon className="w-5 h-5" /> گرفتن عکس</span>
                             </Button>}
                             <input id="national-card-file-input" type="file" accept="image/*" onChange={handleFileFallback} className="hidden" />
@@ -356,7 +349,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
                                             setCapturedUrl(null);
                                             setCapturedFile(null);
                                         }
-                                        // restart camera for retake
+
                                         try {
                                             if (selectedDeviceId) {
                                                 const s = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: selectedDeviceId } }, audio: false });
@@ -372,7 +365,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
                                         }
                                     }}
                                     disabled={ocrLoading}
-                                    className={ocrLoading ? 'opacity-60 pointer-events-none bg-gray-200' : ''}
+                                    loading={ocrLoading}
                                 >
                                     <ArrowPathIcon className="w-5 h-5 ml-2 " />
                                     <span >بازنشانی</span>

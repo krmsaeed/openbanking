@@ -29,7 +29,7 @@ export function SelfieCapture({
     const [error, setError] = useState<string | null>(null);
     const [cameraStarted, setCameraStarted] = useState(false);
 
-    
+
     const startCamera = async () => {
         setLoading(true);
         setError(null);
@@ -56,7 +56,7 @@ export function SelfieCapture({
         }
     };
 
-    
+
     const stopCamera = useCallback(() => {
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
@@ -65,7 +65,7 @@ export function SelfieCapture({
         setCameraStarted(false);
     }, [stream]);
 
-    
+
     const capturePhoto = () => {
         const video = videoRef.current;
         const canvas = canvasRef.current;
@@ -75,44 +75,50 @@ export function SelfieCapture({
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        
+
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
 
-        
+
         ctx.drawImage(video, 0, 0);
 
-        
+
         const dataURL = canvas.toDataURL('image/jpeg', 0.8);
         setSelfieImage(dataURL);
 
-        
+
         stopCamera();
     };
 
-    
+
     const retakePhoto = () => {
         setSelfieImage(null);
         startCamera();
     };
 
-    
-    const confirmPhoto = () => {
-        if (!selfieImage) return;
 
-        
-        fetch(selfieImage)
-            .then(res => res.blob())
-            .then(blob => {
-                const file = new File([blob], 'selfie.jpg', { type: 'image/jpeg' });
-                onComplete(file);
-            })
-            .catch(() => {
-                setError('خطا در پردازش عکس');
-            });
+    const confirmPhoto = async () => {
+        if (!selfieImage) return;
+        setLoading(true);
+        try {
+            const res = await fetch(selfieImage);
+            const blob = await res.blob();
+            type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
+            const maybe = (globalThis as unknown as MaybeCrypto);
+            const uuid = maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
+                ? maybe.crypto.randomUUID()
+                : Date.now().toString(36);
+            const filename = `selfie_${uuid}.jpg`;
+            const file = new File([blob], filename, { type: 'image/jpeg' });
+            onComplete(file);
+        } catch {
+            setError('خطا در پردازش عکس');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    
+
     useEffect(() => {
         return () => {
             stopCamera();
@@ -219,9 +225,9 @@ export function SelfieCapture({
                                     <ArrowPathIcon className="w-4 h-4 ml-2" />
                                     عکس دوباره
                                 </Button>
-                                <Button onClick={confirmPhoto} className="flex-1 bg-green-600 hover:bg-green-700">
-                                    <CheckIcon className="w-4 h-4 ml-2" />
-                                    تأیید عکس
+                                <Button onClick={confirmPhoto} className="flex-1 bg-green-600 hover:bg-green-700" loading={loading} disabled={loading}>
+                                    {!loading && <CheckIcon className="w-4 h-4 ml-2" />}
+                                    {loading ? 'در حال ارسال...' : 'تأیید عکس'}
                                 </Button>
                             </Box>
                         </Box>

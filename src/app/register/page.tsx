@@ -18,7 +18,6 @@ import NationalCardScanner from "@/components/register/NationalCardScanner";
 import ContractPage from "../contract/page";
 import { useUser } from "@/contexts/UserContext";
 
-// Combined registration schema: nationalCode, phoneNumber, birthDate, postalCode
 const registrationSchema = z.object({
     nationalCode: z.string("کد ملی الزامی است").length(10, "کد ملی باید 10 رقم باشد").regex(/^\d+$/, "کد ملی باید فقط شامل اعداد باشد"),
     phoneNumber: z.string("شماره همراه الزامی است").min(10, "شماره همراه نامعتبر است").regex(/^\d+$/, "شماره همراه باید فقط شامل اعداد باشد"),
@@ -26,14 +25,13 @@ const registrationSchema = z.object({
     postalCode: z.string("کد پستی الزامی است").length(10, "کد پستی باید 10 رقم باشد").regex(/^\d+$/, "کد پستی باید فقط شامل اعداد باشد"),
 });
 
-// Extended schema includes optional password fields and validates them when present
 const extendedRegistrationSchema = registrationSchema.extend({
     password: z.string().optional(),
     confirmPassword: z.string().optional(),
     otp: z.string().optional(),
     certOtp: z.string().optional(),
 }).superRefine((data, ctx) => {
-    // If either password field is provided, enforce rules
+
     const pw = data.password;
     const cpw = data.confirmPassword;
     if ((pw !== undefined && pw !== '') || (cpw !== undefined && cpw !== '')) {
@@ -101,10 +99,6 @@ export default function Register() {
         setUserData({ video: file, step: 4 });
         toast.success("فیلم احراز هویت ثبت شد؛");
     };
-    const handleSignatureComplete = (file: File) => {
-        setUserData({ signature: file, step: 5 });
-        toast.success('نمونه امضای شما ثبت شد');
-    };
 
     const handleOtp2Submit = () => {
         setLoading(true);
@@ -140,17 +134,16 @@ export default function Register() {
             </Box>
 
             <Box className="rounded-lg shadow-md  w-full">
-                <Box className="max-w-9xl w-full mx-auto">
+                <Box className="md:max-w-9xl w-full mx-auto">
                     <Box className="flex flex-col md:flex-row gap-3">
                         <Box className="w-full">
-                            <Card padding="sm" className="min-w-96">
+                            <Card padding="sm" className="w-full md:min-w-96">
                                 <CardHeader>
                                     <CardTitle className="text-center">{getStepDescription()}</CardTitle>
                                 </CardHeader>
                                 <CardContent >
                                     {userData.step === 1 && (
                                         <PersonalInfoForm />
-
                                     )}
                                     {userData.step === 2 && (
                                         <SelfieStep />
@@ -158,7 +151,6 @@ export default function Register() {
                                     {userData.step === 3 && (
                                         <VideoStep onComplete={handleVideoRecording} onBack={() => setUserData({ step: 2 })} />
                                     )}
-
                                     {userData.step === 4 && (
                                         <SignatureStep />
                                     )}
@@ -187,7 +179,6 @@ export default function Register() {
                                     {userData.step === 7 && (
                                         <ContractPage />
                                     )}
-
                                 </CardContent>
                             </Card>
                         </Box>

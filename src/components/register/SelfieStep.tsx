@@ -23,6 +23,7 @@ export default function CameraSelfie() {
     const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [faceDetected, setFaceDetected] = useState(false);
     const [faceTooFar, setFaceTooFar] = useState(false);
@@ -34,7 +35,7 @@ export default function CameraSelfie() {
     const [eyeFeatureRatio, setEyeFeatureRatio] = useState(0);
     const autoCaptureTriggeredRef = useRef(false);
     const autoCaptureTimerRef = useRef<number | null>(null);
-    // working blob for the confirmed/compressed image (no longer stored separately)
+
     useEffect(() => {
         setIsClient(true);
     }, []);
@@ -141,7 +142,7 @@ export default function CameraSelfie() {
             gl.bindVertexArray(vao);
 
             const verts = new Float32Array([
-                // x, y, u, v
+
                 -1, -1, 0, 0,
                 1, -1, 1, 0,
                 -1, 1, 0, 1,
@@ -220,7 +221,7 @@ export default function CameraSelfie() {
                 gl.uniform1i(loc, 0);
                 gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-                // read back small RGBA buffer
+
                 const readBuf = new Uint8Array(PROC_W * PROC_H * 4);
                 gl.readPixels(0, 0, PROC_W, PROC_H, gl.RGBA, gl.UNSIGNED_BYTE, readBuf);
 
@@ -665,7 +666,7 @@ export default function CameraSelfie() {
                 try {
                     initWebGL();
                 } catch {
-                    // ignore
+
                 }
 
                 const video = videoRef.current;
@@ -715,7 +716,7 @@ export default function CameraSelfie() {
                 if (webglVboRef.current) gl.deleteBuffer(webglVboRef.current);
             }
         } catch {
-            // ignore cleanup errors
+
         }
         glRef.current = null;
         webglTexRef.current = null;
@@ -792,10 +793,13 @@ export default function CameraSelfie() {
         } catch (err) {
             console.warn('drawImage failed, attempting createImageBitmap fallback', err);
             try {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const bitmap = await (window as any).createImageBitmap(video);
-                context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-                try { bitmap.close?.(); } catch { }
+                type CreateImageBitmapLike = (src: ImageBitmapSource) => Promise<ImageBitmap>;
+                const cib = (window as unknown as { createImageBitmap?: CreateImageBitmapLike }).createImageBitmap;
+                if (cib) {
+                    const bitmap = await cib(video as unknown as ImageBitmapSource);
+                    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+                    try { bitmap.close?.(); } catch { }
+                }
             } catch (err2) {
                 console.error('createImageBitmap fallback failed:', err2);
             }
@@ -816,6 +820,8 @@ export default function CameraSelfie() {
             return;
         }
 
+        setIsUploading(true);
+
         const body = {
             serviceName: 'virtual-open-deposit',
             processId: userData.processId,
@@ -825,7 +831,7 @@ export default function CameraSelfie() {
 
         const data = new FormData();
         try {
-            // try fetch dataURL -> blob
+
             let blob: Blob | null = null;
             try {
                 const res = await fetch(capturedPhoto);
@@ -844,7 +850,7 @@ export default function CameraSelfie() {
                 return;
             }
 
-            // Create a safe, unique filename. Prefer globalThis.crypto.randomUUID when available.
+
             type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
             const maybe = (globalThis as unknown as MaybeCrypto);
             const uuid = maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
@@ -852,19 +858,20 @@ export default function CameraSelfie() {
                 : Date.now().toString(36);
             const filename = `selfie_${uuid}.jpg`;
 
-            // Prefer using a File object so the uploaded part includes a proper filename and MIME type.
+
             const file = new File([blob], filename, { type: 'image/jpeg' });
 
             data.append('messageDTO', JSON.stringify(body));
             data.append('files', file);
 
-            await axios.post('/api/bpms/deposit-files', data).then(res => {
-                if (res.data.body.randomText) setUserData({ ...userData, step: 3, randomText: res.data.body.randomText });
-            });
+            const res = await axios.post('/api/bpms/deposit-files', data);
+            if (res?.data?.body?.randomText) setUserData({ ...userData, step: 3, randomText: res.data.body.randomText });
 
         } catch (err) {
             console.error('upload error', err);
             toast.error('آپلود عکس با مشکل مواجه شد');
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -912,7 +919,7 @@ export default function CameraSelfie() {
                     if (webglVboRef.current) gl.deleteBuffer(webglVboRef.current);
                 }
             } catch {
-                // ignore
+
             }
             glRef.current = null;
             webglTexRef.current = null;
@@ -943,8 +950,8 @@ export default function CameraSelfie() {
                 autoCaptureTimerRef.current = null;
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [capturedPhoto, stream, faceDetected, eyesCentered, closenessPercent, obstructionRatio]);
+
+    }, [capturedPhoto, stream, faceDetected, eyesCentered, closenessPercent, obstructionRatio, capturePhoto]);
 
 
     if (error) {
@@ -1117,10 +1124,10 @@ export default function CameraSelfie() {
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            console.log('External photo button clicked! Face detected:', faceDetected);
                             if (closenessPercent >= 80 && obstructionRatio < 0.15) {
                                 capturePhoto();
                             }
+
                         }}
                         disabled={closenessPercent < 80 && obstructionRatio >= 0.15}
                         className={`w-20 h-20 rounded-full border-4 transition-all duration-300 ${closenessPercent === 100 && obstructionRatio < 0.15
@@ -1165,11 +1172,13 @@ export default function CameraSelfie() {
                 <Button
                     variant="primary"
                     onClick={handleConfirm}
-                    className="  text-white  gap-3 px-5 py-3 flex items-center justify-center  w-full bg-primary"
+                    loading={isUploading}
+                    disabled={isUploading}
+                    className="text-white gap-3 px-5 py-3 flex items-center justify-center w-full bg-primary"
                 >
-                    <CheckIcon className="h-5 w-5" />
+                    {!isUploading && <CheckIcon className="h-5 w-5" />}
                     <Typography variant="body1" className="text-white text-xs font-medium">
-                        تایید
+                        {isUploading ? 'در حال ارسال...' : 'تایید'}
                     </Typography>
                 </Button>
             </Box>
