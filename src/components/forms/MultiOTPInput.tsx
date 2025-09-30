@@ -47,6 +47,28 @@ export function MultiOTPInput({ length, value, onChange, disabled, className }: 
         }
     };
 
+    const handlePaste = (startIndex: number, e: React.ClipboardEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const paste = e.clipboardData.getData('text').replace(/\s+/g, '');
+        if (!paste) return;
+        const chars = paste.split('').filter((c) => /\d/.test(c));
+        if (chars.length === 0) return;
+
+        const newDigits = [...digits];
+        let lastFilled = startIndex;
+        for (let i = 0; i < chars.length && (startIndex + i) < length; i++) {
+            newDigits[startIndex + i] = chars[i];
+            lastFilled = startIndex + i;
+        }
+
+        setDigits(newDigits);
+        onChange(newDigits.join(''));
+
+        // focus the next input after the last filled
+        const next = Math.min(lastFilled + 1, length - 1);
+        inputRefs.current[next]?.focus();
+    };
+
     return (
         <Box className={`flex gap-2 justify-center ${className || ''}`} dir='ltr'>
             {digits.map((digit, index) => (
@@ -55,6 +77,7 @@ export function MultiOTPInput({ length, value, onChange, disabled, className }: 
                     value={digit}
                     onChange={(value: string) => handleDigitChange(index, value)}
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyDown(index, e)}
+                    onPaste={(e) => handlePaste(index, e)}
                     disabled={disabled}
                     autoFocus={index === 0}
                     ref={(el: HTMLInputElement | null) => {

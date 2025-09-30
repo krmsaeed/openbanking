@@ -161,7 +161,6 @@ export default function Register() {
                                                 setPasswordSet={setPasswordSet}
                                             />}
 
-                                            {/* When passwordSet is true, render the CertificateStep for certOtp here */}
                                             {passwordSet && (
                                                 <Controller
                                                     name="certOtp"

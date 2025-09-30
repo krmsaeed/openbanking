@@ -54,7 +54,7 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                         rules={{
                             required: ' نام  لاتین الزامی است',
                             minLength: { value: 4, message: 'نام لاتین باید حداقل 4 کاراکتر باشد' },
-                            pattern: { value: /^[a-z\s]+$/, message: 'نام  باید شامل حروف کوچک لاتین باشد' }
+                            pattern: { value: /^[a-z]+$/, message: 'نام لاتین باید شامل حروف کوچک باشد' }
                         }}
                         render={({ field }) => (
                             <Input {...field}
@@ -63,7 +63,6 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                                 placeholder="نام  لاتین را وارد کنید"
                                 required
                                 fullWidth
-                                className='text-left' dir='ltr'
                                 maxLength={200}
                                 error={errors.ENFirstName?.message}
                             />
@@ -76,7 +75,7 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                         rules={{
                             required: ' نام خانوادگی لاتین الزامی است',
                             minLength: { value: 4, message: 'نام خانوادگی باید حداقل 4 کاراکتر باشد' },
-                            pattern: { value: /^[a-z\s]+$/, message: 'نام خانوادگی باید شامل  حروف کوچک لاتین باشد' }
+                            pattern: { value: /^[a-z]+$/, message: 'نام خانوادگی باید شامل  حروف کوچک باشد' }
                         }}
                         render={({ field }) => (
                             <Input {...field}
@@ -85,7 +84,6 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                                 placeholder="نام خانوادگی لاتین را وارد کنید"
                                 required
                                 fullWidth
-                                className='text-left' dir='ltr'
                                 maxLength={200}
                                 error={errors.ENLastName?.message}
                             />

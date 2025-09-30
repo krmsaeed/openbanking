@@ -7,6 +7,8 @@ interface OTPInputProps {
     value: string;
     onChange: (value: string) => void;
     onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void;
+    autoComplete?: string;
     className?: string;
     maxLength?: number;
     disabled?: boolean;
@@ -19,7 +21,7 @@ export interface OTPInputRef {
 }
 
 const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
-    ({ value, onChange, onKeyDown, className, maxLength = 1, disabled, autoFocus }, ref) => {
+    ({ value, onChange, onKeyDown, onPaste, autoComplete, className, maxLength = 1, disabled, autoFocus }, ref) => {
         const inputRef = useRef<HTMLInputElement>(null);
 
         useImperativeHandle(ref, () => ({
@@ -45,6 +47,8 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
                 inputMode="numeric"
                 value={value}
                 onChange={handleChange}
+                onPaste={onPaste}
+                autoComplete={autoComplete ?? 'one-time-code'}
                 onKeyDown={onKeyDown}
                 className={cn(
                     "w-12 h-12 text-center text-lg font-bold border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-colors",
