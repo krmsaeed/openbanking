@@ -104,9 +104,9 @@ export function SignatureCapture() {
                 const uuid = maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
                     ? maybe.crypto.randomUUID()
                     : Date.now().toString(36);
-                const filename = `signature_${uuid}.png`;
+                const filename = `signature_${uuid}.jpg`;
 
-                const file = new File([blob], filename, { type: 'image/png' });
+                const file = new File([blob], filename, { type: 'image/jpeg' });
                 const body = {
                     serviceName: 'virtual-open-deposit',
                     processId: userData.processId,
@@ -116,18 +116,17 @@ export function SignatureCapture() {
                 const data = new FormData();
                 data.append('messageDTO', JSON.stringify(body));
                 data.append('files', file);
-
-                try {
-                    await axios.post('/api/bpms/deposit-files', data);
-                    setUserData({ ...userData, step: 5 });
-                } catch (e) {
-                    console.error('signature upload failed', e);
-                } finally {
+                await axios.post('/api/bpms/deposit-files', data).then((res) => {
+                    const resData = JSON.parse(res.data.body.response)
+                    if (resData.uploaded) {
+                        setUserData({ ...userData, step: 5 });
+                    }
+                }).finally(() => {
                     setIsLoading(false);
-                }
-            } else {
-                setIsLoading(false);
+                });
             }
+
+
         }, 'image/png');
     };
 

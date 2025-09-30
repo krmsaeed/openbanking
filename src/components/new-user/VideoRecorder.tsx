@@ -172,16 +172,20 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
             data.append('files', video);
             setCameraActive(false);
             setIsUploading(true);
-            try {
-                await axios.post('/api/bpms/deposit-files', data);
-                setUserData({ ...userData, step: 4 });
-                onComplete(videoFile);
-            } catch (err) {
+
+            await axios.post('/api/bpms/deposit-files', data).then((res) => {
+                console.log(res)
+                if (res.data.body.verified) {
+                    setUserData({ ...userData, step: 4 });
+
+                }
+            }).catch((err) => {
                 console.error('video upload error', err);
                 toast.error('ارسال ویدیو با خطا مواجه شد');
-            } finally {
+            }).finally(() => {
                 setIsUploading(false);
-            }
+            })
+
         }
     };
 

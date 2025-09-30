@@ -9,6 +9,7 @@ import { Controller, useForm } from 'react-hook-form';
 import List from '../ui/list';
 import ListItem from '../ui/listItem';
 
+
 export default function PasswordStep({ setPassword, setPasswordSet }:
     {
         setPassword: (value: string) => void,
@@ -22,6 +23,8 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
         reset
     } = useForm({
         defaultValues: {
+            ENFirstName: '',
+            ENLastName: '',
             password: '',
             confirmPassword: '',
         },
@@ -44,6 +47,50 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                     </List>
                 </Box>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                    <Controller
+                        name="ENFirstName"
+                        control={control}
+
+                        rules={{
+                            required: ' نام  لاتین الزامی است',
+                            minLength: { value: 4, message: 'نام لاتین باید حداقل 4 کاراکتر باشد' },
+                            pattern: { value: /^[a-z\s]+$/, message: 'نام  باید شامل حروف کوچک لاتین باشد' }
+                        }}
+                        render={({ field }) => (
+                            <Input {...field}
+                                type="text"
+                                label="نام  لاتین"
+                                placeholder="نام  لاتین را وارد کنید"
+                                required
+                                fullWidth
+                                className='text-left' dir='ltr'
+                                maxLength={200}
+                                error={errors.ENFirstName?.message}
+                            />
+                        )}
+                    />
+                    <Controller
+                        name="ENLastName"
+                        control={control}
+
+                        rules={{
+                            required: ' نام خانوادگی لاتین الزامی است',
+                            minLength: { value: 4, message: 'نام خانوادگی باید حداقل 4 کاراکتر باشد' },
+                            pattern: { value: /^[a-z\s]+$/, message: 'نام خانوادگی باید شامل  حروف کوچک لاتین باشد' }
+                        }}
+                        render={({ field }) => (
+                            <Input {...field}
+                                type="text"
+                                label="نام خانوادگی لاتین"
+                                placeholder="نام خانوادگی لاتین را وارد کنید"
+                                required
+                                fullWidth
+                                className='text-left' dir='ltr'
+                                maxLength={200}
+                                error={errors.ENLastName?.message}
+                            />
+                        )}
+                    />
                     <Controller
                         name="password"
                         control={control}

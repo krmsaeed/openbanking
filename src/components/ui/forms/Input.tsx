@@ -136,7 +136,7 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(
                     )}
                 </Box>
                 {error && (
-                    <Box className="flex items-center pl-1 text-sm text-error mt-1 w-full">
+                    <Box className="flex items-center pl-1 text-sm text-error mt-1 w-full text-right" dir="rtl">
                         {error}
                     </Box>
                 )}
