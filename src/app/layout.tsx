@@ -7,11 +7,10 @@ import ThemeToggle from "@/components/ui/ThemeToggle";
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
 import { UserProvider } from '@/contexts/UserContext';
-// import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 
 export const metadata: Metadata = {
-  title: "پرداخت نوین | هوشمندانه پرداخت کنید...",
-  description: "بانکاقتصاد نوین",
+  title: "...اقتصاد نوین | هوشمندانه پرداخت کنید",
+  description: "بانک اقتصاد نوین",
 };
 
 const iranYekan = localFont({

@@ -64,7 +64,7 @@ export default function ContractPage() {
                         قرارداد تسهیلات بانکی
                     </h1>
                     <p className="text-dark">
-                        قرارداد فی‌مابین مشتری و بانکاقتصاد نوین
+                        قرارداد فی‌مابین مشتری و بانک اقتصاد نوین
                     </p>
                 </div>
 
@@ -135,7 +135,7 @@ export default function ContractPage() {
                             <div>
                                 <h3 className="font-bold text-dark-800 mb-2">ماده ۱ - موضوع قرارداد</h3>
                                 <p className="text-dark">
-                                    بانکاقتصاد نوین متعهد می‌شود مبلغ {contractDetails.facilityAmount} ریال را به عنوان تسهیلات
+                                    بانک اقتصاد نوین متعهد می‌شود مبلغ {contractDetails.facilityAmount} ریال را به عنوان تسهیلات
                                     بانکی در اختیار مشتری قرار دهد. این مبلغ باید طی مدت {contractDetails.duration} ماه
                                     به صورت اقساط ماهانه بازپرداخت شود.
                                 </p>
