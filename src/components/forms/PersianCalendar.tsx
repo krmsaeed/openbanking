@@ -462,7 +462,6 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                                 setDisplayValue(formattedDate);
                                 let outputValue: string;
                                 if (outputFormat === 'iso') {
-                                    // Use UTC components and build ISO string at UTC midnight (ignore local hour)
                                     const y = today.getUTCFullYear();
                                     const m = today.getUTCMonth() + 1;
                                     const d = today.getUTCDate();

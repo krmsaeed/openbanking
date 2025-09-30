@@ -64,7 +64,6 @@ export function MultiOTPInput({ length, value, onChange, disabled, className }: 
         setDigits(newDigits);
         onChange(newDigits.join(''));
 
-        // focus the next input after the last filled
         const next = Math.min(lastFilled + 1, length - 1);
         inputRefs.current[next]?.focus();
     };

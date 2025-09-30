@@ -149,7 +149,7 @@ export default function Register() {
                                         <SelfieStep />
                                     )}
                                     {userData.step === 3 && (
-                                        <VideoStep onComplete={handleVideoRecording} onBack={() => setUserData({ step: 2 })} />
+                                        <VideoStep />
                                     )}
                                     {userData.step === 4 && (
                                         <SignatureStep />

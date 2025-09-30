@@ -123,20 +123,17 @@
   --color-text: #111827;
   --color-bg: #f7fafc;
 
-  /* Surface and card tokens (global) */
   --color-surface: #ffffff;
   --color-surface-foreground: var(--color-text);
   --color-border: rgba(0, 0, 0, 0.06);
   --card-shadow: 0 6px 18px rgba(2, 6, 23, 0.06);
   --scrollbar-thumb: rgba(0, 0, 0, 0.12);
-  /* muted text and background shades used across components (map to gray scale) */
-  --color-muted: var(--color-gray-600); /* maps to text-gray-600 */
-  --color-muted-2: var(--color-gray-500); /* maps to text-gray-500 */
-  --color-bg-soft: var(--color-gray-200); /* bg-gray-200 */
-  --color-bg-100: var(--color-gray-100); /* bg-gray-100 */
-  --color-bg-50: var(--color-gray-50); /* bg-gray-50 */
+  --color-muted: var(--color-gray-600);
+  --color-muted-2: var(--color-gray-500);
+  --color-bg-soft: var(--color-gray-200);
+  --color-bg-100: var(--color-gray-100);
+  --color-bg-50: var(--color-gray-50);
 
-  /* shorthand aliases for older CSS that references --primary-500 etc */
   --primary-50: var(--color-primary-50);
   --primary-100: var(--color-primary-100);
   --primary-200: var(--color-primary-200);
@@ -167,7 +164,6 @@
   --color-dark-100: #1e293b;
   --color-dark-50: #0f172a;
 
-  /* Gray scale (dark) */
   --color-gray-900: #121212;
   --color-gray-800: #1a1a1a;
   --color-gray-700: #242424;
@@ -264,7 +260,6 @@
   --color-text: #e6eef8;
   --color-bg: #0b1220;
 
-  /* surfaces and UI tokens for dark mode */
   --color-surface: #141418;
   --color-surface-foreground: var(--color-text);
   --color-border: rgba(255, 255, 255, 0.06);
@@ -276,7 +271,6 @@
   --color-bg-100: var(--color-gray-100);
   --color-bg-50: var(--color-gray-50);
 
-  /* shorthand aliases for legacy classes in dark mode */
   --primary-50: var(--color-primary-50);
   --primary-100: var(--color-primary-100);
   --primary-200: var(--color-primary-200);

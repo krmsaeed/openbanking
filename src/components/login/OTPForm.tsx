@@ -44,7 +44,6 @@ export function OTPForm({ phoneNumber, onVerify, onResend, loading }: OTPFormPro
         setValue('otp', newOtp.join(''));
     };
 
-    // formatting provided by hook: formatTime()
 
     return (
         <Card padding="lg">
@@ -78,9 +77,6 @@ export function OTPForm({ phoneNumber, onVerify, onResend, loading }: OTPFormPro
                             />
                         ))}
                     </Box>
-
-                    {/* Left button below acts as resend (shows countdown until enabled) */}
-
                     <Box className="flex gap-4">
                         {secondsLeft > 0 ? (
                             <div className="flex-1 text-gray-600 text-sm text-center" style={{ minWidth: 140, fontVariantNumeric: 'tabular-nums', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace' }}>

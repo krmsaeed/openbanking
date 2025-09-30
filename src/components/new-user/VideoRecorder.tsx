@@ -9,12 +9,8 @@ import { Box, Typography } from "../ui";
 import { useUser } from "@/contexts/UserContext";
 import axios from "axios";
 
-interface VideoRecorderProps {
-    onComplete: (file: File) => void;
-    onCancel: () => void;
-}
 
-export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCancel }) => {
+export const VideoRecorder: React.FC = () => {
     const { setUserData, userData } = useUser()
     const [isRecording, setIsRecording] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
@@ -250,7 +246,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
                                 </Box>
                                 <Box className="w-full flex gap-2 items-center">
                                     <Button
-                                        onClick={onCancel}
+                                        onClick={() => { setUserData({ step: 2 }) }}
                                         variant="destructive"
                                         className="w-full flex justify-center gapo-3 px-5 py-3 items-center text-white"
                                     >

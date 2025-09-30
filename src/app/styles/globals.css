@@ -659,7 +659,6 @@ input[data-form-type="other"]::-webkit-contacts-auto-fill-button {
   }
 }
 
-/* Primary color utilities (پشتیبانی از کلاس‌های استفاده‌شده در PersianCalendar.tsx) */
 .bg-primary-500 {
   background-color: var(--primary-500) !important;
 }
@@ -689,7 +688,6 @@ input[data-form-type="other"]::-webkit-contacts-auto-fill-button {
   z-index: 50;
 }
 
-/* scrollbar for pickers */
 .pc-picker::-webkit-scrollbar {
   width: 8px;
   height: 8px;
