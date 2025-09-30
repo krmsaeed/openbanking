@@ -8,9 +8,6 @@ import Image from "next/image";
 import { useUser } from "@/contexts/UserContext";
 import axios from "axios";
 import toast from "react-hot-toast";
-
-
-
 export default function CameraSelfie() {
     const { userData, setUserData } = useUser()
     const videoRef = useRef<HTMLVideoElement>(null);

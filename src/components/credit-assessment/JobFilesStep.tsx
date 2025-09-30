@@ -59,7 +59,7 @@ export function JobFilesStep({ onNext, onPrevious, loading }: JobFilesStepProps)
                         label="فیش‌های حقوقی"
                         required
                         description="حداقل یک فیش حقوقی"
-                        error={!!errors.salarySlips}
+                        error={errors.salarySlips?.message ?? ''}
                     >
                         <Controller
                             name="salarySlips"

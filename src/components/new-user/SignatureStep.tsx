@@ -1,7 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
-import { SignatureCapture } from "@/components/ui/specialized/SignatureCapture";
+import { Card, CardContent, CardHeader, CardTitle, SignatureCapture } from "@/components/ui";
 
 interface SignatureStepProps {
     onComplete: (file: File) => void;

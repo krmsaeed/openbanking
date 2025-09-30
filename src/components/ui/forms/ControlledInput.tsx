@@ -17,7 +17,7 @@ export function ControlledInput({ name, control, placeholder, type = 'text', cla
             name={name}
             control={control}
             render={({ field, fieldState }) => (
-                <Input {...field} type={type} placeholder={placeholder} className={className} error={!!fieldState.error} />
+                <Input {...field} type={type} placeholder={placeholder} className={className} error={fieldState.error?.message} />
             )}
         />
     );

@@ -67,7 +67,7 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                     <FormField
                         label="تصویر جلوی کارت ملی"
                         required
-                        error={!!errors.nationalCardFront}
+                        error={errors.nationalCardFront?.message ?? ''}
                     >
                         <Controller
                             name="nationalCardFront"
@@ -93,7 +93,7 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                     <FormField
                         label="تصویر پشت کارت ملی"
                         required
-                        error={!!errors.nationalCardBack}
+                        error={errors.nationalCardBack?.message ?? ''}
                     >
                         <Controller
                             name="nationalCardBack"
@@ -118,7 +118,7 @@ export function IdentityFilesStep({ onNext, onPrevious, loading }: IdentityFiles
                     <FormField
                         label="تصویر شناسنامه"
                         required
-                        error={!!errors.birthCertificate}
+                        error={errors.birthCertificate?.message ?? ''}
                     >
                         <Controller
                             name="birthCertificate"

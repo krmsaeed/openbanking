@@ -45,7 +45,6 @@ export default function PersonalInfoForm() {
                 postalCode: data.postalCode
             }
         }).then(response => {
-            console.log("hiiiiiiiiiii", response)
             if (response.data.body.hasActiveCertificate) setUserData({ step: 2 })
             else setUserData({ step: 2 })
         })

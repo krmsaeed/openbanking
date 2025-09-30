@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import { SignatureCapture } from '@/components/ui/specialized/SignatureCapture';
+import { SignatureCapture } from '../ui';
 
 interface Props {
     onComplete: (file: File) => void;
