@@ -62,7 +62,7 @@ export function PersianDatePicker({
                     value={value ? formatDisplayDate(value) : ''}
                     readOnly
                     required={required}
-                    error={!!error}
+                    error={error}
                     className="cursor-pointer"
                 />
             </div>

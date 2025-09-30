@@ -27,8 +27,6 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
             if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
             const devices = await navigator.mediaDevices.enumerateDevices();
             const allVids = devices.filter((d) => d.kind === 'videoinput');
-            // During development prefer USB/external webcams so devs can test with USB cameras.
-            // In production use the system default camera (don't filter by USB labels).
             const preferUsb = process.env.NODE_ENV === 'development';
             let vids: MediaDeviceInfo[] = [];
             if (preferUsb) {
@@ -76,14 +74,11 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
         try {
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return false;
             const s = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-            // stop immediately - we only requested to get permission and device labels
             try { s.getTracks().forEach((t) => t.stop()); } catch { }
             setPermissionGranted(true);
-            toast.success('دسترسی دوربین اعطا شد');
             try { await refreshDevices(); } catch { }
             return true;
-        } catch (err) {
-            console.warn('camera permission denied or failed', err);
+        } catch {
             setPermissionGranted(false);
             toast.error('دسترسی دوربین داده نشد');
             try { await refreshDevices(); } catch { }
@@ -91,7 +86,6 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
         }
     }, [refreshDevices]);
 
-    // If a device is selected and permission is already granted, open it automatically.
     useEffect(() => {
         let mounted = true;
         const tryAutoOpen = async () => {
@@ -108,10 +102,8 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
                             await openDeviceById(selectedDeviceId);
                         }
                     } catch {
-                        // permissions.query may throw on some browsers; fallback to no-op
                     }
                 } else {
-                    // No permissions API - try opening but don't force prompt
                     try { await openDeviceById(selectedDeviceId); } catch { }
                 }
             } catch (err) {

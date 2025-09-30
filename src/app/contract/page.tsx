@@ -152,7 +152,7 @@ export default function ContractPage() {
 
                             <div>
                                 <h3 className="font-bold text-dark-800 mb-2">ماده ۳ - نرخ سود</h3>
-                                <p className="text-gray-700">
+                                <p className="text-dark">
                                     نرخ سود این تسهیلات {contractDetails.interestRate}% در سال بوده که
                                     طبق مقررات بانک مرکزی جمهوری اسلامی ایران تعیین شده است.
                                     این نرخ ممکن است طبق تصمیمات بانک مرکزی تغییر یابد.
@@ -161,7 +161,7 @@ export default function ContractPage() {
 
                             <div>
                                 <h3 className="font-bold text-dark-800 mb-2">ماده ۴ - تضامین</h3>
-                                <p className="text-gray-700">
+                                <p className="text-dark">
                                     مشتری متعهد است تضامین لازم شامل اسناد و مدارک مورد نیاز بانک را
                                     ارائه داده و در طول مدت قرارداد حفظ نماید. در صورت کاهش ارزش تضامین،
                                     بانک حق درخواست تضامین اضافی را دارد.
@@ -170,7 +170,7 @@ export default function ContractPage() {
 
                             <div>
                                 <h3 className="font-bold text-dark-800 mb-2">ماده ۵ - فسخ قرارداد</h3>
-                                <p className="text-gray-700">
+                                <p className="text-dark">
                                     در صورت عدم رعایت شرایط قرارداد از سوی مشتری، بانک حق فسخ قرارداد
                                     و مطالبه کل مبلغ باقیمانده را دارد. همچنین مشتری می‌تواند در هر زمان
                                     نسبت به تسویه زودهنگام اقدام نماید.
@@ -179,7 +179,7 @@ export default function ContractPage() {
 
                             <div>
                                 <h3 className="font-bold text-dark-800 mb-2">ماده ۶ - حل اختلاف</h3>
-                                <p className="text-gray-700">
+                                <p className="text-dark">
                                     کلیه اختلافات ناشی از این قرارداد در مراجع ذی‌صلاح قضایی تهران
                                     قابل رسیدگی است. قوانین جمهوری اسلامی ایران بر این قرارداد حاکم خواهد بود.
                                 </p>

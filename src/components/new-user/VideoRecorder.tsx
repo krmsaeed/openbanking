@@ -29,22 +29,6 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
     const recordedChunksRef = useRef<Blob[]>([]);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-
-    useEffect(() => {
-        if (recordingTime > 0) {
-            timerRef.current = setTimeout(() => {
-                setRecordingTime(recordingTime - 1);
-            }, 1000);
-        } else if (recordingTime === 0 && isRecording) {
-            stopVideoRecording();
-        }
-        return () => {
-            if (timerRef.current) {
-                clearTimeout(timerRef.current);
-            }
-        };
-    }, [recordingTime, isRecording]);
-
     useEffect(() => {
         if (!videoFile && !isRecording && !streamRef.current && !cameraActive) {
             startCamera();
@@ -143,6 +127,21 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
         }
     }, [isRecording]);
 
+    useEffect(() => {
+        if (recordingTime > 0) {
+            timerRef.current = setTimeout(() => {
+                setRecordingTime(recordingTime - 1);
+            }, 1000);
+        } else if (recordingTime === 0 && isRecording) {
+            stopVideoRecording();
+        }
+        return () => {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+        };
+    }, [recordingTime, isRecording, stopVideoRecording]);
+
     const handleComplete = async () => {
         if (videoFile) {
             if (streamRef.current) {
@@ -171,8 +170,7 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
             data.append('messageDTO', JSON.stringify(body));
             data.append('files', video);
             setCameraActive(false);
-            await axios.post('/api/bpms/deposit-files', data).then(res => {
-
+            await axios.post('/api/bpms/deposit-files', data).then(() => {
                 setUserData({ ...userData, step: 4 });
             });
             onComplete(videoFile);
@@ -196,8 +194,6 @@ export const VideoRecorder: React.FC<VideoRecorderProps> = ({ onComplete, onCanc
             URL.revokeObjectURL(videoPreviewUrl);
             setVideoPreviewUrl(null);
         }
-
-        // reset any local prompts
 
         toast.success('آماده برای ضبط مجدد');
     };

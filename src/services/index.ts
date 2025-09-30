@@ -1,7 +1,8 @@
 export { authService } from './auth';
 export { verificationService } from './verification';
 export { bankingService } from './banking';
-export { sendMessage } from './bpms/sendMessage';
+export { default as bpms } from './bpms';
+export { virtualOpenDepositSendMessage } from './bpms';
 
 export type { AuthCredentials, AuthResponse, OtpResponse } from './auth';
 export type { VerificationData, VerificationResponse, VerificationStatus } from './verification';

@@ -160,7 +160,7 @@ export default function Register() {
                                     )}
 
                                     {userData.step === 4 && (
-                                        <SignatureStep onComplete={handleSignatureComplete} onCancel={() => setUserData({ step: 3 })} />
+                                        <SignatureStep />
                                     )}
                                     {userData.step === 5 && (
                                         <>

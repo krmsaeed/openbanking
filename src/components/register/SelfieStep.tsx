@@ -34,8 +34,7 @@ export default function CameraSelfie() {
     const [eyeFeatureRatio, setEyeFeatureRatio] = useState(0);
     const autoCaptureTriggeredRef = useRef(false);
     const autoCaptureTimerRef = useRef<number | null>(null);
-    // working blob for the confirmed/compressed image
-    const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
+    // working blob for the confirmed/compressed image (no longer stored separately)
     useEffect(() => {
         setIsClient(true);
     }, []);
@@ -855,7 +854,6 @@ export default function CameraSelfie() {
 
             // Prefer using a File object so the uploaded part includes a proper filename and MIME type.
             const file = new File([blob], filename, { type: 'image/jpeg' });
-            setCapturedBlob(file);
 
             data.append('messageDTO', JSON.stringify(body));
             data.append('files', file);
@@ -878,7 +876,6 @@ export default function CameraSelfie() {
 
     useEffect(() => {
         if (stream && videoRef.current) {
-            console.log('Stream updated, refreshing video...');
             const video = videoRef.current;
 
             if (video.srcObject !== stream) {

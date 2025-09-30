@@ -6,7 +6,6 @@ import { PersianCalendar } from '@/components/forms';
 import { Button } from '../ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import NationalCardPreview from './NationalCardPreview';
 import { useUser } from '@/contexts/UserContext';
 import axios from 'axios';
 
@@ -21,9 +20,9 @@ type PersonalInfoFormData = z.infer<typeof PersonalInfoFormData>;
 
 export default function PersonalInfoForm() {
     const { userData, setUserData } = useUser();
-    const [showNationalCardTemplate, setShowNationalCardTemplate] = React.useState(false);
+    const [showNationalCardTemplate] = React.useState(false);
 
-    const { handleSubmit, formState: { errors }, control, getValues } = useForm<PersonalInfoFormData>({
+    const { handleSubmit, formState: { errors, isSubmitting }, control } = useForm<PersonalInfoFormData>({
         resolver: zodResolver(PersonalInfoFormData),
         mode: 'all',
         defaultValues: {
@@ -109,16 +108,9 @@ export default function PersonalInfoForm() {
                     )}
                 />
 
-                <Button type="submit" className="w-full mt-8 btn bg-primary">ادامه</Button>
+                <Button type="submit" className="w-full mt-8 btn bg-primary" loading={isSubmitting} disabled={isSubmitting}>ادامه</Button>
             </form>}
-            {/* 
-            {showNationalCardTemplate && <NationalCardPreview
-                nationalCode={userData.nationalCode}
-                birthDate={getValues('birthDate') as string}
-                show={showNationalCardTemplate}
-                onConfirm={handleNationalCardConfirm}
-                onBack={() => { if (showNationalCardTemplate) setShowNationalCardTemplate(false); setUserData({ step: 1 }); }}
-            />} */}
+
 
         </div>
     );

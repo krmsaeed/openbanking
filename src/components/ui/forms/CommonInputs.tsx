@@ -36,7 +36,7 @@ export const NationalCodeInput = <T extends FieldValues = FieldValues>({
                     placeholder={placeholder}
                     className={className}
                     maxLength={10}
-                    error={!!fieldState?.error}
+                    error={fieldState?.error?.message ?? ''}
                     inputMode="numeric"
                 />
             )}
@@ -64,7 +64,7 @@ export const PhoneNumberInput = <T extends FieldValues = FieldValues>({
                     placeholder={placeholder}
                     className={className}
                     maxLength={11}
-                    error={!!fieldState?.error}
+                    error={fieldState?.error?.message ?? ''}
                     inputMode="numeric"
                 />
             )}
