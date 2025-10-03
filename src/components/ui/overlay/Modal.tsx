@@ -61,13 +61,13 @@ export default function Modal({
         <div className="fixed inset-0 z-50 overflow-y-auto">
             {/* Backdrop */}
             <div 
-                className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+                className="fixed inset-0 bg-black/30 backdrop-blur-sm transition-all duration-300"
                 onClick={onClose}
             />
             
             {/* Modal */}
             <div className="flex min-h-full items-center justify-center p-4">
-                <div className={`relative w-full ${sizeClasses[size]} transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl transition-all`}>
+                <div className={`relative w-full ${sizeClasses[size]} transform overflow-hidden rounded-lg bg-white/95 dark:bg-gray-50/95 backdrop-blur-md shadow-xl transition-all duration-300 border border-gray-200/20 dark:border-gray-50/20`}>
                     {/* Header */}
                     {(title || showCloseButton) && (
                         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
