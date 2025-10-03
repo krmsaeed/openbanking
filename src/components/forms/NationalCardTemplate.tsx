@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Box, Button, Typography } from "../ui/core";
+import LoadingButton from "../ui/core/LoadingButton";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 interface NationalCardTemplateProps {
@@ -105,17 +106,16 @@ export function NationalCardTemplate({
                     <XMarkIcon className="w-5 h-5 text-white" />
                     انصراف
                 </Button>
-                <Button
-                    variant="primary"
+                <LoadingButton
                     onClick={onConfirm}
                     disabled={!confirmed}
-                    className="  text-white  gap-3 px-5 py-3 flex items-center justify-center  w-full bg-primary"
+                    className="text-white gap-3 px-5 py-3 flex items-center justify-center w-full bg-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <CheckIcon className="h-5 w-5" />
                     <Typography variant="body1" className="text-white text-xs font-medium">
                         تایید
                     </Typography>
-                </Button>
+                </LoadingButton>
             </Box>
         </Box>
     );

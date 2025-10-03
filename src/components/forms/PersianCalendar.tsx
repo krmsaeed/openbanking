@@ -169,7 +169,6 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                 setCurrentYear(py);
                 setCurrentMonth(pm);
             } else {
-                // Assume Persian format
                 const parts = value.split('/');
                 if (parts.length === 3) {
                     const year = parseInt(convertToEnglishDigits(parts[0]));
@@ -345,7 +344,6 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
             </Box>
             {isOpen && (
                 <Box className="p-4 absolute top-full left-0 right-0 mt-2 bg-white border border-gray-300 rounded-xl shadow-lg  z-50">
-                    {/* Header */}
                     <Box className="flex items-center justify-between">
                         <button
                             type="button"
@@ -405,8 +403,8 @@ export default function PersianCalendar({ value, onChange, placeholder, label, r
                                 )}
 
                                 {showYearOverlay && (
-                                    <div className="absolute  top-16 right-0 z-50 mt-2 w-full flex justify-center">
-                                        <div ref={yearOverlayRef} className="bg-white border border-gray-200 rounded-lg shadow-lg p-3" style={{ width: 240, maxWidth: '90%' }}>
+                                    <div className="absolute  top-16 right-0 z-50 mt-2 w-full flex justify-center ">
+                                        <div ref={yearOverlayRef} className="bg-white border border-gray-200 rounded-lg shadow-lg " style={{ width: 240, maxWidth: '90%' }}>
                                             <div ref={yearListRef} className="h-56 overflow-auto pr-2  grid grid-cols-3 gap-4">
                                                 {Array.from({ length: (MAX_YEAR - MIN_YEAR) + 1 }).map((_, i) => {
                                                     const y = MIN_YEAR + i;

@@ -31,8 +31,6 @@ export function OTPForm({ phoneNumber, onVerify, onResend, loading }: OTPFormPro
 
     const otpValue = watch('otp');
 
-    // useOtpTimer starts automatically on mount
-
     const handleOtpChange = (value: string, index: number) => {
         const newOtp = (otpValue || '').split('');
         newOtp[index] = value;
