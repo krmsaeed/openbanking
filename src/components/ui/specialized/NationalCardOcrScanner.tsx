@@ -362,8 +362,8 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                 size="md"
             >
                 <div className="text-center space-y-6 p-2">
-                    <div className="mx-auto w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-full flex items-center justify-center">
-                        <CameraIcon className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                    <div className="mx-auto w-20 h-20 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-700 rounded-full flex items-center justify-center">
+                        <CameraIcon className="w-10 h-10 text-primary-600 dark:text-blue-400" />
                     </div>
                     
                     <div className="space-y-3">
@@ -376,8 +376,8 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                         </p>
                     </div>
 
-                    <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-                        <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                    <div className="bg-secondary-50 dark:bg-secondary-900/20 border border-secondary-200 dark:border-secondary-800 rounded-lg p-4">
+                        <p className="text-sm text-secondary-800 dark:text-secondary-200">
                             <strong>راهنما:</strong> اگر دسترسی داده نشد، از تنظیمات مرورگر دسترسی دوربین را فعال کنید.
                         </p>
                     </div>
