@@ -1,6 +1,6 @@
+import mergeClasses from '@/lib/utils';
 import React, { ComponentProps } from 'react';
 import { Box, Typography } from '../core';
-import mergeClasses from '@/lib/utils';
 
 interface CustomTextareaProps extends ComponentProps<'textarea'> {
     inputComponent?: React.ElementType;
@@ -51,7 +51,7 @@ const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
                 required={required}
                 rows={5}
                 className={mergeClasses(
-                    `focus:border-primary block w-full border-b-2 border-gray-300 bg-white px-4 py-3 text-gray-900 focus:outline-none sm:text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white`,
+                    `focus:border-primary block w-full rounded-md border-b-2 border-gray-300 bg-white px-4 py-3 text-gray-900 focus:outline-none sm:text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white`,
                     className && className
                 )}
                 style={{

@@ -66,6 +66,8 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>((props, ref) => {
                     ref={ref}
                     className={mergeClasses(
                         'text-gray w-full rounded-md bg-white p-3 px-8 shadow-md focus:border-none focus:outline-none',
+                        disabled &&
+                            'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-500',
                         props.className,
                         color
                     )}

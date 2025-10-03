@@ -1,13 +1,13 @@
 'use client';
+import { PersianCalendar } from '@/components/forms';
+import { Input } from '@/components/ui/forms';
+import { useUser } from '@/contexts/UserContext';
+import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Input } from '@/components/ui/forms';
-import { PersianCalendar } from '@/components/forms';
-import { Button } from '../ui';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useUser } from '@/contexts/UserContext';
-import axios from 'axios';
+import { Button } from '../ui';
 
 const PersonalInfoFormData = z.object({
     phoneNumber: z
@@ -43,7 +43,7 @@ export default function PersonalInfoForm() {
     });
     const onSubmit = async (data: PersonalInfoFormData) => {
         await axios
-            .post('/api/bpms/kekyc-user-send-message', {
+            .post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',
                 processId: userData.processId,
                 formName: 'CustomerInquiry',

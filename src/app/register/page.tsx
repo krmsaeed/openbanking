@@ -114,7 +114,7 @@ export default function Register() {
 
     const handleOtp2Submit = () => {
         axios
-            .post('/api/bpms/kekyc-user-send-message', {
+            .post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',
                 formName: 'CertificateOtpVerify',
                 processId: userData.processId,
@@ -167,7 +167,7 @@ export default function Register() {
             </Box>
 
             <Box className="w-full rounded-lg shadow-md">
-                <Box className="md:max-w-9xl mx-auto w-full">
+                <Box className="mx-auto w-full md:max-w-96">
                     <Box className="flex flex-col gap-3 md:flex-row">
                         <Box className="w-full">
                             <Card padding="sm" className="w-full md:min-w-96">

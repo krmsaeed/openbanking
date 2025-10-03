@@ -204,6 +204,7 @@ export default function NationalCardOcrScanner({
             return { text, fields, valid: ok };
         } catch (e) {
             console.warn('ocr failed', e);
+
             setOcrValid(false);
             if (onCapture) {
                 onCapture(file, false);
@@ -279,7 +280,7 @@ export default function NationalCardOcrScanner({
 
     return (
         <Box className="space-y-3">
-            <div className="relative overflow-hidden rounded bg-black">
+            <div className="relative overflow-hidden rounded-md">
                 {!capturedUrl ? (
                     isCameraOpen ? (
                         <video
@@ -287,7 +288,7 @@ export default function NationalCardOcrScanner({
                             autoPlay
                             playsInline
                             muted
-                            className="h-64 w-full object-cover"
+                            className="border-primary h-64 w-full rounded-md border-2 border-dashed object-cover p-1"
                         />
                     ) : (
                         <div

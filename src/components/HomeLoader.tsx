@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, memo, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useUser } from '@/contexts/UserContext';
 import axios from 'axios';
 import Image from 'next/image';
-import { useUser } from '@/contexts/UserContext';
+import { useRouter } from 'next/navigation';
+import { memo, useCallback, useEffect } from 'react';
 type ResponseBody = {
     data: {
         body: {
@@ -28,7 +28,7 @@ function HomeLoader() {
             return;
         }
         await axios
-            .post('/api/bpms/kekyc-user-send-message', {
+            .post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',
                 body: { code: nationalCode },
             })

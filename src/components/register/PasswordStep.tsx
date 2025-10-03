@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import { Input } from '@/components/ui/forms';
 import { Button } from '@/components/ui/core/Button';
 import LoadingButton from '@/components/ui/core/LoadingButton';
-import { Box } from '../ui';
+import { Input } from '@/components/ui/forms';
+import { useUser } from '@/contexts/UserContext';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import axios from 'axios';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
+import { Box } from '../ui';
 import List from '../ui/list';
 import ListItem from '../ui/listItem';
-import axios from 'axios';
-import { useUser } from '@/contexts/UserContext';
-import { toast } from 'react-hot-toast';
 
 export default function PasswordStep({
     setPassword,
@@ -45,7 +45,7 @@ export default function PasswordStep({
         const { ENFirstName, ENLastName, password } = data;
         setIsLoading(true);
         axios
-            .post('/api/bpms/kekyc-user-send-message', {
+            .post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',
                 processId: userData.processId,
                 formName: 'CertificateRequest',
