@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
-const REQUEST_TIMEOUT_MS = 10000; // 10 seconds
+const REQUEST_TIMEOUT_MS = 10000;
 
 const axiosConfig: AxiosRequestConfig = {
   headers: { 'Content-Type': 'application/json' },

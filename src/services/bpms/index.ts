@@ -10,26 +10,14 @@ export interface ApiResponse<T = unknown> {
 const baseUrl = process.env.BASE_URL;
 export async function virtualOpenDepositSendMessage<T>(payload: T) {
     const apiResponse = await axios.post(`${baseUrl}/bpms/sendMessage/`, payload);
-    const response = {
-        status: apiResponse.status,
-        data: apiResponse.data,
-        response: apiResponse.data,
-    };
-    return handleResponse(response);
+    return handleResponse(apiResponse);
 }
 
-export async function virtualOpenDepositKeKycUserFiles(payload: unknown) {
+export async function virtualOpenDepositKeKycUserFiles<T>(payload: T) {
     const baseUrl = process.env.BASE_URL;
-    const resp = await axios.post(`${baseUrl}/bpms/sendMultiPartMessage`, payload);
-    const response = {
-        status: resp.status,
-        data: resp.data,
-        response: resp.data,
-    };
+    const response = await axios.post(`${baseUrl}/bpms/sendMultiPartMessage`, payload);
     return handleResponse(response);
 }
-
-
 const bpms = {
     virtualOpenDepositSendMessage,
     virtualOpenDepositKeKycUserFiles,
