@@ -11,21 +11,13 @@ import toast from 'react-hot-toast';
 import { z } from 'zod';
 import LoadingButton from '../ui/core/LoadingButton';
 import Autocomplete from '../ui/forms/autocomplete';
+import { Select } from '../ui/forms/Select';
 import NationalCardOcrScanner from '../ui/specialized/NationalCardOcrScanner';
 
 type BranchOption = { label: string; value: string };
 
 // Zod Schema
 const formSchema = z.object({
-    fatherName: z.string()
-        .min(1, { message: 'نام پدر الزامی است' })
-        .min(2, { message: 'نام پدر باید حداقل 2 کاراکتر باشد' })
-        .max(50, { message: 'نام پدر نباید بیشتر از 50 کاراکتر باشد' }),
-    gender: z.string()
-        .min(1, { message: 'جنسیت الزامی است' })
-        .refine((val) => ['male', 'female'].includes(val), {
-            message: 'جنسیت نامعتبر است'
-        }),
     isMarried: z.string()
         .min(1, { message: 'وضعیت تاهل الزامی است' })
         .refine((val) => ['true', 'false'].includes(val), {
@@ -56,20 +48,19 @@ const gradeOptions = [
     { value: 'master', label: 'کارشناسی ارشد' },
     { value: 'phd', label: 'دکترا' },
 ];
+const defaultBranches= [
+    {value:"0",label:'شعبه مرکزی'},
+     {value:"1",label:'شعبه شهرک غرب'},
+      {value:"2",label:'شعبه آزادی'},
+       {value:"3",label:'شعبه میرداماد'}
+    ];
 
-export default function NationalCardScanner({ branches = [], onComplete, onBack }: Props) {
+export default function NationalCardScanner({ onComplete, onBack }: Props) {
     const [isLoading, setIsLoading] = useState(false);
     const [capturedFile, setCapturedFile] = useState<File | null>(null);
     const [ocrValid, setOcrValid] = useState<boolean>(false);
 
-    const defaultBranches: string[] = branches.length
-        ? branches.map((b) => typeof b === 'string' ? b : b.label)
-        : ['شعبه مرکزی', 'شعبه شهرک غرب', 'شعبه آزادی', 'شعبه میرداماد'];
 
-    const genderOptions = [
-        { label: 'مرد', value: 'male' },
-        { label: 'زن', value: 'female' },
-    ];
 
     const maritalStatusOptions = [
         { label: 'متاهل', value: 'true' },
@@ -84,9 +75,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
     } = useForm<FormData>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            fatherName: '',
             isMarried: '',
-            gender: '',
             grade: '',
             branch: '',
         }
@@ -115,17 +104,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
 
         if (!result.success) {
             const errors = result.error.flatten().fieldErrors;
-
-            if (errors.fatherName?.[0]) {
-                setError('fatherName', { type: 'manual', message: errors.fatherName[0] });
-                toast.error(errors.fatherName[0]);
-                return;
-            }
-            if (errors.gender?.[0]) {
-                setError('gender', { type: 'manual', message: errors.gender[0] });
-                toast.error(errors.gender[0]);
-                return;
-            }
+           
             if (errors.isMarried?.[0]) {
                 setError('isMarried', { type: 'manual', message: errors.isMarried[0] });
                 toast.error(errors.isMarried[0]);
@@ -191,15 +170,18 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
                         rules={{ required: 'مدرک تحصیلی الزامی است' }}
                         render={({ field }) => (
                             <>
-                                <Autocomplete
-                                    id="grade"
-                                    label="مدرک تحصیلی"
-                                    options={gradeOptions.map(opt => opt.label)}
-                                    onSelect={(value) => {
-                                        const selectedOption = gradeOptions.find(opt => opt.label === value);
-                                        field.onChange(selectedOption?.value || '');
-                                    }}
-                                />
+                                <label className="block text-sm text-gray-700 mb-2">تحصیلات</label>
+                                <Select
+                                    placeholder="انتخاب کنید"
+                                    value={field.value ?? ''}
+                                    onChange={(e) => field.onChange((e.target as HTMLSelectElement).value)}
+                                >
+                                    {gradeOptions.map((o) => (
+                                        <option key={o.value} value={o.value}>
+                                            {o.label}
+                                        </option>
+                                    ))}
+                                </Select>
                                 {errors.grade?.message && (
                                     <p className="mt-2 text-sm text-red-600">
                                         {String(errors.grade.message)}
@@ -221,7 +203,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
                                     id="branch"
                                     label="شعبه"
                                     options={defaultBranches}
-                                    onSelect={(value) => field.onChange(value)}
+                                     onValueChange={(value) => field.onChange(value)}
                                 />
                                 {errors.branch?.message && (
                                     <p className="mt-2 text-sm text-red-600">
