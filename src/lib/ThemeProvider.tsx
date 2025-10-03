@@ -23,7 +23,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
                 document.documentElement.setAttribute('data-theme', 'light');
             }
         } catch {
-            // ignore
         }
     }, []);
 

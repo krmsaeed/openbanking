@@ -11,6 +11,8 @@ interface UserData {
     password?: string;
     confirmPassword?: string;
     otp?: string;
+    ENFirstName?: string;
+    ENLastName?: string;
     certOtp?: string;
     selfie?: File;
     randomText?: string | null;
@@ -51,6 +53,8 @@ const initialState: UserData = {
     confirmPassword: "",
     otp: "",
     certOtp: "",
+    ENFirstName: "",
+    ENLastName: "",
     randomText: null,
     selfie: undefined,
     video: undefined,
