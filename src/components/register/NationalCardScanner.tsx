@@ -2,7 +2,7 @@
 
 import { Box } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
-import { Input, RadioGroup } from '@/components/ui/forms';
+import { RadioGroup } from '@/components/ui/forms';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
@@ -164,39 +164,7 @@ export default function NationalCardScanner({ branches = [], onComplete, onBack 
                 showConfirmButton={true}
             />
             <Box className="space-y-4">
-                <Controller
-                    name="fatherName"
-                    control={control}
-                    rules={{ required: 'نام پدر الزامی است' }}
-                    render={({ field }) => (
-                        <Input
-                            {...field}
-                            variant="outline"
-                            label="نام پدر"
-                            placeholder="نام پدر را وارد کنید"
-                            error={errors.fatherName?.message}
-                            fullWidth
-                        />
-                    )}
-                />
-
-                <Box>
-                    <label className="block text-sm text-gray-700 mb-2">جنسیت</label>
-                    <Controller
-                        name="gender"
-                        control={control}
-                        rules={{ required: 'جنسیت الزامی است' }}
-                        render={({ field }) => (
-                            <RadioGroup
-                                {...field}
-                                options={genderOptions}
-                                name="gender"
-                                direction="horizontal"
-                                error={errors.gender?.message}
-                            />
-                        )}
-                    />
-                </Box>
+              
 
                 <Box>
                     <label className="block text-sm text-gray-700 mb-2">وضعیت تاهل</label>

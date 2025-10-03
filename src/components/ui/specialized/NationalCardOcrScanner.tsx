@@ -2,6 +2,7 @@
 
 import { Box } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
+import { Modal } from '@/components/ui/overlay';
 import { OcrFields, ocrRecognizeFile, parseNationalCardFields } from '@/lib/ocr';
 import { ArrowPathIcon, CameraIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
@@ -26,6 +27,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
     const [capturedFile, setCapturedFile] = useState<File | null>(null);
     const [ocrValid, setOcrValid] = useState<boolean>(false);
     const [ocrLoading, setOcrLoading] = useState<boolean>(false);
+    const [showPermissionModal, setShowPermissionModal] = useState<boolean>(false);
 
     const refreshDevices = useCallback(async () => {
         try {
@@ -77,10 +79,14 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
 
     const requestCameraPermission = useCallback(async () => {
         try {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return false;
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                toast.error('دوربین در این مرورگر پشتیبانی نمی‌شود');
+                return false;
+            }
             const s = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
             try { s.getTracks().forEach((t) => t.stop()); } catch { }
             setPermissionGranted(true);
+            setShowPermissionModal(false);
             try { await refreshDevices(); } catch { }
             return true;
         } catch {
@@ -90,6 +96,10 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
             return false;
         }
     }, [refreshDevices]);
+
+    const handleRequestPermission = useCallback(() => {
+        setShowPermissionModal(true);
+    }, []);
 
     useEffect(() => {
         let mounted = true;
@@ -248,8 +258,14 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                             className="w-full h-64 object-cover"
                         />
                     ) : (
-                        <div className="w-full h-64 flex items-center justify-center bg-gray-50 text-gray-500">
-                            وبکم باز نشده
+                        <div 
+                            className="w-full h-64 flex items-center justify-center bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg"
+                            onClick={handleRequestPermission}
+                        >
+                            <div className="text-center space-y-2">
+                                <CameraIcon className="w-12 h-12 mx-auto" />
+                                <p className="text-sm">برای فعال‌سازی دوربین کلیک کنید</p>
+                            </div>
                         </div>
                     )
                 ) : (
@@ -337,6 +353,54 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                     </Button>
                 )}
             </div>
+
+            {/* Modal for Camera Permission */}
+            <Modal
+                isOpen={showPermissionModal}
+                onClose={() => setShowPermissionModal(false)}
+                title="دسترسی به دوربین"
+                size="md"
+            >
+                <div className="text-center space-y-6 p-2">
+                    <div className="mx-auto w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-full flex items-center justify-center">
+                        <CameraIcon className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    
+                    <div className="space-y-3">
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                            دسترسی به دوربین
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                            برای اسکن کارت ملی، نیاز به دسترسی دوربین دستگاه داریم. 
+                            لطفاً در پنجره بازشده دسترسی را تأیید کنید.
+                        </p>
+                    </div>
+
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                        <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                            <strong>راهنما:</strong> اگر دسترسی داده نشد، از تنظیمات مرورگر دسترسی دوربین را فعال کنید.
+                        </p>
+                    </div>
+
+                    <div className="flex gap-3 justify-center">
+                        <Button
+                            onClick={() => setShowPermissionModal(false)}
+                            variant="secondary"
+                            size="sm"
+                        >
+                            انصراف
+                        </Button>
+                        <Button
+                            onClick={requestCameraPermission}
+                            variant="primary"
+                            size="sm"
+                        >
+                            <CameraIcon className="w-4 h-4 ml-2" />
+                            فعال‌سازی دوربین
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
 
         </Box>
     );
