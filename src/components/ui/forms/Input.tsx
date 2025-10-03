@@ -1,5 +1,5 @@
 import mergeClasses from "@/lib/utils";
-import React, { forwardRef, CSSProperties } from "react";
+import React, { CSSProperties, forwardRef } from "react";
 import { Box } from "../core";
 
 
@@ -60,7 +60,6 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(
             ...rest
         } = props;
 
-        // تنظیم padding براساس وجود adornment
         const inputStyle: CSSProperties = {
             paddingLeft: startAdornment ? "1rem" : "0.5rem",
             paddingRight: endAdornment ? "1rem" : "0.5rem",
@@ -97,7 +96,7 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(
                 })()}
             >
                 {label && (
-                    <Box className="pl-1 text-sm text-gray-700 dark:text-gray-300 text-right ">
+                    <Box className="pl-1 text-sm text-gray-700 dark:text-gray-50 text-right " dir="rtl">
                         {label}
                         {required && <span className="mr-1 text-error">*</span>}
                     </Box>
@@ -108,7 +107,7 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(
                         autoComplete={autoComplete}
                         autoFocus={autoFocus}
                         className={mergeClasses(
-                            "w-full px-8 focus:border-none focus:outline-none  text-gray-900  shadow-md p-3 rounded-md",
+                            "w-full px-8 focus:border-none focus:outline-none  text-gray  shadow-md p-3 rounded-md",
                             props.className,
                             color,
                         )}
@@ -127,12 +126,12 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(
                         {...inputProps}
                     />
                     {startAdornment && (
-                        <Box className="absolute right-1 transform translate-y-1/2 flex items-center pl-1">
+                        <Box className="absolute right-[1rem] bottom-1/2 transform translate-y-1/2 ">
                             {startAdornment}
                         </Box>
                     )}
                     {endAdornment && (
-                        <Box className="absolute left-[1rem] bottom-1/2 transform translate-y-1/2 pr-2">{endAdornment}</Box>
+                        <Box className="absolute left-[1rem] bottom-1/2 transform translate-y-1/2">{endAdornment}</Box>
                     )}
                 </Box>
                 {error && (

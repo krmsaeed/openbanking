@@ -78,10 +78,7 @@ const Typography = ({ variant, children, className, onClick, color, weight, alig
     };
     const baseClass = variantClass(v);
 
-    // If caller supplied `as`, render that element with the computed classes.
     if (as && v !== "LineWrapped") {
-        // Render `as` as a safe inline element (span) to avoid accidentally creating
-        // void/self-closing tags (like <input>) with children during SSR/prerender.
         return renderSpan(mergeClasses(baseClass, propClass));
     }
 

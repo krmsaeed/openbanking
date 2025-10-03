@@ -7,7 +7,7 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const getCardClasses = (variant: 'default' | 'elevated' | 'outline', padding: 'none' | 'sm' | 'md' | 'lg') => {
-    const baseClasses = "rounded-2xl bg-dark-100";
+    const baseClasses = "rounded-lg  bg-gray-50";
 
     const variantClasses = {
         default: "",
@@ -16,7 +16,7 @@ const getCardClasses = (variant: 'default' | 'elevated' | 'outline', padding: 'n
     };
 
     const paddingClasses = {
-        none: "",
+        none: "p-0",
         sm: "p-4",
         md: "p-6",
         lg: "p-8",
