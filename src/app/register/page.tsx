@@ -1,22 +1,23 @@
 "use client";
-import { useState, useEffect } from "react";
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import toast from "react-hot-toast";
-import { convertPersianToEnglish } from '@/lib/utils';
-import Sidebar from '@/components/register/Sidebar';
+import CertificateStep from '@/components/register/CertificateStep';
+import NationalCardScanner from "@/components/register/NationalCardScanner";
+import PasswordStep from '@/components/register/PasswordStep';
 import PersonalInfoForm from '@/components/register/PersonalInfoForm';
 import SelfieStep from '@/components/register/SelfieStep';
-import VideoStep from '@/components/register/VideoStep';
+import Sidebar from '@/components/register/Sidebar';
 import SignatureStep from '@/components/register/SignatureStep';
-import CertificateStep from '@/components/register/CertificateStep';
-import PasswordStep from '@/components/register/PasswordStep';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/core/Card";
+import VideoStep from '@/components/register/VideoStep';
 import { Box } from "@/components/ui";
-import NationalCardScanner from "@/components/register/NationalCardScanner";
-import ContractPage from "../contract/page";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/core/Card";
 import { useUser } from "@/contexts/UserContext";
+import { convertPersianToEnglish } from '@/lib/utils';
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from 'react-hook-form';
+import toast from "react-hot-toast";
+import { z } from "zod";
+import ContractPage from "../contract/page";
 
 const registrationSchema = z.object({
     nationalCode: z.string("کد ملی الزامی است").length(10, "کد ملی باید 10 رقم باشد").regex(/^\d+$/, "کد ملی باید فقط شامل اعداد باشد"),
@@ -63,6 +64,7 @@ export default function Register() {
         control,
         setValue,
         setError,
+        getValues,
     } = useForm<ExtendedRegistrationForm>({
         resolver: zodResolver(extendedRegistrationSchema),
         mode: "onBlur",
@@ -94,19 +96,26 @@ export default function Register() {
         }
     }, [setValue]);
 
-
-    const handleVideoRecording = (file: File) => {
-        setUserData({ video: file, step: 4 });
-        toast.success("فیلم احراز هویت ثبت شد؛");
-    };
-
     const handleOtp2Submit = () => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            toast.success("گواهی دیجیتال صادر شد");
-            setUserData({ step: 6 });
-        }, 2000);
+        axios.post('/api/bpms/kekyc-user-send-message', {
+            "serviceName": "virtual-open-deposit",
+            "formName": "CertificateOtpVerify",
+            processId: userData.processId,
+            body: {
+                otpCode: getValues('certOtp'),
+                password: userData.password
+            }
+        })
+            .then((res) => {
+                const { data } = res.data;
+                if (data.body.success) {
+                    toast.success("عملیات موفق");
+                    setUserData({ step: 6 });
+                }
+            })
+            .catch((error) => {
+                console.error('OTP verification failed', error);
+            });
     };
     const getStepDescription = () => {
         switch (userData.step) {
@@ -114,7 +123,7 @@ export default function Register() {
             case 2: return "عکس سلفی";
             case 3: return "فیلم احراز هویت";
             case 4: return "ثبت امضای دیجیتال";
-            case 5: return "ارسال کد تایید";
+            case 5: return "ارسال فرم";
             case 6: return "اسکن کارت و تعیین شعبه ";
             case 7: return "پیش نمایش قرارداد";
             default: return "";
@@ -167,13 +176,13 @@ export default function Register() {
                                                     control={control}
                                                     defaultValue={''}
                                                     render={({ field }) => (
-                                                        <CertificateStep otp={field.value ?? ''} setOtp={field.onChange} onIssue={() => ((field.value ?? '').length === 5 ? handleOtp2Submit() : setError('certOtp', { type: 'manual', message: 'کد تایید را کامل وارد کنید' }))} loading={loading} />
+                                                        <CertificateStep otp={field.value ?? ''} setOtp={field.onChange} onIssue={() => ((field.value ?? '').length === 6 ? handleOtp2Submit() : setError('certOtp', { type: 'manual', message: 'کد تایید را کامل وارد کنید' }))} loading={loading} />
                                                     )}
                                                 />
                                             )}
                                         </>
                                     )}
-                                    {userData.step === 6 && <NationalCardScanner onComplete={handleNationalCardScanComplete} onBack={() => setUserData({ step: 5 })} />}
+                                    {userData.step === 6 && <NationalCardScanner onComplete={() => handleNationalCardScanComplete} onBack={() => setUserData({ step: 5 })} />}
 
                                     {userData.step === 7 && (
                                         <ContractPage />

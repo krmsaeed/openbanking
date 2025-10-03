@@ -103,7 +103,6 @@ export default function InstallmentsPage() {
                     </Link>
                 </Box>
 
-                {/* خلاصه قرارداد */}
                 <Box className="grid md:grid-cols-4 gap-6 mb-8">
                     <Card>
                         <CardHeader className="pb-3">
