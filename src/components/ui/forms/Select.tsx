@@ -1,248 +1,112 @@
 "use client";
-import { cn } from "@/lib/utils";
-import { cva, type VariantProps } from "class-variance-authority";
-import React, { forwardRef, useEffect, useMemo, useRef, useState } from "react";
-
-const selectVariants = cva(
-    "flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3  text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:cursor-not-allowed disabled:opacity-50",
-    {
-        variants: {
-            variant: {
-                default: "border-gray-300 focus:ring-primary focus:border-primary",
-                error: "border-red-500 focus:ring-red-500 focus:border-red-500",
-                success: "border-green-500 focus:ring-green-500 focus:border-green-500",
-            },
-            size: {
-                sm: "h-8 px-2 text-xs",
-                md: "h-10 px-3 text-sm",
-                lg: "h-12 px-4 text-base",
-            },
-        },
-        defaultVariants: {
-            variant: "default",
-            size: "md",
-        },
-    }
-);
-
-export interface OptionItem {
-    value: string;
-    label: React.ReactNode;
-}
+import mergeClasses from "@/lib/utils";
+import React, { CSSProperties, forwardRef } from "react";
+import { Box } from "../core";
 
 export interface SelectProps
-    extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'size' | 'value'>,
-    VariantProps<typeof selectVariants> {
-    options?: OptionItem[];
-    autocomplete?: boolean;
-    value?: string | null;
-    onValueChange?: (value: string | null) => void;
-    onSearch?: (query: string) => Promise<OptionItem[]> | void;
+    extends React.SelectHTMLAttributes<HTMLSelectElement> {
+    classes?: string;
+    label?: string;
+    color?: string;
+    error?: string;
+    fullWidth?: boolean;
+    id?: string;
+    name?: string;
+    onChange?: React.ChangeEventHandler<HTMLSelectElement>;
     placeholder?: string;
-    allowClear?: boolean;
-    debounceMs?: number;
+    required?: boolean;
+    value?: string | number;
+    endAdornment?: React.ReactNode;
+    startAdornment?: React.ReactNode;
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-    ({ className, variant, size, children, options = [], autocomplete, value = null, onValueChange, placeholder = '', allowClear = false, onSearch, debounceMs: propDebounceMs, onChange, ...props }, ref) => {
+    (props, ref) => {
+        const {
+            classes = "",
+            color = "",
+            defaultValue,
+            disabled,
+            endAdornment,
+            error,
+            fullWidth = false,
+            id,
+            label,
+            name,
+            onChange,
+            placeholder,
+            required,
+            value,
+            startAdornment,
+            style,
+            children,
+            ...rest
+        } = props;
 
-        const [isOpen, setIsOpen] = useState(false);
-        const [query, setQuery] = useState('');
-        const [debouncedQuery, setDebouncedQuery] = useState('');
-        const [highlight, setHighlight] = useState<number>(-1);
-        const containerRef = useRef<HTMLDivElement | null>(null);
-        const inputRef = useRef<HTMLInputElement | null>(null);
-        const [asyncOptions, setAsyncOptions] = useState<OptionItem[] | null>(null);
-        const [loading, setLoading] = useState(false);
-        const reqIdRef = useRef(0);
-        const [localSelectedLabel, setLocalSelectedLabel] = useState<React.ReactNode | null>(null);
-
-
-
-
-        const actualDebounceMs = typeof propDebounceMs === 'number' ? propDebounceMs : 300;
-        useEffect(() => {
-            const t = setTimeout(() => setDebouncedQuery(query), actualDebounceMs);
-            return () => clearTimeout(t);
-        }, [query, actualDebounceMs]);
-
-
-        useEffect(() => {
-            let mounted = true;
-            if (typeof onSearch === 'function') {
-                const id = ++reqIdRef.current;
-                setLoading(true);
-                Promise.resolve(onSearch(debouncedQuery)).then((res) => {
-                    if (!mounted) return;
-                    if (id !== reqIdRef.current) return;
-                    if (Array.isArray(res)) {
-                        setAsyncOptions(res);
-                    }
-                    setLoading(false);
-                }).catch(() => {
-                    if (id === reqIdRef.current) setLoading(false);
-                });
-            } else {
-
-                setAsyncOptions(null);
-            }
-            return () => { mounted = false; };
-        }, [debouncedQuery, onSearch]);
-
-
-        const currentOptions = asyncOptions ?? options;
-        const selectedFromCurrent = useMemo(() => currentOptions.find((o) => o.value === value)?.label ?? '', [currentOptions, value]);
-        const effectiveLabel = localSelectedLabel ?? selectedFromCurrent;
-        const selectedText = typeof effectiveLabel === 'string' || typeof effectiveLabel === 'number' ? String(effectiveLabel) : '';
-        const hasNodeLabel = !!effectiveLabel && !selectedText;
-
-        const filtered = useMemo(() => {
-            const q = debouncedQuery.trim().toLowerCase();
-            if (!q) return currentOptions;
-            return currentOptions.filter((o) => String(o.label).toLowerCase().includes(q) || o.value.toLowerCase().includes(q));
-        }, [currentOptions, debouncedQuery]);
-
-        useEffect(() => {
-            const onClick = (e: MouseEvent) => {
-                if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-                    setIsOpen(false);
-                    setHighlight(-1);
-                }
-            };
-            document.addEventListener('click', onClick);
-            return () => document.removeEventListener('click', onClick);
-        }, []);
-
-        useEffect(() => {
-
-            if (!isOpen) return;
-            setHighlight((h) => Math.max(-1, Math.min(h, filtered.length - 1)));
-        }, [filtered, isOpen]);
-
-        const open = () => { setIsOpen(true); setHighlight(-1); };
-        const close = () => { setIsOpen(false); setHighlight(-1); };
-
-        const selectValue = (val: string) => {
-            onValueChange?.(val);
-
-            try {
-                if (typeof onChange === 'function') (onChange as (...args: unknown[]) => void)(val);
-            } catch {
-
-            }
-
-            const sel = currentOptions.find((o) => o.value === val);
-            if (sel) setLocalSelectedLabel(sel.label);
-            setQuery('');
-            setDebouncedQuery('');
-            close();
+        const selectStyle: CSSProperties = {
+            paddingLeft: startAdornment ? "1rem" : "0.5rem",
+            paddingRight: endAdornment ? "1rem" : "0.5rem",
+            ...style,
         };
-
-
-        useEffect(() => {
-            setLocalSelectedLabel(null);
-        }, [value]);
-
-        const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                setIsOpen(true);
-                setHighlight((h) => Math.min(filtered.length - 1, h + 1));
-                return;
-            }
-            if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                setHighlight((h) => Math.max(-1, h - 1));
-                return;
-            }
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                if (isOpen) {
-                    const item = filtered[highlight >= 0 ? highlight : 0];
-                    if (item) selectValue(item.value);
-                } else {
-                    setIsOpen(true);
-                }
-                return;
-            }
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                close();
-                return;
-            }
-        };
-
-
-        if (!autocomplete) {
-            return (
-                <select
-                    className={cn(selectVariants({ variant, size, className }), `outline-none focus:outline-none`)}
-                    ref={ref}
-                    {...props}
-                >
-                    {children}
-                </select>
-            );
-        }
-
-        const listboxId = `select-listbox-${String(Math.abs(JSON.stringify(options).length))}`;
-        const inputValue = isOpen ? query : selectedText;
 
         return (
-            <div ref={containerRef} className={cn('relative', className)} role="combobox" aria-expanded={isOpen} aria-controls={listboxId} aria-haspopup="listbox">
-                <div className={cn(selectVariants({ variant, size }), 'flex items-center gap-2')}>
-                    <div className="relative flex-1">
-                        <input
-                            ref={inputRef}
-                            className="flex-1 bg-transparent outline-none"
-                            placeholder={isOpen ? (placeholder || 'انتخاب...') : ''}
-                            value={inputValue}
-                            onChange={(e) => { setQuery(e.target.value); setIsOpen(true); }}
-                            onFocus={() => { open(); }}
-                            onClick={() => { setIsOpen(true); }}
-                            onKeyDown={onKeyDown}
-                            aria-autocomplete="list"
-                            aria-controls={listboxId}
-                        />
-                        {/* If selected label is a ReactNode (not plain string), show it when closed */}
-                        {!isOpen && hasNodeLabel && (
-                            <div className="pointer-events-none absolute inset-0 flex items-center pl-3 text-sm text-gray-700">{effectiveLabel}</div>
-                        )}
-                    </div>
-                    {allowClear && value && (
-                        <button aria-label="clear" onClick={() => { setQuery(''); onValueChange?.(null); }} className="text-gray-500 hover:text-gray-700">×</button>
-                    )}
-                </div>
-
-                {isOpen && (
-                    <ul id={listboxId} role="listbox" className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-xl border bg-white py-1 shadow-lg" tabIndex={-1}>
-                        {loading && (
-                            <li className="px-3 py-2 text-sm text-gray-500">در حال جستجو...</li>
-                        )}
-                        {!loading && filtered.length === 0 && (
-                            <li className="px-3 py-2 text-sm text-gray-500">هیچ موردی یافت نشد</li>
-                        )}
-                        {filtered.map((o, idx) => (
-                            <li
-                                key={o.value}
-                                role="option"
-                                aria-selected={value === o.value}
-                                className={cn('cursor-pointer px-3 py-2 text-sm', {
-                                    'bg-primary/10': idx === highlight,
-                                })}
-                                onMouseEnter={() => setHighlight(idx)}
-                                onMouseDown={(e) => { e.preventDefault(); selectValue(o.value); }}
-                            >
-                                {o.label}
-                            </li>
-                        ))}
-                    </ul>
+            <Box
+                className={mergeClasses(
+                    "flex mb-2 relative flex-col text-start items-start",
+                    fullWidth ? "w-full" : "",
+                    classes,
                 )}
-            </div>
+            >
+                {label && (
+                    <Box className="pl-1 text-sm text-gray-900 dark:text-gray-50 text-right " dir="rtl">
+                        {label}
+                        {required && <span className="mr-1 text-error">*</span>}
+                    </Box>
+                )}
+                <Box className="w-full relative">
+                    <select
+                        ref={ref}
+                        className={mergeClasses(
+                            "w-full px-8 focus:border-none focus:outline-none bg-white text-gray shadow-md p-3 rounded-md",
+                            props.className,
+                            color,
+                        )}
+                        defaultValue={defaultValue}
+                        disabled={disabled}
+                        id={id}
+                        name={name}
+                        onChange={onChange}
+                        style={selectStyle}
+                        value={value}
+                        {...rest}
+                    >
+                        {placeholder && (
+                            <option value="" disabled>
+                                {placeholder}
+                            </option>
+                        )}
+                        {children}
+                    </select>
+                    {startAdornment && (
+                        <Box className="absolute right-[1rem] bottom-1/2 transform translate-y-1/2 ">
+                            {startAdornment}
+                        </Box>
+                    )}
+                    {endAdornment && (
+                        <Box className="absolute left-[1rem] bottom-1/2 transform translate-y-1/2">{endAdornment}</Box>
+                    )}
+                </Box>
+                {error && (
+                    <Box className="flex items-center pl-1 text-sm text-error mt-1 w-full text-right" dir="rtl">
+                        {error}
+                    </Box>
+                )}
+            </Box>
         );
     }
 );
 
 Select.displayName = "Select";
 
-export { Select, selectVariants };
+export { Select };
+export default Select;
