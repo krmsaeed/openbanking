@@ -4,10 +4,14 @@ import React, { useState } from 'react';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { Input } from '@/components/ui/forms';
 import { Button } from '@/components/ui/core/Button';
+import LoadingButton from '@/components/ui/core/LoadingButton';
 import { Box } from '../ui';
 import { Controller, useForm } from 'react-hook-form';
 import List from '../ui/list';
 import ListItem from '../ui/listItem';
+import axios from 'axios';
+import { useUser } from '@/contexts/UserContext';
+import { toast } from 'react-hot-toast';
 
 
 export default function PasswordStep({ setPassword, setPasswordSet }:
@@ -15,6 +19,8 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
         setPassword: (value: string) => void,
         setPasswordSet: (value: boolean) => void
     }) {
+    const { userData, setUserData } = useUser();
+    const [isLoading, setIsLoading] = useState(false);
     const {
         control,
         getValues,
@@ -29,9 +35,30 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
             confirmPassword: '',
         },
     })
-    const onSubmit = (data: { password: string, confirmPassword: string }) => {
-        setPassword(data.password);
-        setPasswordSet(true);
+    const onSubmit = async (data: { ENFirstName: string, ENLastName: string, password: string, confirmPassword: string }) => {
+        const { ENFirstName, ENLastName, password } = data;
+        setIsLoading(true);
+        axios.post("/api/bpms/kekyc-user-send-message", {
+            "serviceName": "virtual-open-deposit",
+            "processId": userData.processId,
+            "formName": "CertificateRequest",
+            body: { ENFirstName, ENLastName, password }
+        }).then((response) => {
+            const { data } = response.data;
+            if (data.body.success) {
+                setPassword(data.password);
+                setPasswordSet(true);
+                setUserData({ password, ENFirstName, ENLastName });
+            } else {
+                const errorMessage = data.body.errorMessage || 'خطایی رخ داده است. لطفا دوباره تلاش کنید.';
+                toast.error(errorMessage);
+            }
+        }).catch(() => {
+            toast.error('خطایی رخ داده است. لطفا دوباره تلاش کنید.');
+        }).finally(() => {
+            setIsLoading(false);
+        });
+
     }
     const [showPassword, setShowPassword] = useState(false);
 
@@ -50,11 +77,10 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                     <Controller
                         name="ENFirstName"
                         control={control}
-
                         rules={{
                             required: ' نام  لاتین الزامی است',
                             minLength: { value: 4, message: 'نام لاتین باید حداقل 4 کاراکتر باشد' },
-                            pattern: { value: /^[a-z]+$/, message: 'نام لاتین باید شامل حروف کوچک باشد' }
+                            pattern: { value: /^[a-zA-Z ]+$/, message: 'نام لاتین باید شامل حروف کوچک باشد' }
                         }}
                         render={({ field }) => (
                             <Input {...field}
@@ -63,6 +89,8 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                                 placeholder="نام  لاتین را وارد کنید"
                                 required
                                 fullWidth
+                                className='text-left'
+                                dir='ltr'
                                 maxLength={200}
                                 error={errors.ENFirstName?.message}
                             />
@@ -71,11 +99,10 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                     <Controller
                         name="ENLastName"
                         control={control}
-
                         rules={{
                             required: ' نام خانوادگی لاتین الزامی است',
-                            minLength: { value: 4, message: 'نام خانوادگی باید حداقل 4 کاراکتر باشد' },
-                            pattern: { value: /^[a-z]+$/, message: 'نام خانوادگی باید شامل  حروف کوچک باشد' }
+                            minLength: { value: 4, message: ' حداقل 4 کاراکتر باید باشد' },
+                            pattern: { value: /^[a-zA-Z ]+$/, message: 'فقط شامل حروف کوچک و بزرگ لاتین باید باشد' }
                         }}
                         render={({ field }) => (
                             <Input {...field}
@@ -84,6 +111,8 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                                 placeholder="نام خانوادگی لاتین را وارد کنید"
                                 required
                                 fullWidth
+                                className='text-left'
+                                dir='ltr'
                                 maxLength={200}
                                 error={errors.ENLastName?.message}
                             />
@@ -94,8 +123,8 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                         control={control}
                         rules={{
                             required: 'رمز عبور الزامی است',
-                            minLength: { value: 8, message: 'رمز عبور باید حداقل 8 کاراکتر باشد' },
-                            pattern: { value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, message: 'رمز عبور باید شامل حداقل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک کاراکتر ویژه باشد' }
+                            minLength: { value: 8, message: 'باید حداقل 8 کاراکتر باشد' },
+                            pattern: { value: /^[a-zA-Z0-9]+$/, message: ' فقط شامل حروف انگلیسی و اعداد باشد' }
                         }}
                         render={({ field }) => (
                             <Input {...field}
@@ -104,8 +133,10 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                                 placeholder="رمز عبور را وارد کنید"
                                 required
                                 fullWidth
+                                className='text-left'
+                                dir='ltr'
                                 error={errors.password?.message}
-                                endAdornment={<Box onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}</Box>}
+                                startAdornment={<Box onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}</Box>}
                             />
                         )}
                     />
@@ -122,15 +153,17 @@ export default function PasswordStep({ setPassword, setPasswordSet }:
                                 type={showPassword ? 'text' : 'password'}
                                 required
                                 fullWidth
+                                className='text-left'
+                                dir='ltr'
                                 label="تایید رمز عبور" placeholder="تکرار رمز عبور"
                                 error={errors.confirmPassword?.message}
-                                endAdornment={showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                                startAdornment={<Box onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}</Box>}
                             />
                         )}
                     />
                     <Box className="flex gap-2 mt-4">
-                        <Button onClick={() => reset({ password: '', confirmPassword: '' })} className="w-full bg-error-200">بازنشانی</Button>
-                        <Button type="submit" variant="primary" className="w-full">تعیین رمز عبور</Button>
+                        <Button onClick={() => reset({ password: '', confirmPassword: '' })} className="w-full bg-error-200" disabled={isLoading}>بازنشانی</Button>
+                        <LoadingButton type="submit" loading={isLoading} disabled={isLoading} className="w-full">تعیین رمز عبور</LoadingButton>
                     </Box>
                 </form>
             </Box>

@@ -44,8 +44,14 @@ export default function PersonalInfoForm() {
                 postalCode: data.postalCode
             }
         }).then(response => {
-            if (response.data.body.hasActiveCertificate) setUserData({ step: 2 })
-            else setUserData({ step: 2 })
+            const { data } = response.data;
+            if (data?.body.hasActiveCertificate) {
+                setUserData({ step: 6 })
+            } else {
+                if (data.body.needKYC) setUserData({ step: 2 })
+                else setUserData({ step: 5 })
+            }
+
         })
     };
     return (

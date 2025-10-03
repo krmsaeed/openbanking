@@ -1,8 +1,7 @@
 "use client";
 import React from 'react';
 import { MultiOTPInput } from '@/components/forms';
-import { Button } from '@/components/ui/core/Button';
-import { Loading } from '@/components/ui/feedback/Loading';
+import LoadingButton from '@/components/ui/core/LoadingButton';
 
 interface Props {
     otp: string;
@@ -18,9 +17,10 @@ export default function CertificateStep({ otp, setOtp, onIssue, loading }: Props
             <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-6">
                 <p className="text-sm text-purple-800 text-center"><span dir='ltr'>. کد تایید جدید ارسال شد</span></p>
             </div>
-            <MultiOTPInput value={otp} onChange={setOtp} length={5} />
-            <Button onClick={onIssue} variant='primary' size="lg" className="w-full" disabled={otp.length < 5}>{loading && (<Loading size="sm" className='ml-1' />)} تایید
-            </Button>
+            <MultiOTPInput value={otp} onChange={setOtp} length={6} />
+            <LoadingButton onClick={onIssue} loading={loading} className="w-full" disabled={otp.length < 6 || loading}>
+                تایید
+            </LoadingButton>
 
         </div>
     );

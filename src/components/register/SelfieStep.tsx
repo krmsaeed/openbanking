@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { CameraIcon, ArrowPathIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Button } from "../ui/core/Button";
+import LoadingButton from "../ui/core/LoadingButton";
 import { Box, Typography } from "../ui/core";
 import Image from "next/image";
 import { useUser } from "@/contexts/UserContext";
@@ -22,7 +23,6 @@ export default function CameraSelfie() {
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [faceDetected, setFaceDetected] = useState(false);
@@ -643,7 +643,6 @@ export default function CameraSelfie() {
     }, [stream, detectFace, createThrottled]);
 
     const startCamera = useCallback(async () => {
-        setIsLoading(true);
         setError(null);
 
         try {
@@ -691,8 +690,6 @@ export default function CameraSelfie() {
                         : 'خطا در دسترسی به دوربین. لطفاً دوباره تلاش کنید.';
                 setError(errorMessage);
             }
-        } finally {
-            setIsLoading(false);
         }
     }, [stream, initWebGL]);
 
@@ -864,8 +861,10 @@ export default function CameraSelfie() {
             data.append('messageDTO', JSON.stringify(body));
             data.append('files', file);
 
-            const res = await axios.post('/api/bpms/deposit-files', data);
-            if (res?.data?.body?.randomText) setUserData({ ...userData, step: 3, randomText: res.data.body.randomText });
+            await axios.post('/api/bpms/deposit-files', data).then((res) => {
+                const { data } = res
+                setUserData({ ...userData, step: 3, randomText: data.body.randomText });
+            })
 
         } catch (err) {
             console.error('upload error', err);
@@ -906,6 +905,12 @@ export default function CameraSelfie() {
             stopCamera();
         };
     }, [stopCamera]);
+
+    // Auto-start camera on mount
+    useEffect(() => {
+        startCamera();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         return () => {
@@ -1006,14 +1011,7 @@ export default function CameraSelfie() {
     return (
         <Box className="max-w-md mx-auto space-y-4">
 
-            {capturedPhoto && <Box className="">
-                <Box className="bg-black bg-opacity-60 backdrop-blur-sm rounded-lg p-3">
-                    <Typography variant="body1" className="text-white text-xs text-center">
-                        عکس خود را بررسی کنید. اگر مناسب است تایید کنید، در غیر این صورت عکس جدید بگیرید.
-                    </Typography>
-                </Box>
-            </Box>}
-            <Box className="relative bg-black rounded-full overflow-hidden w-70 h-70 mx-auto">
+            <Box className="relative bg-dark rounded-full overflow-hidden w-70 h-70 mx-auto">
                 <video
                     ref={videoRef}
                     autoPlay
@@ -1026,29 +1024,8 @@ export default function CameraSelfie() {
                     disableRemotePlayback
                 />
 
-                {!stream && !capturedPhoto && !isLoading ? (
-                    <Box className="absolute inset-0 -bottom-16 bg-gray-900 flex flex-col items-center justify-center text-white space-y-2 z-20">
-                        <CameraIcon className="h-16 w-16 text-gray-400" />
-                        <Button onClick={startCamera} className="bg-primary hover:bg-primary-700">
-                            <CameraIcon className="h-5 w-5 ml-2" />
-                            روشن کردن دوربین
-                        </Button>
-                    </Box>
-                ) : null}
-
                 {!capturedPhoto ? (
-                    isLoading && (
-                        <Box className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center z-20">
-                            <Box className="text-white text-center p-4 rounded-xl bg-black bg-opacity-70">
-                                <Box className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-3"></Box>
-                                <Box className="bg-white p-1">
-                                    <Typography variant="body1" className="text-sm text-center ">در حال راه‌اندازی دوربین...</Typography>
-                                    <Typography variant="body1" className="text-xs mt-2  text-center">لطفاً کمی صبر کنید</Typography>
-                                </Box>
-                            </Box>
-                        </Box>
-                    )
-
+                    null
                 ) : (
                     <Box className="relative w-full h-full z-20">
                         <Image
@@ -1067,11 +1044,11 @@ export default function CameraSelfie() {
                         <circle
                             className="transition-all duration-300"
                             stroke={
-                                !faceDetected ?
-                                    closenessPercent <= 80 ?
-                                        'var(--color-error-800)'
-                                        : 'var(--color-success-500)'
-                                    : "var(--color-warning-500)"
+                                closenessPercent === 100 && obstructionRatio < 0.15
+                                    ? 'var(--color-success-500)'
+                                    : closenessPercent < 80
+                                        ? 'var(--color-error-800)'
+                                        : 'var(--color-warning-500)'
                             }
                             strokeWidth="4"
                             fill="none"
@@ -1080,7 +1057,7 @@ export default function CameraSelfie() {
                             cy="50%"
                             style={{
                                 strokeDasharray: `${2 * Math.PI * 49}%`,
-                                strokeDashoffset: `${2 * Math.PI * 49 * (1 - closenessPercent / 100)}%`
+                                strokeDashoffset: `${2 * Math.PI * 49 * (1 - (closenessPercent === 100 && obstructionRatio < 0.15 ? 100 : Math.min(closenessPercent, 95)) / 100)}%`
                             }}
                         />
                     </svg>
@@ -1106,7 +1083,7 @@ export default function CameraSelfie() {
                 <Box className="text-center space-y-3">
                     <Typography variant="body1" className={`text-sm font-medium transition-colors duration-300 text-center
                         ${!faceDetected && "text-red-500"}
-                        ${faceDetected && closenessPercent >= 80 && "text-green-500"}`}>
+                        ${faceDetected && closenessPercent >= 85 && "text-green-500"}`}>
                         {!faceDetected && (
                             faceTooFar ? 'لطفاً نزدیک‌تر بیایید' :
                                 obstructionRatio <= MAX_OBSTRUCTION ? 'عدم وضوح ' :
@@ -1118,39 +1095,42 @@ export default function CameraSelfie() {
             )}
 
 
-            {!capturedPhoto && stream && !isLoading && (
+            {!capturedPhoto && stream && (
                 <Box className="flex flex-col items-center space-y-2">
-                    <button
+                    <Button
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            if (closenessPercent >= 80 && obstructionRatio < 0.15) {
+                            if (closenessPercent === 100 && obstructionRatio < 0.15) {
                                 capturePhoto();
                             }
-
                         }}
-                        disabled={closenessPercent < 80 && obstructionRatio >= 0.15}
-                        className={`w-20 h-20 rounded-full border-4 transition-all duration-300 ${closenessPercent === 100 && obstructionRatio < 0.15
-                            ? 'bg-green-500 border-green-600 hover:bg-green-600 shadow-lg hover:shadow-xl active:scale-95'
-                            : 'bg-gray-300  cursor-not-allowed opacity-50'
+                        disabled={!(closenessPercent === 100 && obstructionRatio < 0.15)}
+                        className={`px-6 py-3 rounded-lg flex items-center gap-2 transition-all duration-300 font-medium ${closenessPercent === 100 && obstructionRatio < 0.15
+                            ? 'bg-success-500 hover:bg-success-600 text-white shadow-lg hover:shadow-xl active:scale-95 cursor-pointer'
+                            : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-60'
                             }`}
                     >
-                        <Box className={`w-12 h-12 rounded-full mx-auto transition-colors ${closenessPercent === 100 && obstructionRatio < 0.15 ? 'bg-white' : 'bg-gray-500'
-                            }`} />
-                    </button>
+                        <CameraIcon className="h-5 w-5" />
+                        <Typography variant="body1" className="text-sm font-medium">
+                            گرفتن عکس
+                        </Typography>
+                    </Button>
                 </Box>
             )}
-            <Box className="bg-gray-100  rounded-xl p-4">
-                <Typography variant="body1" className="font-semibold text-gray-900 mb-2 text-center">راهنمای عکس‌برداری:</Typography>
+            <Box className="bg-gray-300  rounded-xl p-4">
                 {!capturedPhoto ? (
-                    <ul className="text-sm text-gray-800 space-y-1">
-                        <li>• صورت خود را کاملاً در قاب قرار دهید</li>
-                        <li>• از نور کافی استفاده کنید</li>
-                        <li>• عینک آفتابی نداشته باشید</li>
-                        <li>• مستقیم به دوربین نگاه کنید</li>
-                        <li>• منتظر بمانید تا صورت شما تشخیص داده شود</li>
-                        <li>• روی دکمه سبز کلیک کنید تا عکس بگیرید</li>
-                    </ul>
+                    <>
+                        <Typography variant="body1" className="font-semibold text-dark mb-2 text-center">راهنمای عکس سلفی</Typography>
+                        <ul className="text-sm text-dark space-y-1 [&_li]:text-dark">
+                            <li>• صورت خود را کاملاً در قاب قرار دهید</li>
+                            <li>• از نور کافی استفاده کنید</li>
+                            <li>• عینک آفتابی نداشته باشید</li>
+                            <li>• مستقیم به دوربین نگاه کنید</li>
+                            <li>• منتظر بمانید تا صورت شما تشخیص داده شود</li>
+                            <li>• روی دکمه سبز کلیک کنید تا عکس بگیرید</li>
+                        </ul>
+                    </>
                 ) : (
                     <ul className="text-sm text-error-800 space-y-1">
                         <li>• عکس خود را بررسی کنید</li>
@@ -1169,18 +1149,17 @@ export default function CameraSelfie() {
                     <XMarkIcon className="w-5 h-5 text-white" />
                     انصراف
                 </Button>
-                <Button
-                    variant="primary"
+                <LoadingButton
                     onClick={handleConfirm}
                     loading={isUploading}
-                    disabled={isUploading}
-                    className="text-white gap-3 px-5 py-3 flex items-center justify-center w-full bg-primary"
+                    disabled={!capturedPhoto || isUploading}
+                    className="text-white gap-3 px-5 py-3 flex items-center justify-center w-full bg-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {!isUploading && <CheckIcon className="h-5 w-5" />}
                     <Typography variant="body1" className="text-white text-xs font-medium">
                         {isUploading ? 'در حال ارسال...' : 'تایید'}
                     </Typography>
-                </Button>
+                </LoadingButton>
             </Box>
         </Box>
     );

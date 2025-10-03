@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Box, Typography } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
+import LoadingButton from '@/components/ui/core/LoadingButton';
 import Image from 'next/image';
 import { Loading } from '@/components/ui/feedback/Loading';
 
@@ -69,10 +70,14 @@ export default function FinalConfirmation({ onConfirm, loading = false }: Props)
                 <span className="text-sm">من قرارداد را مطالعه کردم و موافقم</span>
             </label>
 
-            <Button variant='primary' onClick={() => accepted && onConfirm()} size="lg" className="w-full" disabled={!accepted || loading}>
-                {loading && (<Loading size="sm" className="ml-1" />)}
+            <LoadingButton
+                onClick={() => accepted && onConfirm()}
+                loading={loading}
+                disabled={!accepted || loading}
+                className="w-full"
+            >
                 تایید
-            </Button>
+            </LoadingButton>
 
         </Box>
     );
