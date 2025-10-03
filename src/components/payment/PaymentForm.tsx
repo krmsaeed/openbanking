@@ -18,7 +18,6 @@ interface PaymentFormProps {
 export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
     const [captcha, setCaptcha] = useState(generateCaptcha());
     const [, startTransition] = useTransition();
-    // debounced helper replaced by useDebouncedCallback
 
 
 
@@ -45,7 +44,6 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
     const expiryMonth = watch('expiryMonth');
     const expiryYear = watch('expiryYear');
 
-    // card number validation kept in formatting logic; removed unused const to satisfy linter
     const isCvv2Valid = cvv2 && (cvv2.length === 3 || cvv2.length === 4);
     const isMonthValid = expiryMonth && expiryMonth.length === 2 && parseInt(expiryMonth) >= 1 && parseInt(expiryMonth) <= 12;
     const isYearValid = expiryYear && expiryYear.length === 2;
@@ -120,10 +118,8 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
         setValue('cvv2', value, { shouldValidate: true, shouldDirty: true });
 
         if (value.length === 3) {
-            // debounced focus to allow optional fourth digit
             debouncedCvvFocus();
         } else if (value.length === 4) {
-            // immediate move to month
             cancelCvvDebounce();
             startTransition(() => {
                 setValue('expiryMonth', '', { shouldValidate: true, shouldDirty: true });
@@ -207,7 +203,6 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
         const currentMonth = watch('expiryMonth');
 
         if (currentMonth && currentMonth.length > 0) {
-            // مستقیماً مقادیر input ها را پاک کن
             if (monthRef.current) {
                 monthRef.current.value = '';
             }
@@ -215,7 +210,6 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                 yearRef.current.value = '';
             }
 
-            // setValue هم برای react-hook-form
             setValue('expiryMonth', '', { shouldValidate: true, shouldDirty: true });
             setValue('expiryYear', '', { shouldValidate: true, shouldDirty: true });
         }
@@ -258,12 +252,10 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                     className="space-y-6"
                     autoComplete="off"
                 >
-                    {/* Register hidden fields for validation */}
                     <input {...register("cardNumber")} type="hidden" />
                     <input {...register("expiryMonth")} type="hidden" />
                     <input {...register("expiryYear")} type="hidden" />
 
-                    {/* Hidden fields to prevent autocomplete */}
                     <input type="text" autoComplete="off" className="hidden" />
                     <input type="password" autoComplete="new-password" className="hidden" />
 
@@ -296,7 +288,6 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                         error={!!errors.cvv2}
                     >
                         <Box className="relative">
-                            {/* Hidden honeypot field to confuse browsers */}
                             <input
                                 type="password"
                                 autoComplete="current-password"
@@ -332,7 +323,6 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                             required
                             error={!!errors.expiryMonth}
                         >
-                            {/* Hidden honeypot field for month */}
                             <input
                                 type="text"
                                 autoComplete="username"
@@ -368,7 +358,6 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                             required
                             error={!!errors.expiryYear}
                         >
-                            {/* Hidden honeypot field for year */}
                             <input
                                 type="text"
                                 autoComplete="email"

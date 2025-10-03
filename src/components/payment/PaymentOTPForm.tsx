@@ -31,12 +31,9 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
 
     const digits = watch(['digit1', 'digit2', 'digit3', 'digit4', 'digit5', 'digit6']);
 
-    // فوکوس اولیه روی اولین ورودی (چپ به راست)
     useEffect(() => {
         inputRefs.current[0]?.focus();
     }, []);
-
-    // timer handled by useOtpTimer
 
     const handleDigitChange = (rawValue: string, index: number) => {
         const normalized = convertPersianToEnglish(rawValue || '');
@@ -47,14 +44,7 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
         if (value && index < 5) {
             inputRefs.current[index + 1]?.focus();
         }
-
-        const currentOtp = inputRefs.current.map((el) => el?.value || '').join('');
-        if (currentOtp.length === 6) {
-            // Let the validation handle it
-        }
     };
-
-    // formatTime provided by useOtpTimer
 
     const maskedCardNumber = cardNumber.replace(/\d(?=\d{4})/g, '*');
 
@@ -96,8 +86,6 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
                         ))}
                     </Box>
 
-                    {/* resend/timer moved into buttons row for stable layout */}
-
                     <Box className="flex gap-4 items-center">
                         <div className="flex-1 flex items-center justify-center">
                             {secondsLeft > 0 ? (
@@ -118,7 +106,6 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
                                     style={{ background: 'transparent', border: 'none', padding: 0, minWidth: 140 }}
                                     aria-label="ارسال مجدد رمز"
                                 >
-                                    {/* link-like appearance: no bg/border, simple text; no hover-bg/scale */}
                                     ارسال مجدد رمز
                                 </button>
                             )}
