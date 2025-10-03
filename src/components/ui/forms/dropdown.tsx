@@ -271,8 +271,8 @@ const DropdownCustom = ({
                                     key={option.id}
                                     onClick={() => !option.disabled && handleSelect(option)}
                                     className={`cursor-pointer px-4 py-2 transition-colors duration-150 ${option.disabled
-                                            ? "cursor-not-allowed  bg-gray-50 opacity-50 "
-                                            : "hover:bg-[#0E5D6B]/5 dark:hover:bg-primary-700"
+                                        ? "cursor-not-allowed  bg-gray-50 opacity-50 "
+                                        : "hover:bg-[#0E5D6B]/5 dark:hover:bg-primary-700"
                                         } ${multiple
                                             ? Array.isArray(value) &&
                                                 value.some((v) => v.id === option.id)

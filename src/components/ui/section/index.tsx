@@ -1,4 +1,4 @@
-import mergeClasses from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { ComponentProps } from "react";
 
@@ -11,7 +11,7 @@ const Section = ({ children, className, variant }: SectionProps) => {
     if (variant === "primary") {
         return (
             <section
-                className={mergeClasses(
+                className={cn(
                     "container relative mx-1 my-32 flex flex-col gap-10 overflow-hidden rounded-[30px] bg-gray-lightest p-4 !py-28  dark:bg-gray-dark lg:rounded-[50px] lg:p-9",
                     className,
                 )}
@@ -39,7 +39,7 @@ const Section = ({ children, className, variant }: SectionProps) => {
     if (variant === "single") {
         return (
             <section
-                className={mergeClasses(
+                className={cn(
                     "container relative mx-1 mt-32 flex w-[95%] flex-col gap-10 rounded-[30px] bg-gray-lightest p-4 dark:bg-gray-dark md:mt-40 md:w-full md:p-8 lg:rounded-[50px] lg:p-9",
                     className,
                 )}
@@ -51,7 +51,7 @@ const Section = ({ children, className, variant }: SectionProps) => {
     if (variant === "secondary") {
         return (
             <section
-                className={mergeClasses(
+                className={cn(
                     "container relative mx-1 my-32 flex flex-col gap-10 rounded-[30px] border border-gray-light p-4 !py-32 dark:border-gray-900 md:p-8 lg:rounded-[50px] lg:p-9",
                     className,
                 )}
@@ -61,7 +61,7 @@ const Section = ({ children, className, variant }: SectionProps) => {
         );
     } else
         return (
-            <section className={mergeClasses("container flex flex-col", className)}>
+            <section className={cn("container flex flex-col", className)}>
                 {children}
             </section>
         );
