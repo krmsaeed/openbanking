@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
 import { XCircleIcon } from "@heroicons/react/24/solid";
+import React, { useEffect, useRef, useState } from "react";
 import { Box } from "../core";
 
 // Props interface for the Autocomplete component
