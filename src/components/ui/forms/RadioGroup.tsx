@@ -39,7 +39,7 @@ const RadioGroup = forwardRef<HTMLInputElement, RadioGroupProps>(
                                 key={option.value}
                                 className={cn(
                                     'relative flex items-center justify-between cursor-pointer',
-                                    'px-4 py-3.5 rounded-xl border-2 transition-all duration-200',
+                                    'px-4 py-3 rounded-xl border-2 transition-all duration-200',
                                     'hover:shadow-sm',
                                     isSelected
                                         ? 'border-primary-500 bg-primary-50 shadow-sm'
@@ -67,7 +67,7 @@ const RadioGroup = forwardRef<HTMLInputElement, RadioGroupProps>(
                                         {...props}
                                     />
                                     <div className={cn(
-                                        'w-4 h-4 rounded-full border-1 transition-all duration-200',
+                                        'w-4 h-4  rounded-full border-1 transition-all duration-200',
                                         'flex items-center justify-center',
                                         isSelected
                                             ? 'border-primary-500 bg-white'
