@@ -15,6 +15,15 @@ body {
   font-family: var(--font-vazirmatn), "Tahoma", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* برای تست راحت‌تر Dark Mode */
+.dark-mode-preview {
+  background-color: var(--color-bg) !important;
+  color: var(--color-text) !important;
 }
 
 @keyframes pulse {

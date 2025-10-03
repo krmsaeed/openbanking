@@ -6,10 +6,12 @@ import axios from "axios";
 import Image from "next/image";
 import { useUser } from "@/contexts/UserContext";
 type ResponseBody = {
-    "body": {
-        "isCustomer": boolean
-    },
-    "processId": number
+    data: {
+        "body": {
+            "isCustomer": boolean
+        },
+        "processId": number
+    }
 }
 function HomeLoader() {
     const router = useRouter();
@@ -25,13 +27,12 @@ function HomeLoader() {
         }
         await axios.post('/api/bpms/kekyc-user-send-message', { serviceName: "virtual-open-deposit", body: { code: nationalCode } })
             .then((response) => {
-                const res = response.data as ResponseBody;
-                console.log(res)
-                if (res.body.isCustomer) {
-                    setUserData({ nationalCode, step: 2, processId: res.processId });
+                const { data } = response.data as ResponseBody;
+                if (data.body.isCustomer) {
+                    setUserData({ nationalCode, step: 2, processId: data.processId });
                     router.push("/register");
                 } else {
-                    setUserData({ nationalCode, processId: res.processId });
+                    setUserData({ nationalCode, processId: data.processId });
                     router.push("/register");
                 }
             })
@@ -54,7 +55,7 @@ function HomeLoader() {
                     <h3 className="text-lg font-semibold text-red-600">خطا در اطلاعات</h3>
                     <p className="mt-2 text-sm text-red-500">{error}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2">u
                     <button className="px-4 py-2 rounded bg-gray-100" onClick={() => router.push('/')}>برگشت</button>
                     <button className="px-4 py-2 rounded bg-primary text-white" onClick={() => router.push('/register')}>رفتن به ثبت‌نام</button>
                 </div>

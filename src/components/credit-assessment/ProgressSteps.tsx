@@ -35,7 +35,7 @@ export function ProgressSteps({ currentStep }: ProgressStepsProps) {
                     <div key={item.number} className="flex items-center flex-shrink-0">
                         <div className={`flex items-center justify-center w-10 h-10 rounded-full ${currentStep >= item.number
                             ? 'bg-primary text-white'
-                            : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                            : 'bg-dark-100 dark:bg-dark-700 text-gray-500 dark:text-gray-400'
                             }`}>
                             <item.icon className="w-5 h-5" />
                         </div>
@@ -44,7 +44,7 @@ export function ProgressSteps({ currentStep }: ProgressStepsProps) {
                             {item.title}
                         </span>
                         {index < steps.length - 1 && (
-                            <div className={`w-6 h-0.5 mx-3 ${currentStep > item.number ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-600'
+                            <div className={`w-6 h-0.5 mx-3 ${currentStep > item.number ? 'bg-primary' : 'bg-dark-200 dark:bg-gray-400'
                                 }`} />
                         )}
                     </div>
