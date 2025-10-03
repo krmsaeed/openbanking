@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useRef } from 'react';
 import { Button } from '@/components/ui/core/Button';
@@ -10,7 +10,12 @@ type Props = {
     buttonLabel?: string;
 };
 
-export default function OcrReader({ onFileSelected, accept = 'image/*', className = '', buttonLabel = 'بارگذاری تصویر' }: Props) {
+export default function OcrReader({
+    onFileSelected,
+    accept = 'image/*',
+    className = '',
+    buttonLabel = 'بارگذاری تصویر',
+}: Props) {
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

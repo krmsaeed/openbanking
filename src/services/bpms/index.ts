@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { handleResponse } from '../setResponse';
 
-
 export interface ApiResponse<T = unknown> {
     status: number;
     data: T;

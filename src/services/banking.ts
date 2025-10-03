@@ -41,15 +41,19 @@ class BankingService {
         accountId: string,
         page: number = 1,
         limit: number = 20
-    ): Promise<ApiResponse<{ transactions: Transaction[]; total: number; }>> {
-        return apiClient.get(`/banking/accounts/${accountId}/transactions?page=${page}&limit=${limit}`);
+    ): Promise<ApiResponse<{ transactions: Transaction[]; total: number }>> {
+        return apiClient.get(
+            `/banking/accounts/${accountId}/transactions?page=${page}&limit=${limit}`
+        );
     }
 
     async transfer(transferData: TransferRequest): Promise<ApiResponse<Transaction>> {
         return apiClient.post<Transaction>('/banking/transfer', transferData);
     }
 
-    async getBalance(accountId: string): Promise<ApiResponse<{ balance: number; currency: string; }>> {
+    async getBalance(
+        accountId: string
+    ): Promise<ApiResponse<{ balance: number; currency: string }>> {
         return apiClient.get(`/banking/accounts/${accountId}/balance`);
     }
 

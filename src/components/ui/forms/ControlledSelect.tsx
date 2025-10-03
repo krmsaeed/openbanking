@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Controller, Control, FieldValues } from "react-hook-form";
-import { Select } from "./Select";
+import { Controller, Control, FieldValues } from 'react-hook-form';
+import { Select } from './Select';
 
 interface ControlledSelectProps<T extends FieldValues = FieldValues> {
     name: string;
@@ -20,7 +20,11 @@ export function ControlledSelect({ name, control, children, className }: Control
                     <Select {...field} className={className}>
                         {children}
                     </Select>
-                    {fieldState.error && <p className="text-xs text-red-500 mt-1">{String(fieldState.error.message)}</p>}
+                    {fieldState.error && (
+                        <p className="mt-1 text-xs text-red-500">
+                            {String(fieldState.error.message)}
+                        </p>
+                    )}
                 </>
             )}
         />

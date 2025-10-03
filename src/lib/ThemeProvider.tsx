@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 
 interface ThemeProviderProps {
     children: React.ReactNode;
@@ -10,7 +10,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     useEffect(() => {
         try {
             const stored = typeof window !== 'undefined' ? localStorage.getItem('theme') : null;
-            const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const prefersDark =
+                typeof window !== 'undefined' &&
+                window.matchMedia &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches;
             const theme = stored || (prefersDark ? 'dark' : 'light');
 
             if (theme === 'dark') {
@@ -22,8 +25,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
                 document.body.classList.remove('dark');
                 document.documentElement.setAttribute('data-theme', 'light');
             }
-        } catch {
-        }
+        } catch {}
     }, []);
 
     return <>{children}</>;

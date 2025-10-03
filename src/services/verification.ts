@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { apiClient, ApiResponse } from './api';
 
 export interface UserInfo {
@@ -35,8 +35,7 @@ export interface VerificationStatus {
 class VerificationService {
     async submitVerification(data: VerificationData): Promise<ApiResponse<VerificationResponse>> {
         const formData = new FormData();
-        
-        
+
         const timestamp = Date.now();
         if (typeof data.signature === 'string') {
             formData.append('signature', data.signature);

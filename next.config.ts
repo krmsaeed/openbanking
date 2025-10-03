@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
     // produce a standalone build (server + minimal node_modules) in .next/standalone
@@ -62,7 +62,7 @@ const nextConfig: NextConfig = {
         return config;
     },
     env: {
-        BASE_URL: "http://192.168.91.112:9999"
+        BASE_URL: 'http://192.168.91.112:9999',
     },
 
     // async rewrites() {
@@ -73,8 +73,6 @@ const nextConfig: NextConfig = {
     //         }
     //     ]
     // }
-
 };
-
 
 export default nextConfig;

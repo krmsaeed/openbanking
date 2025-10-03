@@ -43,24 +43,24 @@ const getTableClasses = (
     responsive: boolean,
     stickyHeader: boolean
 ) => {
-    const baseClasses = "w-full border-collapse bg-white text-gray-900";
+    const baseClasses = 'w-full border-collapse bg-white text-gray-900';
 
     const variantClasses = {
-        default: "border-gray-200",
-        bordered: "border border-gray-300",
-        striped: "border-gray-200",
-        hover: "border-gray-200",
-        compact: "border-gray-200",
+        default: 'border-gray-200',
+        bordered: 'border border-gray-300',
+        striped: 'border-gray-200',
+        hover: 'border-gray-200',
+        compact: 'border-gray-200',
     };
 
     const sizeClasses = {
-        sm: "text-sm",
-        md: "text-base",
-        lg: "text-lg",
+        sm: 'text-sm',
+        md: 'text-base',
+        lg: 'text-lg',
     };
 
-    const responsiveClasses = responsive ? "table-auto" : "";
-    const stickyClasses = stickyHeader ? "sticky-header" : "";
+    const responsiveClasses = responsive ? 'table-auto' : '';
+    const stickyClasses = stickyHeader ? 'sticky-header' : '';
 
     return cn(
         baseClasses,
@@ -72,12 +72,12 @@ const getTableClasses = (
 };
 
 const getTableHeaderClasses = (variant: 'default' | 'dark' | 'light') => {
-    const baseClasses = "border-b";
+    const baseClasses = 'border-b';
 
     const variantClasses = {
-        default: "bg-gray-50 border-gray-200",
-        dark: "bg-gray-800 text-white border-gray-700",
-        light: "bg-gray-100 border-gray-200",
+        default: 'bg-gray-50 border-gray-200',
+        dark: 'bg-gray-800 text-white border-gray-700',
+        light: 'bg-gray-100 border-gray-200',
     };
 
     return cn(baseClasses, variantClasses[variant]);
@@ -87,17 +87,17 @@ const getTableRowClasses = (
     variant: 'default' | 'selected' | 'success' | 'warning' | 'error',
     interactive: boolean
 ) => {
-    const baseClasses = "border-b border-gray-100 transition-colors duration-200";
+    const baseClasses = 'border-b border-gray-100 transition-colors duration-200';
 
     const variantClasses = {
-        default: "bg-white hover:bg-gray-50",
-        selected: "bg-primary-50 border-primary-200 hover:bg-primary-100",
-        success: "bg-green-50 border-green-200 hover:bg-green-100",
-        warning: "bg-yellow-50 border-yellow-200 hover:bg-yellow-100",
-        error: "bg-red-50 border-red-200 hover:bg-red-100",
+        default: 'bg-white hover:bg-gray-50',
+        selected: 'bg-primary-50 border-primary-200 hover:bg-primary-100',
+        success: 'bg-green-50 border-green-200 hover:bg-green-100',
+        warning: 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100',
+        error: 'bg-red-50 border-red-200 hover:bg-red-100',
     };
 
-    const interactiveClasses = interactive ? "cursor-pointer" : "";
+    const interactiveClasses = interactive ? 'cursor-pointer' : '';
 
     return cn(baseClasses, variantClasses[variant], interactiveClasses);
 };
@@ -108,29 +108,29 @@ const getTableCellClasses = (
     weight: 'normal' | 'medium' | 'semibold' | 'bold',
     sortable: boolean
 ) => {
-    const baseClasses = "py-3 px-4 transition-colors duration-200";
+    const baseClasses = 'py-3 px-4 transition-colors duration-200';
 
     const alignClasses = {
-        left: "text-right", 
-        center: "text-center",
-        right: "text-left", 
+        left: 'text-right',
+        center: 'text-center',
+        right: 'text-left',
     };
 
     const variantClasses = {
-        default: "text-gray-900",
-        header: "text-gray-700 font-medium",
-        numeric: "font-mono text-gray-900",
-        action: "text-center",
+        default: 'text-gray-900',
+        header: 'text-gray-700 font-medium',
+        numeric: 'font-mono text-gray-900',
+        action: 'text-center',
     };
 
     const weightClasses = {
-        normal: "font-normal",
-        medium: "font-medium",
-        semibold: "font-semibold",
-        bold: "font-bold",
+        normal: 'font-normal',
+        medium: 'font-medium',
+        semibold: 'font-semibold',
+        bold: 'font-bold',
     };
 
-    const sortableClasses = sortable ? "cursor-pointer hover:bg-gray-100 select-none" : "";
+    const sortableClasses = sortable ? 'cursor-pointer hover:bg-gray-100 select-none' : '';
 
     return cn(
         baseClasses,
@@ -142,33 +142,28 @@ const getTableCellClasses = (
 };
 
 export const Table = forwardRef<HTMLTableElement, TableProps>(
-    ({
-        variant = 'default',
-        size = 'md',
-        responsive = true,
-        stickyHeader = false,
-        className,
-        children,
-        ...props
-    }, ref) => {
+    (
+        {
+            variant = 'default',
+            size = 'md',
+            responsive = true,
+            stickyHeader = false,
+            className,
+            children,
+            ...props
+        },
+        ref
+    ) => {
         const tableClasses = getTableClasses(variant, size, responsive, stickyHeader);
 
         const TableComponent = (
-            <table
-                ref={ref}
-                className={cn(tableClasses, className)}
-                {...props}
-            >
+            <table ref={ref} className={cn(tableClasses, className)} {...props}>
                 {children}
             </table>
         );
 
         if (responsive) {
-            return (
-                <div className="overflow-x-auto">
-                    {TableComponent}
-                </div>
-            );
+            return <div className="overflow-x-auto">{TableComponent}</div>;
         }
 
         return TableComponent;
@@ -180,11 +175,7 @@ export const TableHeader = forwardRef<HTMLTableSectionElement, TableHeaderProps>
         const classes = getTableHeaderClasses(variant);
 
         return (
-            <thead
-                ref={ref}
-                className={cn(classes, className)}
-                {...props}
-            >
+            <thead ref={ref} className={cn(classes, className)} {...props}>
                 {children}
             </thead>
         );
@@ -193,14 +184,12 @@ export const TableHeader = forwardRef<HTMLTableSectionElement, TableHeaderProps>
 
 export const TableBody = forwardRef<HTMLTableSectionElement, TableBodyProps>(
     ({ striped = false, className, children, ...props }, ref) => {
-        const stripedClasses = striped ? "divide-y divide-gray-100 [&>tr:nth-child(even)]:bg-gray-50" : "divide-y divide-gray-100";
+        const stripedClasses = striped
+            ? 'divide-y divide-gray-100 [&>tr:nth-child(even)]:bg-gray-50'
+            : 'divide-y divide-gray-100';
 
         return (
-            <tbody
-                ref={ref}
-                className={cn(stripedClasses, className)}
-                {...props}
-            >
+            <tbody ref={ref} className={cn(stripedClasses, className)} {...props}>
                 {children}
             </tbody>
         );
@@ -208,21 +197,11 @@ export const TableBody = forwardRef<HTMLTableSectionElement, TableBodyProps>(
 );
 
 export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
-    ({
-        variant = 'default',
-        interactive = false,
-        className,
-        children,
-        ...props
-    }, ref) => {
+    ({ variant = 'default', interactive = false, className, children, ...props }, ref) => {
         const classes = getTableRowClasses(variant, interactive);
 
         return (
-            <tr
-                ref={ref}
-                className={cn(classes, className)}
-                {...props}
-            >
+            <tr ref={ref} className={cn(classes, className)} {...props}>
                 {children}
             </tr>
         );
@@ -230,17 +209,20 @@ export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
 );
 
 export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
-    ({
-        align = 'right', 
-        variant = 'default',
-        weight = 'normal',
-        as = 'td',
-        sortable = false,
-        sortDirection = null,
-        className,
-        children,
-        ...props
-    }, ref) => {
+    (
+        {
+            align = 'right',
+            variant = 'default',
+            weight = 'normal',
+            as = 'td',
+            sortable = false,
+            sortDirection = null,
+            className,
+            children,
+            ...props
+        },
+        ref
+    ) => {
         const classes = getTableCellClasses(align, variant, weight, sortable);
 
         const content = (
@@ -251,7 +233,7 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
                         <span className="flex flex-col">
                             <svg
                                 className={cn(
-                                    "w-3 h-3",
+                                    'h-3 w-3',
                                     sortDirection === 'asc' ? 'text-blue-600' : 'text-gray-400'
                                 )}
                                 fill="currentColor"
@@ -261,7 +243,7 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
                             </svg>
                             <svg
                                 className={cn(
-                                    "w-3 h-3 -mt-1",
+                                    '-mt-1 h-3 w-3',
                                     sortDirection === 'desc' ? 'text-blue-600' : 'text-gray-400'
                                 )}
                                 fill="currentColor"
@@ -289,11 +271,7 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
         }
 
         return (
-            <td
-                ref={ref}
-                className={cn(classes, className)}
-                {...props}
-            >
+            <td ref={ref} className={cn(classes, className)} {...props}>
                 {content}
             </td>
         );
@@ -302,20 +280,17 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
 
 export const TableFooter = forwardRef<HTMLTableSectionElement, TableFooterProps>(
     ({ summary = false, className, children, ...props }, ref) => {
-        const summaryClasses = summary ? "bg-gray-100 border-t-2 border-gray-300 font-medium" : "bg-gray-50 border-t border-gray-200";
+        const summaryClasses = summary
+            ? 'bg-gray-100 border-t-2 border-gray-300 font-medium'
+            : 'bg-gray-50 border-t border-gray-200';
 
         return (
-            <tfoot
-                ref={ref}
-                className={cn(summaryClasses, className)}
-                {...props}
-            >
+            <tfoot ref={ref} className={cn(summaryClasses, className)} {...props}>
                 {children}
             </tfoot>
         );
     }
 );
-
 
 Table.displayName = 'Table';
 TableHeader.displayName = 'TableHeader';

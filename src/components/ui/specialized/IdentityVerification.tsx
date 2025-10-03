@@ -1,11 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect } from "react";
-import toast from "react-hot-toast";
-import { VideoCameraIcon, XMarkIcon, SpeakerWaveIcon, CheckIcon } from "@heroicons/react/24/outline";
-import { Button } from "../core/Button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../core/Card";
-import { Box } from "../core";
+import { useState, useRef, useEffect } from 'react';
+import toast from 'react-hot-toast';
+import {
+    VideoCameraIcon,
+    XMarkIcon,
+    SpeakerWaveIcon,
+    CheckIcon,
+} from '@heroicons/react/24/outline';
+import { Button } from '../core/Button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../core/Card';
+import { Box } from '../core';
 
 interface IdentityVerificationProps {
     onComplete: (selfieFile: File | null, videoFile: File | null) => void;
@@ -27,9 +32,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
     const recordedChunksRef = useRef<Blob[]>([]);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-    const verificationTexts = [
-        "این یک متن تستی است"
-    ];
+    const verificationTexts = ['این یک متن تستی است'];
 
     const currentText = verificationTexts[currentTextIndex];
 
@@ -55,7 +58,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
     useEffect(() => {
         return () => {
             if (streamRef.current) {
-                streamRef.current.getTracks().forEach(track => track.stop());
+                streamRef.current.getTracks().forEach((track) => track.stop());
             }
             if (videoPreviewUrl) {
                 URL.revokeObjectURL(videoPreviewUrl);
@@ -67,7 +70,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: true,
-                audio: true
+                audio: true,
             });
 
             if (videoRef.current) {
@@ -96,7 +99,11 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
 
             mediaRecorder.onstop = () => {
                 const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
-                const file = new File([blob], `verification_video_${window !== undefined && Date.now()}.webm`, { type: 'video/webm' });
+                const file = new File(
+                    [blob],
+                    `verification_video_${window !== undefined && Date.now()}.webm`,
+                    { type: 'video/webm' }
+                );
 
                 const url = URL.createObjectURL(blob);
                 setVideoPreviewUrl(url);
@@ -128,7 +135,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
             }
 
             if (streamRef.current) {
-                streamRef.current.getTracks().forEach(track => {
+                streamRef.current.getTracks().forEach((track) => {
                     track.stop();
                 });
                 streamRef.current = null;
@@ -147,7 +154,7 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
     const handleComplete = () => {
         if (videoFile) {
             if (streamRef.current) {
-                streamRef.current.getTracks().forEach(track => track.stop());
+                streamRef.current.getTracks().forEach((track) => track.stop());
                 navigator.mediaDevices.getUserMedia({ video: false, audio: false });
                 streamRef.current = null;
             }
@@ -160,9 +167,10 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
 
             onComplete(null, videoFile);
         }
-    }; const handleRetakeVideo = () => {
+    };
+    const handleRetakeVideo = () => {
         if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current.getTracks().forEach((track) => track.stop());
             streamRef.current = null;
         }
 
@@ -188,35 +196,34 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
             utterance.rate = 0.8;
             speechSynthesis.speak(utterance);
         }
-    }; return (
+    };
+    return (
         <div className="space-y-6">
             <Card padding="lg">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-3">
-                        <VideoCameraIcon className="w-6 h-6 text-red-600" />
+                        <VideoCameraIcon className="h-6 w-6 text-red-600" />
                         ضبط ویدیو احراز هویت
                     </CardTitle>
-                    <CardDescription>
-                        متن نمایش داده شده را با صدای بلند بخوانید
-                    </CardDescription>
+                    <CardDescription>متن نمایش داده شده را با صدای بلند بخوانید</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="text-center">
                         {videoFile && videoPreviewUrl ? (
                             <div className="space-y-4">
-                                <div className="border-2 border-green-200 rounded-lg p-4 bg-green-50">
-                                    <h4 className="font-medium text-green-800 mb-3">پیش‌نمایش ویدیو ضبط شده:</h4>
+                                <div className="rounded-lg border-2 border-green-200 bg-green-50 p-4">
+                                    <h4 className="mb-3 font-medium text-green-800">
+                                        پیش‌نمایش ویدیو ضبط شده:
+                                    </h4>
                                     <video
                                         src={videoPreviewUrl}
                                         controls
-                                        className="w-full max-w-md mx-auto rounded-lg border border-gray-300"
+                                        className="mx-auto w-full max-w-md rounded-lg border border-gray-300"
                                         style={{ maxHeight: '200px' }}
                                     >
                                         مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
                                     </video>
                                 </div>
-
-
 
                                 <div className="flex justify-center gap-3">
                                     <Button
@@ -224,61 +231,67 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                                         onClick={handleRetakeVideo}
                                         className="flex items-center gap-2"
                                     >
-                                        <VideoCameraIcon className="w-4 h-4" />
+                                        <VideoCameraIcon className="h-4 w-4" />
                                         ضبط مجدد
                                     </Button>
-
-
                                 </div>
                             </div>
                         ) : (
                             <div className="space-y-4">
-                                <div className="border-2 border-dashed border-primary-300 rounded-lg p-4 bg-primary-50">
-                                    <div className="relative bg-black rounded-lg overflow-hidden mb-4">
+                                <div className="border-primary-300 bg-primary-50 rounded-lg border-2 border-dashed p-4">
+                                    <div className="relative mb-4 overflow-hidden rounded-lg bg-black">
                                         <video
                                             ref={videoRef}
                                             autoPlay
                                             muted
-                                            className="w-full h-64 object-cover"
+                                            className="h-64 w-full object-cover"
                                             style={{ transform: 'scaleX(-1)' }}
                                         />
                                         <canvas ref={canvasRef} className="hidden" />
 
                                         {isRecording && (
-                                            <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full">
-                                                <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                                            <div className="absolute top-4 left-4 flex items-center gap-2 rounded-full bg-red-500 px-3 py-1 text-white">
+                                                <div className="h-2 w-2 animate-pulse rounded-full bg-white" />
                                                 <span className="text-sm font-medium">
-                                                    ضبط: {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
+                                                    ضبط: {Math.floor(recordingTime / 60)}:
+                                                    {(recordingTime % 60)
+                                                        .toString()
+                                                        .padStart(2, '0')}
                                                 </span>
                                             </div>
                                         )}
                                     </div>
 
-                                    <div className="mb-4 p-3 bg-white border-2 border-primary-200 rounded-lg">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <h4 className="font-medium text-primary-900">متن زیر را بخوانید:</h4>
+                                    <div className="border-primary-200 mb-4 rounded-lg border-2 bg-white p-3">
+                                        <div className="mb-2 flex items-center justify-between">
+                                            <h4 className="text-primary-900 font-medium">
+                                                متن زیر را بخوانید:
+                                            </h4>
                                             <Button
                                                 variant="outline"
                                                 size="sm"
                                                 onClick={speakText}
                                                 className="flex items-center gap-1"
                                             >
-                                                <SpeakerWaveIcon className="w-4 h-4" />
+                                                <SpeakerWaveIcon className="h-4 w-4" />
                                                 پخش صوتی
                                             </Button>
                                         </div>
-                                        <p className="text-base text-gray-800 leading-relaxed text-center">
+                                        <p className="text-center text-base leading-relaxed text-gray-800">
                                             {currentText}
                                         </p>
-                                        <div className="flex justify-between items-center mt-2">
-                                            <span className="text-sm text-primary font-medium">
-                                                متن {currentTextIndex + 1} از {verificationTexts.length}
+                                        <div className="mt-2 flex items-center justify-between">
+                                            <span className="text-primary text-sm font-medium">
+                                                متن {currentTextIndex + 1} از{' '}
+                                                {verificationTexts.length}
                                             </span>
                                             {currentTextIndex < verificationTexts.length - 1 && (
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => setCurrentTextIndex(prev => prev + 1)}
+                                                    onClick={() =>
+                                                        setCurrentTextIndex((prev) => prev + 1)
+                                                    }
                                                 >
                                                     متن بعدی
                                                 </Button>
@@ -290,40 +303,40 @@ export function IdentityVerification({ onComplete, onCancel }: IdentityVerificat
                                         {!isRecording ? (
                                             <Button
                                                 onClick={startVideoRecording}
-                                                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-6 py-3"
+                                                className="flex items-center gap-2 bg-red-600 px-6 py-3 hover:bg-red-700"
                                             >
-                                                <VideoCameraIcon className="w-5 h-5" />
+                                                <VideoCameraIcon className="h-5 w-5" />
                                                 شروع ضبط
                                             </Button>
                                         ) : (
                                             <Button
                                                 onClick={stopVideoRecording}
-                                                className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-6 py-3"
+                                                className="flex items-center gap-2 bg-gray-600 px-6 py-3 hover:bg-gray-700"
                                             >
-                                                <XMarkIcon className="w-5 h-5" />
+                                                <XMarkIcon className="h-5 w-5" />
                                                 پایان ضبط
                                             </Button>
                                         )}
                                     </div>
                                 </div>
 
-                                <Box className="w-full flex gap-2 items-center">
+                                <Box className="flex w-full items-center gap-2">
                                     <Button
                                         onClick={onCancel}
                                         variant="destructive"
-                                        className="w-full flex justify-center gapo-3 px-5 py-3 items-center text-white"
+                                        className="gapo-3 flex w-full items-center justify-center px-5 py-3 text-white"
                                     >
-                                        <XMarkIcon className="w-5 h-5 text-white" />
+                                        <XMarkIcon className="h-5 w-5 text-white" />
                                         انصراف
                                     </Button>
 
                                     <Button
                                         variant="success"
                                         onClick={handleComplete}
-                                        className="  text-white  gap-3 px-5 py-3 flex items-center justify-center  w-full"
+                                        className="flex w-full items-center justify-center gap-3 px-5 py-3 text-white"
                                     >
                                         <CheckIcon className="h-5 w-5" />
-                                        <span className="text-white text-xs font-medium">
+                                        <span className="text-xs font-medium text-white">
                                             تایید
                                         </span>
                                     </Button>

@@ -1,0 +1,11 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Format code with Prettier
+yarn format
+
+# Add formatted files to staging
+git add -A
+
+# Build project to check for errors
+yarn build

@@ -1,6 +1,6 @@
-"use client";
-import { Control, Controller, FieldValues, FieldPath } from "react-hook-form";
-import Input from "../forms/Input";
+'use client';
+import { Control, Controller, FieldValues, FieldPath } from 'react-hook-form';
+import Input from '../forms/Input';
 
 interface NationalCodeInputProps<T extends FieldValues = FieldValues> {
     control: Control<T>;
@@ -19,10 +19,10 @@ interface PhoneNumberInputProps<T extends FieldValues = FieldValues> {
 }
 export const NationalCodeInput = <T extends FieldValues = FieldValues>({
     control,
-    name = "nationalCode" as FieldPath<T>,
-    className = "text-center",
-    placeholder = "کد ملی ۱۰ رقمی",
-    label = "کد ملی",
+    name = 'nationalCode' as FieldPath<T>,
+    className = 'text-center',
+    placeholder = 'کد ملی ۱۰ رقمی',
+    label = 'کد ملی',
 }: NationalCodeInputProps<T>) => {
     return (
         <Controller<T>
@@ -44,13 +44,12 @@ export const NationalCodeInput = <T extends FieldValues = FieldValues>({
     );
 };
 
-
 export const PhoneNumberInput = <T extends FieldValues = FieldValues>({
     control,
-    name = "phoneNumber" as FieldPath<T>,
-    className = "text-center",
-    placeholder = "0912*******",
-    label = "شماره تلفن همراه",
+    name = 'phoneNumber' as FieldPath<T>,
+    className = 'text-center',
+    placeholder = '0912*******',
+    label = 'شماره تلفن همراه',
 }: PhoneNumberInputProps<T>) => {
     return (
         <Controller<T>

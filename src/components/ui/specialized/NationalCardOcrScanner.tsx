@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Box } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
@@ -16,7 +16,12 @@ type Props = {
     showConfirmButton?: boolean;
 };
 
-export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen = true, showConfirmButton = false }: Props) {
+export default function NationalCardOcrScanner({
+    onCapture,
+    onConfirm,
+    autoOpen = true,
+    showConfirmButton = false,
+}: Props) {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
@@ -43,39 +48,47 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                 vids = allVids;
             }
             if (!selectedDeviceId && vids.length > 0) setSelectedDeviceId(vids[0].deviceId);
-        } catch (e) {
-            console.warn('refreshDevices failed', e);
+        } catch {
+            // Device enumeration failed
         }
     }, [selectedDeviceId]);
 
-    const openDeviceById = useCallback(async (deviceId: string, remember = false) => {
-        setIsCameraOpen(true);
-        try {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-            try { streamRef.current?.getTracks().forEach((t) => t.stop()); } catch { }
-            const s = await navigator.mediaDevices.getUserMedia({
-                video: { deviceId: { exact: deviceId } },
-                audio: false
-            });
-            streamRef.current = s;
-            if (videoRef.current) videoRef.current.srcObject = s;
+    const openDeviceById = useCallback(
+        async (deviceId: string, remember = false) => {
+            setIsCameraOpen(true);
             try {
-                const id = s.getVideoTracks()?.[0]?.getSettings?.()?.deviceId as string | undefined;
-                if (id) setSelectedDeviceId(id);
-                else setSelectedDeviceId(deviceId);
-            } catch {
-                setSelectedDeviceId(deviceId);
-            }
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+                try {
+                    streamRef.current?.getTracks().forEach((t) => t.stop());
+                } catch {}
+                const s = await navigator.mediaDevices.getUserMedia({
+                    video: { deviceId: { exact: deviceId } },
+                    audio: false,
+                });
+                streamRef.current = s;
+                if (videoRef.current) videoRef.current.srcObject = s;
+                try {
+                    const id = s.getVideoTracks()?.[0]?.getSettings?.()?.deviceId as
+                        | string
+                        | undefined;
+                    if (id) setSelectedDeviceId(id);
+                    else setSelectedDeviceId(deviceId);
+                } catch {
+                    setSelectedDeviceId(deviceId);
+                }
 
-            if (remember && process.env.NODE_ENV === 'development') {
-                localStorage.setItem('preferredUsbCameraId', deviceId);
+                if (remember && process.env.NODE_ENV === 'development') {
+                    localStorage.setItem('preferredUsbCameraId', deviceId);
+                }
+                try {
+                    await refreshDevices();
+                } catch {}
+            } catch {
+                toast.error('باز کردن وبکم با خطا مواجه شد');
             }
-            try { await refreshDevices(); } catch { }
-        } catch (e) {
-            console.warn('openDeviceById failed', e);
-            toast.error('باز کردن وبکم با خطا مواجه شد');
-        }
-    }, [refreshDevices]);
+        },
+        [refreshDevices]
+    );
 
     const requestCameraPermission = useCallback(async () => {
         try {
@@ -84,15 +97,21 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                 return false;
             }
             const s = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-            try { s.getTracks().forEach((t) => t.stop()); } catch { }
+            try {
+                s.getTracks().forEach((t) => t.stop());
+            } catch {}
             setPermissionGranted(true);
             setShowPermissionModal(false);
-            try { await refreshDevices(); } catch { }
+            try {
+                await refreshDevices();
+            } catch {}
             return true;
         } catch {
             setPermissionGranted(false);
             toast.error('دسترسی دوربین داده نشد');
-            try { await refreshDevices(); } catch { }
+            try {
+                await refreshDevices();
+            } catch {}
             return false;
         }
     }, [refreshDevices]);
@@ -107,7 +126,9 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
             if (!autoOpen || !selectedDeviceId || isCameraOpen) return;
             try {
                 type PermissionStatusLike = { state?: string };
-                type PermissionsLike = { query?: (desc: { name: string }) => Promise<PermissionStatusLike> };
+                type PermissionsLike = {
+                    query?: (desc: { name: string }) => Promise<PermissionStatusLike>;
+                };
                 const nav = navigator as unknown as { permissions?: PermissionsLike };
                 if (nav.permissions && typeof nav.permissions.query === 'function') {
                     try {
@@ -116,16 +137,20 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                         if (res && res.state === 'granted') {
                             await openDeviceById(selectedDeviceId);
                         }
-                    } catch { }
+                    } catch {}
                 } else {
-                    try { await openDeviceById(selectedDeviceId); } catch { }
+                    try {
+                        await openDeviceById(selectedDeviceId);
+                    } catch {}
                 }
             } catch (err) {
                 console.warn('auto-open check failed', err);
             }
         };
         tryAutoOpen();
-        return () => { mounted = false; };
+        return () => {
+            mounted = false;
+        };
     }, [selectedDeviceId, isCameraOpen, openDeviceById, autoOpen]);
 
     useEffect(() => {
@@ -134,7 +159,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
         (async () => {
             try {
                 await requestCameraPermission();
-            } catch { }
+            } catch {}
         })();
         return () => {
             try {
@@ -144,7 +169,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                     setIsCameraOpen(false);
                 }
                 if (localVideo) localVideo.srcObject = null;
-            } catch { }
+            } catch {}
         };
     }, [refreshDevices, requestCameraPermission]);
 
@@ -187,7 +212,8 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
         } finally {
             setOcrLoading(false);
         }
-    }; const handleCapture = () => {
+    };
+    const handleCapture = () => {
         if (ocrLoading) return;
         if (!videoRef.current) return;
         const video = videoRef.current;
@@ -199,24 +225,30 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
         ctx.drawImage(video, 0, 0, w, h);
-        canvas.toBlob((blob) => {
-            if (!blob) return;
-            const file = new File([blob], `national-card-${Date.now()}.jpg`, { type: blob.type });
-            const url = URL.createObjectURL(file);
-            if (capturedUrl) URL.revokeObjectURL(capturedUrl);
-            setCapturedUrl(url);
+        canvas.toBlob(
+            (blob) => {
+                if (!blob) return;
+                const file = new File([blob], `national-card-${Date.now()}.jpg`, {
+                    type: blob.type,
+                });
+                const url = URL.createObjectURL(file);
+                if (capturedUrl) URL.revokeObjectURL(capturedUrl);
+                setCapturedUrl(url);
 
-            processOcr(file);
+                processOcr(file);
 
-            try {
-                if (streamRef.current) {
-                    streamRef.current.getTracks().forEach((t) => t.stop());
-                    streamRef.current = null;
-                    setIsCameraOpen(false);
-                }
-                if (videoRef.current) videoRef.current.srcObject = null;
-            } catch { }
-        }, 'image/jpeg', 0.90);
+                try {
+                    if (streamRef.current) {
+                        streamRef.current.getTracks().forEach((t) => t.stop());
+                        streamRef.current = null;
+                        setIsCameraOpen(false);
+                    }
+                    if (videoRef.current) videoRef.current.srcObject = null;
+                } catch {}
+            },
+            'image/jpeg',
+            0.9
+        );
     };
 
     const handleReset = async () => {
@@ -231,7 +263,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
             if (selectedDeviceId) {
                 const s = await navigator.mediaDevices.getUserMedia({
                     video: { deviceId: { exact: selectedDeviceId } },
-                    audio: false
+                    audio: false,
                 });
                 streamRef.current = s;
                 if (videoRef.current) videoRef.current.srcObject = s;
@@ -247,7 +279,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
 
     return (
         <Box className="space-y-3">
-            <div className="relative bg-black rounded overflow-hidden">
+            <div className="relative overflow-hidden rounded bg-black">
                 {!capturedUrl ? (
                     isCameraOpen ? (
                         <video
@@ -255,21 +287,21 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                             autoPlay
                             playsInline
                             muted
-                            className="w-full h-64 object-cover"
+                            className="h-64 w-full object-cover"
                         />
                     ) : (
-                        <div 
-                            className="w-full h-64 flex items-center justify-center bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg"
+                        <div
+                            className="flex h-64 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-500 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
                             onClick={handleRequestPermission}
                         >
-                            <div className="text-center space-y-2">
-                                <CameraIcon className="w-12 h-12 mx-auto" />
+                            <div className="space-y-2 text-center">
+                                <CameraIcon className="mx-auto h-12 w-12" />
                                 <p className="text-sm">برای فعال‌سازی دوربین کلیک کنید</p>
                             </div>
                         </div>
                     )
                 ) : (
-                    <div className="w-full h-64 relative">
+                    <div className="relative h-64 w-full">
                         <Image
                             src={capturedUrl}
                             alt="preview"
@@ -279,15 +311,15 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                         />
                         {/* آیکون وضعیت OCR - طراحی جدید */}
                         {!ocrLoading && (
-                            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 transform">
                                 {ocrValid ? (
-                                    <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl px-4 py-2 shadow-xl border-2 border-white flex items-center gap-2 backdrop-blur-sm">
-                                        <CheckIcon className="w-5 h-5" />
+                                    <div className="flex items-center gap-2 rounded-2xl border-2 border-white bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2 text-white shadow-xl backdrop-blur-sm">
+                                        <CheckIcon className="h-5 w-5" />
                                         <span className="text-sm font-medium">تایید شد</span>
                                     </div>
                                 ) : (
-                                    <div className="bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-2xl px-4 py-2 shadow-xl border-2 border-white flex items-center gap-2 backdrop-blur-sm">
-                                        <XMarkIcon className="w-5 h-5" />
+                                    <div className="flex items-center gap-2 rounded-2xl border-2 border-white bg-gradient-to-r from-red-500 to-rose-500 px-4 py-2 text-white shadow-xl backdrop-blur-sm">
+                                        <XMarkIcon className="h-5 w-5" />
                                         <span className="text-sm font-medium">نامعتبر</span>
                                     </div>
                                 )}
@@ -297,9 +329,9 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                 )}
                 <canvas ref={canvasRef} style={{ display: 'none' }} />
                 {ocrLoading && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                         <div className="flex flex-col items-center gap-2">
-                            <svg className="animate-spin h-10 w-10 text-white" viewBox="0 0 24 24">
+                            <svg className="h-10 w-10 animate-spin text-white" viewBox="0 0 24 24">
                                 <circle
                                     className="opacity-25"
                                     cx="12"
@@ -315,7 +347,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                                     d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                                 />
                             </svg>
-                            <div className="text-white text-sm">در حال پردازش ...</div>
+                            <div className="text-sm text-white">در حال پردازش ...</div>
                         </div>
                     </div>
                 )}
@@ -325,7 +357,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                 {/* پیام وضعیت حذف شد - حالا آیکون روی عکس نمایش داده می‌شود */}
             </div>
 
-            <div className="flex gap-2 items-center justify-center">
+            <div className="flex items-center justify-center gap-2">
                 {!capturedUrl && (
                     <Button
                         onClick={handleCapture}
@@ -334,8 +366,8 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                         disabled={ocrLoading || !isCameraOpen}
                         loading={ocrLoading}
                     >
-                        <span className="flex items-center gap-2 justify-center">
-                            <CameraIcon className="w-5 h-5" />
+                        <span className="flex items-center justify-center gap-2">
+                            <CameraIcon className="h-5 w-5" />
                             گرفتن عکس
                         </span>
                     </Button>
@@ -348,7 +380,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                         disabled={ocrLoading}
                         loading={ocrLoading}
                     >
-                        <ArrowPathIcon className="w-5 h-5 ml-2" />
+                        <ArrowPathIcon className="ml-2 h-5 w-5" />
                         <span>بازنشانی</span>
                     </Button>
                 )}
@@ -361,28 +393,29 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                 title="دسترسی به دوربین"
                 size="md"
             >
-                <div className="text-center space-y-6 p-2">
-                    <div className="mx-auto w-20 h-20 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-700 rounded-full flex items-center justify-center">
-                        <CameraIcon className="w-10 h-10 text-primary-600 dark:text-blue-400" />
+                <div className="space-y-6 p-2 text-center">
+                    <div className="from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-700 mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br">
+                        <CameraIcon className="text-primary-600 h-10 w-10 dark:text-blue-400" />
                     </div>
-                    
+
                     <div className="space-y-3">
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                             دسترسی به دوربین
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                            برای اسکن کارت ملی، نیاز به دسترسی دوربین دستگاه داریم. 
-                            لطفاً در پنجره بازشده دسترسی را تأیید کنید.
+                        <p className="leading-relaxed text-gray-600 dark:text-gray-300">
+                            برای اسکن کارت ملی، نیاز به دسترسی دوربین دستگاه داریم. لطفاً در پنجره
+                            بازشده دسترسی را تأیید کنید.
                         </p>
                     </div>
 
-                    <div className="bg-secondary-50 dark:bg-secondary-900/20 border border-secondary-200 dark:border-secondary-800 rounded-lg p-4">
-                        <p className="text-sm text-secondary-800 dark:text-secondary-200">
-                            <strong>راهنما:</strong> اگر دسترسی داده نشد، از تنظیمات مرورگر دسترسی دوربین را فعال کنید.
+                    <div className="bg-secondary-50 dark:bg-secondary-900/20 border-secondary-200 dark:border-secondary-800 rounded-lg border p-4">
+                        <p className="text-secondary-800 dark:text-secondary-200 text-sm">
+                            <strong>راهنما:</strong> اگر دسترسی داده نشد، از تنظیمات مرورگر دسترسی
+                            دوربین را فعال کنید.
                         </p>
                     </div>
 
-                    <div className="flex gap-3 justify-center">
+                    <div className="flex justify-center gap-3">
                         <Button
                             onClick={() => setShowPermissionModal(false)}
                             variant="secondary"
@@ -390,18 +423,13 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                         >
                             انصراف
                         </Button>
-                        <Button
-                            onClick={requestCameraPermission}
-                            variant="primary"
-                            size="sm"
-                        >
-                            <CameraIcon className="w-4 h-4 ml-2" />
+                        <Button onClick={requestCameraPermission} variant="primary" size="sm">
+                            <CameraIcon className="ml-2 h-4 w-4" />
                             فعال‌سازی دوربین
                         </Button>
                     </div>
                 </div>
             </Modal>
-
         </Box>
     );
 }

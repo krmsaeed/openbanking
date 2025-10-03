@@ -1,12 +1,10 @@
-
-import { Box } from "@/components/ui";
-import HomeLoader from "@/components/HomeLoader";
+import { Box } from '@/components/ui';
+import HomeLoader from '@/components/HomeLoader';
 
 export default function Home() {
-  return (
-
-    <Box className="min-h-screen flex items-center justify-center p-6 w-full">
-      <HomeLoader />
-    </Box>
-  );
+    return (
+        <Box className="flex min-h-screen w-full items-center justify-center p-6">
+            <HomeLoader />
+        </Box>
+    );
 }

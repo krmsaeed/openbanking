@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ocrRecognizeFile, parseNationalCardFields } from '@/lib/ocr';
@@ -24,28 +24,39 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
                 const saved = localStorage.getItem('preferredUsbCameraId');
                 if (saved) {
                     try {
-                        const s = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: saved } }, audio: false });
+                        const s = await navigator.mediaDevices.getUserMedia({
+                            video: { deviceId: { exact: saved } },
+                            audio: false,
+                        });
                         streamRef.current = s;
                         if (videoRef.current) videoRef.current.srcObject = s;
                         return;
-                    } catch { }
+                    } catch {}
                 }
-            } catch { }
-            const tempStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            } catch {}
+            const tempStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: false,
+            });
             let usbDeviceId: string | null = null;
             try {
                 const devices = await navigator.mediaDevices.enumerateDevices();
                 const vids = devices.filter((d) => d.kind === 'videoinput');
                 const usb = vids.find((v) => /usb|external|webcam/i.test(v.label));
                 usbDeviceId = usb?.deviceId ?? null;
-            } catch { }
+            } catch {}
             if (usbDeviceId) {
                 try {
                     tempStream.getTracks().forEach((t) => t.stop());
-                    const s = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: usbDeviceId } }, audio: false });
+                    const s = await navigator.mediaDevices.getUserMedia({
+                        video: { deviceId: { exact: usbDeviceId } },
+                        audio: false,
+                    });
                     streamRef.current = s;
                     if (videoRef.current) videoRef.current.srcObject = s;
-                    try { localStorage.setItem('preferredUsbCameraId', usbDeviceId); } catch { }
+                    try {
+                        localStorage.setItem('preferredUsbCameraId', usbDeviceId);
+                    } catch {}
                     return;
                 } catch (e) {
                     console.warn('failed to open usb device, using temp stream', e);
@@ -56,10 +67,15 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
         } catch (e) {
             console.warn('startStream failed', e);
             try {
-                const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+                const s = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' },
+                    audio: false,
+                });
                 streamRef.current = s;
                 if (videoRef.current) videoRef.current.srcObject = s;
-            } catch { console.warn('fallback startStream failed'); }
+            } catch {
+                console.warn('fallback startStream failed');
+            }
         }
     }, []);
 
@@ -75,10 +91,9 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
                     streamRef.current = null;
                 }
                 if (localVideo) localVideo.srcObject = null;
-            } catch { }
+            } catch {}
         };
     }, [startStream]);
-
 
     const capture = async () => {
         if (!videoRef.current) return;
@@ -93,11 +108,15 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
         ctx.drawImage(video, 0, 0, w, h);
         setLoading(true);
         const file: File | null = await new Promise((resolve) => {
-            canvas.toBlob((blob) => {
-                if (!blob) return resolve(null);
-                const f = new File([blob], `ocr-${Date.now()}.jpg`, { type: blob.type });
-                resolve(f);
-            }, 'image/jpeg', 0.9);
+            canvas.toBlob(
+                (blob) => {
+                    if (!blob) return resolve(null);
+                    const f = new File([blob], `ocr-${Date.now()}.jpg`, { type: blob.type });
+                    resolve(f);
+                },
+                'image/jpeg',
+                0.9
+            );
         });
         if (!file) {
             setLoading(false);
@@ -128,38 +147,61 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
                 streamRef.current = null;
             }
             if (videoRef.current) videoRef.current.srcObject = null;
-        } catch { }
+        } catch {}
     };
 
     return (
         <div className="space-y-4">
-            <div className="w-full max-w-xl mx-auto">
-                <div className="bg-black rounded overflow-hidden relative">
-                    <video ref={videoRef} autoPlay playsInline muted className="w-full h-64 object-cover" />
+            <div className="mx-auto w-full max-w-xl">
+                <div className="relative overflow-hidden rounded bg-black">
+                    <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        muted
+                        className="h-64 w-full object-cover"
+                    />
                     <canvas ref={canvasRef} style={{ display: 'none' }} />
                 </div>
                 {showControls && (
-                    <div className="flex gap-2 mt-3">
-                        <button onClick={capture} disabled={loading} className="px-3 py-2 bg-primary-600 text-white rounded">گرفتن عکس</button>
-                        <button onClick={stopCamera} className="px-3 py-2 bg-gray-200 rounded">توقف دوربین</button>
-                        <label className="px-3 py-2 bg-white border rounded cursor-pointer">
+                    <div className="mt-3 flex gap-2">
+                        <button
+                            onClick={capture}
+                            disabled={loading}
+                            className="bg-primary-600 rounded px-3 py-2 text-white"
+                        >
+                            گرفتن عکس
+                        </button>
+                        <button onClick={stopCamera} className="rounded bg-gray-200 px-3 py-2">
+                            توقف دوربین
+                        </button>
+                        <label className="cursor-pointer rounded border bg-white px-3 py-2">
                             آپلود عکس
-                            <input type="file" accept="image/*" onChange={async (e) => {
-                                const f = e.target.files?.[0];
-                                if (!f) return;
-                                setLoading(true);
-                                try {
-                                    const t = await ocrRecognizeFile(f);
-                                    const fields = parseNationalCardFields(t);
-                                    const ok = !!(fields.nationalId && /^\d{10}$/.test(fields.nationalId));
-                                    setOcrChecked(true);
-                                    setOcrValid(ok);
-                                    const url = URL.createObjectURL(f);
-                                    if (capturedUrl) URL.revokeObjectURL(capturedUrl);
-                                    setCapturedUrl(url);
-                                    if (onRecognize) onRecognize(t, f);
-                                } finally { setLoading(false); }
-                            }} className="hidden" />
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={async (e) => {
+                                    const f = e.target.files?.[0];
+                                    if (!f) return;
+                                    setLoading(true);
+                                    try {
+                                        const t = await ocrRecognizeFile(f);
+                                        const fields = parseNationalCardFields(t);
+                                        const ok = !!(
+                                            fields.nationalId && /^\d{10}$/.test(fields.nationalId)
+                                        );
+                                        setOcrChecked(true);
+                                        setOcrValid(ok);
+                                        const url = URL.createObjectURL(f);
+                                        if (capturedUrl) URL.revokeObjectURL(capturedUrl);
+                                        setCapturedUrl(url);
+                                        if (onRecognize) onRecognize(t, f);
+                                    } finally {
+                                        setLoading(false);
+                                    }
+                                }}
+                                className="hidden"
+                            />
                         </label>
                     </div>
                 )}
@@ -167,7 +209,9 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
                 {loading && <p className="text-sm">Processing...</p>}
                 {ocrChecked && (
                     <div className="mt-3">
-                        <div className={`inline-block px-3 py-1 rounded ${ocrValid ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+                        <div
+                            className={`inline-block rounded px-3 py-1 ${ocrValid ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}
+                        >
                             {ocrValid ? 'کارت ملی معتبر' : 'کارت ملی نامعتبر'}
                         </div>
                     </div>

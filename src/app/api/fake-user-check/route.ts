@@ -15,10 +15,13 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(resp);
     }
 
-    return NextResponse.json({
-        success: false,
-        error: 'کد ملی یا شماره موبایل ارسال نشده است'
-    }, { status: 400 });
+    return NextResponse.json(
+        {
+            success: false,
+            error: 'کد ملی یا شماره موبایل ارسال نشده است',
+        },
+        { status: 400 }
+    );
 }
 
 export async function POST(request: NextRequest) {
@@ -36,7 +39,10 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(makeFakeResponse(nationalId, mobile));
         }
 
-        return NextResponse.json({ success: false, error: 'missing nationalId or mobile' }, { status: 400 });
+        return NextResponse.json(
+            { success: false, error: 'missing nationalId or mobile' },
+            { status: 400 }
+        );
     } catch {
         return NextResponse.json({ success: false, error: 'invalid JSON' }, { status: 400 });
     }
@@ -46,10 +52,10 @@ function makeFakeResponse(nationalId: string, mobile: string) {
     const lastChar = nationalId.trim().slice(-1);
     const lastDigit = parseInt(lastChar, 10);
 
-    const hasBankAccount = !Number.isNaN(lastDigit) ? (lastDigit % 2 === 0) : true;
-    const verified = !Number.isNaN(lastDigit) ? (lastDigit % 3 === 0) : false;
+    const hasBankAccount = !Number.isNaN(lastDigit) ? lastDigit % 2 === 0 : true;
+    const verified = !Number.isNaN(lastDigit) ? lastDigit % 3 === 0 : false;
 
-    const verifiedFinal = (!Number.isNaN(lastDigit) && (lastDigit % 5 === 0)) ? false : verified;
+    const verifiedFinal = !Number.isNaN(lastDigit) && lastDigit % 5 === 0 ? false : verified;
 
     return {
         success: true,
@@ -60,7 +66,7 @@ function makeFakeResponse(nationalId: string, mobile: string) {
             hasBankAccount,
             firstName: 'علی',
             lastName: 'احمدی',
-        }
+        },
     };
 }
 
@@ -77,7 +83,7 @@ function makeRandomResponse(nationalId: string, mobile: string) {
                 hasBankAccount: true,
                 firstName: 'علی',
                 lastName: 'احمدی',
-            }
+            },
         };
     }
 
@@ -90,6 +96,6 @@ function makeRandomResponse(nationalId: string, mobile: string) {
             hasBankAccount: false,
             firstName: 'علی',
             lastName: 'احمدی',
-        }
+        },
     };
 }

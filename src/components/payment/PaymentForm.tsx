@@ -1,13 +1,24 @@
-"use client";
+'use client';
 
-import { useState, useRef, useCallback, useTransition, useId } from "react";
+import { useState, useRef, useCallback, useTransition, useId } from 'react';
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowPathIcon } from "@heroicons/react/24/outline";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, FormField, Box, Typography } from "@/components/ui";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    Button,
+    Input,
+    FormField,
+    Box,
+    Typography,
+} from '@/components/ui';
 import { convertPersianToEnglish } from '@/lib/utils';
-import { cardFormSchema, type CardFormData } from "@/lib/schemas/payment";
+import { cardFormSchema, type CardFormData } from '@/lib/schemas/payment';
 
 interface PaymentFormProps {
     amount: string;
@@ -18,8 +29,6 @@ interface PaymentFormProps {
 export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
     const [captcha, setCaptcha] = useState(generateCaptcha());
     const [, startTransition] = useTransition();
-
-
 
     const cardNumberRef = useRef<HTMLInputElement>(null);
     const cvvRef = useRef<HTMLInputElement>(null);
@@ -33,10 +42,10 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
         handleSubmit,
         setValue,
         watch,
-        formState: { errors, isValid }
+        formState: { errors, isValid },
     } = useForm<CardFormData>({
         resolver: zodResolver(cardFormSchema),
-        mode: 'onChange'
+        mode: 'onChange',
     });
 
     const cardNumber = watch('cardNumber');
@@ -45,7 +54,11 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
     const expiryYear = watch('expiryYear');
 
     const isCvv2Valid = cvv2 && (cvv2.length === 3 || cvv2.length === 4);
-    const isMonthValid = expiryMonth && expiryMonth.length === 2 && parseInt(expiryMonth) >= 1 && parseInt(expiryMonth) <= 12;
+    const isMonthValid =
+        expiryMonth &&
+        expiryMonth.length === 2 &&
+        parseInt(expiryMonth) >= 1 &&
+        parseInt(expiryMonth) <= 12;
     const isYearValid = expiryYear && expiryYear.length === 2;
 
     function generateCaptcha(): string {
@@ -55,7 +68,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
     const formatCardNumber = (value: string) => {
         const v = value.replace(/[-\s]/g, '').replace(/[^0-9]/gi, '');
         const matches = v.match(/\d{4,16}/g);
-        const match = matches && matches[0] || '';
+        const match = (matches && matches[0]) || '';
         const parts = [];
 
         for (let i = 0, len = match.length; i < len; i += 4) {
@@ -69,39 +82,47 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
         }
     };
 
-    const handleCardNumberChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const input = e.target;
-        const cursorPosition = input.selectionStart || 0;
-        const oldValue = input.value;
-        const newValue = formatCardNumber(e.target.value);
+    const handleCardNumberChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const input = e.target;
+            const cursorPosition = input.selectionStart || 0;
+            const oldValue = input.value;
+            const newValue = formatCardNumber(e.target.value);
 
-        setValue('cardNumber', newValue, { shouldValidate: true, shouldDirty: true });
+            setValue('cardNumber', newValue, { shouldValidate: true, shouldDirty: true });
 
-        setTimeout(() => {
-            if (cardNumberRef.current) {
-                let newCursorPosition = cursorPosition;
+            setTimeout(() => {
+                if (cardNumberRef.current) {
+                    let newCursorPosition = cursorPosition;
 
-                const digitsBeforeCursor = oldValue.substring(0, cursorPosition).replace(/[^0-9]/g, '').length;
-                const dashesBeforeCursorNew = Math.floor((digitsBeforeCursor - 1) / 4);
+                    const digitsBeforeCursor = oldValue
+                        .substring(0, cursorPosition)
+                        .replace(/[^0-9]/g, '').length;
+                    const dashesBeforeCursorNew = Math.floor((digitsBeforeCursor - 1) / 4);
 
-                newCursorPosition = digitsBeforeCursor + Math.max(0, dashesBeforeCursorNew);
+                    newCursorPosition = digitsBeforeCursor + Math.max(0, dashesBeforeCursorNew);
 
-                if (newValue[newCursorPosition - 1] === '-' && cursorPosition > oldValue.lastIndexOf('-', cursorPosition - 1) + 1) {
-                    newCursorPosition++;
+                    if (
+                        newValue[newCursorPosition - 1] === '-' &&
+                        cursorPosition > oldValue.lastIndexOf('-', cursorPosition - 1) + 1
+                    ) {
+                        newCursorPosition++;
+                    }
+
+                    newCursorPosition = Math.max(0, Math.min(newCursorPosition, newValue.length));
+
+                    cardNumberRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
                 }
+            }, 0);
 
-                newCursorPosition = Math.max(0, Math.min(newCursorPosition, newValue.length));
-
-                cardNumberRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
+            if (newValue.replace(/[-\s]/g, '').length === 16) {
+                startTransition(() => {
+                    setTimeout(() => cvvRef.current?.focus(), 100);
+                });
             }
-        }, 0);
-
-        if (newValue.replace(/[-\s]/g, '').length === 16) {
-            startTransition(() => {
-                setTimeout(() => cvvRef.current?.focus(), 100);
-            });
-        }
-    }, [setValue, startTransition]);
+        },
+        [setValue, startTransition]
+    );
 
     const [debouncedCvvFocus, cancelCvvDebounce] = useDebouncedCallback(() => {
         setValue('expiryMonth', '', { shouldValidate: true, shouldDirty: true });
@@ -112,82 +133,91 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
         }
     }, 500);
 
-    const handleCvvChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const normalized = convertPersianToEnglish(e.target.value || '');
-        const value = normalized.replace(/\D/g, '');
-        setValue('cvv2', value, { shouldValidate: true, shouldDirty: true });
+    const handleCvvChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const normalized = convertPersianToEnglish(e.target.value || '');
+            const value = normalized.replace(/\D/g, '');
+            setValue('cvv2', value, { shouldValidate: true, shouldDirty: true });
 
-        if (value.length === 3) {
-            debouncedCvvFocus();
-        } else if (value.length === 4) {
-            cancelCvvDebounce();
-            startTransition(() => {
-                setValue('expiryMonth', '', { shouldValidate: true, shouldDirty: true });
-                setValue('expiryYear', '', { shouldValidate: true, shouldDirty: true });
+            if (value.length === 3) {
+                debouncedCvvFocus();
+            } else if (value.length === 4) {
+                cancelCvvDebounce();
+                startTransition(() => {
+                    setValue('expiryMonth', '', { shouldValidate: true, shouldDirty: true });
+                    setValue('expiryYear', '', { shouldValidate: true, shouldDirty: true });
 
-                setTimeout(() => {
-                    if (monthRef.current && !monthRef.current.disabled) {
-                        monthRef.current.focus();
-                    }
-                }, 0);
-            });
-        }
-    }, [setValue, startTransition, debouncedCvvFocus, cancelCvvDebounce]);
+                    setTimeout(() => {
+                        if (monthRef.current && !monthRef.current.disabled) {
+                            monthRef.current.focus();
+                        }
+                    }, 0);
+                });
+            }
+        },
+        [setValue, startTransition, debouncedCvvFocus, cancelCvvDebounce]
+    );
 
-    const handleMonthChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = convertPersianToEnglish(e.target.value || '').replace(/\D/g, '');
+    const handleMonthChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            let value = convertPersianToEnglish(e.target.value || '').replace(/\D/g, '');
 
-        if (value.length === 1) {
-            const firstDigit = parseInt(value);
-            if (firstDigit > 1) {
-                value = '0' + value;
+            if (value.length === 1) {
+                const firstDigit = parseInt(value);
+                if (firstDigit > 1) {
+                    value = '0' + value;
+                    setValue('expiryMonth', value, { shouldValidate: true, shouldDirty: true });
+                    startTransition(() => {
+                        setTimeout(() => yearRef.current?.focus(), 0);
+                    });
+                    return;
+                }
+                setValue('expiryMonth', value, { shouldValidate: true, shouldDirty: true });
+                return;
+            }
+
+            if (value.length === 2) {
+                const month = parseInt(value);
+                if (month > 12) {
+                    return;
+                } else if (month < 1) {
+                    value = '01';
+                }
                 setValue('expiryMonth', value, { shouldValidate: true, shouldDirty: true });
                 startTransition(() => {
                     setTimeout(() => yearRef.current?.focus(), 0);
                 });
                 return;
             }
-            setValue('expiryMonth', value, { shouldValidate: true, shouldDirty: true });
-            return;
-        }
 
-        if (value.length === 2) {
-            const month = parseInt(value);
-            if (month > 12) {
-                return;
-            } else if (month < 1) {
-                value = '01';
+            if (value.length > 2) {
+                value = value.substring(0, 2);
+                const month = parseInt(value);
+                if (month > 12) {
+                    value = '12';
+                }
+                setValue('expiryMonth', value, { shouldValidate: true, shouldDirty: true });
+                startTransition(() => {
+                    setTimeout(() => yearRef.current?.focus(), 0);
+                });
             }
-            setValue('expiryMonth', value, { shouldValidate: true, shouldDirty: true });
-            startTransition(() => {
-                setTimeout(() => yearRef.current?.focus(), 0);
-            });
-            return;
-        }
+        },
+        [setValue, startTransition]
+    );
 
-        if (value.length > 2) {
-            value = value.substring(0, 2);
-            const month = parseInt(value);
-            if (month > 12) {
-                value = '12';
+    const handleYearChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = convertPersianToEnglish(e.target.value || '').replace(/\D/g, '');
+            setValue('expiryYear', value, { shouldValidate: true, shouldDirty: true });
+
+            if (value.length === 2) {
+                startTransition(() => {
+                    setTimeout(() => captchaRef.current?.focus(), 0);
+                });
             }
-            setValue('expiryMonth', value, { shouldValidate: true, shouldDirty: true });
-            startTransition(() => {
-                setTimeout(() => yearRef.current?.focus(), 0);
-            });
-        }
-    }, [setValue, startTransition]);
-
-    const handleYearChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = convertPersianToEnglish(e.target.value || '').replace(/\D/g, '');
-        setValue('expiryYear', value, { shouldValidate: true, shouldDirty: true });
-
-        if (value.length === 2) {
-            startTransition(() => {
-                setTimeout(() => captchaRef.current?.focus(), 0);
-            });
-        }
-    }, [setValue, startTransition]);
+        },
+        [setValue, startTransition]
+    );
 
     const refreshCaptcha = () => {
         setCaptcha(generateCaptcha());
@@ -195,31 +225,40 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
         setTimeout(() => captchaRef.current?.focus(), 0);
     };
 
-    const handleCaptchaChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setValue('captchaInput', convertPersianToEnglish(e.target.value || ''), { shouldValidate: true, shouldDirty: true });
-    }, [setValue]);
+    const handleCaptchaChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            setValue('captchaInput', convertPersianToEnglish(e.target.value || ''), {
+                shouldValidate: true,
+                shouldDirty: true,
+            });
+        },
+        [setValue]
+    );
 
-    const handleMonthFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
-        const currentMonth = watch('expiryMonth');
+    const handleMonthFocus = useCallback(
+        (e: React.FocusEvent<HTMLInputElement>) => {
+            const currentMonth = watch('expiryMonth');
 
-        if (currentMonth && currentMonth.length > 0) {
-            if (monthRef.current) {
-                monthRef.current.value = '';
+            if (currentMonth && currentMonth.length > 0) {
+                if (monthRef.current) {
+                    monthRef.current.value = '';
+                }
+                if (yearRef.current) {
+                    yearRef.current.value = '';
+                }
+
+                setValue('expiryMonth', '', { shouldValidate: true, shouldDirty: true });
+                setValue('expiryYear', '', { shouldValidate: true, shouldDirty: true });
             }
-            if (yearRef.current) {
-                yearRef.current.value = '';
-            }
 
-            setValue('expiryMonth', '', { shouldValidate: true, shouldDirty: true });
-            setValue('expiryYear', '', { shouldValidate: true, shouldDirty: true });
-        }
-
-        startTransition(() => {
-            setTimeout(() => {
-                e.target.select();
-            }, 0);
-        });
-    }, [watch, setValue, startTransition]);
+            startTransition(() => {
+                setTimeout(() => {
+                    e.target.select();
+                }, 0);
+            });
+        },
+        [watch, setValue, startTransition]
+    );
 
     const handleMonthKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
         const key = e.key;
@@ -231,11 +270,14 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
         }
     }, []);
 
-    const handleFormSubmit = useCallback((data: CardFormData) => {
-        startTransition(() => {
-            onNext(data);
-        });
-    }, [onNext, startTransition]);
+    const handleFormSubmit = useCallback(
+        (data: CardFormData) => {
+            startTransition(() => {
+                onNext(data);
+            });
+        },
+        [onNext, startTransition]
+    );
     return (
         <Card padding="lg">
             <CardHeader>
@@ -252,27 +294,22 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                     className="space-y-6"
                     autoComplete="off"
                 >
-                    <input {...register("cardNumber")} type="hidden" />
-                    <input {...register("expiryMonth")} type="hidden" />
-                    <input {...register("expiryYear")} type="hidden" />
+                    <input {...register('cardNumber')} type="hidden" />
+                    <input {...register('expiryMonth')} type="hidden" />
+                    <input {...register('expiryYear')} type="hidden" />
 
                     <input type="text" autoComplete="off" className="hidden" />
                     <input type="password" autoComplete="new-password" className="hidden" />
 
-                    <FormField
-                        label="شماره کارت"
-                        required
-                        error={!!errors.cardNumber}
-
-                    >
+                    <FormField label="شماره کارت" required error={!!errors.cardNumber}>
                         <Input
                             ref={cardNumberRef}
                             value={cardNumber || ''}
                             onChange={handleCardNumberChange}
                             placeholder="xxxx-xxxx-xxxx-xxxx"
                             maxLength={19}
-                            className="font-mono tracking-wider text-center font-bold outline-none"
-                            variant={errors.cardNumber ? "error" : "default"}
+                            className="text-center font-mono font-bold tracking-wider outline-none"
+                            variant={errors.cardNumber ? 'error' : 'default'}
                             dir="ltr"
                             autoComplete="off"
                             autoCorrect="off"
@@ -280,31 +317,26 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                             spellCheck={false}
                             name={`card_${id}`}
                         />
-
                     </FormField>
-                    <FormField
-                        label="CVV2"
-                        required
-                        error={!!errors.cvv2}
-                    >
+                    <FormField label="CVV2" required error={!!errors.cvv2}>
                         <Box className="relative">
                             <input
                                 type="password"
                                 autoComplete="current-password"
-                                className="absolute -left-[9999px] w-px h-px opacity-0 pointer-events-none"
+                                className="pointer-events-none absolute -left-[9999px] h-px w-px opacity-0"
                                 tabIndex={-1}
                             />
                             <Input
-                                {...register("cvv2", {
-                                    onChange: handleCvvChange
+                                {...register('cvv2', {
+                                    onChange: handleCvvChange,
                                 })}
                                 ref={cvvRef}
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="***"
                                 maxLength={4}
-                                variant={errors.cvv2 ? "error" : "default"}
-                                className="outline-none cvv-input pr-12"
+                                variant={errors.cvv2 ? 'error' : 'default'}
+                                className="cvv-input pr-12 outline-none"
                                 autoComplete="off"
                                 autoCorrect="off"
                                 autoCapitalize="off"
@@ -313,20 +345,14 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                                 data-lpignore="true"
                                 data-form-type="other"
                             />
-
-
                         </Box>
                     </FormField>
                     <Box className="grid grid-cols-2 gap-4">
-                        <FormField
-                            label="ماه انقضا"
-                            required
-                            error={!!errors.expiryMonth}
-                        >
+                        <FormField label="ماه انقضا" required error={!!errors.expiryMonth}>
                             <input
                                 type="text"
                                 autoComplete="username"
-                                className="absolute -left-[9999px] w-px h-px opacity-0 pointer-events-none"
+                                className="pointer-events-none absolute -left-[9999px] h-px w-px opacity-0"
                                 tabIndex={-1}
                             />
                             <Input
@@ -339,7 +365,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                                 onChange={handleMonthChange}
                                 onFocus={handleMonthFocus}
                                 onKeyDown={handleMonthKeyDown}
-                                variant={errors.expiryMonth ? "error" : "default"}
+                                variant={errors.expiryMonth ? 'error' : 'default'}
                                 className="outline-none"
                                 disabled={!isCvv2Valid}
                                 autoComplete="new-password"
@@ -353,15 +379,11 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                             />
                         </FormField>
 
-                        <FormField
-                            label="سال انقضا"
-                            required
-                            error={!!errors.expiryYear}
-                        >
+                        <FormField label="سال انقضا" required error={!!errors.expiryYear}>
                             <input
                                 type="text"
                                 autoComplete="email"
-                                className="absolute -left-[9999px] w-px h-px opacity-0 pointer-events-none"
+                                className="pointer-events-none absolute -left-[9999px] h-px w-px opacity-0"
                                 tabIndex={-1}
                             />
                             <Input
@@ -372,7 +394,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                                 maxLength={2}
                                 value={expiryYear || ''}
                                 onChange={handleYearChange}
-                                variant={errors.expiryYear ? "error" : "default"}
+                                variant={errors.expiryYear ? 'error' : 'default'}
                                 className="outline-none"
                                 disabled={!isMonthValid}
                                 autoComplete="one-time-code"
@@ -387,10 +409,8 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                         </FormField>
                     </Box>
 
-
-
                     <Box variant="secondary" className="rounded-lg">
-                        <Box className="flex items-center justify-between mb-2">
+                        <Box className="mb-2 flex items-center justify-between">
                             <Typography variant="body2" weight="medium" color="secondary">
                                 کد امنیتی *
                             </Typography>
@@ -401,34 +421,31 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                                 onClick={refreshCaptcha}
                                 className="text-blue-600 hover:text-blue-700"
                             >
-                                <ArrowPathIcon className="w-4 h-4 ml-1" />
+                                <ArrowPathIcon className="ml-1 h-4 w-4" />
                                 تازه‌سازی
                             </Button>
                         </Box>
                         <Box className="flex items-start gap-4">
-                            <Box className="bg-white px-4 py-2 border-2 border-dashed border-gray-300 rounded font-mono text-lg font-bold tracking-wider select-none">
+                            <Box className="rounded border-2 border-dashed border-gray-300 bg-white px-4 py-2 font-mono text-lg font-bold tracking-wider select-none">
                                 {captcha}
                             </Box>
                             <Box className="relative flex-1">
                                 <Input
-                                    {...register("captchaInput", {
-                                        onChange: handleCaptchaChange
+                                    {...register('captchaInput', {
+                                        onChange: handleCaptchaChange,
                                     })}
                                     ref={captchaRef}
                                     placeholder="کد امنیتی را وارد کنید"
-                                    className="outline-none pr-12"
-                                    variant={errors.captchaInput ? "error" : "default"}
+                                    className="pr-12 outline-none"
+                                    variant={errors.captchaInput ? 'error' : 'default'}
                                     disabled={!isYearValid}
                                     autoComplete="off"
                                     autoCorrect="off"
                                     autoCapitalize="off"
                                     spellCheck={false}
                                 />
-
-
                             </Box>
                         </Box>
-
                     </Box>
 
                     <Button

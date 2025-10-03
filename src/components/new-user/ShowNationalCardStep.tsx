@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
-import { NationalCardTemplate } from "@/components/forms/NationalCardTemplate";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { NationalCardTemplate } from '@/components/forms/NationalCardTemplate';
 
 interface ShowNationalCardStepProps {
     firstName: string;
@@ -11,7 +11,13 @@ interface ShowNationalCardStepProps {
     onConfirm: () => void;
 }
 
-export function ShowNationalCardStep({ firstName, lastName, nationalCode, birthDate, onConfirm }: ShowNationalCardStepProps) {
+export function ShowNationalCardStep({
+    firstName,
+    lastName,
+    nationalCode,
+    birthDate,
+    onConfirm,
+}: ShowNationalCardStepProps) {
     return (
         <Card padding="lg">
             <CardHeader>

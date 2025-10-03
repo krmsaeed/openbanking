@@ -1,4 +1,3 @@
-
 export default function DarkModeTest() {
     const toggleDarkMode = () => {
         document.documentElement.classList.toggle('dark');
@@ -8,7 +7,7 @@ export default function DarkModeTest() {
         <div className="fixed top-4 left-4 z-50">
             <button
                 onClick={toggleDarkMode}
-                className="px-4 py-2 bg-primary-500 text-white rounded-lg shadow-md hover:bg-primary-600 transition-colors"
+                className="bg-primary-500 hover:bg-primary-600 rounded-lg px-4 py-2 text-white shadow-md transition-colors"
             >
                 🌙 Toggle Dark Mode
             </button>

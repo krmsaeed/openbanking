@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useUser } from "@/contexts/UserContext";
-import { VideoRecorderView } from "./VideoRecorderView";
-import { useVideoRecorder } from "@/hooks/useVideoRecorder";
+import { useUser } from '@/contexts/UserContext';
+import { VideoRecorderView } from './VideoRecorderView';
+import { useVideoRecorder } from '@/hooks/useVideoRecorder';
 
 export const VideoRecorder: React.FC = () => {
     const { userData, setUserData } = useUser();

@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, Typography } from "../core";
+import React from 'react';
+import { Box, Typography } from '../core';
 
 interface FormFieldProps {
     label: string;
@@ -22,7 +22,7 @@ const FormField: React.FC<FormFieldProps> = ({
     id,
     error,
     disabled = false,
-    className = "",
+    className = '',
     required = false,
     description,
     children,
@@ -35,10 +35,10 @@ const FormField: React.FC<FormFieldProps> = ({
                 className="mb-1 block text-right text-[0.9rem] font-medium text-gray-700 dark:text-gray-300"
             >
                 {label}
-                {required && <span className="mr-1 text-secondary">*</span>}
+                {required && <span className="text-secondary mr-1">*</span>}
             </Typography>
             {description && (
-                <Typography variant="span" className="block text-sm text-secondary mb-2">
+                <Typography variant="span" className="text-secondary mb-2 block text-sm">
                     {description}
                 </Typography>
             )}
@@ -50,16 +50,12 @@ const FormField: React.FC<FormFieldProps> = ({
                     {...(id ? { id } : {})}
                     disabled={disabled}
                     {...(inputProps || {})}
-                    className={`block w-full border-b border-light px-4 py-3  focus:outline-none 
-           bg-gray-800 sm:text-sm
-          ${disabled ? "bg-gray-100 cursor-not-allowed dark:bg-gray-700" : "bg-white dark:bg-gray-800"}
-          ${error ? "border-red-500 border" : "border-b border-gray-300 dark:border-gray-600"} 
-          ${className}`}
+                    className={`border-light block w-full border-b bg-gray-800 px-4 py-3 focus:outline-none sm:text-sm ${disabled ? 'cursor-not-allowed bg-gray-100 dark:bg-gray-700' : 'bg-white dark:bg-gray-800'} ${error ? 'border border-red-500' : 'border-b border-gray-300 dark:border-gray-600'} ${className}`}
                 />
             )}
 
             {typeof error === 'string' && error.length > 0 && (
-                <Typography variant="span" className=" block text-xs mt-1 text-error">
+                <Typography variant="span" className="text-error mt-1 block text-xs">
                     {error}
                 </Typography>
             )}

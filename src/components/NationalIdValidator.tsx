@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useEffect } from 'react';
 
@@ -9,12 +9,11 @@ export function cleanNationalId(input: string): string {
     return normalized.replace(/\D/g, '').trim();
 }
 
-
 export function isValidNationalId(code: string): boolean {
     if (!code) return false;
     const v = cleanNationalId(code);
     if (v.length !== 10) return false;
-    
+
     if (/^(\d)\1{9}$/.test(v)) return false;
 
     const digits = v.split('').map((d) => parseInt(d, 10));
@@ -55,9 +54,11 @@ export function NationalIdValidation({
     const cleaned = cleanNationalId(v);
     if (!isValidNationalId(cleaned)) {
         return (
-            <div className="w-full max-w-lg flex flex-col items-center justify-center gap-4 p-4 rounded-2xl shadow-sm bg-red-50">
-                <div className="text-red-600 font-medium">کد ملی نامعتبر است</div>
-                <div className="text-sm text-red-500">لطفاً لینک را بررسی کنید یا کد ملی را اصلاح کنید.</div>
+            <div className="flex w-full max-w-lg flex-col items-center justify-center gap-4 rounded-2xl bg-red-50 p-4 shadow-sm">
+                <div className="font-medium text-red-600">کد ملی نامعتبر است</div>
+                <div className="text-sm text-red-500">
+                    لطفاً لینک را بررسی کنید یا کد ملی را اصلاح کنید.
+                </div>
             </div>
         );
     }

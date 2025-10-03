@@ -68,7 +68,7 @@ export const spacing = {
     lg: '1.5rem',
     xl: '2rem',
     '2xl': '3rem',
-    '3xl': '4rem'
+    '3xl': '4rem',
 } as const;
 
 export const borderRadius = {
@@ -90,7 +90,7 @@ export const fontSize = {
     xl: '1.25rem',
     '2xl': '1.5rem',
     '3xl': '1.875rem',
-    '4xl': '2.25rem'
+    '4xl': '2.25rem',
 } as const;
 
 export const fontWeight = {

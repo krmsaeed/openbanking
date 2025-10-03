@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
+import { useState } from 'react';
+import Link from 'next/link';
 import {
     CalendarDaysIcon,
     BanknotesIcon,
@@ -10,35 +10,134 @@ import {
     ClockIcon,
     ArrowLeftIcon,
     CreditCardIcon,
-    DocumentTextIcon
-} from "@heroicons/react/24/outline";
-import { Button, Card, CardContent, CardHeader, CardTitle, Box, Typography, List, ListItem, Table, TableHeader, TableBody, TableRow, TableCell } from "@/components/ui";
+    DocumentTextIcon,
+} from '@heroicons/react/24/outline';
+import {
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    Box,
+    Typography,
+    List,
+    ListItem,
+    Table,
+    TableHeader,
+    TableBody,
+    TableRow,
+    TableCell,
+} from '@/components/ui';
 
 export default function InstallmentsPage() {
     const [selectedInstallment, setSelectedInstallment] = useState<number | null>(null);
 
     const contractInfo = {
-        contractNumber: "TC-2025-001234",
-        customerName: "محمد احمدی",
-        facilityAmount: "50,000,000",
+        contractNumber: 'TC-2025-001234',
+        customerName: 'محمد احمدی',
+        facilityAmount: '50,000,000',
         totalInstallments: 12,
         paidInstallments: 5,
-        remainingAmount: "20,833,335"
+        remainingAmount: '20,833,335',
     };
 
     const installments = [
-        { id: 1, dueDate: "۱۴۰۴/۰۷/۰۵", amount: "4,583,333", status: "paid", payDate: "۱۴۰۴/۰۷/۰۳", penalty: "0" },
-        { id: 2, dueDate: "۱۴۰۴/۰۸/۰۵", amount: "4,583,333", status: "paid", payDate: "۱۴۰۴/۰۸/۰۴", penalty: "0" },
-        { id: 3, dueDate: "۱۴۰۴/۰۹/۰۵", amount: "4,583,333", status: "paid", payDate: "۱۴۰۴/۰۹/۰۶", penalty: "25,000" },
-        { id: 4, dueDate: "۱۴۰۴/۱۰/۰۵", amount: "4,583,333", status: "paid", payDate: "۱۴۰۴/۱۰/۰۲", penalty: "0" },
-        { id: 5, dueDate: "۱۴۰۴/۱۱/۰۵", amount: "4,583,333", status: "paid", payDate: "۱۴۰۴/۱۱/۰۵", penalty: "0" },
-        { id: 6, dueDate: "۱۴۰۴/۱۲/۰۵", amount: "4,583,333", status: "overdue", payDate: null, penalty: "137,500" },
-        { id: 7, dueDate: "۱۴۰۵/۰۱/۰۵", amount: "4,583,333", status: "current", payDate: null, penalty: "0" },
-        { id: 8, dueDate: "۱۴۰۵/۰۲/۰۵", amount: "4,583,333", status: "upcoming", payDate: null, penalty: "0" },
-        { id: 9, dueDate: "۱۴۰۵/۰۳/۰۵", amount: "4,583,333", status: "upcoming", payDate: null, penalty: "0" },
-        { id: 10, dueDate: "۱۴۰۵/۰۴/۰۵", amount: "4,583,333", status: "upcoming", payDate: null, penalty: "0" },
-        { id: 11, dueDate: "۱۴۰۵/۰۵/۰۵", amount: "4,583,333", status: "upcoming", payDate: null, penalty: "0" },
-        { id: 12, dueDate: "۱۴۰۵/۰۶/۰۵", amount: "4,583,333", status: "upcoming", payDate: null, penalty: "0" }
+        {
+            id: 1,
+            dueDate: '۱۴۰۴/۰۷/۰۵',
+            amount: '4,583,333',
+            status: 'paid',
+            payDate: '۱۴۰۴/۰۷/۰۳',
+            penalty: '0',
+        },
+        {
+            id: 2,
+            dueDate: '۱۴۰۴/۰۸/۰۵',
+            amount: '4,583,333',
+            status: 'paid',
+            payDate: '۱۴۰۴/۰۸/۰۴',
+            penalty: '0',
+        },
+        {
+            id: 3,
+            dueDate: '۱۴۰۴/۰۹/۰۵',
+            amount: '4,583,333',
+            status: 'paid',
+            payDate: '۱۴۰۴/۰۹/۰۶',
+            penalty: '25,000',
+        },
+        {
+            id: 4,
+            dueDate: '۱۴۰۴/۱۰/۰۵',
+            amount: '4,583,333',
+            status: 'paid',
+            payDate: '۱۴۰۴/۱۰/۰۲',
+            penalty: '0',
+        },
+        {
+            id: 5,
+            dueDate: '۱۴۰۴/۱۱/۰۵',
+            amount: '4,583,333',
+            status: 'paid',
+            payDate: '۱۴۰۴/۱۱/۰۵',
+            penalty: '0',
+        },
+        {
+            id: 6,
+            dueDate: '۱۴۰۴/۱۲/۰۵',
+            amount: '4,583,333',
+            status: 'overdue',
+            payDate: null,
+            penalty: '137,500',
+        },
+        {
+            id: 7,
+            dueDate: '۱۴۰۵/۰۱/۰۵',
+            amount: '4,583,333',
+            status: 'current',
+            payDate: null,
+            penalty: '0',
+        },
+        {
+            id: 8,
+            dueDate: '۱۴۰۵/۰۲/۰۵',
+            amount: '4,583,333',
+            status: 'upcoming',
+            payDate: null,
+            penalty: '0',
+        },
+        {
+            id: 9,
+            dueDate: '۱۴۰۵/۰۳/۰۵',
+            amount: '4,583,333',
+            status: 'upcoming',
+            payDate: null,
+            penalty: '0',
+        },
+        {
+            id: 10,
+            dueDate: '۱۴۰۵/۰۴/۰۵',
+            amount: '4,583,333',
+            status: 'upcoming',
+            payDate: null,
+            penalty: '0',
+        },
+        {
+            id: 11,
+            dueDate: '۱۴۰۵/۰۵/۰۵',
+            amount: '4,583,333',
+            status: 'upcoming',
+            payDate: null,
+            penalty: '0',
+        },
+        {
+            id: 12,
+            dueDate: '۱۴۰۵/۰۶/۰۵',
+            amount: '4,583,333',
+            status: 'upcoming',
+            payDate: null,
+            penalty: '0',
+        },
     ];
 
     const getStatusIcon = (status: string) => {
@@ -80,15 +179,18 @@ export default function InstallmentsPage() {
         }
     };
 
-    const totalPenalty = installments.reduce((sum, inst) => sum + parseInt(inst.penalty.replace(/,/g, '')), 0);
-    const overdueCount = installments.filter(inst => inst.status === 'overdue').length;
+    const totalPenalty = installments.reduce(
+        (sum, inst) => sum + parseInt(inst.penalty.replace(/,/g, '')),
+        0
+    );
+    const overdueCount = installments.filter((inst) => inst.status === 'overdue').length;
 
     return (
         <Box className="min-h-screen bg-gray-50 py-8">
-            <Box className="max-w-6xl mx-auto px-4">
-                <Box className="flex items-center justify-between mb-8">
+            <Box className="mx-auto max-w-6xl px-4">
+                <Box className="mb-8 flex items-center justify-between">
                     <Box>
-                        <Typography variant="h1" className="text-3xl font-bold text-gray-900 mb-2">
+                        <Typography variant="h1" className="mb-2 text-3xl font-bold text-gray-900">
                             لیست اقساط تسهیلات
                         </Typography>
                         <Typography variant="body1" color="secondary">
@@ -97,25 +199,29 @@ export default function InstallmentsPage() {
                     </Box>
                     <Link href="/">
                         <Button variant="outline">
-                            <ArrowLeftIcon className="h-4 w-4 ml-2" />
+                            <ArrowLeftIcon className="ml-2 h-4 w-4" />
                             بازگشت
                         </Button>
                     </Link>
                 </Box>
 
-                <Box className="grid md:grid-cols-4 gap-6 mb-8">
+                <Box className="mb-8 grid gap-6 md:grid-cols-4">
                     <Card>
                         <CardHeader className="pb-3">
                             <CardTitle className="text-sm text-gray-600">مبلغ کل تسهیلات</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-2xl font-bold text-blue-600">{contractInfo.facilityAmount} ریال</p>
+                            <p className="text-2xl font-bold text-blue-600">
+                                {contractInfo.facilityAmount} ریال
+                            </p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-sm text-gray-600">اقساط پرداخت شده</CardTitle>
+                            <CardTitle className="text-sm text-gray-600">
+                                اقساط پرداخت شده
+                            </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <p className="text-2xl font-bold text-green-600">
@@ -129,7 +235,9 @@ export default function InstallmentsPage() {
                             <CardTitle className="text-sm text-gray-600">مانده بدهی</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-2xl font-bold text-orange-600">{contractInfo.remainingAmount} ریال</p>
+                            <p className="text-2xl font-bold text-orange-600">
+                                {contractInfo.remainingAmount} ریال
+                            </p>
                         </CardContent>
                     </Card>
 
@@ -147,11 +255,14 @@ export default function InstallmentsPage() {
                     <Card className="mb-6 border-red-200 bg-red-50">
                         <CardContent className="pt-6">
                             <Box className="flex items-center space-x-3 space-x-reverse">
-                                <ExclamationTriangleIcon className="h-6 w-6 text-red-600 flex-shrink-0" />
+                                <ExclamationTriangleIcon className="h-6 w-6 flex-shrink-0 text-red-600" />
                                 <Box>
-                                    <Typography variant="h6" className="font-bold text-red-800">توجه: اقساط معوق</Typography>
-                                    <Typography variant="body2" className="text-red-700 mt-1">
-                                        شما {overdueCount} قسط معوق دارید. مجموع جریمه تأخیر: {totalPenalty.toLocaleString('fa-IR')} ریال
+                                    <Typography variant="h6" className="font-bold text-red-800">
+                                        توجه: اقساط معوق
+                                    </Typography>
+                                    <Typography variant="body2" className="mt-1 text-red-700">
+                                        شما {overdueCount} قسط معوق دارید. مجموع جریمه تأخیر:{' '}
+                                        {totalPenalty.toLocaleString('fa-IR')} ریال
                                     </Typography>
                                 </Box>
                                 <Button size="sm" className="bg-red-600 hover:bg-red-700">
@@ -165,7 +276,7 @@ export default function InstallmentsPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center">
-                            <BanknotesIcon className="h-5 w-5 text-blue-600 ml-2" />
+                            <BanknotesIcon className="ml-2 h-5 w-5 text-blue-600" />
                             جدول اقساط
                         </CardTitle>
                     </CardHeader>
@@ -173,66 +284,90 @@ export default function InstallmentsPage() {
                         <Table variant="hover" size="md" responsive>
                             <TableHeader>
                                 <TableRow>
-                                    <TableCell as="th" variant="header" weight="medium">قسط</TableCell>
-                                    <TableCell as="th" variant="header" weight="medium">تاریخ سررسید</TableCell>
-                                    <TableCell as="th" variant="header" weight="medium">مبلغ قسط</TableCell>
-                                    <TableCell as="th" variant="header" weight="medium">جریمه</TableCell>
-                                    <TableCell as="th" variant="header" weight="medium">تاریخ پرداخت</TableCell>
-                                    <TableCell as="th" variant="header" weight="medium">وضعیت</TableCell>
-                                    <TableCell as="th" variant="header" weight="medium" align="center">عملیات</TableCell>
+                                    <TableCell as="th" variant="header" weight="medium">
+                                        قسط
+                                    </TableCell>
+                                    <TableCell as="th" variant="header" weight="medium">
+                                        تاریخ سررسید
+                                    </TableCell>
+                                    <TableCell as="th" variant="header" weight="medium">
+                                        مبلغ قسط
+                                    </TableCell>
+                                    <TableCell as="th" variant="header" weight="medium">
+                                        جریمه
+                                    </TableCell>
+                                    <TableCell as="th" variant="header" weight="medium">
+                                        تاریخ پرداخت
+                                    </TableCell>
+                                    <TableCell as="th" variant="header" weight="medium">
+                                        وضعیت
+                                    </TableCell>
+                                    <TableCell
+                                        as="th"
+                                        variant="header"
+                                        weight="medium"
+                                        align="center"
+                                    >
+                                        عملیات
+                                    </TableCell>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {installments.map((installment) => (
                                     <TableRow
                                         key={installment.id}
-                                        variant={selectedInstallment === installment.id ? 'selected' : 'default'}
+                                        variant={
+                                            selectedInstallment === installment.id
+                                                ? 'selected'
+                                                : 'default'
+                                        }
                                         interactive
                                         onClick={() => setSelectedInstallment(installment.id)}
                                     >
-                                        <TableCell weight="medium">
-                                            قسط {installment.id}
-                                        </TableCell>
-                                        <TableCell>
-                                            {installment.dueDate}
-                                        </TableCell>
+                                        <TableCell weight="medium">قسط {installment.id}</TableCell>
+                                        <TableCell>{installment.dueDate}</TableCell>
                                         <TableCell variant="numeric" weight="bold">
                                             {installment.amount} ریال
                                         </TableCell>
                                         <TableCell>
-                                            {installment.penalty !== "0" ? (
-                                                <Typography variant="body2" color="error" weight="medium">
+                                            {installment.penalty !== '0' ? (
+                                                <Typography
+                                                    variant="body2"
+                                                    color="error"
+                                                    weight="medium"
+                                                >
                                                     {installment.penalty} ریال
                                                 </Typography>
                                             ) : (
-                                                <Typography variant="body2" color="secondary">-</Typography>
+                                                <Typography variant="body2" color="secondary">
+                                                    -
+                                                </Typography>
                                             )}
                                         </TableCell>
-                                        <TableCell>
-                                            {installment.payDate || '-'}
-                                        </TableCell>
+                                        <TableCell>{installment.payDate || '-'}</TableCell>
                                         <TableCell>
                                             <Box className="flex items-center space-x-2 space-x-reverse">
                                                 {getStatusIcon(installment.status)}
                                                 <Typography
                                                     variant="caption"
                                                     weight="medium"
-                                                    className={`px-2 py-1 rounded-full ${getStatusColor(installment.status)}`}
+                                                    className={`rounded-full px-2 py-1 ${getStatusColor(installment.status)}`}
                                                 >
                                                     {getStatusText(installment.status)}
                                                 </Typography>
                                             </Box>
                                         </TableCell>
                                         <TableCell variant="action">
-                                            {(installment.status === 'current' || installment.status === 'overdue') && (
+                                            {(installment.status === 'current' ||
+                                                installment.status === 'overdue') && (
                                                 <Button size="sm" variant="outline">
-                                                    <CreditCardIcon className="h-4 w-4 ml-1" />
+                                                    <CreditCardIcon className="ml-1 h-4 w-4" />
                                                     پرداخت
                                                 </Button>
                                             )}
                                             {installment.status === 'paid' && (
                                                 <Button size="sm" variant="ghost">
-                                                    <DocumentTextIcon className="h-4 w-4 ml-1" />
+                                                    <DocumentTextIcon className="ml-1 h-4 w-4" />
                                                     رسید
                                                 </Button>
                                             )}
@@ -244,7 +379,7 @@ export default function InstallmentsPage() {
                     </CardContent>
                 </Card>
 
-                <Box className="grid md:grid-cols-2 gap-6 mt-8">
+                <Box className="mt-8 grid gap-6 md:grid-cols-2">
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-lg">راهنمای پرداخت</CardTitle>
@@ -252,16 +387,22 @@ export default function InstallmentsPage() {
                         <CardContent>
                             <List variant="unordered" spacing="sm" marker={false}>
                                 <ListItem className="flex items-center space-x-2 space-x-reverse">
-                                    <Box className="w-2 h-2 bg-blue-500 rounded-full"></Box>
-                                    <Typography variant="body2" color="secondary">اقساط تا تاریخ ۵ هر ماه قابل پرداخت هستند</Typography>
+                                    <Box className="h-2 w-2 rounded-full bg-blue-500"></Box>
+                                    <Typography variant="body2" color="secondary">
+                                        اقساط تا تاریخ ۵ هر ماه قابل پرداخت هستند
+                                    </Typography>
                                 </ListItem>
                                 <ListItem className="flex items-center space-x-2 space-x-reverse">
-                                    <Box className="w-2 h-2 bg-red-500 rounded-full"></Box>
-                                    <Typography variant="body2" color="secondary">پس از تاریخ سررسید، جریمه تأخیر محاسبه می‌شود</Typography>
+                                    <Box className="h-2 w-2 rounded-full bg-red-500"></Box>
+                                    <Typography variant="body2" color="secondary">
+                                        پس از تاریخ سررسید، جریمه تأخیر محاسبه می‌شود
+                                    </Typography>
                                 </ListItem>
                                 <ListItem className="flex items-center space-x-2 space-x-reverse">
-                                    <Box className="w-2 h-2 bg-green-500 rounded-full"></Box>
-                                    <Typography variant="body2" color="secondary">امکان پرداخت زودهنگام با تخفیف موجود است</Typography>
+                                    <Box className="h-2 w-2 rounded-full bg-green-500"></Box>
+                                    <Typography variant="body2" color="secondary">
+                                        امکان پرداخت زودهنگام با تخفیف موجود است
+                                    </Typography>
                                 </ListItem>
                             </List>
                         </CardContent>

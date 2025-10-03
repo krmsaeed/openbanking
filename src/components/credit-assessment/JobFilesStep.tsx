@@ -1,12 +1,20 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { BriefcaseIcon, ArrowRightIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
-import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription, FormField } from "@/components/ui";
-import { SimpleFileUpload } from "@/components/ui/media/SimpleFileUpload";
-import { jobFilesSchema, type JobFilesFormData } from "@/lib/schemas/creditAssessment";
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { BriefcaseIcon, ArrowRightIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import {
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    FormField,
+} from '@/components/ui';
+import { SimpleFileUpload } from '@/components/ui/media/SimpleFileUpload';
+import { jobFilesSchema, type JobFilesFormData } from '@/lib/schemas/creditAssessment';
 
 interface JobFilesStepProps {
     onNext: () => void;
@@ -22,10 +30,10 @@ export function JobFilesStep({ onNext, onPrevious, loading }: JobFilesStepProps)
         handleSubmit,
         setValue,
         trigger,
-        formState: { errors }
+        formState: { errors },
     } = useForm<JobFilesFormData>({
         resolver: zodResolver(jobFilesSchema),
-        mode: 'onChange'
+        mode: 'onChange',
     });
 
     const handleFileSelect = (files: FileList | null) => {
@@ -46,12 +54,10 @@ export function JobFilesStep({ onNext, onPrevious, loading }: JobFilesStepProps)
         <Card padding="lg">
             <CardHeader>
                 <CardTitle className="flex items-center gap-3">
-                    <BriefcaseIcon className="w-6 h-6 text-primary" />
+                    <BriefcaseIcon className="text-primary h-6 w-6" />
                     مدارک شغلی
                 </CardTitle>
-                <CardDescription>
-                    لطفاً مدارک مربوط به شغل خود را بارگذاری کنید
-                </CardDescription>
+                <CardDescription>لطفاً مدارک مربوط به شغل خود را بارگذاری کنید</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit(onNext)} className="space-y-8">
@@ -74,7 +80,9 @@ export function JobFilesStep({ onNext, onPrevious, loading }: JobFilesStepProps)
                                         multiple
                                     />
                                     {fieldState.error && (
-                                        <p className="text-xs text-red-500 mt-1">{String(fieldState.error.message)}</p>
+                                        <p className="mt-1 text-xs text-red-500">
+                                            {String(fieldState.error.message)}
+                                        </p>
                                     )}
                                 </>
                             )}
@@ -88,7 +96,7 @@ export function JobFilesStep({ onNext, onPrevious, loading }: JobFilesStepProps)
                             onClick={onPrevious}
                             className="flex items-center gap-2"
                         >
-                            <ArrowRightIcon className="w-4 h-4" />
+                            <ArrowRightIcon className="h-4 w-4" />
                             مرحله قبل
                         </Button>
                         <Button
@@ -97,7 +105,7 @@ export function JobFilesStep({ onNext, onPrevious, loading }: JobFilesStepProps)
                             disabled={loading}
                         >
                             {loading ? 'در حال پردازش...' : 'تأیید نهایی'}
-                            <CheckCircleIcon className="w-4 h-4" />
+                            <CheckCircleIcon className="h-4 w-4" />
                         </Button>
                     </div>
                 </form>

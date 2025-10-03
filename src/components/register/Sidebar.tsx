@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useUser } from '@/contexts/UserContext';
 import {
     CameraIcon,
@@ -8,54 +8,65 @@ import {
     PencilIcon,
     UserIcon,
     VideoCameraIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 import { Box, Typography } from '../ui';
 
 const STEP_META = [
-    { title: "اطلاعات شخصی", icon: UserIcon },
-    { title: "عکس سلفی", icon: CameraIcon },
-    { title: "فیلم احراز هویت", icon: VideoCameraIcon },
-    { title: "ثبت امضا", icon: PencilIcon },
-    { title: "ارسال کد تایید", icon: EnvelopeIcon },
-    { title: "اسکن کارت ملی", icon: DocumentMagnifyingGlassIcon },
-    { title: "تأیید نهایی", icon: CheckCircleIcon }
+    { title: 'اطلاعات شخصی', icon: UserIcon },
+    { title: 'عکس سلفی', icon: CameraIcon },
+    { title: 'فیلم احراز هویت', icon: VideoCameraIcon },
+    { title: 'ثبت امضا', icon: PencilIcon },
+    { title: 'ارسال کد تایید', icon: EnvelopeIcon },
+    { title: 'اسکن کارت ملی', icon: DocumentMagnifyingGlassIcon },
+    { title: 'تأیید نهایی', icon: CheckCircleIcon },
 ];
-
 
 export default function Sidebar() {
     const { userData, setUserData } = useUser();
     return (
-        <nav className="bg-white dark:bg-gray-600 rounded-lg shadow-lg p-4 w-full max-w-md mx-auto h-full" aria-label="مراحل ثبت‌نام">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2 text-center">مراحل ثبت‌ نام</h3>
-            <ul className="flex flex-row md:flex-col px-1 gap-2 md:gap-3 overflow-auto items-center justify-start md:justify-start md:pl-0 py-2 md:py-0">
+        <nav
+            className="mx-auto h-full w-full max-w-md rounded-lg bg-white p-4 shadow-lg dark:bg-gray-600"
+            aria-label="مراحل ثبت‌نام"
+        >
+            <h3 className="mb-2 text-center text-lg font-semibold text-gray-800 dark:text-white">
+                مراحل ثبت‌ نام
+            </h3>
+            <ul className="flex flex-row items-center justify-start gap-2 overflow-auto px-1 py-2 md:flex-col md:justify-start md:gap-3 md:py-0 md:pl-0">
                 {STEP_META.map((item, index) => {
                     const Icon = item.icon;
                     const step = userData?.step ?? 0;
                     const current = step === index + 1;
                     const completed = step > index + 1;
                     return (
-                        <li key={item.title} className="relative min-w-[96px] md:min-w-full flex-shrink-0 md:flex-shrink md:flex md:flex-row items-center md:gap-3 py-2 group md:w-auto">
-                            <Box className="flex flex-col items-center md:flex-row md:items-center w-full">
+                        <li
+                            key={item.title}
+                            className="group relative min-w-[96px] flex-shrink-0 items-center py-2 md:flex md:w-auto md:min-w-full md:flex-shrink md:flex-row md:gap-3"
+                        >
+                            <Box className="flex w-full flex-col items-center md:flex-row md:items-center">
                                 <Box className="relative flex items-center justify-center">
-                                    <Typography variant='span' className={`
-                                        w-12 h-12 md:w-10 md:h-10 flex items-center justify-center rounded-full border-2  shadow-sm relative z-10
-                                        ${index < STEP_META.length - 1 && ((userData?.step ?? 0) > index + 1 ? 'md:connector md:connector-primary' : 'md:connector md:connector-gray')}
-                                        ${completed && 'bg-primary-400  text-white scale-100'}
-                                        ${current ? 'bg-dark-100   text-primary scale-105' : 'bg-dark-200 border-dark-200 dark:border-gray-500 text-gray-400 dark:text-gray-400'}`
-                                    }>
-                                        {completed ? <CheckCircleIcon className="w-6 h-6 mx-auto text-dark-100 " /> : <Icon className="w-6 h-6 mx-auto" />}
+                                    <Typography
+                                        variant="span"
+                                        className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-sm md:h-10 md:w-10 ${index < STEP_META.length - 1 && ((userData?.step ?? 0) > index + 1 ? 'md:connector md:connector-primary' : 'md:connector md:connector-gray')} ${completed && 'bg-primary-400 scale-100 text-white'} ${current ? 'bg-dark-100 text-primary scale-105' : 'bg-dark-200 border-dark-200 text-gray-400 dark:border-gray-500 dark:text-gray-400'}`}
+                                    >
+                                        {completed ? (
+                                            <CheckCircleIcon className="text-dark-100 mx-auto h-6 w-6" />
+                                        ) : (
+                                            <Icon className="mx-auto h-6 w-6" />
+                                        )}
                                     </Typography>
                                     {index > 0 && (
-                                        <span className={`relative S  ${step > index ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-600'}`} />
+                                        <span
+                                            className={`S relative ${step > index ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-600'}`}
+                                        />
                                     )}
                                 </Box>
 
                                 <Typography
-                                    className={`mt-2 md:mt-0 text-xs md:text-sm font-medium transition-colors duration-150 ${current ? 'text-primary' : 'text-gray-500 dark:text-gray-300'} ${completed ? 'text-primary-500' : ''} group-hover:text-primary text-center md:text-right px-2`}
+                                    className={`mt-2 text-xs font-medium transition-colors duration-150 md:mt-0 md:text-sm ${current ? 'text-primary' : 'text-gray-500 dark:text-gray-300'} ${completed ? 'text-primary-500' : ''} group-hover:text-primary px-2 text-center md:text-right`}
                                     onClick={() => setUserData({ step: index + 1 })}
                                     tabIndex={0}
                                     aria-current={current ? 'step' : undefined}
-                                    variant='body2'
+                                    variant="body2"
                                 >
                                     {item.title}
                                 </Typography>

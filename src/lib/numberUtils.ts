@@ -16,7 +16,6 @@ export const convertToEnglishNumbers = (value: string): string => {
     return result;
 };
 
-
 export const convertToEnglishDigits = convertToEnglishNumbers;
 
 export const convertToPersianDigits = (str: string): string => {

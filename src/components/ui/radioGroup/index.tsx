@@ -1,11 +1,10 @@
-"use client";
-import React from "react";
-import clsx from "clsx";
-import { Box, Typography } from "../core";
+'use client';
+import React from 'react';
+import clsx from 'clsx';
+import { Box, Typography } from '../core';
 
-
-type Variant = "default" | "outline" | "solid" | "ghost";
-type Size = "sm" | "md" | "lg";
+type Variant = 'default' | 'outline' | 'solid' | 'ghost';
+type Size = 'sm' | 'md' | 'lg';
 
 interface StyleConfig {
     [key: string]: {
@@ -17,34 +16,33 @@ interface StyleConfig {
 
 const variants: StyleConfig = {
     default: {
-        base: "transition-all rounded-lg font-medium",
-        selected: "bg-[#008C9B] text-white border-[#008C9B] hover:bg-[#008C9B]/90",
+        base: 'transition-all rounded-lg font-medium',
+        selected: 'bg-[#008C9B] text-white border-[#008C9B] hover:bg-[#008C9B]/90',
         unselected:
-            "bg-white dark:bg-dark text-gray-700 border-gray-200 hover:border-[#008C9B] hover:text-[#008C9B]",
+            'bg-white dark:bg-dark text-gray-700 border-gray-200 hover:border-[#008C9B] hover:text-[#008C9B]',
     },
     outline: {
-        base: "transition-all rounded-lg font-medium border-2",
-        selected: "border-[#008C9B] bg-[#008C9B]/10 text-[#008C9B]",
-        unselected:
-            "border-gray-200 text-gray-700 hover:border-[#008C9B] hover:text-[#008C9B]",
+        base: 'transition-all rounded-lg font-medium border-2',
+        selected: 'border-[#008C9B] bg-[#008C9B]/10 text-[#008C9B]',
+        unselected: 'border-gray-200 text-gray-700 hover:border-[#008C9B] hover:text-[#008C9B]',
     },
     solid: {
-        base: "transition-all rounded-lg font-medium",
-        selected: "bg-[#008C9B] text-white hover:bg-[#008C9B]/90",
+        base: 'transition-all rounded-lg font-medium',
+        selected: 'bg-[#008C9B] text-white hover:bg-[#008C9B]/90',
         unselected:
-            "bg-gray-100 dark:bg-gray-dark dark:text-gray-light text-gray-700 hover:bg-gray-200",
+            'bg-gray-100 dark:bg-gray-dark dark:text-gray-light text-gray-700 hover:bg-gray-200',
     },
     ghost: {
-        base: "transition-all rounded-lg font-medium",
-        selected: "bg-[#008C9B]/10 text-[#008C9B]",
-        unselected: "text-gray-700 hover:bg-gray-100",
+        base: 'transition-all rounded-lg font-medium',
+        selected: 'bg-[#008C9B]/10 text-[#008C9B]',
+        unselected: 'text-gray-700 hover:bg-gray-100',
     },
 };
 
 const sizes = {
-    sm: "h-8 text-sm",
-    md: "h-10",
-    lg: "h-12 text-lg",
+    sm: 'h-8 text-sm',
+    md: 'h-10',
+    lg: 'h-12 text-lg',
 };
 
 export interface RadioButtonProps {
@@ -75,26 +73,23 @@ export const RadioButton = ({
     name,
     checked,
     onChange,
-    variant = "default",
-    size = "md",
-    className = "",
+    variant = 'default',
+    size = 'md',
+    className = '',
 }: RadioButtonProps) => {
     const variantStyles = variants[variant];
     const sizeStyle = sizes[size];
 
     return (
-        <label
-            className={clsx(className, "relative flex cursor-pointer items-center")}
-        >
+        <label className={clsx(className, 'relative flex cursor-pointer items-center')}>
             <Typography
                 variant="body2"
                 className={clsx(
-                    "inline-flex w-full cursor-pointer items-center justify-center",
-                    !checked &&
-                    "border-spacing-2 border border-gray-lightest dark:border-gray-900",
+                    'inline-flex w-full cursor-pointer items-center justify-center',
+                    !checked && 'border-gray-lightest border-spacing-2 border dark:border-gray-900',
                     variantStyles.base,
                     checked ? variantStyles.selected : variantStyles.unselected,
-                    sizeStyle,
+                    sizeStyle
                 )}
             >
                 {label}
@@ -117,9 +112,9 @@ export const RadioButtonGroup = ({
     name,
     defaultValue,
     onChange,
-    variant = "default",
-    size = "md",
-    className = "",
+    variant = 'default',
+    size = 'md',
+    className = '',
 }: RadioButtonGroupProps) => {
     const [value, setValue] = React.useState(defaultValue);
 

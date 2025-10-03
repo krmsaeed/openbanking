@@ -1,7 +1,7 @@
-import { cn } from "@/lib/utils";
-import { XCircleIcon } from "@heroicons/react/24/solid";
-import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import CustomInput from "./Input";
+import { cn } from '@/lib/utils';
+import { XCircleIcon } from '@heroicons/react/24/solid';
+import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import CustomInput from './Input';
 
 export interface OptionItem {
     value: string;
@@ -26,7 +26,26 @@ interface AutocompleteProps {
 }
 
 const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
-    ({ className, label, id, options = [], placeholder, value = null, onValueChange, allowClear = true, onSearch, debounceMs: propDebounceMs, disabled, error, required, fullWidth, ...props }, ref) => {
+    (
+        {
+            className,
+            label,
+            id,
+            options = [],
+            placeholder,
+            value = null,
+            onValueChange,
+            allowClear = true,
+            onSearch,
+            debounceMs: propDebounceMs,
+            disabled,
+            error,
+            required,
+            fullWidth,
+            ...props
+        },
+        ref
+    ) => {
         const [isOpen, setIsOpen] = useState(false);
         const [query, setQuery] = useState('');
         const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -39,7 +58,7 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
         const [localSelectedLabel, setLocalSelectedLabel] = useState<React.ReactNode | null>(null);
 
         const actualDebounceMs = typeof propDebounceMs === 'number' ? propDebounceMs : 300;
-        
+
         useEffect(() => {
             const t = setTimeout(() => setDebouncedQuery(query), actualDebounceMs);
             return () => clearTimeout(t);
@@ -50,32 +69,45 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
             if (typeof onSearch === 'function') {
                 const id = ++reqIdRef.current;
                 setLoading(true);
-                Promise.resolve(onSearch(debouncedQuery)).then((res) => {
-                    if (!mounted) return;
-                    if (id !== reqIdRef.current) return;
-                    if (Array.isArray(res)) {
-                        setAsyncOptions(res);
-                    }
-                    setLoading(false);
-                }).catch(() => {
-                    if (id === reqIdRef.current) setLoading(false);
-                });
+                Promise.resolve(onSearch(debouncedQuery))
+                    .then((res) => {
+                        if (!mounted) return;
+                        if (id !== reqIdRef.current) return;
+                        if (Array.isArray(res)) {
+                            setAsyncOptions(res);
+                        }
+                        setLoading(false);
+                    })
+                    .catch(() => {
+                        if (id === reqIdRef.current) setLoading(false);
+                    });
             } else {
                 setAsyncOptions(null);
             }
-            return () => { mounted = false; };
+            return () => {
+                mounted = false;
+            };
         }, [debouncedQuery, onSearch]);
 
         const currentOptions = asyncOptions ?? options;
-        const selectedFromCurrent = useMemo(() => currentOptions.find((o) => o.value === value)?.label ?? '', [currentOptions, value]);
+        const selectedFromCurrent = useMemo(
+            () => currentOptions.find((o) => o.value === value)?.label ?? '',
+            [currentOptions, value]
+        );
         const effectiveLabel = localSelectedLabel ?? selectedFromCurrent;
-        const selectedText = typeof effectiveLabel === 'string' || typeof effectiveLabel === 'number' ? String(effectiveLabel) : '';
+        const selectedText =
+            typeof effectiveLabel === 'string' || typeof effectiveLabel === 'number'
+                ? String(effectiveLabel)
+                : '';
         const hasNodeLabel = !!effectiveLabel && !selectedText;
 
         const filtered = useMemo(() => {
             const q = debouncedQuery.trim().toLowerCase();
             if (!q) return currentOptions;
-            return currentOptions.filter((o) => String(o.label).toLowerCase().includes(q) || o.value.toLowerCase().includes(q));
+            return currentOptions.filter(
+                (o) =>
+                    String(o.label).toLowerCase().includes(q) || o.value.toLowerCase().includes(q)
+            );
         }, [currentOptions, debouncedQuery]);
 
         useEffect(() => {
@@ -94,20 +126,29 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
             setHighlight((h) => Math.max(-1, Math.min(h, filtered.length - 1)));
         }, [filtered, isOpen]);
 
-        const open = useCallback(() => { setIsOpen(true); setHighlight(-1); }, []);
-        const close = useCallback(() => { setIsOpen(false); setHighlight(-1); }, []);
+        const open = useCallback(() => {
+            setIsOpen(true);
+            setHighlight(-1);
+        }, []);
+        const close = useCallback(() => {
+            setIsOpen(false);
+            setHighlight(-1);
+        }, []);
 
-        const selectValue = useCallback((val: string) => {
-            onValueChange?.(val);
-            const sel = currentOptions.find((o) => o.value === val);
-            if (sel) setLocalSelectedLabel(sel.label);
-            setQuery('');
-            setDebouncedQuery('');
-            close();
-        }, [onValueChange, currentOptions, close]);
+        const selectValue = useCallback(
+            (val: string) => {
+                onValueChange?.(val);
+                const sel = currentOptions.find((o) => o.value === val);
+                if (sel) setLocalSelectedLabel(sel.label);
+                setQuery('');
+                setDebouncedQuery('');
+                close();
+            },
+            [onValueChange, currentOptions, close]
+        );
 
         const clearValue = useCallback(() => {
-            setQuery(''); 
+            setQuery('');
             onValueChange?.(null);
             setLocalSelectedLabel(null);
         }, [onValueChange]);
@@ -149,14 +190,26 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
         const inputValue = isOpen ? query : selectedText;
 
         return (
-            <div ref={containerRef} className={cn('relative', className)} role="combobox" aria-expanded={isOpen} aria-controls={listboxId} aria-haspopup="listbox">
+            <div
+                ref={containerRef}
+                className={cn('relative', className)}
+                role="combobox"
+                aria-expanded={isOpen}
+                aria-controls={listboxId}
+                aria-haspopup="listbox"
+            >
                 <CustomInput
                     ref={ref || inputRef}
                     id={id}
                     label={label}
-                    placeholder={isOpen ? 'جستجو...' : (!value ? placeholder || 'انتخاب کنید...' : '')}
+                    placeholder={
+                        isOpen ? 'جستجو...' : !value ? placeholder || 'انتخاب کنید...' : ''
+                    }
                     value={inputValue}
-                    onChange={(e) => { setQuery(e.target.value); setIsOpen(true); }}
+                    onChange={(e) => {
+                        setQuery(e.target.value);
+                        setIsOpen(true);
+                    }}
                     onFocus={open}
                     onClick={open}
                     onKeyDown={onKeyDown}
@@ -168,43 +221,60 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
                     aria-controls={listboxId}
                     endAdornment={
                         allowClear && value ? (
-                            <button 
+                            <button
                                 type="button"
-                                aria-label="clear" 
-                                onClick={clearValue} 
+                                aria-label="clear"
+                                onClick={clearValue}
                                 className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                             >
-                                <XCircleIcon className="w-4 h-4" />
+                                <XCircleIcon className="h-4 w-4" />
                             </button>
                         ) : undefined
                     }
                     {...props}
                 />
-                
+
                 {/* If selected label is a ReactNode (not plain string), show it when closed */}
                 {!isOpen && hasNodeLabel && (
-                    <div className="pointer-events-none absolute top-8 right-8 flex items-center text-sm text-gray-700 dark:text-gray-300">{effectiveLabel}</div>
+                    <div className="pointer-events-none absolute top-8 right-8 flex items-center text-sm text-gray-700 dark:text-gray-300">
+                        {effectiveLabel}
+                    </div>
                 )}
 
                 {isOpen && (
-                    <ul id={listboxId} role="listbox" className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-xl border bg-white dark:bg-gray-800 py-1 shadow-lg border-gray-200 dark:border-gray-700" tabIndex={-1}>
+                    <ul
+                        id={listboxId}
+                        role="listbox"
+                        className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+                        tabIndex={-1}
+                    >
                         {loading && (
-                            <li className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">در حال جستجو...</li>
+                            <li className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                                در حال جستجو...
+                            </li>
                         )}
                         {!loading && filtered.length === 0 && (
-                            <li className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">هیچ موردی یافت نشد</li>
+                            <li className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                                هیچ موردی یافت نشد
+                            </li>
                         )}
                         {filtered.map((o, idx) => (
                             <li
                                 key={o.value}
                                 role="option"
                                 aria-selected={value === o.value}
-                                className={cn('cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700', {
-                                    'bg-primary/10 dark:bg-primary/20': idx === highlight,
-                                    'bg-primary/5 dark:bg-primary/10': value === o.value,
-                                })}
+                                className={cn(
+                                    'cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700',
+                                    {
+                                        'bg-primary/10 dark:bg-primary/20': idx === highlight,
+                                        'bg-primary/5 dark:bg-primary/10': value === o.value,
+                                    }
+                                )}
                                 onMouseEnter={() => setHighlight(idx)}
-                                onMouseDown={(e) => { e.preventDefault(); selectValue(o.value); }}
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    selectValue(o.value);
+                                }}
                             >
                                 {o.label}
                             </li>
@@ -216,7 +286,7 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
     }
 );
 
-Autocomplete.displayName = "Autocomplete";
+Autocomplete.displayName = 'Autocomplete';
 
 export { Autocomplete };
 export default Autocomplete;

@@ -1,5 +1,4 @@
-
-"use client"
+'use client';
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface UserData {
@@ -45,36 +44,34 @@ interface UserProviderProps {
 }
 const initialState: UserData = {
     step: 1,
-    nationalCode: "",
-    phoneNumber: "",
-    birthDate: "",
-    postalCode: "",
-    password: "",
-    confirmPassword: "",
-    otp: "",
-    certOtp: "",
-    ENFirstName: "",
-    ENLastName: "",
+    nationalCode: '',
+    phoneNumber: '',
+    birthDate: '',
+    postalCode: '',
+    password: '',
+    confirmPassword: '',
+    otp: '',
+    certOtp: '',
+    ENFirstName: '',
+    ENLastName: '',
     randomText: null,
     selfie: undefined,
     video: undefined,
     signature: undefined,
     nationalCard: undefined,
-    branch: "",
+    branch: '',
     nationalFile: undefined,
     processId: null,
-}
+};
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const [userData, setUserDataState] = useState<UserData>(initialState);
 
-
-
     const setUserData = (data: Partial<UserData>) => {
-        setUserDataState(prev => ({ ...prev, ...data }));
+        setUserDataState((prev) => ({ ...prev, ...data }));
     };
 
     const updateUserData = (key: keyof UserData, value: UserData[keyof UserData]) => {
-        setUserDataState(prev => ({ ...prev, [key]: value }));
+        setUserDataState((prev) => ({ ...prev, [key]: value }));
     };
 
     const clearUserData = () => {
@@ -82,12 +79,14 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     };
 
     return (
-        <UserContext.Provider value={{
-            userData,
-            setUserData,
-            updateUserData,
-            clearUserData
-        }}>
+        <UserContext.Provider
+            value={{
+                userData,
+                setUserData,
+                updateUserData,
+                clearUserData,
+            }}
+        >
             {children}
         </UserContext.Provider>
     );

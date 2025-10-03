@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import { OTPInput } from '../ui/forms/OTPInput';
-import { Box } from "../ui/core";
+import { Box } from '../ui/core';
 
 interface MultiOTPInputProps {
     length: number;
@@ -12,7 +12,13 @@ interface MultiOTPInputProps {
     className?: string;
 }
 
-export function MultiOTPInput({ length, value, onChange, disabled, className }: MultiOTPInputProps) {
+export function MultiOTPInput({
+    length,
+    value,
+    onChange,
+    disabled,
+    className,
+}: MultiOTPInputProps) {
     const [digits, setDigits] = useState<string[]>(Array(length).fill(''));
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -56,7 +62,7 @@ export function MultiOTPInput({ length, value, onChange, disabled, className }: 
 
         const newDigits = [...digits];
         let lastFilled = startIndex;
-        for (let i = 0; i < chars.length && (startIndex + i) < length; i++) {
+        for (let i = 0; i < chars.length && startIndex + i < length; i++) {
             newDigits[startIndex + i] = chars[i];
             lastFilled = startIndex + i;
         }
@@ -69,13 +75,15 @@ export function MultiOTPInput({ length, value, onChange, disabled, className }: 
     };
 
     return (
-        <Box className={`flex gap-2 justify-center ${className || ''}`} dir='ltr'>
+        <Box className={`flex justify-center gap-2 ${className || ''}`} dir="ltr">
             {digits.map((digit, index) => (
                 <OTPInput
                     key={index}
                     value={digit}
                     onChange={(value: string) => handleDigitChange(index, value)}
-                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyDown(index, e)}
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
+                        handleKeyDown(index, e)
+                    }
                     onPaste={(e) => handlePaste(index, e)}
                     disabled={disabled}
                     autoFocus={index === 0}

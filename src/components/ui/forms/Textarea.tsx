@@ -1,10 +1,8 @@
+import React, { ComponentProps } from 'react';
+import { Box, Typography } from '../core';
+import mergeClasses from '@/lib/utils';
 
-import React, { ComponentProps } from "react";
-import { Box, Typography } from "../core";
-import mergeClasses from "@/lib/utils";
-
-
-interface CustomTextareaProps extends ComponentProps<"textarea"> {
+interface CustomTextareaProps extends ComponentProps<'textarea'> {
     inputComponent?: React.ElementType;
     inputProps?: React.TextareaHTMLAttributes<HTMLTextAreaElement>;
     name?: string;
@@ -22,7 +20,7 @@ interface CustomTextareaProps extends ComponentProps<"textarea"> {
 
 const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
     const {
-        inputComponent: InputComponent = "textarea",
+        inputComponent: InputComponent = 'textarea',
         name,
         onChange,
         placeholder,
@@ -36,16 +34,14 @@ const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
         value,
     } = props;
     return (
-        <Box className={mergeClasses("relative w-full", className)} style={sx}>
-            {startDecorator && (
-                <Box className="absolute left-0">{startDecorator}</Box>
-            )}
+        <Box className={mergeClasses('relative w-full', className)} style={sx}>
+            {startDecorator && <Box className="absolute left-0">{startDecorator}</Box>}
             <Typography
                 variant="span"
                 className="mb-1 block text-right text-[0.9rem] font-medium text-gray-700 dark:text-gray-300"
             >
                 {label}
-                {required && <span className="mr-1 text-secondary">*</span>}
+                {required && <span className="text-secondary mr-1">*</span>}
             </Typography>
             <InputComponent
                 {...props}
@@ -55,19 +51,19 @@ const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
                 required={required}
                 rows={5}
                 className={mergeClasses(
-                    `block w-full border-b-2 border-gray-300 bg-white px-4 py-3 focus:border-primary focus:outline-none text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white sm:text-sm`,
-                    className && className,
+                    `focus:border-primary block w-full border-b-2 border-gray-300 bg-white px-4 py-3 text-gray-900 focus:outline-none sm:text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white`,
+                    className && className
                 )}
                 style={{
-                    paddingLeft: startDecorator ? "2rem" : "0.5rem",
-                    paddingRight: endDecorator ? "2rem" : "0.5rem",
-                    resize: "vertical",
+                    paddingLeft: startDecorator ? '2rem' : '0.5rem',
+                    paddingRight: endDecorator ? '2rem' : '0.5rem',
+                    resize: 'vertical',
                     ...sx,
                 }}
                 value={value}
             />
             {error && (
-                <Typography variant="span" className=" block text-sm text-secondary">
+                <Typography variant="span" className="text-secondary block text-sm">
                     {error}
                 </Typography>
             )}

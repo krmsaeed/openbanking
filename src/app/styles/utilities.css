@@ -1,932 +1,932 @@
 .container {
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  max-width: 100%;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    max-width: 100%;
 }
 @media (min-width: 640px) {
-  .container {
-    max-width: 640px;
-  }
+    .container {
+        max-width: 640px;
+    }
 }
 @media (min-width: 768px) {
-  .container {
-    max-width: 768px;
-  }
+    .container {
+        max-width: 768px;
+    }
 }
 @media (min-width: 1024px) {
-  .container {
-    max-width: 1024px;
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
+    .container {
+        max-width: 1024px;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
 }
 @media (min-width: 1280px) {
-  .container {
-    max-width: 1280px;
-  }
+    .container {
+        max-width: 1280px;
+    }
 }
 @media (min-width: 1536px) {
-  .container {
-    max-width: 1536px;
-    padding-left: 4rem;
-    padding-right: 4rem;
-  }
+    .container {
+        max-width: 1536px;
+        padding-left: 4rem;
+        padding-right: 4rem;
+    }
 }
 
 .pc-picker {
-  position: absolute;
-  left: 1rem;
-  right: 1rem;
-  top: 4rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-  box-shadow: var(--card-shadow);
-  z-index: 50;
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    top: 4rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    box-shadow: var(--card-shadow);
+    z-index: 50;
 }
 .pc-picker::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+    width: 8px;
+    height: 8px;
 }
 .pc-picker::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 9999px;
+    background: var(--scrollbar-thumb);
+    border-radius: 9999px;
 }
 
 /* Semantic color utilities */
 .bg-primary {
-  background-color: var(--color-primary-500) !important;
+    background-color: var(--color-primary-500) !important;
 }
 .bg-primary-50 {
-  background-color: var(--color-primary-50) !important;
+    background-color: var(--color-primary-50) !important;
 }
 .bg-primary-100 {
-  background-color: var(--color-primary-100) !important;
+    background-color: var(--color-primary-100) !important;
 }
 .bg-primary-200 {
-  background-color: var(--color-primary-200) !important;
+    background-color: var(--color-primary-200) !important;
 }
 .bg-primary-300 {
-  background-color: var(--color-primary-300) !important;
+    background-color: var(--color-primary-300) !important;
 }
 .bg-primary-400 {
-  background-color: var(--color-primary-400) !important;
+    background-color: var(--color-primary-400) !important;
 }
 .bg-primary-500 {
-  background-color: var(--color-primary-500) !important;
+    background-color: var(--color-primary-500) !important;
 }
 .bg-primary-600 {
-  background-color: var(--color-primary-600) !important;
+    background-color: var(--color-primary-600) !important;
 }
 .bg-primary-700 {
-  background-color: var(--color-primary-700) !important;
+    background-color: var(--color-primary-700) !important;
 }
 .bg-primary-800 {
-  background-color: var(--color-primary-800) !important;
+    background-color: var(--color-primary-800) !important;
 }
 .bg-primary-900 {
-  background-color: var(--color-primary-900) !important;
+    background-color: var(--color-primary-900) !important;
 }
 .text-primary {
-  color: var(--color-primary-500) !important;
+    color: var(--color-primary-500) !important;
 }
 .text-primary-50 {
-  color: var(--color-primary-50) !important;
+    color: var(--color-primary-50) !important;
 }
 .text-primary-100 {
-  color: var(--color-primary-100) !important;
+    color: var(--color-primary-100) !important;
 }
 .text-primary-200 {
-  color: var(--color-primary-200) !important;
+    color: var(--color-primary-200) !important;
 }
 .text-primary-300 {
-  color: var(--color-primary-300) !important;
+    color: var(--color-primary-300) !important;
 }
 .text-primary-400 {
-  color: var(--color-primary-400) !important;
+    color: var(--color-primary-400) !important;
 }
 .text-primary-500 {
-  color: var(--color-primary-500) !important;
+    color: var(--color-primary-500) !important;
 }
 .text-primary-600 {
-  color: var(--color-primary-600) !important;
+    color: var(--color-primary-600) !important;
 }
 .text-primary-700 {
-  color: var(--color-primary-700) !important;
+    color: var(--color-primary-700) !important;
 }
 .text-primary-800 {
-  color: var(--color-primary-800) !important;
+    color: var(--color-primary-800) !important;
 }
 .text-primary-900 {
-  color: var(--color-primary-900) !important;
+    color: var(--color-primary-900) !important;
 }
 .border-primary {
-  border-color: var(--color-primary-500) !important;
+    border-color: var(--color-primary-500) !important;
 }
 .ring-primary {
-  --tw-ring-color: var(--color-primary-500);
+    --tw-ring-color: var(--color-primary-500);
 }
 
 .bg-secondary {
-  background-color: var(--color-secondary-500) !important;
+    background-color: var(--color-secondary-500) !important;
 }
 .bg-secondary-50 {
-  background-color: var(--color-secondary-50) !important;
+    background-color: var(--color-secondary-50) !important;
 }
 .bg-secondary-100 {
-  background-color: var(--color-secondary-100) !important;
+    background-color: var(--color-secondary-100) !important;
 }
 .bg-secondary-200 {
-  background-color: var(--color-secondary-200) !important;
+    background-color: var(--color-secondary-200) !important;
 }
 .bg-secondary-300 {
-  background-color: var(--color-secondary-300) !important;
+    background-color: var(--color-secondary-300) !important;
 }
 .bg-secondary-400 {
-  background-color: var(--color-secondary-400) !important;
+    background-color: var(--color-secondary-400) !important;
 }
 .bg-secondary-500 {
-  background-color: var(--color-secondary-500) !important;
+    background-color: var(--color-secondary-500) !important;
 }
 .bg-secondary-600 {
-  background-color: var(--color-secondary-600) !important;
+    background-color: var(--color-secondary-600) !important;
 }
 .bg-secondary-700 {
-  background-color: var(--color-secondary-700) !important;
+    background-color: var(--color-secondary-700) !important;
 }
 .bg-secondary-800 {
-  background-color: var(--color-secondary-800) !important;
+    background-color: var(--color-secondary-800) !important;
 }
 .bg-secondary-900 {
-  background-color: var(--color-secondary-900) !important;
+    background-color: var(--color-secondary-900) !important;
 }
 .text-secondary {
-  color: var(--color-secondary-500) !important;
+    color: var(--color-secondary-500) !important;
 }
 .text-secondary-50 {
-  color: var(--color-secondary-50) !important;
+    color: var(--color-secondary-50) !important;
 }
 .text-secondary-100 {
-  color: var(--color-secondary-100) !important;
+    color: var(--color-secondary-100) !important;
 }
 .text-secondary-200 {
-  color: var(--color-secondary-200) !important;
+    color: var(--color-secondary-200) !important;
 }
 .text-secondary-300 {
-  color: var(--color-secondary-300) !important;
+    color: var(--color-secondary-300) !important;
 }
 .text-secondary-400 {
-  color: var(--color-secondary-400) !important;
+    color: var(--color-secondary-400) !important;
 }
 .text-secondary-500 {
-  color: var(--color-secondary-500) !important;
+    color: var(--color-secondary-500) !important;
 }
 .text-secondary-600 {
-  color: var(--color-secondary-600) !important;
+    color: var(--color-secondary-600) !important;
 }
 .text-secondary-700 {
-  color: var(--color-secondary-700) !important;
+    color: var(--color-secondary-700) !important;
 }
 .text-secondary-800 {
-  color: var(--color-secondary-800) !important;
+    color: var(--color-secondary-800) !important;
 }
 .text-secondary-900 {
-  color: var(--color-secondary-900) !important;
+    color: var(--color-secondary-900) !important;
 }
 .border-secondary {
-  border-color: var(--color-secondary-500) !important;
+    border-color: var(--color-secondary-500) !important;
 }
 .bg-teal {
-  background-color: var(--color-teal-500) !important;
+    background-color: var(--color-teal-500) !important;
 }
 .bg-teal-50 {
-  background-color: var(--color-teal-50) !important;
+    background-color: var(--color-teal-50) !important;
 }
 .bg-teal-100 {
-  background-color: var(--color-teal-100) !important;
+    background-color: var(--color-teal-100) !important;
 }
 .bg-teal-200 {
-  background-color: var(--color-teal-200) !important;
+    background-color: var(--color-teal-200) !important;
 }
 .bg-teal-300 {
-  background-color: var(--color-teal-300) !important;
+    background-color: var(--color-teal-300) !important;
 }
 .bg-teal-400 {
-  background-color: var(--color-teal-400) !important;
+    background-color: var(--color-teal-400) !important;
 }
 .bg-teal-500 {
-  background-color: var(--color-teal-500) !important;
+    background-color: var(--color-teal-500) !important;
 }
 .bg-teal-600 {
-  background-color: var(--color-teal-600) !important;
+    background-color: var(--color-teal-600) !important;
 }
 .bg-teal-700 {
-  background-color: var(--color-teal-700) !important;
+    background-color: var(--color-teal-700) !important;
 }
 .bg-teal-800 {
-  background-color: var(--color-teal-800) !important;
+    background-color: var(--color-teal-800) !important;
 }
 .bg-teal-900 {
-  background-color: var(--color-teal-900) !important;
+    background-color: var(--color-teal-900) !important;
 }
 .text-teal {
-  color: var(--color-teal-500) !important;
+    color: var(--color-teal-500) !important;
 }
 .text-teal-50 {
-  color: var(--color-teal-50) !important;
+    color: var(--color-teal-50) !important;
 }
 .text-teal-100 {
-  color: var(--color-teal-100) !important;
+    color: var(--color-teal-100) !important;
 }
 .text-teal-200 {
-  color: var(--color-teal-200) !important;
+    color: var(--color-teal-200) !important;
 }
 .text-teal-300 {
-  color: var(--color-teal-300) !important;
+    color: var(--color-teal-300) !important;
 }
 .text-teal-400 {
-  color: var(--color-teal-400) !important;
+    color: var(--color-teal-400) !important;
 }
 .text-teal-500 {
-  color: var(--color-teal-500) !important;
+    color: var(--color-teal-500) !important;
 }
 .text-teal-600 {
-  color: var(--color-teal-600) !important;
+    color: var(--color-teal-600) !important;
 }
 .text-teal-700 {
-  color: var(--color-teal-700) !important;
+    color: var(--color-teal-700) !important;
 }
 .text-teal-800 {
-  color: var(--color-teal-800) !important;
+    color: var(--color-teal-800) !important;
 }
 .text-teal-900 {
-  color: var(--color-teal-900) !important;
+    color: var(--color-teal-900) !important;
 }
 .border-teal {
-  border-color: var(--color-teal-500) !important;
+    border-color: var(--color-teal-500) !important;
 }
 .bg-cta {
-  background-color: var(--color-cta-500) !important;
+    background-color: var(--color-cta-500) !important;
 }
 .bg-cta-50 {
-  background-color: var(--color-cta-50) !important;
+    background-color: var(--color-cta-50) !important;
 }
 .bg-cta-100 {
-  background-color: var(--color-cta-100) !important;
+    background-color: var(--color-cta-100) !important;
 }
 .bg-cta-200 {
-  background-color: var(--color-cta-200) !important;
+    background-color: var(--color-cta-200) !important;
 }
 .bg-cta-300 {
-  background-color: var(--color-cta-300) !important;
+    background-color: var(--color-cta-300) !important;
 }
 .bg-cta-400 {
-  background-color: var(--color-cta-400) !important;
+    background-color: var(--color-cta-400) !important;
 }
 .bg-cta-500 {
-  background-color: var(--color-cta-500) !important;
+    background-color: var(--color-cta-500) !important;
 }
 .bg-cta-600 {
-  background-color: var(--color-cta-600) !important;
+    background-color: var(--color-cta-600) !important;
 }
 .bg-cta-700 {
-  background-color: var(--color-cta-700) !important;
+    background-color: var(--color-cta-700) !important;
 }
 .bg-cta-800 {
-  background-color: var(--color-cta-800) !important;
+    background-color: var(--color-cta-800) !important;
 }
 .bg-cta-900 {
-  background-color: var(--color-cta-900) !important;
+    background-color: var(--color-cta-900) !important;
 }
 .text-cta {
-  color: var(--color-cta-500) !important;
+    color: var(--color-cta-500) !important;
 }
 .text-cta-50 {
-  color: var(--color-cta-50) !important;
+    color: var(--color-cta-50) !important;
 }
 .text-cta-100 {
-  color: var(--color-cta-100) !important;
+    color: var(--color-cta-100) !important;
 }
 .text-cta-200 {
-  color: var(--color-cta-200) !important;
+    color: var(--color-cta-200) !important;
 }
 .text-cta-300 {
-  color: var(--color-cta-300) !important;
+    color: var(--color-cta-300) !important;
 }
 .text-cta-400 {
-  color: var(--color-cta-400) !important;
+    color: var(--color-cta-400) !important;
 }
 .text-cta-500 {
-  color: var(--color-cta-500) !important;
+    color: var(--color-cta-500) !important;
 }
 .text-cta-600 {
-  color: var(--color-cta-600) !important;
+    color: var(--color-cta-600) !important;
 }
 .text-cta-700 {
-  color: var(--color-cta-700) !important;
+    color: var(--color-cta-700) !important;
 }
 .text-cta-800 {
-  color: var(--color-cta-800) !important;
+    color: var(--color-cta-800) !important;
 }
 .text-cta-900 {
-  color: var(--color-cta-900) !important;
+    color: var(--color-cta-900) !important;
 }
 .border-cta {
-  border-color: var(--color-cta-500) !important;
+    border-color: var(--color-cta-500) !important;
 }
 .bg-success {
-  background-color: var(--color-success-500) !important;
+    background-color: var(--color-success-500) !important;
 }
 .bg-success-50 {
-  background-color: var(--color-success-50) !important;
+    background-color: var(--color-success-50) !important;
 }
 .bg-success-100 {
-  background-color: var(--color-success-100) !important;
+    background-color: var(--color-success-100) !important;
 }
 .bg-success-200 {
-  background-color: var(--color-success-200) !important;
+    background-color: var(--color-success-200) !important;
 }
 .bg-success-300 {
-  background-color: var(--color-success-300) !important;
+    background-color: var(--color-success-300) !important;
 }
 .bg-success-400 {
-  background-color: var(--color-success-400) !important;
+    background-color: var(--color-success-400) !important;
 }
 .bg-success-500 {
-  background-color: var(--color-success-500) !important;
+    background-color: var(--color-success-500) !important;
 }
 .bg-success-600 {
-  background-color: var(--color-success-600) !important;
+    background-color: var(--color-success-600) !important;
 }
 .bg-success-700 {
-  background-color: var(--color-success-700) !important;
+    background-color: var(--color-success-700) !important;
 }
 .bg-success-800 {
-  background-color: var(--color-success-800) !important;
+    background-color: var(--color-success-800) !important;
 }
 .bg-success-900 {
-  background-color: var(--color-success-900) !important;
+    background-color: var(--color-success-900) !important;
 }
 .text-success {
-  color: var(--color-success-500) !important;
+    color: var(--color-success-500) !important;
 }
 .text-success-50 {
-  color: var(--color-success-50) !important;
+    color: var(--color-success-50) !important;
 }
 .text-success-100 {
-  color: var(--color-success-100) !important;
+    color: var(--color-success-100) !important;
 }
 .text-success-200 {
-  color: var(--color-success-200) !important;
+    color: var(--color-success-200) !important;
 }
 .text-success-300 {
-  color: var(--color-success-300) !important;
+    color: var(--color-success-300) !important;
 }
 .text-success-400 {
-  color: var(--color-success-400) !important;
+    color: var(--color-success-400) !important;
 }
 .text-success-500 {
-  color: var(--color-success-500) !important;
+    color: var(--color-success-500) !important;
 }
 .text-success-600 {
-  color: var(--color-success-600) !important;
+    color: var(--color-success-600) !important;
 }
 .text-success-700 {
-  color: var(--color-success-700) !important;
+    color: var(--color-success-700) !important;
 }
 .text-success-800 {
-  color: var(--color-success-800) !important;
+    color: var(--color-success-800) !important;
 }
 .text-success-900 {
-  color: var(--color-success-900) !important;
+    color: var(--color-success-900) !important;
 }
 .border-success {
-  border-color: var(--color-success-500) !important;
+    border-color: var(--color-success-500) !important;
 }
 .bg-info {
-  background-color: var(--color-info-500) !important;
+    background-color: var(--color-info-500) !important;
 }
 .bg-info-50 {
-  background-color: var(--color-info-50) !important;
+    background-color: var(--color-info-50) !important;
 }
 .bg-info-100 {
-  background-color: var(--color-info-100) !important;
+    background-color: var(--color-info-100) !important;
 }
 .bg-info-200 {
-  background-color: var(--color-info-200) !important;
+    background-color: var(--color-info-200) !important;
 }
 .bg-info-300 {
-  background-color: var(--color-info-300) !important;
+    background-color: var(--color-info-300) !important;
 }
 .bg-info-400 {
-  background-color: var(--color-info-400) !important;
+    background-color: var(--color-info-400) !important;
 }
 .bg-info-500 {
-  background-color: var(--color-info-500) !important;
+    background-color: var(--color-info-500) !important;
 }
 .bg-info-600 {
-  background-color: var(--color-info-600) !important;
+    background-color: var(--color-info-600) !important;
 }
 .bg-info-700 {
-  background-color: var(--color-info-700) !important;
+    background-color: var(--color-info-700) !important;
 }
 .bg-info-800 {
-  background-color: var(--color-info-800) !important;
+    background-color: var(--color-info-800) !important;
 }
 .bg-info-900 {
-  background-color: var(--color-info-900) !important;
+    background-color: var(--color-info-900) !important;
 }
 .text-info {
-  color: var(--color-info-500) !important;
+    color: var(--color-info-500) !important;
 }
 .text-info-50 {
-  color: var(--color-info-50) !important;
+    color: var(--color-info-50) !important;
 }
 .text-info-100 {
-  color: var(--color-info-100) !important;
+    color: var(--color-info-100) !important;
 }
 .text-info-200 {
-  color: var(--color-info-200) !important;
+    color: var(--color-info-200) !important;
 }
 .text-info-300 {
-  color: var(--color-info-300) !important;
+    color: var(--color-info-300) !important;
 }
 .text-info-400 {
-  color: var(--color-info-400) !important;
+    color: var(--color-info-400) !important;
 }
 .text-info-500 {
-  color: var(--color-info-500) !important;
+    color: var(--color-info-500) !important;
 }
 .text-info-600 {
-  color: var(--color-info-600) !important;
+    color: var(--color-info-600) !important;
 }
 .text-info-700 {
-  color: var(--color-info-700) !important;
+    color: var(--color-info-700) !important;
 }
 .text-info-800 {
-  color: var(--color-info-800) !important;
+    color: var(--color-info-800) !important;
 }
 .text-info-900 {
-  color: var(--color-info-900) !important;
+    color: var(--color-info-900) !important;
 }
 .border-info {
-  border-color: var(--color-info-500) !important;
+    border-color: var(--color-info-500) !important;
 }
 .bg-warning {
-  background-color: var(--color-warning-500) !important;
+    background-color: var(--color-warning-500) !important;
 }
 .bg-warning-50 {
-  background-color: var(--color-warning-50) !important;
+    background-color: var(--color-warning-50) !important;
 }
 .bg-warning-100 {
-  background-color: var(--color-warning-100) !important;
+    background-color: var(--color-warning-100) !important;
 }
 .bg-warning-200 {
-  background-color: var(--color-warning-200) !important;
+    background-color: var(--color-warning-200) !important;
 }
 .bg-warning-300 {
-  background-color: var(--color-warning-300) !important;
+    background-color: var(--color-warning-300) !important;
 }
 .bg-warning-400 {
-  background-color: var(--color-warning-400) !important;
+    background-color: var(--color-warning-400) !important;
 }
 .bg-warning-500 {
-  background-color: var(--color-warning-500) !important;
+    background-color: var(--color-warning-500) !important;
 }
 .bg-warning-600 {
-  background-color: var(--color-warning-600) !important;
+    background-color: var(--color-warning-600) !important;
 }
 .bg-warning-700 {
-  background-color: var(--color-warning-700) !important;
+    background-color: var(--color-warning-700) !important;
 }
 .bg-warning-800 {
-  background-color: var(--color-warning-800) !important;
+    background-color: var(--color-warning-800) !important;
 }
 .bg-warning-900 {
-  background-color: var(--color-warning-900) !important;
+    background-color: var(--color-warning-900) !important;
 }
 .text-warning {
-  color: var(--color-warning-500) !important;
+    color: var(--color-warning-500) !important;
 }
 .text-warning-50 {
-  color: var(--color-warning-50) !important;
+    color: var(--color-warning-50) !important;
 }
 .text-warning-100 {
-  color: var(--color-warning-100) !important;
+    color: var(--color-warning-100) !important;
 }
 .text-warning-200 {
-  color: var(--color-warning-200) !important;
+    color: var(--color-warning-200) !important;
 }
 .text-warning-300 {
-  color: var(--color-warning-300) !important;
+    color: var(--color-warning-300) !important;
 }
 .text-warning-400 {
-  color: var(--color-warning-400) !important;
+    color: var(--color-warning-400) !important;
 }
 .text-warning-500 {
-  color: var(--color-warning-500) !important;
+    color: var(--color-warning-500) !important;
 }
 .text-warning-600 {
-  color: var(--color-warning-600) !important;
+    color: var(--color-warning-600) !important;
 }
 .text-warning-700 {
-  color: var(--color-warning-700) !important;
+    color: var(--color-warning-700) !important;
 }
 .text-warning-800 {
-  color: var(--color-warning-800) !important;
+    color: var(--color-warning-800) !important;
 }
 .text-warning-900 {
-  color: var(--color-warning-900) !important;
+    color: var(--color-warning-900) !important;
 }
 .border-warning {
-  border-color: var(--color-warning-500) !important;
+    border-color: var(--color-warning-500) !important;
 }
 .bg-error {
-  background-color: var(--color-error-500) !important;
+    background-color: var(--color-error-500) !important;
 }
 .bg-error-50 {
-  background-color: var(--color-error-50) !important;
+    background-color: var(--color-error-50) !important;
 }
 .bg-error-100 {
-  background-color: var(--color-error-100) !important;
+    background-color: var(--color-error-100) !important;
 }
 .bg-error-200 {
-  background-color: var(--color-error-200) !important;
+    background-color: var(--color-error-200) !important;
 }
 .bg-error-300 {
-  background-color: var(--color-error-300) !important;
+    background-color: var(--color-error-300) !important;
 }
 .bg-error-400 {
-  background-color: var(--color-error-400) !important;
+    background-color: var(--color-error-400) !important;
 }
 .bg-error-500 {
-  background-color: var(--color-error-500) !important;
+    background-color: var(--color-error-500) !important;
 }
 .bg-error-600 {
-  background-color: var(--color-error-600) !important;
+    background-color: var(--color-error-600) !important;
 }
 .bg-error-700 {
-  background-color: var(--color-error-700) !important;
+    background-color: var(--color-error-700) !important;
 }
 .bg-error-800 {
-  background-color: var(--color-error-800) !important;
+    background-color: var(--color-error-800) !important;
 }
 .bg-error-900 {
-  background-color: var(--color-error-900) !important;
+    background-color: var(--color-error-900) !important;
 }
 .text-error {
-  color: var(--color-error-500) !important;
+    color: var(--color-error-500) !important;
 }
 .text-error-50 {
-  color: var(--color-error-50) !important;
+    color: var(--color-error-50) !important;
 }
 .text-error-100 {
-  color: var(--color-error-100) !important;
+    color: var(--color-error-100) !important;
 }
 .text-error-200 {
-  color: var(--color-error-200) !important;
+    color: var(--color-error-200) !important;
 }
 .text-error-300 {
-  color: var(--color-error-300) !important;
+    color: var(--color-error-300) !important;
 }
 .text-error-400 {
-  color: var(--color-error-400) !important;
+    color: var(--color-error-400) !important;
 }
 .text-error-500 {
-  color: var(--color-error-500) !important;
+    color: var(--color-error-500) !important;
 }
 .text-error-600 {
-  color: var(--color-error-600) !important;
+    color: var(--color-error-600) !important;
 }
 .text-error-700 {
-  color: var(--color-error-700) !important;
+    color: var(--color-error-700) !important;
 }
 .text-error-800 {
-  color: var(--color-error-800) !important;
+    color: var(--color-error-800) !important;
 }
 .text-error-900 {
-  color: var(--color-error-900) !important;
+    color: var(--color-error-900) !important;
 }
 .border-error {
-  border-color: var(--color-error-500) !important;
+    border-color: var(--color-error-500) !important;
 }
 .bg-dark {
-  background-color: var(--color-dark-500) !important;
+    background-color: var(--color-dark-500) !important;
 }
 .bg-dark-50 {
-  background-color: var(--color-dark-50) !important;
+    background-color: var(--color-dark-50) !important;
 }
 .bg-dark-100 {
-  background-color: var(--color-dark-100) !important;
+    background-color: var(--color-dark-100) !important;
 }
 .bg-dark-200 {
-  background-color: var(--color-dark-200) !important;
+    background-color: var(--color-dark-200) !important;
 }
 .bg-dark-300 {
-  background-color: var(--color-dark-300) !important;
+    background-color: var(--color-dark-300) !important;
 }
 .bg-dark-400 {
-  background-color: var(--color-dark-400) !important;
+    background-color: var(--color-dark-400) !important;
 }
 .bg-dark-500 {
-  background-color: var(--color-dark-500) !important;
+    background-color: var(--color-dark-500) !important;
 }
 .bg-dark-600 {
-  background-color: var(--color-dark-600) !important;
+    background-color: var(--color-dark-600) !important;
 }
 .bg-dark-700 {
-  background-color: var(--color-dark-700) !important;
+    background-color: var(--color-dark-700) !important;
 }
 .bg-dark-800 {
-  background-color: var(--color-dark-800) !important;
+    background-color: var(--color-dark-800) !important;
 }
 .bg-dark-900 {
-  background-color: var(--color-dark-900) !important;
+    background-color: var(--color-dark-900) !important;
 }
 .text-dark {
-  color: var(--color-dark-500) !important;
+    color: var(--color-dark-500) !important;
 }
 .text-dark-50 {
-  color: var(--color-dark-50) !important;
+    color: var(--color-dark-50) !important;
 }
 .text-dark-100 {
-  color: var(--color-dark-100) !important;
+    color: var(--color-dark-100) !important;
 }
 .text-dark-200 {
-  color: var(--color-dark-200) !important;
+    color: var(--color-dark-200) !important;
 }
 .text-dark-300 {
-  color: var(--color-dark-300) !important;
+    color: var(--color-dark-300) !important;
 }
 .text-dark-400 {
-  color: var(--color-dark-400) !important;
+    color: var(--color-dark-400) !important;
 }
 .text-dark-500 {
-  color: var(--color-dark-500) !important;
+    color: var(--color-dark-500) !important;
 }
 .text-dark-600 {
-  color: var(--color-dark-600) !important;
+    color: var(--color-dark-600) !important;
 }
 .text-dark-700 {
-  color: var(--color-dark-700) !important;
+    color: var(--color-dark-700) !important;
 }
 .text-dark-800 {
-  color: var(--color-dark-800) !important;
+    color: var(--color-dark-800) !important;
 }
 .text-dark-900 {
-  color: var(--color-dark-900) !important;
+    color: var(--color-dark-900) !important;
 }
 .border-dark {
-  border-color: var(--color-dark-500) !important;
+    border-color: var(--color-dark-500) !important;
 }
 
 .text-body {
-  color: var(--color-text) !important;
+    color: var(--color-text) !important;
 }
 .bg-body {
-  background-color: var(--color-bg) !important;
+    background-color: var(--color-bg) !important;
 }
 
 .hover\:bg-primary:hover {
-  background-color: var(--color-primary-600) !important;
+    background-color: var(--color-primary-600) !important;
 }
 .hover\:bg-secondary:hover {
-  background-color: var(--color-secondary-600) !important;
+    background-color: var(--color-secondary-600) !important;
 }
 .hover\:bg-cta:hover {
-  background-color: var(--color-cta-600) !important;
+    background-color: var(--color-cta-600) !important;
 }
 .hover\:text-primary:hover {
-  color: var(--color-primary-600) !important;
+    color: var(--color-primary-600) !important;
 }
 
 .from-primary {
-  --tw-gradient-from: var(--color-primary-500);
+    --tw-gradient-from: var(--color-primary-500);
 }
 .to-primary {
-  --tw-gradient-to: var(--color-primary-700);
+    --tw-gradient-to: var(--color-primary-700);
 }
 
 /* Map some palette names to Tailwind-like blue/red/green/yellow classes */
 .bg-blue-50 {
-  background-color: var(--color-info-50) !important;
+    background-color: var(--color-info-50) !important;
 }
 .bg-blue-100 {
-  background-color: var(--color-info-100) !important;
+    background-color: var(--color-info-100) !important;
 }
 .bg-blue-200 {
-  background-color: var(--color-info-200) !important;
+    background-color: var(--color-info-200) !important;
 }
 .bg-blue-300 {
-  background-color: var(--color-info-300) !important;
+    background-color: var(--color-info-300) !important;
 }
 .bg-blue-400 {
-  background-color: var(--color-info-400) !important;
+    background-color: var(--color-info-400) !important;
 }
 .bg-blue-500 {
-  background-color: var(--color-info-500) !important;
+    background-color: var(--color-info-500) !important;
 }
 .bg-blue-600 {
-  background-color: var(--color-info-600) !important;
+    background-color: var(--color-info-600) !important;
 }
 .bg-blue-700 {
-  background-color: var(--color-info-700) !important;
+    background-color: var(--color-info-700) !important;
 }
 .bg-blue-800 {
-  background-color: var(--color-info-800) !important;
+    background-color: var(--color-info-800) !important;
 }
 .bg-blue-900 {
-  background-color: var(--color-info-900) !important;
+    background-color: var(--color-info-900) !important;
 }
 .text-blue-600 {
-  color: var(--color-info-600) !important;
+    color: var(--color-info-600) !important;
 }
 .text-blue-500 {
-  color: var(--color-info-500) !important;
+    color: var(--color-info-500) !important;
 }
 .bg-red-50 {
-  background-color: var(--color-error-50) !important;
+    background-color: var(--color-error-50) !important;
 }
 .bg-red-100 {
-  background-color: var(--color-error-100) !important;
+    background-color: var(--color-error-100) !important;
 }
 .bg-red-200 {
-  background-color: var(--color-error-200) !important;
+    background-color: var(--color-error-200) !important;
 }
 .bg-red-300 {
-  background-color: var(--color-error-300) !important;
+    background-color: var(--color-error-300) !important;
 }
 .bg-red-400 {
-  background-color: var(--color-error-400) !important;
+    background-color: var(--color-error-400) !important;
 }
 .bg-red-500 {
-  background-color: var(--color-error-500) !important;
+    background-color: var(--color-error-500) !important;
 }
 .bg-red-600 {
-  background-color: var(--color-error-600) !important;
+    background-color: var(--color-error-600) !important;
 }
 .bg-red-700 {
-  background-color: var(--color-error-700) !important;
+    background-color: var(--color-error-700) !important;
 }
 .bg-red-800 {
-  background-color: var(--color-error-800) !important;
+    background-color: var(--color-error-800) !important;
 }
 .bg-red-900 {
-  background-color: var(--color-error-900) !important;
+    background-color: var(--color-error-900) !important;
 }
 .text-red-600 {
-  color: var(--color-error-600) !important;
+    color: var(--color-error-600) !important;
 }
 .bg-green-50 {
-  background-color: var(--color-success-50) !important;
+    background-color: var(--color-success-50) !important;
 }
 .bg-green-100 {
-  background-color: var(--color-success-100) !important;
+    background-color: var(--color-success-100) !important;
 }
 .bg-green-200 {
-  background-color: var(--color-success-200) !important;
+    background-color: var(--color-success-200) !important;
 }
 .bg-green-300 {
-  background-color: var(--color-success-300) !important;
+    background-color: var(--color-success-300) !important;
 }
 .bg-green-400 {
-  background-color: var(--color-success-400) !important;
+    background-color: var(--color-success-400) !important;
 }
 .bg-green-500 {
-  background-color: var(--color-success-500) !important;
+    background-color: var(--color-success-500) !important;
 }
 .bg-green-600 {
-  background-color: var(--color-success-600) !important;
+    background-color: var(--color-success-600) !important;
 }
 .bg-green-700 {
-  background-color: var(--color-success-700) !important;
+    background-color: var(--color-success-700) !important;
 }
 .bg-green-800 {
-  background-color: var(--color-success-800) !important;
+    background-color: var(--color-success-800) !important;
 }
 .bg-green-900 {
-  background-color: var(--color-success-900) !important;
+    background-color: var(--color-success-900) !important;
 }
 .text-green-600 {
-  color: var(--color-success-600) !important;
+    color: var(--color-success-600) !important;
 }
 .bg-yellow-50 {
-  background-color: var(--color-warning-50) !important;
+    background-color: var(--color-warning-50) !important;
 }
 .bg-yellow-100 {
-  background-color: var(--color-warning-100) !important;
+    background-color: var(--color-warning-100) !important;
 }
 .bg-yellow-200 {
-  background-color: var(--color-warning-200) !important;
+    background-color: var(--color-warning-200) !important;
 }
 .bg-yellow-300 {
-  background-color: var(--color-warning-300) !important;
+    background-color: var(--color-warning-300) !important;
 }
 .bg-yellow-400 {
-  background-color: var(--color-warning-400) !important;
+    background-color: var(--color-warning-400) !important;
 }
 .bg-yellow-500 {
-  background-color: var(--color-warning-500) !important;
+    background-color: var(--color-warning-500) !important;
 }
 .bg-yellow-600 {
-  background-color: var(--color-warning-600) !important;
+    background-color: var(--color-warning-600) !important;
 }
 .bg-yellow-700 {
-  background-color: var(--color-warning-700) !important;
+    background-color: var(--color-warning-700) !important;
 }
 .bg-yellow-800 {
-  background-color: var(--color-warning-800) !important;
+    background-color: var(--color-warning-800) !important;
 }
 .bg-yellow-900 {
-  background-color: var(--color-warning-900) !important;
+    background-color: var(--color-warning-900) !important;
 }
 .text-yellow-600 {
-  color: var(--color-warning-600) !important;
+    color: var(--color-warning-600) !important;
 }
 
 .text-gray-600 {
-  color: var(--color-muted) !important;
+    color: var(--color-muted) !important;
 }
 .text-gray-500 {
-  color: var(--color-muted-2) !important;
+    color: var(--color-muted-2) !important;
 }
 .bg-gray-200 {
-  background-color: var(--color-bg-soft) !important;
+    background-color: var(--color-bg-soft) !important;
 }
 .bg-gray-100 {
-  background-color: var(--color-bg-100) !important;
+    background-color: var(--color-bg-100) !important;
 }
 .bg-gray-50 {
-  background-color: var(--color-bg-50) !important;
+    background-color: var(--color-bg-50) !important;
 }
 .bg-gray-300 {
-  background-color: var(--color-gray-300) !important;
+    background-color: var(--color-gray-300) !important;
 }
 .bg-gray-400 {
-  background-color: var(--color-gray-400) !important;
+    background-color: var(--color-gray-400) !important;
 }
 .bg-gray-500 {
-  background-color: var(--color-gray-500) !important;
+    background-color: var(--color-gray-500) !important;
 }
 .bg-gray-600 {
-  background-color: var(--color-gray-600) !important;
+    background-color: var(--color-gray-600) !important;
 }
 .bg-gray-700 {
-  background-color: var(--color-gray-700) !important;
+    background-color: var(--color-gray-700) !important;
 }
 .bg-gray-800 {
-  background-color: var(--color-gray-800) !important;
+    background-color: var(--color-gray-800) !important;
 }
 .bg-gray-900 {
-  background-color: var(--color-gray-900) !important;
+    background-color: var(--color-gray-900) !important;
 }
 .text-gray-50 {
-  color: var(--color-gray-50) !important;
+    color: var(--color-gray-50) !important;
 }
 .text-gray-100 {
-  color: var(--color-gray-100) !important;
+    color: var(--color-gray-100) !important;
 }
 .text-gray-200 {
-  color: var(--color-gray-200) !important;
+    color: var(--color-gray-200) !important;
 }
 .text-gray-300 {
-  color: var(--color-gray-300) !important;
+    color: var(--color-gray-300) !important;
 }
 .text-gray-400 {
-  color: var(--color-gray-400) !important;
+    color: var(--color-gray-400) !important;
 }
 .text-gray-700 {
-  color: var(--color-gray-700) !important;
+    color: var(--color-gray-700) !important;
 }
 .text-gray-800 {
-  color: var(--color-gray-800) !important;
+    color: var(--color-gray-800) !important;
 }
 .text-gray-900 {
-  color: var(--color-gray-900) !important;
+    color: var(--color-gray-900) !important;
 }
 
 /* Legacy mappings for components that still use bg-white / border-gray-* */
 .bg-white {
-  background-color: var(--color-surface) !important;
+    background-color: var(--color-surface) !important;
 }
 .border-gray-100 {
-  border-color: var(--color-bg-100) !important;
+    border-color: var(--color-bg-100) !important;
 }
 .border-gray-200 {
-  border-color: var(--color-bg-soft) !important;
+    border-color: var(--color-bg-soft) !important;
 }
 .border-gray-300 {
-  border-color: var(--color-muted-2) !important;
+    border-color: var(--color-muted-2) !important;
 }
 .text-gray-700 {
-  color: var(--color-muted) !important;
+    color: var(--color-muted) !important;
 }
 .text-gray-400 {
-  color: var(--color-muted-2) !important;
+    color: var(--color-muted-2) !important;
 }
 .border-1 {
-  border-width: 1px;
+    border-width: 1px;
 }

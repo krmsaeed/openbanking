@@ -1,11 +1,11 @@
-"use client";
-import { useEffect, useState } from "react";
+'use client';
+import { useEffect, useState } from 'react';
 
 export default function ServiceWorkerRegistrar() {
     const [status, setStatus] = useState<string | null>(null);
 
     useEffect(() => {
-        if (typeof window === "undefined" || !('serviceWorker' in navigator)) return;
+        if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
 
         let mounted = true;
 
@@ -16,7 +16,9 @@ export default function ServiceWorkerRegistrar() {
                 setStatus(reg.installing ? 'installing' : reg.waiting ? 'waiting' : 'active');
 
                 reg.addEventListener('updatefound', () => setStatus('updatefound'));
-                navigator.serviceWorker.addEventListener('controllerchange', () => setStatus('controllerchange'));
+                navigator.serviceWorker.addEventListener('controllerchange', () =>
+                    setStatus('controllerchange')
+                );
             } catch (err) {
                 console.warn('SW registration failed:', err);
                 if (mounted) setStatus('error');
@@ -25,9 +27,15 @@ export default function ServiceWorkerRegistrar() {
 
         register();
 
-        return () => { mounted = false; };
+        return () => {
+            mounted = false;
+        };
     }, []);
 
     if (!status) return null;
-    return <div aria-hidden className="sr-only">Service worker: {status}</div>;
+    return (
+        <div aria-hidden className="sr-only">
+            Service worker: {status}
+        </div>
+    );
 }

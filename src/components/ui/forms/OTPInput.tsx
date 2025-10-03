@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { cn, convertPersianToEnglish } from '@/lib/utils';
@@ -21,7 +21,20 @@ export interface OTPInputRef {
 }
 
 const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
-    ({ value, onChange, onKeyDown, onPaste, autoComplete, className, maxLength = 1, disabled, autoFocus }, ref) => {
+    (
+        {
+            value,
+            onChange,
+            onKeyDown,
+            onPaste,
+            autoComplete,
+            className,
+            maxLength = 1,
+            disabled,
+            autoFocus,
+        },
+        ref
+    ) => {
         const inputRef = useRef<HTMLInputElement>(null);
 
         useImperativeHandle(ref, () => ({
@@ -51,7 +64,7 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
                 autoComplete={autoComplete ?? 'one-time-code'}
                 onKeyDown={onKeyDown}
                 className={cn(
-                    "w-12 h-12 text-center text-lg font-bold border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-colors",
+                    'focus:ring-primary focus:border-primary h-12 w-12 rounded-xl border border-gray-300 text-center text-lg font-bold transition-colors focus:ring-2',
                     className
                 )}
                 maxLength={maxLength}
@@ -62,6 +75,6 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
     }
 );
 
-OTPInput.displayName = "OTPInput";
+OTPInput.displayName = 'OTPInput';
 
 export { OTPInput };

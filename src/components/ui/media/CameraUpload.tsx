@@ -1,8 +1,15 @@
-"use client";
-import { useState, useRef } from "react";
-import toast from "react-hot-toast";
-import { CameraIcon, VideoCameraIcon, XMarkIcon, PlayIcon, PauseIcon, StopIcon } from "@heroicons/react/24/outline";
-import { Button } from "../core/Button";
+'use client';
+import { useState, useRef } from 'react';
+import toast from 'react-hot-toast';
+import {
+    CameraIcon,
+    VideoCameraIcon,
+    XMarkIcon,
+    PlayIcon,
+    PauseIcon,
+    StopIcon,
+} from '@heroicons/react/24/outline';
+import { Button } from '../core/Button';
 
 interface CameraUploadProps {
     files: File[];
@@ -19,9 +26,9 @@ export function CameraUpload({
     onFileSelect,
     onRemoveFile,
     label,
-    accept = "image/*,video/*",
+    accept = 'image/*,video/*',
     multiple = false,
-    enableVideo = true
+    enableVideo = true,
 }: CameraUploadProps) {
     const [dragOver, setDragOver] = useState(false);
     const [showCamera, setShowCamera] = useState(false);
@@ -62,7 +69,7 @@ export function CameraUpload({
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: true,
-                audio: enableVideo
+                audio: enableVideo,
             });
 
             if (videoRef.current) {
@@ -78,7 +85,7 @@ export function CameraUpload({
 
     const stopCamera = () => {
         if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current.getTracks().forEach((track) => track.stop());
             streamRef.current = null;
         }
         setShowCamera(false);
@@ -103,15 +110,23 @@ export function CameraUpload({
             if (ctx) {
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                canvas.toBlob((blob) => {
-                    if (blob) {
-                        const file = new File([blob], `photo_${window !== undefined && Date.now()}.jpg`, { type: 'image/jpeg' });
-                        const fileList = new DataTransfer();
-                        fileList.items.add(file);
-                        onFileSelect(fileList.files);
-                        stopCamera();
-                    }
-                }, 'image/jpeg', 0.8);
+                canvas.toBlob(
+                    (blob) => {
+                        if (blob) {
+                            const file = new File(
+                                [blob],
+                                `photo_${window !== undefined && Date.now()}.jpg`,
+                                { type: 'image/jpeg' }
+                            );
+                            const fileList = new DataTransfer();
+                            fileList.items.add(file);
+                            onFileSelect(fileList.files);
+                            stopCamera();
+                        }
+                    },
+                    'image/jpeg',
+                    0.8
+                );
             }
         }
     };
@@ -145,7 +160,7 @@ export function CameraUpload({
             setRecordingTime(0);
 
             timerRef.current = setInterval(() => {
-                setRecordingTime(prev => prev + 1);
+                setRecordingTime((prev) => prev + 1);
             }, 1000);
         } catch (error) {
             console.error('Error starting recording:', error);
@@ -169,7 +184,7 @@ export function CameraUpload({
             mediaRecorderRef.current.resume();
             setIsPaused(false);
             timerRef.current = setInterval(() => {
-                setRecordingTime(prev => prev + 1);
+                setRecordingTime((prev) => prev + 1);
             }, 1000);
         }
     };
@@ -195,18 +210,15 @@ export function CameraUpload({
     if (showCamera) {
         return (
             <div className="relative">
-                <div className="relative bg-black rounded-xl overflow-hidden">
-                    <video
-                        ref={videoRef}
-                        autoPlay
-                        muted
-                        className="w-full h-64 object-cover"
-                    />
+                <div className="relative overflow-hidden rounded-xl bg-black">
+                    <video ref={videoRef} autoPlay muted className="h-64 w-full object-cover" />
                     <canvas ref={canvasRef} className="hidden" />
 
                     {isRecording && (
-                        <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full">
-                            <div className={`w-2 h-2 rounded-full bg-white ${isPaused ? '' : 'animate-pulse'}`} />
+                        <div className="absolute top-4 left-4 flex items-center gap-2 rounded-full bg-red-500 px-3 py-1 text-white">
+                            <div
+                                className={`h-2 w-2 rounded-full bg-white ${isPaused ? '' : 'animate-pulse'}`}
+                            />
                             <span className="text-sm font-medium">
                                 {isPaused ? 'متوقف' : 'درحال ضبط'} {formatTime(recordingTime)}
                             </span>
@@ -215,29 +227,31 @@ export function CameraUpload({
 
                     <button
                         onClick={stopCamera}
-                        className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70"
+                        className="bg-opacity-50 hover:bg-opacity-70 absolute top-4 right-4 rounded-full bg-black p-2 text-white"
                     >
-                        <XMarkIcon className="w-5 h-5" />
+                        <XMarkIcon className="h-5 w-5" />
                     </button>
 
                     {enableVideo && !isRecording && (
-                        <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
-                            <div className="flex bg-black bg-opacity-50 rounded-full p-1">
+                        <div className="absolute top-4 left-1/2 -translate-x-1/2 transform">
+                            <div className="bg-opacity-50 flex rounded-full bg-black p-1">
                                 <button
                                     onClick={() => setRecordingMode('photo')}
-                                    className={`px-3 py-1 rounded-full text-sm transition-colors ${recordingMode === 'photo'
-                                        ? 'bg-white text-black'
-                                        : 'text-white hover:bg-white hover:bg-opacity-20'
-                                        }`}
+                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${
+                                        recordingMode === 'photo'
+                                            ? 'bg-white text-black'
+                                            : 'hover:bg-opacity-20 text-white hover:bg-white'
+                                    }`}
                                 >
                                     عکس
                                 </button>
                                 <button
                                     onClick={() => setRecordingMode('video')}
-                                    className={`px-3 py-1 rounded-full text-sm transition-colors ${recordingMode === 'video'
-                                        ? 'bg-white text-black'
-                                        : 'text-white hover:bg-white hover:bg-opacity-20'
-                                        }`}
+                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${
+                                        recordingMode === 'video'
+                                            ? 'bg-white text-black'
+                                            : 'hover:bg-opacity-20 text-white hover:bg-white'
+                                    }`}
                                 >
                                     ویدیو
                                 </button>
@@ -246,13 +260,13 @@ export function CameraUpload({
                     )}
                 </div>
 
-                <div className="flex justify-center gap-4 mt-4">
+                <div className="mt-4 flex justify-center gap-4">
                     {recordingMode === 'photo' && !isRecording && (
                         <Button
                             onClick={takePhoto}
-                            className="flex items-center gap-2 bg-primary hover:bg-primary-700"
+                            className="bg-primary hover:bg-primary-700 flex items-center gap-2"
                         >
-                            <CameraIcon className="w-5 h-5" />
+                            <CameraIcon className="h-5 w-5" />
                             گرفتن عکس
                         </Button>
                     )}
@@ -264,7 +278,7 @@ export function CameraUpload({
                                     onClick={startRecording}
                                     className="flex items-center gap-2 bg-red-600 hover:bg-red-700"
                                 >
-                                    <VideoCameraIcon className="w-5 h-5" />
+                                    <VideoCameraIcon className="h-5 w-5" />
                                     شروع ضبط
                                 </Button>
                             ) : (
@@ -274,7 +288,7 @@ export function CameraUpload({
                                             onClick={resumeRecording}
                                             className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
                                         >
-                                            <PlayIcon className="w-5 h-5" />
+                                            <PlayIcon className="h-5 w-5" />
                                             ادامه
                                         </Button>
                                     ) : (
@@ -282,7 +296,7 @@ export function CameraUpload({
                                             onClick={pauseRecording}
                                             className="flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700"
                                         >
-                                            <PauseIcon className="w-5 h-5" />
+                                            <PauseIcon className="h-5 w-5" />
                                             توقف
                                         </Button>
                                     )}
@@ -291,7 +305,7 @@ export function CameraUpload({
                                         onClick={stopRecording}
                                         className="flex items-center gap-2 bg-red-600 hover:bg-red-700"
                                     >
-                                        <StopIcon className="w-5 h-5" />
+                                        <StopIcon className="h-5 w-5" />
                                         پایان ضبط
                                     </Button>
                                 </>
@@ -306,10 +320,11 @@ export function CameraUpload({
     return (
         <div>
             <div
-                className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${dragOver
-                    ? 'border-primary-500 bg-primary-50'
-                    : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-                    }`}
+                className={`cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-colors ${
+                    dragOver
+                        ? 'border-primary-500 bg-primary-50'
+                        : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                }`}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -324,22 +339,32 @@ export function CameraUpload({
                     className="hidden"
                 />
                 <div className="text-gray-600">
-                    <svg className="w-10 h-10 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <svg
+                        className="mx-auto mb-2 h-10 w-10"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
                     </svg>
                     <p className="font-medium">{label}</p>
-                    <p className="text-sm text-gray-400 mt-1">یا اینجا کلیک کنید</p>
+                    <p className="mt-1 text-sm text-gray-400">یا اینجا کلیک کنید</p>
                 </div>
             </div>
 
-            <div className="flex justify-center gap-2 mt-4">
+            <div className="mt-4 flex justify-center gap-2">
                 <Button
                     type="button"
                     variant="outline"
                     onClick={startCamera}
                     className="flex items-center gap-2"
                 >
-                    <CameraIcon className="w-4 h-4" />
+                    <CameraIcon className="h-4 w-4" />
                     استفاده از دوربین
                 </Button>
 
@@ -353,7 +378,7 @@ export function CameraUpload({
                         }}
                         className="flex items-center gap-2"
                     >
-                        <VideoCameraIcon className="w-4 h-4" />
+                        <VideoCameraIcon className="h-4 w-4" />
                         ضبط ویدیو
                     </Button>
                 )}
@@ -363,15 +388,18 @@ export function CameraUpload({
                 <div className="mt-4 space-y-2">
                     <p className="text-sm font-medium">فایل‌های انتخاب شده:</p>
                     {files.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <div
+                            key={index}
+                            className="flex items-center justify-between rounded bg-gray-50 p-2"
+                        >
                             <div className="flex items-center gap-2">
                                 {file.type.startsWith('image/') && (
-                                    <CameraIcon className="w-4 h-4 text-primary" />
+                                    <CameraIcon className="text-primary h-4 w-4" />
                                 )}
                                 {file.type.startsWith('video/') && (
-                                    <VideoCameraIcon className="w-4 h-4 text-red-600" />
+                                    <VideoCameraIcon className="h-4 w-4 text-red-600" />
                                 )}
-                                <span className="text-sm truncate">{file.name}</span>
+                                <span className="truncate text-sm">{file.name}</span>
                                 <span className="text-xs text-gray-500">
                                     ({(file.size / 1024 / 1024).toFixed(1)} MB)
                                 </span>
@@ -379,9 +407,9 @@ export function CameraUpload({
                             <button
                                 type="button"
                                 onClick={() => onRemoveFile(index)}
-                                className="text-red-500 hover:text-red-700 p-1"
+                                className="p-1 text-red-500 hover:text-red-700"
                             >
-                                <XMarkIcon className="w-4 h-4" />
+                                <XMarkIcon className="h-4 w-4" />
                             </button>
                         </div>
                     ))}

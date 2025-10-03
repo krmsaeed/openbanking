@@ -1,34 +1,34 @@
-import { forwardRef, useCallback } from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
-import toast from "react-hot-toast";
-import { DocumentIcon, PhotoIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { forwardRef, useCallback } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
+import toast from 'react-hot-toast';
+import { DocumentIcon, PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const fileUploadVariants = cva(
-    "relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors cursor-pointer hover:bg-gray-50",
+    'relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors cursor-pointer hover:bg-gray-50',
     {
         variants: {
             variant: {
-                default: "border-gray-300 text-gray-600",
-                error: "border-red-300 text-red-600 bg-red-50",
-                success: "border-green-300 text-green-600 bg-green-50",
+                default: 'border-gray-300 text-gray-600',
+                error: 'border-red-300 text-red-600 bg-red-50',
+                success: 'border-green-300 text-green-600 bg-green-50',
             },
             size: {
-                sm: "p-4 h-24",
-                md: "p-6 h-32",
-                lg: "p-8 h-40",
+                sm: 'p-4 h-24',
+                md: 'p-6 h-32',
+                lg: 'p-8 h-40',
             },
         },
         defaultVariants: {
-            variant: "default",
-            size: "md",
+            variant: 'default',
+            size: 'md',
         },
     }
 );
 
 export interface FileUploadProps
     extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'>,
-    VariantProps<typeof fileUploadVariants> {
+        VariantProps<typeof fileUploadVariants> {
     onFileSelect?: (files: FileList | null) => void;
     accept?: string;
     multiple?: boolean;
@@ -41,62 +41,74 @@ export interface FileUploadProps
 }
 
 const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
-    ({
-        className,
-        variant,
-        size,
-        onFileSelect,
-        accept = "image/*,application/pdf",
-        multiple = false,
-        maxFiles = 5,
-        maxSizeMB = 10,
-        files = [],
-        onRemoveFile,
-        label = "فایل‌ها را اینجا بکشید یا کلیک کنید",
-        description = "PNG، JPG یا PDF تا 10MB",
-        ...props
-    }, ref) => {
-
-        const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-            const selectedFiles = e.target.files;
-            if (selectedFiles) {
-                if (multiple && selectedFiles.length > maxFiles) {
-                    toast.error(`حداکثر ${maxFiles} فایل مجاز است`);
-                    return;
-                }
-
-                for (let i = 0; i < selectedFiles.length; i++) {
-                    const fileSizeMB = selectedFiles[i].size / (1024 * 1024);
-                    if (fileSizeMB > maxSizeMB) {
-                        toast.error(`حجم فایل ${selectedFiles[i].name} بیش از ${maxSizeMB}MB است`);
+    (
+        {
+            className,
+            variant,
+            size,
+            onFileSelect,
+            accept = 'image/*,application/pdf',
+            multiple = false,
+            maxFiles = 5,
+            maxSizeMB = 10,
+            files = [],
+            onRemoveFile,
+            label = 'فایل‌ها را اینجا بکشید یا کلیک کنید',
+            description = 'PNG، JPG یا PDF تا 10MB',
+            ...props
+        },
+        ref
+    ) => {
+        const handleFileChange = useCallback(
+            (e: React.ChangeEvent<HTMLInputElement>) => {
+                const selectedFiles = e.target.files;
+                if (selectedFiles) {
+                    if (multiple && selectedFiles.length > maxFiles) {
+                        toast.error(`حداکثر ${maxFiles} فایل مجاز است`);
                         return;
                     }
+
+                    for (let i = 0; i < selectedFiles.length; i++) {
+                        const fileSizeMB = selectedFiles[i].size / (1024 * 1024);
+                        if (fileSizeMB > maxSizeMB) {
+                            toast.error(
+                                `حجم فایل ${selectedFiles[i].name} بیش از ${maxSizeMB}MB است`
+                            );
+                            return;
+                        }
+                    }
+
+                    onFileSelect?.(selectedFiles);
                 }
+            },
+            [onFileSelect, multiple, maxFiles, maxSizeMB]
+        );
 
-                onFileSelect?.(selectedFiles);
-            }
-        }, [onFileSelect, multiple, maxFiles, maxSizeMB]);
-
-        const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-            e.preventDefault();
-            const droppedFiles = e.dataTransfer.files;
-            if (droppedFiles.length > 0) {
-                if (multiple && droppedFiles.length > maxFiles) {
-                    toast.error(`حداکثر ${maxFiles} فایل مجاز است`);
-                    return;
-                }
-
-                for (let i = 0; i < droppedFiles.length; i++) {
-                    const fileSizeMB = droppedFiles[i].size / (1024 * 1024);
-                    if (fileSizeMB > maxSizeMB) {
-                        toast.error(`حجم فایل ${droppedFiles[i].name} بیش از ${maxSizeMB}MB است`);
+        const handleDrop = useCallback(
+            (e: React.DragEvent<HTMLDivElement>) => {
+                e.preventDefault();
+                const droppedFiles = e.dataTransfer.files;
+                if (droppedFiles.length > 0) {
+                    if (multiple && droppedFiles.length > maxFiles) {
+                        toast.error(`حداکثر ${maxFiles} فایل مجاز است`);
                         return;
                     }
-                }
 
-                onFileSelect?.(droppedFiles);
-            }
-        }, [onFileSelect, multiple, maxFiles, maxSizeMB]);
+                    for (let i = 0; i < droppedFiles.length; i++) {
+                        const fileSizeMB = droppedFiles[i].size / (1024 * 1024);
+                        if (fileSizeMB > maxSizeMB) {
+                            toast.error(
+                                `حجم فایل ${droppedFiles[i].name} بیش از ${maxSizeMB}MB است`
+                            );
+                            return;
+                        }
+                    }
+
+                    onFileSelect?.(droppedFiles);
+                }
+            },
+            [onFileSelect, multiple, maxFiles, maxSizeMB]
+        );
 
         const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
             e.preventDefault();
@@ -105,9 +117,9 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
         const getFileIcon = (fileName: string) => {
             const extension = fileName.split('.').pop()?.toLowerCase();
             if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension || '')) {
-                return <PhotoIcon className="w-5 h-5" />;
+                return <PhotoIcon className="h-5 w-5" />;
             }
-            return <DocumentIcon className="w-5 h-5" />;
+            return <DocumentIcon className="h-5 w-5" />;
         };
 
         const formatFileSize = (bytes: number) => {
@@ -138,9 +150,9 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
                     />
 
                     <div className="text-center">
-                        <DocumentIcon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                        <DocumentIcon className="mx-auto mb-2 h-8 w-8 text-gray-400" />
                         <p className="text-sm font-medium">{label}</p>
-                        <p className="text-xs text-gray-500 mt-1">{description}</p>
+                        <p className="mt-1 text-xs text-gray-500">{description}</p>
                     </div>
                 </div>
 
@@ -150,12 +162,12 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
                         {files.map((file, index) => (
                             <div
                                 key={index}
-                                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                                className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
                             >
                                 <div className="flex items-center space-x-3 space-x-reverse">
                                     {getFileIcon(file.name)}
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-900 truncate">
+                                    <div className="min-w-0 flex-1">
+                                        <p className="truncate text-sm font-medium text-gray-900">
                                             {file.name}
                                         </p>
                                         <p className="text-xs text-gray-500">
@@ -167,9 +179,9 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
                                     <button
                                         type="button"
                                         onClick={() => onRemoveFile(index)}
-                                        className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                                        className="p-1 text-red-500 transition-colors hover:text-red-700"
                                     >
-                                        <XMarkIcon className="w-4 h-4" />
+                                        <XMarkIcon className="h-4 w-4" />
                                     </button>
                                 )}
                             </div>
@@ -181,6 +193,6 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
     }
 );
 
-FileUpload.displayName = "FileUpload";
+FileUpload.displayName = 'FileUpload';
 
 export { FileUpload, fileUploadVariants };

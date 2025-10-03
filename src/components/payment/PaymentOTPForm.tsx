@@ -1,11 +1,20 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, Box } from "@/components/ui";
+import { useEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    Button,
+    Input,
+    Box,
+} from '@/components/ui';
 import { convertPersianToEnglish } from '@/lib/utils';
-import { otpFormSchema, type PaymentOtpFormData } from "@/lib/schemas/payment";
+import { otpFormSchema, type PaymentOtpFormData } from '@/lib/schemas/payment';
 import { useOtpTimer } from '@/hooks/useOtpTimer';
 
 interface PaymentOTPFormProps {
@@ -23,10 +32,10 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
         handleSubmit,
         setValue,
         watch,
-        formState: { isValid }
+        formState: { isValid },
     } = useForm<PaymentOtpFormData>({
         resolver: zodResolver(otpFormSchema),
-        mode: 'onChange'
+        mode: 'onChange',
     });
 
     const digits = watch(['digit1', 'digit2', 'digit3', 'digit4', 'digit5', 'digit6']);
@@ -69,16 +78,22 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
                         {[0, 1, 2, 3, 4, 5].map((index) => (
                             <Input
                                 key={index}
-                                ref={(el) => { inputRefs.current[index] = el }}
+                                ref={(el) => {
+                                    inputRefs.current[index] = el;
+                                }}
                                 type="text"
                                 maxLength={1}
                                 inputMode="numeric"
                                 dir="ltr"
-                                className="w-10 h-10 text-center text-lg font-bold"
+                                className="h-10 w-10 text-center text-lg font-bold"
                                 value={digits[index] || ''}
                                 onChange={(e) => handleDigitChange(e.target.value, index)}
                                 onKeyDown={(e) => {
-                                    if (e.key === 'Backspace' && !e.currentTarget.value && index > 0) {
+                                    if (
+                                        e.key === 'Backspace' &&
+                                        !e.currentTarget.value &&
+                                        index > 0
+                                    ) {
                                         inputRefs.current[index - 1]?.focus();
                                     }
                                 }}
@@ -86,12 +101,17 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
                         ))}
                     </Box>
 
-                    <Box className="flex gap-4 items-center">
-                        <div className="flex-1 flex items-center justify-center">
+                    <Box className="flex items-center gap-4">
+                        <div className="flex flex-1 items-center justify-center">
                             {secondsLeft > 0 ? (
                                 <div
                                     className="text-sm text-gray-500"
-                                    style={{ minWidth: 140, fontVariantNumeric: 'tabular-nums', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace' }}
+                                    style={{
+                                        minWidth: 140,
+                                        fontVariantNumeric: 'tabular-nums',
+                                        fontFamily:
+                                            'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
+                                    }}
                                 >
                                     ارسال مجدد رمز در {formatTime()}
                                 </div>
@@ -103,7 +123,12 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
                                         reset(120);
                                     }}
                                     className="text-primary"
-                                    style={{ background: 'transparent', border: 'none', padding: 0, minWidth: 140 }}
+                                    style={{
+                                        background: 'transparent',
+                                        border: 'none',
+                                        padding: 0,
+                                        minWidth: 140,
+                                    }}
                                     aria-label="ارسال مجدد رمز"
                                 >
                                     ارسال مجدد رمز

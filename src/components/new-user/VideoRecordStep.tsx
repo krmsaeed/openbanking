@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
-import { VideoRecorder } from "@/components/new-user/VideoRecorder";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { VideoRecorder } from '@/components/new-user/VideoRecorder';
 
 export function VideoRecordStep() {
     return (

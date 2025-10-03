@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useRef, useCallback, useEffect } from "react";
-import { CameraIcon, ArrowPathIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Button } from "../ui/core/Button";
-import LoadingButton from "../ui/core/LoadingButton";
-import { Box, Typography } from "../ui/core";
-import Image from "next/image";
-import { useUser } from "@/contexts/UserContext";
-import axios from "axios";
-import toast from "react-hot-toast";
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { CameraIcon, ArrowPathIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Button } from '../ui/core/Button';
+import LoadingButton from '../ui/core/LoadingButton';
+import { Box, Typography } from '../ui/core';
+import Image from 'next/image';
+import { useUser } from '@/contexts/UserContext';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 export default function CameraSelfie() {
-    const { userData, setUserData } = useUser()
+    const { userData, setUserData } = useUser();
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const procCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -142,13 +142,7 @@ export default function CameraSelfie() {
             gl.bindVertexArray(vao);
 
             const verts = new Float32Array([
-
-                -1, -1, 0, 0,
-                1, -1, 1, 0,
-                -1, 1, 0, 1,
-                -1, 1, 0, 1,
-                1, -1, 1, 0,
-                1, 1, 1, 1
+                -1, -1, 0, 0, 1, -1, 1, 0, -1, 1, 0, 1, -1, 1, 0, 1, 1, -1, 1, 0, 1, 1, 1, 1,
             ]);
             const vbo = gl.createBuffer();
             webglVboRef.current = vbo;
@@ -173,13 +167,29 @@ export default function CameraSelfie() {
 
             const targetTex = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D, targetTex);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, PROC_W, PROC_H, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+            gl.texImage2D(
+                gl.TEXTURE_2D,
+                0,
+                gl.RGBA,
+                PROC_W,
+                PROC_H,
+                0,
+                gl.RGBA,
+                gl.UNSIGNED_BYTE,
+                null
+            );
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
             const fbo = gl.createFramebuffer();
             gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, targetTex, 0);
+            gl.framebufferTexture2D(
+                gl.FRAMEBUFFER,
+                gl.COLOR_ATTACHMENT0,
+                gl.TEXTURE_2D,
+                targetTex,
+                0
+            );
 
             webglTexRef.current = tex;
             webglFboRef.current = fbo;
@@ -204,7 +214,13 @@ export default function CameraSelfie() {
         }
 
         const gl = glRef.current;
-        if (gl && procCanvasRef.current && webglProgRef.current && webglTexRef.current && webglFboRef.current) {
+        if (
+            gl &&
+            procCanvasRef.current &&
+            webglProgRef.current &&
+            webglTexRef.current &&
+            webglFboRef.current
+        ) {
             try {
                 gl.bindFramebuffer(gl.FRAMEBUFFER, webglFboRef.current);
                 gl.viewport(0, 0, PROC_W, PROC_H);
@@ -220,7 +236,6 @@ export default function CameraSelfie() {
                 const loc = gl.getUniformLocation(webglProgRef.current as WebGLProgram, 'u_tex');
                 gl.uniform1i(loc, 0);
                 gl.drawArrays(gl.TRIANGLES, 0, 6);
-
 
                 const readBuf = new Uint8Array(PROC_W * PROC_H * 4);
                 gl.readPixels(0, 0, PROC_W, PROC_H, gl.RGBA, gl.UNSIGNED_BYTE, readBuf);
@@ -248,8 +263,14 @@ export default function CameraSelfie() {
                         const dy = y - faceRadius;
                         const distance = Math.sqrt(dx * dx + dy * dy);
                         if (distance <= faceRadius) {
-                            const px = Math.max(0, Math.min(PROC_W - 1, Math.floor(faceX - faceRadius + x)));
-                            const py = Math.max(0, Math.min(PROC_H - 1, Math.floor(faceY - faceRadius + y)));
+                            const px = Math.max(
+                                0,
+                                Math.min(PROC_W - 1, Math.floor(faceX - faceRadius + x))
+                            );
+                            const py = Math.max(
+                                0,
+                                Math.min(PROC_H - 1, Math.floor(faceY - faceRadius + y))
+                            );
                             const i = (py * PROC_W + px) * 4;
                             const r = readBuf[i];
                             const g = readBuf[i + 1];
@@ -257,7 +278,8 @@ export default function CameraSelfie() {
                             const gray = (r + g + b) / 3;
                             circularPixelCount++;
                             avgBrightness += gray;
-                            if (r > g && r > b && r > 80 && g > 50 && g < 180 && b > 30 && b < 150) skinPixels++;
+                            if (r > g && r > b && r > 80 && g > 50 && g < 180 && b > 30 && b < 150)
+                                skinPixels++;
                             if (gray < 60) {
                                 const isUpperHalf = y < faceRadius;
                                 if (isUpperHalf) {
@@ -270,10 +292,19 @@ export default function CameraSelfie() {
                             const eyeUpperBound = faceRadius * 0.7;
                             let localSum = 0;
                             let localCount = 0;
-                            for (let ny = Math.max(0, py - 1); ny <= Math.min(PROC_H - 1, py + 1); ny++) {
-                                for (let nx = Math.max(0, px - 1); nx <= Math.min(PROC_W - 1, px + 1); nx++) {
+                            for (
+                                let ny = Math.max(0, py - 1);
+                                ny <= Math.min(PROC_H - 1, py + 1);
+                                ny++
+                            ) {
+                                for (
+                                    let nx = Math.max(0, px - 1);
+                                    nx <= Math.min(PROC_W - 1, px + 1);
+                                    nx++
+                                ) {
                                     const ni = (ny * PROC_W + nx) * 4;
-                                    localSum += (readBuf[ni] + readBuf[ni + 1] + readBuf[ni + 2]) / 3;
+                                    localSum +=
+                                        (readBuf[ni] + readBuf[ni + 1] + readBuf[ni + 2]) / 3;
                                     localCount++;
                                 }
                             }
@@ -290,9 +321,16 @@ export default function CameraSelfie() {
                             if (isBright || isDark) obstructionPixels++;
                             if (x < faceRadius) {
                                 const mirrorX = cSize - 1 - x;
-                                const mirrorPx = Math.max(0, Math.min(PROC_W - 1, Math.floor(faceX - faceRadius + mirrorX)));
+                                const mirrorPx = Math.max(
+                                    0,
+                                    Math.min(PROC_W - 1, Math.floor(faceX - faceRadius + mirrorX))
+                                );
                                 const mirrorI = (py * PROC_W + mirrorPx) * 4;
-                                const mirrorGray = (readBuf[mirrorI] + readBuf[mirrorI + 1] + readBuf[mirrorI + 2]) / 3;
+                                const mirrorGray =
+                                    (readBuf[mirrorI] +
+                                        readBuf[mirrorI + 1] +
+                                        readBuf[mirrorI + 2]) /
+                                    3;
                                 const diff = Math.abs(gray - mirrorGray);
                                 symmetryScore += (50 - Math.min(diff, 50)) / 50;
                             }
@@ -341,7 +379,10 @@ export default function CameraSelfie() {
                     } else {
                         const minSkin = 0.08;
                         const maxSkin = 0.35;
-                        const raw = Math.max(0, Math.min(1, (boxSkinRatio - minSkin) / (maxSkin - minSkin)));
+                        const raw = Math.max(
+                            0,
+                            Math.min(1, (boxSkinRatio - minSkin) / (maxSkin - minSkin))
+                        );
                         const percent = Math.round(raw * 100);
                         currentClosenessPercent = percent;
                         setClosenessPercent(percent);
@@ -359,27 +400,25 @@ export default function CameraSelfie() {
                 const symmetryFactor = Math.min(symmetryRatio * 2, 1);
                 const obstructionFactor = obstructionRatio < 0.1 ? 1 : 0;
 
-                const confidence = (
+                const confidence =
                     skinFactor * 0.25 +
-                    featureFactor * 0.20 +
-                    eyeFactor * 0.30 +
+                    featureFactor * 0.2 +
+                    eyeFactor * 0.3 +
                     brightnessFactor * 0.15 +
                     symmetryFactor * 0.05 +
-                    obstructionFactor * 0.05
-                );
+                    obstructionFactor * 0.05;
 
                 const MIN_DARK_HALF_RATIO = 0.005;
-                const detected = (
+                const detected =
                     confidence > 0.45 &&
                     obstructionRatio < 0.15 &&
                     centerBoxClose &&
                     skinRatio >= 0.15 &&
-                    symmetryRatio >= 0.40 &&
+                    symmetryRatio >= 0.4 &&
                     eyeRatio >= MIN_EYE_RATIO &&
                     darkUpperRatio >= MIN_DARK_HALF_RATIO &&
                     darkLowerRatio >= MIN_DARK_HALF_RATIO &&
-                    (currentClosenessPercent ?? 0) >= 75
-                );
+                    (currentClosenessPercent ?? 0) >= 75;
 
                 setFaceDetected(detected);
                 setFaceTooFar(!centerBoxClose);
@@ -461,8 +500,16 @@ export default function CameraSelfie() {
                             circularPixelCount++;
                             avgBrightness += gray;
 
-                            if (r > g && r > b && r > 80 && r < 220 &&
-                                g > 50 && g < 180 && b > 30 && b < 150) {
+                            if (
+                                r > g &&
+                                r > b &&
+                                r > 80 &&
+                                r < 220 &&
+                                g > 50 &&
+                                g < 180 &&
+                                b > 30 &&
+                                b < 150
+                            ) {
                                 skinPixels++;
                             }
 
@@ -479,11 +526,20 @@ export default function CameraSelfie() {
                             try {
                                 let localSum = 0;
                                 let localCount = 0;
-                                for (let ny = Math.max(0, y - 1); ny <= Math.min(cSize - 1, y + 1); ny++) {
-                                    for (let nx = Math.max(0, x - 1); nx <= Math.min(cSize - 1, x + 1); nx++) {
+                                for (
+                                    let ny = Math.max(0, y - 1);
+                                    ny <= Math.min(cSize - 1, y + 1);
+                                    ny++
+                                ) {
+                                    for (
+                                        let nx = Math.max(0, x - 1);
+                                        nx <= Math.min(cSize - 1, x + 1);
+                                        nx++
+                                    ) {
                                         const ni = (ny * cSize + nx) * 4;
                                         if (ni < cData.length) {
-                                            localSum += (cData[ni] + cData[ni + 1] + cData[ni + 2]) / 3;
+                                            localSum +=
+                                                (cData[ni] + cData[ni + 1] + cData[ni + 2]) / 3;
                                             localCount++;
                                         }
                                     }
@@ -511,7 +567,9 @@ export default function CameraSelfie() {
                                 const mirrorX = cSize - 1 - x;
                                 const mirrorI = (y * cSize + mirrorX) * 4;
                                 if (mirrorI < cData.length) {
-                                    const mirrorGray = (cData[mirrorI] + cData[mirrorI + 1] + cData[mirrorI + 2]) / 3;
+                                    const mirrorGray =
+                                        (cData[mirrorI] + cData[mirrorI + 1] + cData[mirrorI + 2]) /
+                                        3;
                                     const diff = Math.abs(gray - mirrorGray);
                                     symmetryScore += (50 - Math.min(diff, 50)) / 50;
                                 }
@@ -562,7 +620,10 @@ export default function CameraSelfie() {
                 } else {
                     const minSkin = 0.08;
                     const maxSkin = 0.35;
-                    const raw = Math.max(0, Math.min(1, (boxSkinRatio - minSkin) / (maxSkin - minSkin)));
+                    const raw = Math.max(
+                        0,
+                        Math.min(1, (boxSkinRatio - minSkin) / (maxSkin - minSkin))
+                    );
                     const percent = Math.round(raw * 100);
                     currentClosenessPercent = percent;
                     setClosenessPercent(percent);
@@ -570,7 +631,6 @@ export default function CameraSelfie() {
                     else centerBoxClose = true;
                 }
                 setFaceTooFar(!centerBoxClose);
-
             } catch {
                 centerBoxClose = true;
             }
@@ -582,27 +642,25 @@ export default function CameraSelfie() {
             const symmetryFactor = Math.min(symmetryRatio * 2, 1);
             const obstructionFactor = obstructionRatio < 0.1 ? 1 : 0;
 
-            const confidence = (
+            const confidence =
                 skinFactor * 0.25 +
-                featureFactor * 0.20 +
-                eyeFactor * 0.30 +
+                featureFactor * 0.2 +
+                eyeFactor * 0.3 +
                 brightnessFactor * 0.15 +
                 symmetryFactor * 0.05 +
-                obstructionFactor * 0.05
-            );
+                obstructionFactor * 0.05;
 
             const MIN_DARK_HALF_RATIO = 0.005;
-            const detected = (
+            const detected =
                 confidence > 0.45 &&
                 obstructionRatio < 0.15 &&
                 centerBoxClose &&
                 skinRatio >= 0.15 &&
-                symmetryRatio >= 0.40 &&
+                symmetryRatio >= 0.4 &&
                 eyeRatio >= MIN_EYE_RATIO &&
                 darkUpperRatio >= MIN_DARK_HALF_RATIO &&
                 darkLowerRatio >= MIN_DARK_HALF_RATIO &&
-                (currentClosenessPercent ?? 0) >= 75
-            );
+                (currentClosenessPercent ?? 0) >= 75;
             setFaceDetected(detected);
             setFaceTooFar(!centerBoxClose);
             setObstructionRatio(obstructionRatio);
@@ -647,16 +705,16 @@ export default function CameraSelfie() {
 
         try {
             if (stream) {
-                stream.getTracks().forEach(track => track.stop());
+                stream.getTracks().forEach((track) => track.stop());
             }
 
             const mediaStream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     facingMode: 'user',
                     width: { ideal: 640, min: 480 },
-                    height: { ideal: 480, min: 360 }
+                    height: { ideal: 480, min: 360 },
                 },
-                audio: false
+                audio: false,
             });
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
@@ -664,15 +722,12 @@ export default function CameraSelfie() {
 
                 try {
                     initWebGL();
-                } catch {
-
-                }
+                } catch {}
 
                 const video = videoRef.current;
 
                 const handleCanPlay = () => {
-                    video.play().catch(() => {
-                    });
+                    video.play().catch(() => {});
                 };
 
                 if (video.readyState >= 3) {
@@ -683,11 +738,12 @@ export default function CameraSelfie() {
             }
         } catch (err) {
             if (err instanceof Error) {
-                const errorMessage = err.name === 'NotAllowedError'
-                    ? 'دسترسی به دوربین رد شد. لطفاً دسترسی را اجازه دهید.'
-                    : err.name === 'NotFoundError'
-                        ? 'دوربین یافت نشد. لطفاً از وجود دوربین اطمینان حاصل کنید.'
-                        : 'خطا در دسترسی به دوربین. لطفاً دوباره تلاش کنید.';
+                const errorMessage =
+                    err.name === 'NotAllowedError'
+                        ? 'دسترسی به دوربین رد شد. لطفاً دسترسی را اجازه دهید.'
+                        : err.name === 'NotFoundError'
+                          ? 'دوربین یافت نشد. لطفاً از وجود دوربین اطمینان حاصل کنید.'
+                          : 'خطا در دسترسی به دوربین. لطفاً دوباره تلاش کنید.';
                 setError(errorMessage);
             }
         }
@@ -695,7 +751,7 @@ export default function CameraSelfie() {
 
     const stopCamera = useCallback(() => {
         if (stream) {
-            stream.getTracks().forEach(track => {
+            stream.getTracks().forEach((track) => {
                 track.stop();
             });
             setStream(null);
@@ -712,9 +768,7 @@ export default function CameraSelfie() {
                 if (webglVaoRef.current) gl.deleteVertexArray(webglVaoRef.current);
                 if (webglVboRef.current) gl.deleteBuffer(webglVboRef.current);
             }
-        } catch {
-
-        }
+        } catch {}
         glRef.current = null;
         webglTexRef.current = null;
         webglFboRef.current = null;
@@ -725,33 +779,35 @@ export default function CameraSelfie() {
         procCanvasRef.current = null;
     }, [stream]);
 
-    const compressImage = useCallback((canvas: HTMLCanvasElement, maxWidth = 800, maxHeight = 600, quality = 0.7): string => {
-        const compressCanvas = document.createElement('canvas');
-        const compressContext = compressCanvas.getContext('2d');
+    const compressImage = useCallback(
+        (canvas: HTMLCanvasElement, maxWidth = 800, maxHeight = 600, quality = 0.7): string => {
+            const compressCanvas = document.createElement('canvas');
+            const compressContext = compressCanvas.getContext('2d');
 
-        if (!compressContext) return canvas.toDataURL('image/jpeg', quality);
+            if (!compressContext) return canvas.toDataURL('image/jpeg', quality);
 
-        let { width, height } = canvas;
+            let { width, height } = canvas;
 
-        if (width > height) {
-            if (width > maxWidth) {
-                height = (height * maxWidth) / width;
-                width = maxWidth;
+            if (width > height) {
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width = (width * maxHeight) / height;
+                    height = maxHeight;
+                }
             }
-        } else {
-            if (height > maxHeight) {
-                width = (width * maxHeight) / height;
-                height = maxHeight;
-            }
-        }
-        compressCanvas.width = width;
-        compressCanvas.height = height;
-        compressContext.drawImage(canvas, 0, 0, width, height);
-        return compressCanvas.toDataURL('image/jpeg', quality);
-    }, []);
+            compressCanvas.width = width;
+            compressCanvas.height = height;
+            compressContext.drawImage(canvas, 0, 0, width, height);
+            return compressCanvas.toDataURL('image/jpeg', quality);
+        },
+        []
+    );
 
     const capturePhoto = useCallback(async () => {
-
         if (!videoRef.current || !canvasRef.current || !stream) {
             console.warn('capturePhoto: missing video/canvas/stream');
             return;
@@ -767,10 +823,9 @@ export default function CameraSelfie() {
 
         try {
             if (video.readyState < 2) {
-                video.play().catch(() => { });
+                video.play().catch(() => {});
             }
-        } catch {
-        }
+        } catch {}
 
         const vw = video.videoWidth || Math.round(video.clientWidth) || 640;
         const vh = video.videoHeight || Math.round(video.clientHeight) || 480;
@@ -791,11 +846,14 @@ export default function CameraSelfie() {
             console.warn('drawImage failed, attempting createImageBitmap fallback', err);
             try {
                 type CreateImageBitmapLike = (src: ImageBitmapSource) => Promise<ImageBitmap>;
-                const cib = (window as unknown as { createImageBitmap?: CreateImageBitmapLike }).createImageBitmap;
+                const cib = (window as unknown as { createImageBitmap?: CreateImageBitmapLike })
+                    .createImageBitmap;
                 if (cib) {
                     const bitmap = await cib(video as unknown as ImageBitmapSource);
                     context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-                    try { bitmap.close?.(); } catch { }
+                    try {
+                        bitmap.close?.();
+                    } catch {}
                 }
             } catch (err2) {
                 console.error('createImageBitmap fallback failed:', err2);
@@ -809,7 +867,6 @@ export default function CameraSelfie() {
         setTimeout(() => {
             stopCamera();
         }, 200);
-
     }, [stream, stopCamera, compressImage]);
     const handleConfirm = async () => {
         if (!capturedPhoto) {
@@ -828,7 +885,6 @@ export default function CameraSelfie() {
 
         const data = new FormData();
         try {
-
             let blob: Blob | null = null;
             try {
                 const res = await fetch(capturedPhoto);
@@ -847,14 +903,13 @@ export default function CameraSelfie() {
                 return;
             }
 
-
             type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
-            const maybe = (globalThis as unknown as MaybeCrypto);
-            const uuid = maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
-                ? maybe.crypto.randomUUID()
-                : Date.now().toString(36);
+            const maybe = globalThis as unknown as MaybeCrypto;
+            const uuid =
+                maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
+                    ? maybe.crypto.randomUUID()
+                    : Date.now().toString(36);
             const filename = `selfie_${uuid}.jpg`;
-
 
             const file = new File([blob], filename, { type: 'image/jpeg' });
 
@@ -862,10 +917,9 @@ export default function CameraSelfie() {
             data.append('files', file);
 
             await axios.post('/api/bpms/deposit-files', data).then((res) => {
-                const { data } = res
+                const { data } = res;
                 setUserData({ ...userData, step: 3, randomText: data.body.randomText });
-            })
-
+            });
         } catch (err) {
             console.error('upload error', err);
             toast.error('آپلود عکس با مشکل مواجه شد');
@@ -873,7 +927,6 @@ export default function CameraSelfie() {
             setIsUploading(false);
         }
     };
-
 
     const retakePhoto = useCallback(() => {
         setCapturedPhoto(null);
@@ -889,7 +942,7 @@ export default function CameraSelfie() {
             }
 
             const playVideo = () => {
-                video.play()
+                video.play();
             };
 
             if (video.readyState >= 2) {
@@ -923,9 +976,7 @@ export default function CameraSelfie() {
                     if (webglVaoRef.current) gl.deleteVertexArray(webglVaoRef.current);
                     if (webglVboRef.current) gl.deleteBuffer(webglVboRef.current);
                 }
-            } catch {
-
-            }
+            } catch {}
             glRef.current = null;
             webglTexRef.current = null;
             webglFboRef.current = null;
@@ -955,33 +1006,48 @@ export default function CameraSelfie() {
                 autoCaptureTimerRef.current = null;
             }
         }
-
-    }, [capturedPhoto, stream, faceDetected, eyesCentered, closenessPercent, obstructionRatio, capturePhoto]);
-
+    }, [
+        capturedPhoto,
+        stream,
+        faceDetected,
+        eyesCentered,
+        closenessPercent,
+        obstructionRatio,
+        capturePhoto,
+    ]);
 
     if (error) {
         return (
-            <Box className="max-w-md mx-auto text-center space-y-4">
-                <Box className="bg-error-50 border border-error-200 rounded-xl p-6">
-                    <CameraIcon className="h-12 w-12 text-error-400 mx-auto mb-4" />
-                    <Typography variant="h3" className="text-lg font-semibold text-error-800 mb-2">خطا در دسترسی به دوربین</Typography>
-                    <Typography variant="body1" className="text-error-700 text-sm mb-4">{error}</Typography>
+            <Box className="mx-auto max-w-md space-y-4 text-center">
+                <Box className="bg-error-50 border-error-200 rounded-xl border p-6">
+                    <CameraIcon className="text-error-400 mx-auto mb-4 h-12 w-12" />
+                    <Typography variant="h3" className="text-error-800 mb-2 text-lg font-semibold">
+                        خطا در دسترسی به دوربین
+                    </Typography>
+                    <Typography variant="body1" className="text-error-700 mb-4 text-sm">
+                        {error}
+                    </Typography>
                     <Box className="space-y-2">
-                        <Typography variant="body1" className="text-xs text-error-600">لطفاً:</Typography>
-                        <ul className="text-xs text-error-600 list-disc list-inside text-right">
+                        <Typography variant="body1" className="text-error-600 text-xs">
+                            لطفاً:
+                        </Typography>
+                        <ul className="text-error-600 list-inside list-disc text-right text-xs">
                             <li>دسترسی دوربین را در تنظیمات مرورگر فعال کنید</li>
                             <li>از https استفاده کنید</li>
                         </ul>
                     </Box>
-                    <Box className="flex space-x-3 space-x-reverse mt-4">
+                    <Box className="mt-4 flex space-x-3 space-x-reverse">
                         <Button onClick={startCamera} size="sm" variant="outline">
                             تلاش مجدد
                         </Button>
 
-                        <Button onClick={() => setUserData({ step: 1 })} size="sm" variant="destructive">
+                        <Button
+                            onClick={() => setUserData({ step: 1 })}
+                            size="sm"
+                            variant="destructive"
+                        >
                             انصراف
                         </Button>
-
                     </Box>
                 </Box>
             </Box>
@@ -990,17 +1056,25 @@ export default function CameraSelfie() {
 
     if (!isClient) {
         return (
-            <Box className="max-w-md mx-auto space-y-4">
-                <Box className="text-center mb-4">
-                    <Typography variant="h2" className="text-xl font-bold text-gray-800">عکس سلفی</Typography>
-                    <Typography variant="body1" className="text-gray-600 text-sm">برای احراز هویت، عکس سلفی خود را بگیرید</Typography>
+            <Box className="mx-auto max-w-md space-y-4">
+                <Box className="mb-4 text-center">
+                    <Typography variant="h2" className="text-xl font-bold text-gray-800">
+                        عکس سلفی
+                    </Typography>
+                    <Typography variant="body1" className="text-sm text-gray-600">
+                        برای احراز هویت، عکس سلفی خود را بگیرید
+                    </Typography>
                 </Box>
-                <Box className="relative bg-black rounded-full overflow-hidden aspect-square w-80 h-80 mx-auto">
-                    <Box className="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center text-white space-y-4">
+                <Box className="relative mx-auto aspect-square h-80 w-80 overflow-hidden rounded-full bg-black">
+                    <Box className="absolute inset-0 flex flex-col items-center justify-center space-y-4 bg-gray-900 text-white">
                         <CameraIcon className="h-16 w-16 text-gray-400" />
                         <Box className="text-center">
-                            <Typography variant="h3" className="text-lg font-semibold mb-2">آماده عکس‌گیری</Typography>
-                            <Typography variant="body1" className="text-sm text-gray-300 mb-4">در حال بارگذاری...</Typography>
+                            <Typography variant="h3" className="mb-2 text-lg font-semibold">
+                                آماده عکس‌گیری
+                            </Typography>
+                            <Typography variant="body1" className="mb-4 text-sm text-gray-300">
+                                در حال بارگذاری...
+                            </Typography>
                         </Box>
                     </Box>
                 </Box>
@@ -1009,46 +1083,44 @@ export default function CameraSelfie() {
     }
 
     return (
-        <Box className="max-w-md mx-auto space-y-4">
-
-            <Box className="relative bg-dark rounded-full overflow-hidden w-70 h-70 mx-auto">
+        <Box className="mx-auto max-w-md space-y-4">
+            <Box className="bg-dark relative mx-auto h-70 w-70 overflow-hidden rounded-full">
                 <video
                     ref={videoRef}
                     autoPlay
                     playsInline
                     muted
-                    className={`absolute top-0 left-0 w-full h-full object-cover transform -scale-x-100 bg-black z-10 ${stream && !capturedPhoto ? 'opacity-100 visible' : 'opacity-0 invisible'
-                        }`}
+                    className={`absolute top-0 left-0 z-10 h-full w-full -scale-x-100 transform bg-black object-cover ${
+                        stream && !capturedPhoto ? 'visible opacity-100' : 'invisible opacity-0'
+                    }`}
                     controls={false}
                     disablePictureInPicture
                     disableRemotePlayback
                 />
 
-                {!capturedPhoto ? (
-                    null
-                ) : (
-                    <Box className="relative w-full h-full z-20">
+                {!capturedPhoto ? null : (
+                    <Box className="relative z-20 h-full w-full">
                         <Image
                             src={capturedPhoto ?? ''}
                             alt="Captured selfie"
-                            className="w-full h-full object-cover rounded-full transform scale-x-100"
+                            className="h-full w-full scale-x-100 transform rounded-full object-cover"
                             width={300}
                             height={300}
                         />
 
-                        <Box className="absolute inset-0 border-2 border-white border-opacity-20 rounded-full pointer-events-none"></Box>
+                        <Box className="border-opacity-20 pointer-events-none absolute inset-0 rounded-full border-2 border-white"></Box>
                     </Box>
                 )}
                 {!capturedPhoto && stream && (
-                    <svg className="absolute inset-0 w-full h-full -rotate-90 z-30 pointer-events-none">
+                    <svg className="pointer-events-none absolute inset-0 z-30 h-full w-full -rotate-90">
                         <circle
                             className="transition-all duration-300"
                             stroke={
                                 closenessPercent === 100 && obstructionRatio < 0.15
                                     ? 'var(--color-success-500)'
                                     : closenessPercent < 80
-                                        ? 'var(--color-error-800)'
-                                        : 'var(--color-warning-500)'
+                                      ? 'var(--color-error-800)'
+                                      : 'var(--color-warning-500)'
                             }
                             strokeWidth="4"
                             fill="none"
@@ -1057,7 +1129,7 @@ export default function CameraSelfie() {
                             cy="50%"
                             style={{
                                 strokeDasharray: `${2 * Math.PI * 49}%`,
-                                strokeDashoffset: `${2 * Math.PI * 49 * (1 - (closenessPercent === 100 && obstructionRatio < 0.15 ? 100 : Math.min(closenessPercent, 95)) / 100)}%`
+                                strokeDashoffset: `${2 * Math.PI * 49 * (1 - (closenessPercent === 100 && obstructionRatio < 0.15 ? 100 : Math.min(closenessPercent, 95)) / 100)}%`,
                             }}
                         />
                     </svg>
@@ -1068,32 +1140,32 @@ export default function CameraSelfie() {
                 <Box className="flex justify-center gap-4">
                     <Button
                         onClick={retakePhoto}
-                        className="w-fu  px-5 py-3 flex items-center justify-center bg-success hover:bg-primary-300"
+                        className="w-fu bg-success hover:bg-primary-300 flex items-center justify-center px-5 py-3"
                     >
                         <ArrowPathIcon className="h-6 w-6 text-white" />
-                        <Typography variant="body1" className=" text-xs font-medium text-white">
+                        <Typography variant="body1" className="text-xs font-medium text-white">
                             عکس جدید
                         </Typography>
                     </Button>
-
-
                 </Box>
             )}
             {!capturedPhoto && stream && closenessPercent <= 80 && (
-                <Box className="text-center space-y-3">
-                    <Typography variant="body1" className={`text-sm font-medium transition-colors duration-300 text-center
-                        ${!faceDetected && "text-red-500"}
-                        ${faceDetected && closenessPercent >= 85 && "text-green-500"}`}>
-                        {!faceDetected && (
-                            faceTooFar ? 'لطفاً نزدیک‌تر بیایید' :
-                                obstructionRatio <= MAX_OBSTRUCTION ? 'عدم وضوح ' :
-                                    eyeFeatureRatio < MIN_EYE_RATIO ? 'لطفاً مطمئن شوید چشم‌ها و ابروها به وضوح دیده می‌شوند' :
-                                        'صورت خود را در مقابل دوربین قرار دهید'
-                        )}
+                <Box className="space-y-3 text-center">
+                    <Typography
+                        variant="body1"
+                        className={`text-center text-sm font-medium transition-colors duration-300 ${!faceDetected && 'text-red-500'} ${faceDetected && closenessPercent >= 85 && 'text-green-500'}`}
+                    >
+                        {!faceDetected &&
+                            (faceTooFar
+                                ? 'لطفاً نزدیک‌تر بیایید'
+                                : obstructionRatio <= MAX_OBSTRUCTION
+                                  ? 'عدم وضوح '
+                                  : eyeFeatureRatio < MIN_EYE_RATIO
+                                    ? 'لطفاً مطمئن شوید چشم‌ها و ابروها به وضوح دیده می‌شوند'
+                                    : 'صورت خود را در مقابل دوربین قرار دهید')}
                     </Typography>
                 </Box>
             )}
-
 
             {!capturedPhoto && stream && (
                 <Box className="flex flex-col items-center space-y-2">
@@ -1106,10 +1178,11 @@ export default function CameraSelfie() {
                             }
                         }}
                         disabled={!(closenessPercent === 100 && obstructionRatio < 0.15)}
-                        className={`px-6 py-3 rounded-lg flex items-center gap-2 transition-all duration-300 font-medium ${closenessPercent === 100 && obstructionRatio < 0.15
-                            ? 'bg-success-500 hover:bg-success-600 text-white shadow-lg hover:shadow-xl active:scale-95 cursor-pointer'
-                            : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-60'
-                            }`}
+                        className={`flex items-center gap-2 rounded-lg px-6 py-3 font-medium transition-all duration-300 ${
+                            closenessPercent === 100 && obstructionRatio < 0.15
+                                ? 'bg-success-500 hover:bg-success-600 cursor-pointer text-white shadow-lg hover:shadow-xl active:scale-95'
+                                : 'cursor-not-allowed bg-gray-400 text-gray-600 opacity-60'
+                        }`}
                     >
                         <CameraIcon className="h-5 w-5" />
                         <Typography variant="body1" className="text-sm font-medium">
@@ -1118,11 +1191,16 @@ export default function CameraSelfie() {
                     </Button>
                 </Box>
             )}
-            <Box className="bg-gray-300  rounded-xl p-4">
+            <Box className="rounded-xl bg-gray-300 p-4">
                 {!capturedPhoto ? (
                     <>
-                        <Typography variant="body1" className="font-semibold text-dark mb-2 text-center">راهنمای عکس سلفی</Typography>
-                        <ul className="text-sm text-dark space-y-1 [&_li]:text-dark">
+                        <Typography
+                            variant="body1"
+                            className="text-dark mb-2 text-center font-semibold"
+                        >
+                            راهنمای عکس سلفی
+                        </Typography>
+                        <ul className="text-dark [&_li]:text-dark space-y-1 text-sm">
                             <li>• صورت خود را کاملاً در قاب قرار دهید</li>
                             <li>• از نور کافی استفاده کنید</li>
                             <li>• عینک آفتابی نداشته باشید</li>
@@ -1132,7 +1210,7 @@ export default function CameraSelfie() {
                         </ul>
                     </>
                 ) : (
-                    <ul className="text-sm text-error-800 space-y-1">
+                    <ul className="text-error-800 space-y-1 text-sm">
                         <li>• عکس خود را بررسی کنید</li>
                         <li>• اگر عکس مناسب است، روی «تایید» کلیک کنید</li>
                         <li>• برای گرفتن عکس جدید، روی «عکس جدید» کلیک کنید</li>
@@ -1140,23 +1218,23 @@ export default function CameraSelfie() {
                 )}
             </Box>
 
-            <Box className="w-full flex gap-2 items-center">
+            <Box className="flex w-full items-center gap-2">
                 <Button
                     onClick={() => setUserData({ step: 1 })}
                     variant="destructive"
-                    className="w-full flex justify-center gapo-3 px-5 py-3 items-center text-white"
+                    className="gapo-3 flex w-full items-center justify-center px-5 py-3 text-white"
                 >
-                    <XMarkIcon className="w-5 h-5 text-white" />
+                    <XMarkIcon className="h-5 w-5 text-white" />
                     انصراف
                 </Button>
                 <LoadingButton
                     onClick={handleConfirm}
                     loading={isUploading}
                     disabled={!capturedPhoto || isUploading}
-                    className="text-white gap-3 px-5 py-3 flex items-center justify-center w-full bg-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-primary flex w-full items-center justify-center gap-3 px-5 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {!isUploading && <CheckIcon className="h-5 w-5" />}
-                    <Typography variant="body1" className="text-white text-xs font-medium">
+                    <Typography variant="body1" className="text-xs font-medium text-white">
                         {isUploading ? 'در حال ارسال...' : 'تایید'}
                     </Typography>
                 </LoadingButton>

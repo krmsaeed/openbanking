@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 import {
     firstNameSchema,
     lastNameSchema,
@@ -7,58 +7,60 @@ import {
     birthDateSchema,
     postalCodeSchema,
     passwordSchema,
-    otpSchema
-} from "./personal";
+    otpSchema,
+} from './personal';
 
 export const step1Schema = z.object({
     firstName: firstNameSchema,
     lastName: lastNameSchema,
     nationalCode: nationalCodeSchema,
     phoneNumber: phoneNumberSchema,
-    email: z.string().email("ایمیل معتبر وارد کنید").optional().or(z.literal(''))
+    email: z.string().email('ایمیل معتبر وارد کنید').optional().or(z.literal('')),
 });
 
 export const step2Schema = z.object({
     birthDate: birthDateSchema,
-    postalCode: postalCodeSchema
+    postalCode: postalCodeSchema,
 });
 
 export const step3Schema = z.object({
     nationalCardPhoto: z.instanceof(File).refine((file) => file instanceof File, {
-        message: "عکس کارت ملی اجباری است"
-    })
+        message: 'عکس کارت ملی اجباری است',
+    }),
 });
 
 export const step4Schema = z.object({
     selfiePhoto: z.instanceof(File).refine((file) => file instanceof File, {
-        message: "عکس سلفی اجباری است"
-    })
+        message: 'عکس سلفی اجباری است',
+    }),
 });
 
 export const step5Schema = z.object({
     videoFile: z.instanceof(File).refine((file) => file instanceof File, {
-        message: "فیلم احراز هویت اجباری است"
-    })
+        message: 'فیلم احراز هویت اجباری است',
+    }),
 });
 
-export const step6Schema = z.object({
-    password: passwordSchema,
-    confirmPassword: z.string("تایید رمز عبور اجباری است")
-}).refine((data) => data.password === data.confirmPassword, {
-    message: "رمز عبور و تایید آن باید یکسان باشد",
-    path: ["confirmPassword"],
-});
+export const step6Schema = z
+    .object({
+        password: passwordSchema,
+        confirmPassword: z.string('تایید رمز عبور اجباری است'),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: 'رمز عبور و تایید آن باید یکسان باشد',
+        path: ['confirmPassword'],
+    });
 
 export const step7Schema = z.object({
-    otp: otpSchema
+    otp: otpSchema,
 });
 
 export const step8Schema = z.object({
-    otp: otpSchema
+    otp: otpSchema,
 });
 
 export const step9Schema = z.object({
-    digitalSignature: z.boolean()
+    digitalSignature: z.boolean(),
 });
 
 export type Step1Data = z.infer<typeof step1Schema>;

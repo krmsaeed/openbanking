@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { CreditCardIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
-import { Button, Card, CardHeader, CardContent, Loading, Box, Typography } from "@/components/ui";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { CreditCardIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import { Button, Card, CardHeader, CardContent, Loading, Box, Typography } from '@/components/ui';
 
 export default function CreditAssessmentPayment() {
     const router = useRouter();
@@ -16,36 +16,49 @@ export default function CreditAssessmentPayment() {
         const amount = amountTomans;
         setTimeout(() => {
             setLoading(false);
-            router.push(`/payment/gateway?amount=${amount}&merchant=${encodeURIComponent("پرداخت نوین")}`);
+            router.push(
+                `/payment/gateway?amount=${amount}&merchant=${encodeURIComponent('پرداخت نوین')}`
+            );
         }, 600);
     };
 
     return (
-        <Box className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-            <Box className="max-w-md w-full">
+        <Box className="flex min-h-screen items-center justify-center bg-gray-50 p-6">
+            <Box className="w-full max-w-md">
                 <Card padding="lg">
                     <CardHeader>
-                        <Box className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <Box className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600">
                             <CreditCardIcon className="h-6 w-6 text-white" />
                         </Box>
-                        <Typography variant="h6" className="text-center">پرداخت هزینه اعتبارسنجی</Typography>
+                        <Typography variant="h6" className="text-center">
+                            پرداخت هزینه اعتبارسنجی
+                        </Typography>
                         <Typography variant="body2" color="secondary" className="text-center">
                             برای ادامه استفاده از خدمات، لطفاً هزینه اعتبارسنجی را پرداخت کنید
                         </Typography>
                     </CardHeader>
                     <CardContent>
                         <Box className="space-y-6">
-                            <Box className="p-4 bg-white rounded-xl border border-gray-200">
+                            <Box className="rounded-xl border border-gray-200 bg-white p-4">
                                 <Box className="flex items-center justify-between">
                                     <Box>
-                                        <Typography variant="caption" color="secondary">مبلغ قابل پرداخت</Typography>
-                                        <Typography variant="h4" className="text-gray-900 mt-1">
-                                            {amountTomans.toLocaleString("fa-IR")} <Typography as="span" variant="body2">تومان</Typography>
+                                        <Typography variant="caption" color="secondary">
+                                            مبلغ قابل پرداخت
+                                        </Typography>
+                                        <Typography variant="h4" className="mt-1 text-gray-900">
+                                            {amountTomans.toLocaleString('fa-IR')}{' '}
+                                            <Typography as="span" variant="body2">
+                                                تومان
+                                            </Typography>
                                         </Typography>
                                     </Box>
-                                    <ShieldCheckIcon className="w-8 h-8 text-emerald-600" />
+                                    <ShieldCheckIcon className="h-8 w-8 text-emerald-600" />
                                 </Box>
-                                <Typography variant="caption" color="secondary" className="mt-3 block">
+                                <Typography
+                                    variant="caption"
+                                    color="secondary"
+                                    className="mt-3 block"
+                                >
                                     پرداخت امن از طریق درگاه بانکی انجام می‌شود.
                                 </Typography>
                             </Box>
@@ -62,7 +75,7 @@ export default function CreditAssessmentPayment() {
 
                             <Button
                                 variant="ghost"
-                                onClick={() => router.push("/login")}
+                                onClick={() => router.push('/login')}
                                 className="w-full"
                             >
                                 انصراف

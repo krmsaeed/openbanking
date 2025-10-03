@@ -23,7 +23,9 @@ export const base64ToBlob = (base64: string, mimeType: string): Blob => {
     return new Blob([byteArray], { type: mimeType });
 };
 
-export const submitVerificationData = async (data: VerificationData): Promise<{
+export const submitVerificationData = async (
+    data: VerificationData
+): Promise<{
     success: boolean;
     message: string;
     referenceId?: string;
@@ -46,8 +48,7 @@ export const submitVerificationData = async (data: VerificationData): Promise<{
         const response = await fetch('/api/verification', {
             method: 'POST',
             body: formData,
-            headers: {
-            }
+            headers: {},
         });
 
         const result = await response.json();
@@ -56,19 +57,18 @@ export const submitVerificationData = async (data: VerificationData): Promise<{
             return {
                 success: true,
                 message: 'اطلاعات با موفقیت ارسال شد',
-                referenceId: result.referenceId
+                referenceId: result.referenceId,
             };
         } else {
             return {
                 success: false,
-                message: result.message || 'خطا در ارسال اطلاعات'
+                message: result.message || 'خطا در ارسال اطلاعات',
             };
         }
-
     } catch {
         return {
             success: false,
-            message: 'خطا در ارتباط با سرور'
+            message: 'خطا در ارتباط با سرور',
         };
     }
 };
@@ -91,7 +91,9 @@ export const validateSignature = (signatureCanvas: HTMLCanvasElement): boolean =
     return false;
 };
 
-export const validateVideo = (videoBlob: Blob): {
+export const validateVideo = (
+    videoBlob: Blob
+): {
     isValid: boolean;
     duration?: number;
     size: number;
@@ -101,7 +103,7 @@ export const validateVideo = (videoBlob: Blob): {
 
     return {
         isValid: videoBlob.size >= minSize && videoBlob.size <= maxSize,
-        size: videoBlob.size
+        size: videoBlob.size,
     };
 };
 
@@ -129,6 +131,6 @@ export const checkBrowserSupport = (): {
     return {
         mediaRecorder: typeof MediaRecorder !== 'undefined',
         getUserMedia: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
-        canvas: !!(document.createElement('canvas').getContext)
+        canvas: !!document.createElement('canvas').getContext,
     };
 };

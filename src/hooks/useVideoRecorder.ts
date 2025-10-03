@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
-import axios from "axios";
-import toast from "react-hot-toast";
-import { useUser } from "@/contexts/UserContext";
+import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useUser } from '@/contexts/UserContext';
 
 interface UseVideoRecorderOptions {
     processId?: string | number | null;
@@ -28,7 +28,7 @@ type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
 
 export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRecorderResult {
     const { processId, onSuccess } = options;
-    const { setUserData } = useUser()
+    const { setUserData } = useUser();
     const [isRecording, setIsRecording] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
     const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -52,8 +52,8 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
                 setCameraActive(true);
             }
         } catch (err) {
-            console.warn("camera access failed", err);
-            toast.error("دسترسی به دوربین امکان‌پذیر نیست");
+            console.warn('camera access failed', err);
+            toast.error('دسترسی به دوربین امکان‌پذیر نیست');
         }
     }, []);
 
@@ -87,8 +87,10 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
             };
 
             mediaRecorder.onstop = () => {
-                const blob = new Blob(recordedChunksRef.current, { type: "video/webm" });
-                const file = new File([blob], `verification_video_${Date.now()}.webm`, { type: "video/webm" });
+                const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+                const file = new File([blob], `verification_video_${Date.now()}.webm`, {
+                    type: 'video/webm',
+                });
                 const url = URL.createObjectURL(blob);
                 setVideoPreviewUrl(url);
                 setTimeout(() => setVideoFile(file), 100);
@@ -99,8 +101,8 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
             setIsRecording(true);
             setRecordingTime(30);
         } catch (error) {
-            console.error("Error starting recording:", error);
-            toast.error("خطا در شروع ضبط");
+            console.error('Error starting recording:', error);
+            toast.error('خطا در شروع ضبط');
         }
     }, []);
 
@@ -124,7 +126,7 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
             }
 
             setCameraActive(false);
-            toast.success("ضبط ویدیو متوقف شد و دوربین خاموش شد");
+            toast.success('ضبط ویدیو متوقف شد و دوربین خاموش شد');
         }
     }, [isRecording]);
 
@@ -147,7 +149,7 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
     const handleUpload = useCallback(async () => {
         if (!videoFile) return;
         if (!processId) {
-            toast.error("شناسه فرآیند یافت نشد");
+            toast.error('شناسه فرآیند یافت نشد');
             return;
         }
 
@@ -159,36 +161,40 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
         if (videoRef.current) {
             videoRef.current.srcObject = null;
         }
-        const maybe = (globalThis as unknown as MaybeCrypto);
-        const uuid = maybe?.crypto && typeof maybe.crypto.randomUUID === "function"
-            ? maybe.crypto.randomUUID()
-            : Date.now().toString(36);
+        const maybe = globalThis as unknown as MaybeCrypto;
+        const uuid =
+            maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
+                ? maybe.crypto.randomUUID()
+                : Date.now().toString(36);
         const videoName = `verification_video_${uuid}.webm`;
-        const video = new File([videoFile], videoName, { type: "video/webm" });
+        const video = new File([videoFile], videoName, { type: 'video/webm' });
 
         const body = {
-            serviceName: "virtual-open-deposit",
+            serviceName: 'virtual-open-deposit',
             processId,
-            formName: "ImageInquiry",
+            formName: 'ImageInquiry',
             body: {},
         };
 
         const data = new FormData();
-        data.append("messageDTO", JSON.stringify(body));
-        data.append("files", video);
+        data.append('messageDTO', JSON.stringify(body));
+        data.append('files', video);
 
         setCameraActive(false);
         setIsUploading(true);
 
-        await axios.post("/api/bpms/deposit-files", data).then((res) => {
-            const { data } = res
-            if (data?.body?.verified) {
-                setUserData({ step: 4 })
-                onSuccess?.();
-            }
-        }).finally(() => {
-            setIsUploading(false);
-        });
+        await axios
+            .post('/api/bpms/deposit-files', data)
+            .then((res) => {
+                const { data } = res;
+                if (data?.body?.verified) {
+                    setUserData({ step: 4 });
+                    onSuccess?.();
+                }
+            })
+            .finally(() => {
+                setIsUploading(false);
+            });
     }, [processId, videoFile, onSuccess, setUserData]);
 
     const handleRetake = useCallback(() => {
@@ -209,7 +215,7 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
             setVideoPreviewUrl(null);
         }
 
-        toast.success("آماده برای ضبط مجدد");
+        toast.success('آماده برای ضبط مجدد');
         void startCamera();
     }, [videoPreviewUrl, startCamera]);
 

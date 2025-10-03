@@ -1,8 +1,12 @@
-
-"use client"
-import React, { createContext, useContext } from "react";
-import toast, { Toaster, Toast } from "react-hot-toast";
-import { CheckCircleIcon, XCircleIcon, ExclamationTriangleIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
+'use client';
+import React, { createContext, useContext } from 'react';
+import toast, { Toaster, Toast } from 'react-hot-toast';
+import {
+    CheckCircleIcon,
+    XCircleIcon,
+    ExclamationTriangleIcon,
+    InformationCircleIcon,
+} from '@heroicons/react/24/solid';
 
 interface ToastContextType {
     success: (message: string, options?: object) => void;
@@ -18,17 +22,20 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export const useToast = () => {
     const context = useContext(ToastContext);
     if (!context) {
-        throw new Error("useToast must be used within a ToastProvider");
+        throw new Error('useToast must be used within a ToastProvider');
     }
     return context;
 };
 
-const CustomToast: React.FC<{ t: Toast; type: 'success' | 'error' | 'warning' | 'info' }> = ({ t, type }) => {
+const CustomToast: React.FC<{ t: Toast; type: 'success' | 'error' | 'warning' | 'info' }> = ({
+    t,
+    type,
+}) => {
     const icons = {
-        success: <CheckCircleIcon className="w-5 h-5 text-[var(--color-success-500)]" />,
-        error: <XCircleIcon className="w-5 h-5 text-[var(--color-error-500)]" />,
-        warning: <ExclamationTriangleIcon className="w-5 h-5 text-[var(--color-warning-500)]" />,
-        info: <InformationCircleIcon className="w-5 h-5 text-[var(--color-info-500)]" />,
+        success: <CheckCircleIcon className="h-5 w-5 text-[var(--color-success-500)]" />,
+        error: <XCircleIcon className="h-5 w-5 text-[var(--color-error-500)]" />,
+        warning: <ExclamationTriangleIcon className="h-5 w-5 text-[var(--color-warning-500)]" />,
+        info: <InformationCircleIcon className="h-5 w-5 text-[var(--color-info-500)]" />,
     };
 
     const colors = {
@@ -40,8 +47,9 @@ const CustomToast: React.FC<{ t: Toast; type: 'success' | 'error' | 'warning' | 
 
     return (
         <div
-            className={`${t.visible ? 'animate-enter' : 'animate-leave'
-                } flex items-center p-4 rounded-xl border ${colors[type]} shadow-lg max-w-md`}
+            className={`${
+                t.visible ? 'animate-enter' : 'animate-leave'
+            } flex items-center rounded-xl border p-4 ${colors[type]} max-w-md shadow-lg`}
         >
             <div className="flex items-center space-x-3 space-x-reverse">
                 {icons[type]}
@@ -51,9 +59,9 @@ const CustomToast: React.FC<{ t: Toast; type: 'success' | 'error' | 'warning' | 
             </div>
             <button
                 onClick={() => toast.dismiss(t.id)}
-                className="mr-auto text-gray-400 hover:text-gray-600 transition-colors"
+                className="mr-auto text-gray-400 transition-colors hover:text-gray-600"
             >
-                <XCircleIcon className="w-5 h-5" />
+                <XCircleIcon className="h-5 w-5" />
             </button>
         </div>
     );

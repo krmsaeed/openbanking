@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
-import { SelfieCapture } from "@/components/ui/specialized/SelfieCapture";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { SelfieCapture } from '@/components/ui/specialized/SelfieCapture';
 
 interface SelfieStepProps {
     onNext: (file: File) => void;
@@ -15,7 +15,10 @@ export function SelfieStep({ onNext, onBack }: SelfieStepProps) {
                 <CardTitle>گرفتن سلفی</CardTitle>
             </CardHeader>
             <CardContent>
-                <SelfieCapture onComplete={(file) => onNext(file)} onCancel={onBack || (() => { })} />
+                <SelfieCapture
+                    onComplete={(file) => onNext(file)}
+                    onCancel={onBack || (() => {})}
+                />
             </CardContent>
         </Card>
     );

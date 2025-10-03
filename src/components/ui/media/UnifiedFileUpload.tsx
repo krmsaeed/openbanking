@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { forwardRef, useCallback, useState, useRef, useEffect, useId } from "react";
-import Image from "next/image";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
-import toast from "react-hot-toast";
+import { forwardRef, useCallback, useState, useRef, useEffect, useId } from 'react';
+import Image from 'next/image';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
+import toast from 'react-hot-toast';
 import {
     DocumentIcon,
     PhotoIcon,
@@ -14,36 +14,36 @@ import {
     VideoCameraIcon,
     PlayIcon,
     PauseIcon,
-    StopIcon
-} from "@heroicons/react/24/outline";
-import { Button } from "../core/Button";
-import { Box, Typography } from "../core";
+    StopIcon,
+} from '@heroicons/react/24/outline';
+import { Button } from '../core/Button';
+import { Box, Typography } from '../core';
 
 const fileUploadVariants = cva(
-    "relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors cursor-pointer hover:bg-gray-50",
+    'relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors cursor-pointer hover:bg-gray-50',
     {
         variants: {
             variant: {
-                default: "border-gray-300 text-gray-600",
-                error: "border-red-300 text-red-600 bg-red-50",
-                success: "border-green-300 text-green-600 bg-green-50",
+                default: 'border-gray-300 text-gray-600',
+                error: 'border-red-300 text-red-600 bg-red-50',
+                success: 'border-green-300 text-green-600 bg-green-50',
             },
             size: {
-                sm: "p-4 h-24",
-                md: "p-6 h-32",
-                lg: "p-8 h-40",
+                sm: 'p-4 h-24',
+                md: 'p-6 h-32',
+                lg: 'p-8 h-40',
             },
         },
         defaultVariants: {
-            variant: "default",
-            size: "md",
+            variant: 'default',
+            size: 'md',
         },
     }
 );
 
 export interface UnifiedFileUploadProps
     extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'>,
-    VariantProps<typeof fileUploadVariants> {
+        VariantProps<typeof fileUploadVariants> {
     onFileSelect?: (files: FileList | null) => void;
     accept?: string;
     multiple?: boolean;
@@ -59,24 +59,27 @@ export interface UnifiedFileUploadProps
 }
 
 const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
-    ({
-        className,
-        variant,
-        size,
-        onFileSelect,
-        accept = "image/*,application/pdf",
-        multiple = false,
-        maxFiles = 5,
-        maxSizeMB = 10,
-        files = [],
-        onRemoveFile,
-        label = "فایل‌ها را اینجا بکشید یا کلیک کنید",
-        description = "PNG، JPG یا PDF تا 10MB",
-        enableCamera = false,
-        enableVideo = false,
-        showPreview = true,
-        ...props
-    }, ref) => {
+    (
+        {
+            className,
+            variant,
+            size,
+            onFileSelect,
+            accept = 'image/*,application/pdf',
+            multiple = false,
+            maxFiles = 5,
+            maxSizeMB = 10,
+            files = [],
+            onRemoveFile,
+            label = 'فایل‌ها را اینجا بکشید یا کلیک کنید',
+            description = 'PNG، JPG یا PDF تا 10MB',
+            enableCamera = false,
+            enableVideo = false,
+            showPreview = true,
+            ...props
+        },
+        ref
+    ) => {
         const [dragOver, setDragOver] = useState(false);
         const [showCamera, setShowCamera] = useState(false);
         const [isRecording, setIsRecording] = useState(false);
@@ -86,7 +89,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
         const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
         const reactId = useId();
-        const inputId = props.id || `file-input-${reactId.replace(/:/g, "-")}`;
+        const inputId = props.id || `file-input-${reactId.replace(/:/g, '-')}`;
 
         const videoRef = useRef<HTMLVideoElement>(null);
         const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -97,11 +100,13 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
 
         useEffect(() => {
             if (showPreview) {
-                const urls = files.map(file => isImageFile(file) ? URL.createObjectURL(file) : '');
+                const urls = files.map((file) =>
+                    isImageFile(file) ? URL.createObjectURL(file) : ''
+                );
                 setPreviewUrls(urls);
 
                 return () => {
-                    urls.forEach(url => {
+                    urls.forEach((url) => {
                         if (url) URL.revokeObjectURL(url);
                     });
                 };
@@ -110,40 +115,49 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
 
         const isImageFile = (file: File) => file.type.startsWith('image/');
 
-        const validateFiles = useCallback((selectedFiles: FileList | null): boolean => {
-            if (!selectedFiles) return false;
+        const validateFiles = useCallback(
+            (selectedFiles: FileList | null): boolean => {
+                if (!selectedFiles) return false;
 
-            if (multiple && selectedFiles.length > maxFiles) {
-                toast.error(`حداکثر ${maxFiles} فایل مجاز است`);
-                return false;
-            }
-
-            for (let i = 0; i < selectedFiles.length; i++) {
-                const fileSizeMB = selectedFiles[i].size / (1024 * 1024);
-                if (fileSizeMB > maxSizeMB) {
-                    toast.error(`حجم فایل ${selectedFiles[i].name} بیش از ${maxSizeMB}MB است`);
+                if (multiple && selectedFiles.length > maxFiles) {
+                    toast.error(`حداکثر ${maxFiles} فایل مجاز است`);
                     return false;
                 }
-            }
 
-            return true;
-        }, [multiple, maxFiles, maxSizeMB]);
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    const fileSizeMB = selectedFiles[i].size / (1024 * 1024);
+                    if (fileSizeMB > maxSizeMB) {
+                        toast.error(`حجم فایل ${selectedFiles[i].name} بیش از ${maxSizeMB}MB است`);
+                        return false;
+                    }
+                }
 
-        const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-            const selectedFiles = e.target.files;
-            if (validateFiles(selectedFiles)) {
-                onFileSelect?.(selectedFiles);
-            }
-        }, [onFileSelect, validateFiles]);
+                return true;
+            },
+            [multiple, maxFiles, maxSizeMB]
+        );
 
-        const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-            e.preventDefault();
-            setDragOver(false);
-            const droppedFiles = e.dataTransfer.files;
-            if (validateFiles(droppedFiles)) {
-                onFileSelect?.(droppedFiles);
-            }
-        }, [onFileSelect, validateFiles]);
+        const handleFileChange = useCallback(
+            (e: React.ChangeEvent<HTMLInputElement>) => {
+                const selectedFiles = e.target.files;
+                if (validateFiles(selectedFiles)) {
+                    onFileSelect?.(selectedFiles);
+                }
+            },
+            [onFileSelect, validateFiles]
+        );
+
+        const handleDrop = useCallback(
+            (e: React.DragEvent<HTMLDivElement>) => {
+                e.preventDefault();
+                setDragOver(false);
+                const droppedFiles = e.dataTransfer.files;
+                if (validateFiles(droppedFiles)) {
+                    onFileSelect?.(droppedFiles);
+                }
+            },
+            [onFileSelect, validateFiles]
+        );
 
         const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
             e.preventDefault();
@@ -166,7 +180,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: true,
-                    audio: enableVideo
+                    audio: enableVideo,
                 });
 
                 if (videoRef.current) {
@@ -182,7 +196,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
 
         const stopCamera = () => {
             if (streamRef.current) {
-                streamRef.current.getTracks().forEach(track => track.stop());
+                streamRef.current.getTracks().forEach((track) => track.stop());
                 streamRef.current = null;
             }
             setShowCamera(false);
@@ -207,15 +221,21 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                 if (ctx) {
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                    canvas.toBlob((blob) => {
-                        if (blob) {
-                            const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
-                            const fileList = new DataTransfer();
-                            fileList.items.add(file);
-                            onFileSelect?.(fileList.files);
-                            stopCamera();
-                        }
-                    }, 'image/jpeg', 0.8);
+                    canvas.toBlob(
+                        (blob) => {
+                            if (blob) {
+                                const file = new File([blob], `photo_${Date.now()}.jpg`, {
+                                    type: 'image/jpeg',
+                                });
+                                const fileList = new DataTransfer();
+                                fileList.items.add(file);
+                                onFileSelect?.(fileList.files);
+                                stopCamera();
+                            }
+                        },
+                        'image/jpeg',
+                        0.8
+                    );
                 }
             }
         };
@@ -235,7 +255,9 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
 
                 mediaRecorder.onstop = () => {
                     const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
-                    const file = new File([blob], `video_${Date.now()}.webm`, { type: 'video/webm' });
+                    const file = new File([blob], `video_${Date.now()}.webm`, {
+                        type: 'video/webm',
+                    });
                     const fileList = new DataTransfer();
                     fileList.items.add(file);
                     onFileSelect?.(fileList.files);
@@ -249,7 +271,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                 setRecordingTime(0);
 
                 timerRef.current = setInterval(() => {
-                    setRecordingTime(prev => prev + 1);
+                    setRecordingTime((prev) => prev + 1);
                 }, 1000);
             } catch (error) {
                 console.error('Error starting recording:', error);
@@ -273,7 +295,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                 mediaRecorderRef.current.resume();
                 setIsPaused(false);
                 timerRef.current = setInterval(() => {
-                    setRecordingTime(prev => prev + 1);
+                    setRecordingTime((prev) => prev + 1);
                 }, 1000);
             }
         };
@@ -299,9 +321,9 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
         const getFileIcon = (fileName: string) => {
             const extension = fileName.split('.').pop()?.toLowerCase();
             if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension || '')) {
-                return <PhotoIcon className="w-5 h-5" />;
+                return <PhotoIcon className="h-5 w-5" />;
             }
-            return <DocumentIcon className="w-5 h-5" />;
+            return <DocumentIcon className="h-5 w-5" />;
         };
 
         const formatFileSize = (bytes: number) => {
@@ -315,18 +337,15 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
         if (showCamera) {
             return (
                 <Box>
-                    <Box className="relative bg-black rounded-xl overflow-hidden">
-                        <video
-                            ref={videoRef}
-                            autoPlay
-                            muted
-                            className="w-full h-64 object-cover"
-                        />
+                    <Box className="relative overflow-hidden rounded-xl bg-black">
+                        <video ref={videoRef} autoPlay muted className="h-64 w-full object-cover" />
                         <canvas ref={canvasRef} className="hidden" />
 
                         {isRecording && (
-                            <Box className="absolute top-4 left-4 flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full">
-                                <Box className={`w-2 h-2 rounded-full bg-white ${isPaused ? '' : 'animate-pulse'}`} />
+                            <Box className="absolute top-4 left-4 flex items-center gap-2 rounded-full bg-red-500 px-3 py-1 text-white">
+                                <Box
+                                    className={`h-2 w-2 rounded-full bg-white ${isPaused ? '' : 'animate-pulse'}`}
+                                />
                                 <span className="text-sm font-medium">
                                     {isPaused ? 'متوقف' : 'درحال ضبط'} {formatTime(recordingTime)}
                                 </span>
@@ -337,29 +356,31 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                             onClick={stopCamera}
                             variant="ghost"
                             size="sm"
-                            className="absolute top-4 right-4 bg-black bg-opacity-50 text-white hover:bg-opacity-70"
+                            className="bg-opacity-50 hover:bg-opacity-70 absolute top-4 right-4 bg-black text-white"
                         >
-                            <XMarkIcon className="w-5 h-5" />
+                            <XMarkIcon className="h-5 w-5" />
                         </Button>
 
                         {enableVideo && !isRecording && (
-                            <Box className="absolute top-4 left-1/2 transform -translate-x-1/2">
-                                <Box className="flex bg-black bg-opacity-50 rounded-full p-1">
+                            <Box className="absolute top-4 left-1/2 -translate-x-1/2 transform">
+                                <Box className="bg-opacity-50 flex rounded-full bg-black p-1">
                                     <button
                                         onClick={() => setRecordingMode('photo')}
-                                        className={`px-3 py-1 rounded-full text-sm transition-colors ${recordingMode === 'photo'
-                                            ? 'bg-white text-black'
-                                            : 'text-white hover:bg-white hover:bg-opacity-20'
-                                            }`}
+                                        className={`rounded-full px-3 py-1 text-sm transition-colors ${
+                                            recordingMode === 'photo'
+                                                ? 'bg-white text-black'
+                                                : 'hover:bg-opacity-20 text-white hover:bg-white'
+                                        }`}
                                     >
                                         عکس
                                     </button>
                                     <button
                                         onClick={() => setRecordingMode('video')}
-                                        className={`px-3 py-1 rounded-full text-sm transition-colors ${recordingMode === 'video'
-                                            ? 'bg-white text-black'
-                                            : 'text-white hover:bg-white hover:bg-opacity-20'
-                                            }`}
+                                        className={`rounded-full px-3 py-1 text-sm transition-colors ${
+                                            recordingMode === 'video'
+                                                ? 'bg-white text-black'
+                                                : 'hover:bg-opacity-20 text-white hover:bg-white'
+                                        }`}
                                     >
                                         ویدیو
                                     </button>
@@ -368,13 +389,10 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                         )}
                     </Box>
 
-                    <Box className="flex justify-center gap-4 mt-4">
+                    <Box className="mt-4 flex justify-center gap-4">
                         {recordingMode === 'photo' && !isRecording && (
-                            <Button
-                                onClick={takePhoto}
-                                className="flex items-center gap-2"
-                            >
-                                <CameraIcon className="w-5 h-5" />
+                            <Button onClick={takePhoto} className="flex items-center gap-2">
+                                <CameraIcon className="h-5 w-5" />
                                 گرفتن عکس
                             </Button>
                         )}
@@ -387,7 +405,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                                         variant="destructive"
                                         className="flex items-center gap-2"
                                     >
-                                        <VideoCameraIcon className="w-5 h-5" />
+                                        <VideoCameraIcon className="h-5 w-5" />
                                         شروع ضبط
                                     </Button>
                                 ) : (
@@ -397,7 +415,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                                                 onClick={resumeRecording}
                                                 className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
                                             >
-                                                <PlayIcon className="w-5 h-5" />
+                                                <PlayIcon className="h-5 w-5" />
                                                 ادامه
                                             </Button>
                                         ) : (
@@ -405,7 +423,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                                                 onClick={pauseRecording}
                                                 className="flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700"
                                             >
-                                                <PauseIcon className="w-5 h-5" />
+                                                <PauseIcon className="h-5 w-5" />
                                                 توقف
                                             </Button>
                                         )}
@@ -415,7 +433,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                                             variant="destructive"
                                             className="flex items-center gap-2"
                                         >
-                                            <StopIcon className="w-5 h-5" />
+                                            <StopIcon className="h-5 w-5" />
                                             پایان ضبط
                                         </Button>
                                     </>
@@ -433,7 +451,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                     <Box
                         className={cn(
                             fileUploadVariants({ variant, size, className }),
-                            dragOver && "border-primary-500 bg-primary-50"
+                            dragOver && 'border-primary-500 bg-primary-50'
                         )}
                         onDrop={handleDrop}
                         onDragOver={handleDragOver}
@@ -452,7 +470,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                         />
 
                         <Box className="text-center">
-                            <CloudArrowUpIcon className="w-10 h-10 mx-auto mb-2 text-gray-400" />
+                            <CloudArrowUpIcon className="mx-auto mb-2 h-10 w-10 text-gray-400" />
                             <Typography variant="body2" weight="medium">
                                 {label}
                             </Typography>
@@ -472,7 +490,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                             size="sm"
                             className="flex items-center gap-2"
                         >
-                            <CameraIcon className="w-4 h-4" />
+                            <CameraIcon className="h-4 w-4" />
                             دوربین
                         </Button>
 
@@ -487,7 +505,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                                 size="sm"
                                 className="flex items-center gap-2"
                             >
-                                <VideoCameraIcon className="w-4 h-4" />
+                                <VideoCameraIcon className="h-4 w-4" />
                                 ویدیو
                             </Button>
                         )}
@@ -503,22 +521,22 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                             {files.map((file, index) => (
                                 <Box key={index}>
                                     {isImageFile(file) && showPreview ? (
-                                        <Box className="relative group">
+                                        <Box className="group relative">
                                             <Image
                                                 src={previewUrls[index]}
                                                 alt={`Preview ${index + 1}`}
                                                 width={400}
                                                 height={128}
-                                                className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                                                className="h-32 w-full rounded-lg border border-gray-200 object-cover"
                                             />
-                                            <Box className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                                            <Box className="bg-opacity-50 absolute inset-0 flex items-center justify-center gap-2 rounded-lg bg-black opacity-0 transition-opacity group-hover:opacity-100">
                                                 <Button
                                                     type="button"
                                                     onClick={handleClickUpload}
                                                     size="sm"
-                                                    className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center"
+                                                    className="bg-primary flex h-8 w-8 items-center justify-center rounded-full text-white"
                                                 >
-                                                    <CloudArrowUpIcon className="w-4 h-4" />
+                                                    <CloudArrowUpIcon className="h-4 w-4" />
                                                 </Button>
                                                 {onRemoveFile && (
                                                     <Button
@@ -526,24 +544,28 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                                                         onClick={() => onRemoveFile(index)}
                                                         size="sm"
                                                         variant="destructive"
-                                                        className="rounded-full w-8 h-8 flex items-center justify-center"
+                                                        className="flex h-8 w-8 items-center justify-center rounded-full"
                                                     >
-                                                        <XMarkIcon className="w-4 h-4" />
+                                                        <XMarkIcon className="h-4 w-4" />
                                                     </Button>
                                                 )}
                                             </Box>
-                                            <Box className="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
+                                            <Box className="bg-opacity-70 absolute bottom-2 left-2 rounded bg-black px-2 py-1 text-xs text-white">
                                                 {formatFileSize(file.size)}
                                             </Box>
                                         </Box>
                                     ) : (
-                                        <Box className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                        <Box className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
                                             <Box className="flex items-center gap-3">
-                                                <Box className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
+                                                <Box className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-200">
                                                     {getFileIcon(file.name)}
                                                 </Box>
-                                                <Box className="flex-1 min-w-0">
-                                                    <Typography variant="body2" weight="medium" className="truncate">
+                                                <Box className="min-w-0 flex-1">
+                                                    <Typography
+                                                        variant="body2"
+                                                        weight="medium"
+                                                        className="truncate"
+                                                    >
                                                         {file.name}
                                                     </Typography>
                                                     <Typography variant="caption" color="secondary">
@@ -559,7 +581,7 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                                                     size="sm"
                                                     className="text-red-500 hover:text-red-700"
                                                 >
-                                                    <XMarkIcon className="w-4 h-4" />
+                                                    <XMarkIcon className="h-4 w-4" />
                                                 </Button>
                                             )}
                                         </Box>
@@ -574,6 +596,6 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
     }
 );
 
-UnifiedFileUpload.displayName = "UnifiedFileUpload";
+UnifiedFileUpload.displayName = 'UnifiedFileUpload';
 
 export { UnifiedFileUpload, fileUploadVariants };

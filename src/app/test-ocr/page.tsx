@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import OcrReader from '@/components/Ocr/OcrReader';
 

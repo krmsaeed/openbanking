@@ -1,9 +1,20 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, FormField, Box, Typography } from "@/components/ui";
-import { newUserSchema, type NewUserFormData } from "@/lib/schemas/newUser";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    Button,
+    Input,
+    FormField,
+    Box,
+    Typography,
+} from '@/components/ui';
+import { newUserSchema, type NewUserFormData } from '@/lib/schemas/newUser';
 
 interface UserInfoStepProps {
     onNext: (data: NewUserFormData) => void;
@@ -13,26 +24,24 @@ export function UserInfoStep({ onNext }: UserInfoStepProps) {
     const {
         register,
         handleSubmit,
-        formState: { errors, isValid }
+        formState: { errors, isValid },
     } = useForm<NewUserFormData>({
         resolver: zodResolver(newUserSchema),
-        mode: "onChange",
+        mode: 'onChange',
         defaultValues: {
-            firstName: "",
-            lastName: "",
-            nationalCode: "",
-            mobile: "",
-            email: "",
-            birthDate: "",
+            firstName: '',
+            lastName: '',
+            nationalCode: '',
+            mobile: '',
+            email: '',
+            birthDate: '',
         },
     });
 
     return (
         <Card padding="lg">
             <CardHeader>
-                <CardTitle className="text-center">
-                    ایجاد حساب جدید
-                </CardTitle>
+                <CardTitle className="text-center">ایجاد حساب جدید</CardTitle>
                 <CardDescription className="text-center">
                     اطلاعات پایه خود را وارد کنید
                 </CardDescription>
@@ -40,15 +49,17 @@ export function UserInfoStep({ onNext }: UserInfoStepProps) {
 
             <CardContent>
                 <form onSubmit={handleSubmit(onNext)} className="space-y-6">
-                    <Box className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Box className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <FormField label="نام" required>
                             <Input
                                 type="text"
                                 placeholder="نام خود را وارد کنید"
-                                {...register("firstName")}
+                                {...register('firstName')}
                             />
                             {errors.firstName && (
-                                <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>
+                                <p className="mt-1 text-xs text-red-500">
+                                    {errors.firstName.message}
+                                </p>
                             )}
                         </FormField>
 
@@ -56,10 +67,12 @@ export function UserInfoStep({ onNext }: UserInfoStepProps) {
                             <Input
                                 type="text"
                                 placeholder="نام خانوادگی"
-                                {...register("lastName")}
+                                {...register('lastName')}
                             />
                             {errors.lastName && (
-                                <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>
+                                <p className="mt-1 text-xs text-red-500">
+                                    {errors.lastName.message}
+                                </p>
                             )}
                         </FormField>
                     </Box>
@@ -69,10 +82,12 @@ export function UserInfoStep({ onNext }: UserInfoStepProps) {
                             type="text"
                             placeholder="کد ملی 10 رقمی"
                             maxLength={10}
-                            {...register("nationalCode")}
+                            {...register('nationalCode')}
                         />
                         {errors.nationalCode && (
-                            <p className="text-red-500 text-xs mt-1">{errors.nationalCode.message}</p>
+                            <p className="mt-1 text-xs text-red-500">
+                                {errors.nationalCode.message}
+                            </p>
                         )}
                     </FormField>
 
@@ -81,10 +96,10 @@ export function UserInfoStep({ onNext }: UserInfoStepProps) {
                             type="tel"
                             placeholder="09123456789"
                             maxLength={11}
-                            {...register("mobile")}
+                            {...register('mobile')}
                         />
                         {errors.mobile && (
-                            <p className="text-red-500 text-xs mt-1">{errors.mobile.message}</p>
+                            <p className="mt-1 text-xs text-red-500">{errors.mobile.message}</p>
                         )}
                     </FormField>
 
@@ -92,37 +107,35 @@ export function UserInfoStep({ onNext }: UserInfoStepProps) {
                         <Input
                             type="email"
                             placeholder="example@email.com"
-                            {...register("email")}
+                            {...register('email')}
                         />
                         {errors.email && (
-                            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+                            <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
                         )}
                     </FormField>
 
                     <FormField label="تاریخ تولد (اختیاری)">
-                        <Input
-                            type="date"
-                            {...register("birthDate")}
-                        />
+                        <Input type="date" {...register('birthDate')} />
                         {errors.birthDate && (
-                            <p className="text-red-500 text-xs mt-1">{errors.birthDate.message}</p>
+                            <p className="mt-1 text-xs text-red-500">{errors.birthDate.message}</p>
                         )}
                     </FormField>
 
                     <Box variant="info" radius="lg" border>
-                        <Typography variant="h6" weight="medium" color="info">مرحله بعد: احراز هویت</Typography>
+                        <Typography variant="h6" weight="medium" color="info">
+                            مرحله بعد: احراز هویت
+                        </Typography>
                         <Box className="space-y-1">
-                            <Typography variant="body2" color="info">• ضبط ویدیو با خواندن متن تأیید</Typography>
-                            <Typography variant="body2" color="info">• تأیید نهایی هویت</Typography>
+                            <Typography variant="body2" color="info">
+                                • ضبط ویدیو با خواندن متن تأیید
+                            </Typography>
+                            <Typography variant="body2" color="info">
+                                • تأیید نهایی هویت
+                            </Typography>
                         </Box>
                     </Box>
 
-                    <Button
-                        type="submit"
-                        size="lg"
-                        className="w-full"
-                        disabled={!isValid}
-                    >
+                    <Button type="submit" size="lg" className="w-full" disabled={!isValid}>
                         ادامه به احراز هویت
                     </Button>
                 </form>

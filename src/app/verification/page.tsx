@@ -1,18 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useRef, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import toast from "react-hot-toast";
-import {
-    CameraIcon,
-    ArrowRightIcon,
-    DocumentIcon,
-} from "@heroicons/react/24/outline";
-import { Button } from "@/components/ui/core/Button";
-import { Card, CardContent, CardHeader } from "@/components/ui/core/Card";
-import { Box, Typography } from "@/components/ui";
-import { Loading } from "@/components/ui/feedback/Loading";
-import Image from "next/image";
+import { useState, useRef, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { CameraIcon, ArrowRightIcon, DocumentIcon } from '@heroicons/react/24/outline';
+import { Button } from '@/components/ui/core/Button';
+import { Card, CardContent, CardHeader } from '@/components/ui/core/Card';
+import { Box, Typography } from '@/components/ui';
+import { Loading } from '@/components/ui/feedback/Loading';
+import Image from 'next/image';
 
 function VerificationContent() {
     const router = useRouter();
@@ -83,7 +79,7 @@ function VerificationContent() {
     const startCamera = async () => {
         try {
             const mediaStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'user' }
+                video: { facingMode: 'user' },
             });
             setStream(mediaStream);
             if (videoRef.current) {
@@ -110,7 +106,7 @@ function VerificationContent() {
         setSelfieImage(dataURL);
 
         if (stream) {
-            stream.getTracks().forEach(track => track.stop());
+            stream.getTracks().forEach((track) => track.stop());
         }
     };
 
@@ -125,17 +121,17 @@ function VerificationContent() {
         } else if (step === 2 && selfieImage) {
             setLoading(true);
             setTimeout(() => {
-                router.push(isRegister ? "/" : "/");
+                router.push(isRegister ? '/' : '/');
             }, 3000);
         } else {
-            toast.error(step === 1 ? "لطفاً امضای خود را ثبت کنید" : "لطفاً عکس سلفی بگیرید");
+            toast.error(step === 1 ? 'لطفاً امضای خود را ثبت کنید' : 'لطفاً عکس سلفی بگیرید');
         }
     };
 
     if (loading) {
         return (
-            <Box className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-                <Card padding="lg" className="max-w-md w-full">
+            <Box className="flex min-h-screen items-center justify-center bg-gray-50 p-6">
+                <Card padding="lg" className="w-full max-w-md">
                     <CardContent className="text-center">
                         <Loading className="mx-auto mb-6" />
                         <Typography variant="h6" className="mb-4">
@@ -151,21 +147,16 @@ function VerificationContent() {
     }
 
     return (
-        <Box className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-            <Box className="max-w-lg w-full">
-
-                <Button
-                    variant="ghost"
-                    onClick={() => router.back()}
-                    className="mb-8"
-                >
-                    <ArrowRightIcon className="w-4 h-4 ml-2" />
+        <Box className="flex min-h-screen items-center justify-center bg-gray-50 p-6">
+            <Box className="w-full max-w-lg">
+                <Button variant="ghost" onClick={() => router.back()} className="mb-8">
+                    <ArrowRightIcon className="ml-2 h-4 w-4" />
                     بازگشت
                 </Button>
 
                 <Card padding="lg">
                     <CardHeader>
-                        <Box className="w-12 h-12 bg-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <Box className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-600">
                             {step === 1 ? (
                                 <DocumentIcon className="h-6 w-6 text-white" />
                             ) : (
@@ -177,19 +168,32 @@ function VerificationContent() {
                             تأیید هویت
                         </Typography>
                         <Typography variant="body2" color="muted" className="text-center">
-                            {step === 1 ? "امضای خود را ثبت کنید" : "عکس سلفی بگیرید"}
+                            {step === 1 ? 'امضای خود را ثبت کنید' : 'عکس سلفی بگیرید'}
                         </Typography>
 
-                        <Box className="flex items-center justify-center mt-6">
+                        <Box className="mt-6 flex items-center justify-center">
                             <Box className="flex items-center">
-                                <Box className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${step >= 1 ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600'
-                                    }`}>
+                                <Box
+                                    className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${
+                                        step >= 1
+                                            ? 'bg-purple-600 text-white'
+                                            : 'bg-gray-200 text-gray-600'
+                                    }`}
+                                >
                                     1
                                 </Box>
-                                <Box className={`w-16 h-1 mx-2 transition-colors ${step >= 2 ? 'bg-purple-600' : 'bg-gray-200'
-                                    }`} />
-                                <Box className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${step >= 2 ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600'
-                                    }`}>
+                                <Box
+                                    className={`mx-2 h-1 w-16 transition-colors ${
+                                        step >= 2 ? 'bg-purple-600' : 'bg-gray-200'
+                                    }`}
+                                />
+                                <Box
+                                    className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${
+                                        step >= 2
+                                            ? 'bg-purple-600 text-white'
+                                            : 'bg-gray-200 text-gray-600'
+                                    }`}
+                                >
                                     2
                                 </Box>
                             </Box>
@@ -200,7 +204,7 @@ function VerificationContent() {
                         {step === 1 && (
                             <Box className="space-y-6">
                                 <Box className="text-center">
-                                    <Typography variant="h5" className="text-gray-900 mb-2">
+                                    <Typography variant="h5" className="mb-2 text-gray-900">
                                         ثبت امضا
                                     </Typography>
                                     <Typography variant="body2" color="secondary" className="mb-6">
@@ -208,12 +212,12 @@ function VerificationContent() {
                                     </Typography>
                                 </Box>
 
-                                <Box className="border-2 border-dashed border-gray-300 rounded-xl p-4 bg-gray-50">
+                                <Box className="rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-4">
                                     <canvas
                                         ref={canvasRef}
                                         width={400}
                                         height={200}
-                                        className="w-full h-48 border border-gray-300 rounded-lg bg-white cursor-crosshair"
+                                        className="h-48 w-full cursor-crosshair rounded-lg border border-gray-300 bg-white"
                                         onMouseDown={startDrawing}
                                         onMouseMove={draw}
                                         onMouseUp={stopDrawing}
@@ -243,7 +247,7 @@ function VerificationContent() {
                         {step === 2 && (
                             <Box className="space-y-6">
                                 <Box className="text-center">
-                                    <Typography variant="h5" className="text-gray-900 mb-2">
+                                    <Typography variant="h5" className="mb-2 text-gray-900">
                                         عکس سلفی
                                     </Typography>
                                     <Typography variant="body2" color="secondary" className="mb-6">
@@ -253,10 +257,10 @@ function VerificationContent() {
 
                                 {!selfieImage && !stream && (
                                     <Box className="text-center">
-                                        <Box className="border-2 border-dashed border-gray-300 rounded-xl p-12 bg-gray-50">
-                                            <CameraIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                                        <Box className="rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-12">
+                                            <CameraIcon className="mx-auto mb-4 h-16 w-16 text-gray-400" />
                                             <Button onClick={startCamera}>
-                                                <CameraIcon className="h-5 w-5 ml-2" />
+                                                <CameraIcon className="ml-2 h-5 w-5" />
                                                 شروع دوربین
                                             </Button>
                                         </Box>
@@ -264,28 +268,28 @@ function VerificationContent() {
                                 )}
 
                                 {stream && !selfieImage && (
-                                    <Box className="text-center space-y-4">
+                                    <Box className="space-y-4 text-center">
                                         <video
                                             ref={videoRef}
                                             autoPlay
                                             muted
-                                            className="w-full max-w-sm mx-auto rounded-xl border border-gray-300"
+                                            className="mx-auto w-full max-w-sm rounded-xl border border-gray-300"
                                         />
                                         <Button onClick={capturePhoto}>
-                                            <CameraIcon className="h-5 w-5 ml-2" />
+                                            <CameraIcon className="ml-2 h-5 w-5" />
                                             گرفتن عکس
                                         </Button>
                                     </Box>
                                 )}
 
                                 {selfieImage && (
-                                    <Box className="text-center space-y-4">
+                                    <Box className="space-y-4 text-center">
                                         <Image
                                             src={selfieImage}
                                             width={400}
                                             height={400}
                                             alt="Selfie"
-                                            className="w-full max-w-sm mx-auto rounded-xl border border-gray-300"
+                                            className="mx-auto w-full max-w-sm rounded-xl border border-gray-300"
                                         />
                                         <Box className="flex gap-3">
                                             <Button
@@ -295,10 +299,7 @@ function VerificationContent() {
                                             >
                                                 گرفتن مجدد
                                             </Button>
-                                            <Button
-                                                onClick={handleNext}
-                                                className="flex-1"
-                                            >
+                                            <Button onClick={handleNext} className="flex-1">
                                                 تأیید عکس
                                             </Button>
                                         </Box>

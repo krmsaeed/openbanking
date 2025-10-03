@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Box } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
@@ -18,18 +18,19 @@ type BranchOption = { label: string; value: string };
 
 // Zod Schema
 const formSchema = z.object({
-    isMarried: z.string()
+    isMarried: z
+        .string()
         .min(1, { message: 'وضعیت تاهل الزامی است' })
         .refine((val) => ['true', 'false'].includes(val), {
-            message: 'وضعیت تاهل نامعتبر است'
+            message: 'وضعیت تاهل نامعتبر است',
         }),
-    grade: z.string()
+    grade: z
+        .string()
         .min(1, { message: 'مدرک تحصیلی الزامی است' })
         .refine((val) => ['diploma', 'associate', 'BA', 'MA', 'PHD'].includes(val), {
-            message: 'مدرک تحصیلی نامعتبر است'
+            message: 'مدرک تحصیلی نامعتبر است',
         }),
-    branch: z.string()
-        .min(1, { message: 'انتخاب شعبه الزامی است' })
+    branch: z.string().min(1, { message: 'انتخاب شعبه الزامی است' }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -48,19 +49,17 @@ const gradeOptions = [
     { value: 'master', label: 'کارشناسی ارشد' },
     { value: 'phd', label: 'دکترا' },
 ];
-const defaultBranches= [
-    {value:"0",label:'شعبه مرکزی'},
-     {value:"1",label:'شعبه شهرک غرب'},
-      {value:"2",label:'شعبه آزادی'},
-       {value:"3",label:'شعبه میرداماد'}
-    ];
+const defaultBranches = [
+    { value: '0', label: 'شعبه مرکزی' },
+    { value: '1', label: 'شعبه شهرک غرب' },
+    { value: '2', label: 'شعبه آزادی' },
+    { value: '3', label: 'شعبه میرداماد' },
+];
 
 export default function NationalCardScanner({ onComplete, onBack }: Props) {
     const [isLoading, setIsLoading] = useState(false);
     const [capturedFile, setCapturedFile] = useState<File | null>(null);
     const [ocrValid, setOcrValid] = useState<boolean>(false);
-
-
 
     const maritalStatusOptions = [
         { label: 'متاهل', value: 'true' },
@@ -71,14 +70,14 @@ export default function NationalCardScanner({ onComplete, onBack }: Props) {
         control,
         setError,
         getValues,
-        formState: { errors }
+        formState: { errors },
     } = useForm<FormData>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             isMarried: '',
             grade: '',
             branch: '',
-        }
+        },
     });
 
     const handleConfirm = (file: File, isValid: boolean) => {
@@ -104,7 +103,7 @@ export default function NationalCardScanner({ onComplete, onBack }: Props) {
 
         if (!result.success) {
             const errors = result.error.flatten().fieldErrors;
-           
+
             if (errors.isMarried?.[0]) {
                 setError('isMarried', { type: 'manual', message: errors.isMarried[0] });
                 toast.error(errors.isMarried[0]);
@@ -143,10 +142,8 @@ export default function NationalCardScanner({ onComplete, onBack }: Props) {
                 showConfirmButton={true}
             />
             <Box className="space-y-4">
-              
-
                 <Box>
-                    <label className="block text-sm text-gray-700 mb-2">وضعیت تاهل</label>
+                    <label className="mb-2 block text-sm text-gray-700">وضعیت تاهل</label>
                     <Controller
                         name="isMarried"
                         control={control}
@@ -170,11 +167,13 @@ export default function NationalCardScanner({ onComplete, onBack }: Props) {
                         rules={{ required: 'مدرک تحصیلی الزامی است' }}
                         render={({ field }) => (
                             <>
-                                <label className="block text-sm text-gray-700 mb-2">تحصیلات</label>
+                                <label className="mb-2 block text-sm text-gray-700">تحصیلات</label>
                                 <Select
                                     placeholder="انتخاب کنید"
                                     value={field.value ?? ''}
-                                    onChange={(e) => field.onChange((e.target as HTMLSelectElement).value)}
+                                    onChange={(e) =>
+                                        field.onChange((e.target as HTMLSelectElement).value)
+                                    }
                                 >
                                     {gradeOptions.map((o) => (
                                         <option key={o.value} value={o.value}>
@@ -194,7 +193,7 @@ export default function NationalCardScanner({ onComplete, onBack }: Props) {
 
                 <Box>
                     <Controller
-                        name='branch'
+                        name="branch"
                         control={control}
                         rules={{ required: 'لطفا یک شعبه انتخاب کنید' }}
                         render={({ field }) => (
@@ -203,7 +202,7 @@ export default function NationalCardScanner({ onComplete, onBack }: Props) {
                                     id="branch"
                                     label="شعبه"
                                     options={defaultBranches}
-                                     onValueChange={(value) => field.onChange(value)}
+                                    onValueChange={(value) => field.onChange(value)}
                                 />
                                 {errors.branch?.message && (
                                     <p className="mt-2 text-sm text-red-600">
@@ -216,20 +215,20 @@ export default function NationalCardScanner({ onComplete, onBack }: Props) {
                 </Box>
             </Box>
 
-            <Box className="w-full flex gap-2 items-center">
+            <Box className="flex w-full items-center gap-2">
                 <Button
                     onClick={onBack}
                     variant="destructive"
-                    className="w-full flex justify-center gap-3 px-5 py-3 items-center text-white"
+                    className="flex w-full items-center justify-center gap-3 px-5 py-3 text-white"
                 >
-                    <XMarkIcon className="w-5 h-5 text-white" />
+                    <XMarkIcon className="h-5 w-5 text-white" />
                     بازگشت
                 </Button>
                 <LoadingButton
                     isLoading={isLoading}
                     onClick={handleSubmit}
                     disabled={!capturedFile || !ocrValid}
-                    className="w-full flex justify-center gap-3 px-5 py-3 items-center text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-primary-600 hover:bg-primary-700 flex w-full items-center justify-center gap-3 px-5 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <CheckIcon className="h-5 w-5" />
                     ثبت نام

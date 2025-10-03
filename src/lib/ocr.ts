@@ -13,7 +13,13 @@ export async function ocrRecognizeFile(file: File | Blob): Promise<string> {
     }
 }
 
-export type OcrFields = { nationalId?: string; firstName?: string; lastName?: string; fatherName?: string; dob?: string };
+export type OcrFields = {
+    nationalId?: string;
+    firstName?: string;
+    lastName?: string;
+    fatherName?: string;
+    dob?: string;
+};
 
 const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
 const toAsciiDigits = (s: string) =>
@@ -33,7 +39,9 @@ export function parseNationalCardFields(text: string): OcrFields {
     if (dateMatch) fields.dob = dateMatch[1];
 
     const persianWordRe = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]{2,}/g;
-    const words = Array.from(new Set(((t.match(persianWordRe) || [])).map(s => s.trim()).filter(Boolean)));
+    const words = Array.from(
+        new Set((t.match(persianWordRe) || []).map((s) => s.trim()).filter(Boolean))
+    );
     if (words.length >= 1) fields.firstName = words[0];
     if (words.length >= 2) fields.lastName = words[1];
 
@@ -42,4 +50,3 @@ export function parseNationalCardFields(text: string): OcrFields {
 
     return fields;
 }
-

@@ -1,10 +1,19 @@
-"use client";
+'use client';
 
-import { useRef } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, Box } from "@/components/ui";
-import { otpSchema, type LoginOtpFormData } from "@/lib/schemas/login";
+import { useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    Button,
+    Input,
+    Box,
+} from '@/components/ui';
+import { otpSchema, type LoginOtpFormData } from '@/lib/schemas/login';
 import { useOtpTimer } from '@/hooks/useOtpTimer';
 
 interface OTPFormProps {
@@ -23,10 +32,10 @@ export function OTPForm({ phoneNumber, onVerify, onResend, loading }: OTPFormPro
         handleSubmit,
         setValue,
         watch,
-        formState: { isValid }
+        formState: { isValid },
     } = useForm<LoginOtpFormData>({
         resolver: zodResolver(otpSchema),
-        mode: 'onChange'
+        mode: 'onChange',
     });
 
     const otpValue = watch('otp');
@@ -41,7 +50,6 @@ export function OTPForm({ phoneNumber, onVerify, onResend, loading }: OTPFormPro
 
         setValue('otp', newOtp.join(''));
     };
-
 
     return (
         <Card padding="lg">
@@ -61,14 +69,20 @@ export function OTPForm({ phoneNumber, onVerify, onResend, loading }: OTPFormPro
                         {[0, 1, 2, 3, 4].map((index) => (
                             <Input
                                 key={index}
-                                ref={(el) => { inputRefs.current[index] = el }}
+                                ref={(el) => {
+                                    inputRefs.current[index] = el;
+                                }}
                                 type="text"
                                 maxLength={1}
-                                className="w-12 h-12 text-center text-lg font-bold"
+                                className="h-12 w-12 text-center text-lg font-bold"
                                 value={(otpValue || '')[index] || ''}
                                 onChange={(e) => handleOtpChange(e.target.value, index)}
                                 onKeyDown={(e) => {
-                                    if (e.key === 'Backspace' && !e.currentTarget.value && index > 0) {
+                                    if (
+                                        e.key === 'Backspace' &&
+                                        !e.currentTarget.value &&
+                                        index > 0
+                                    ) {
                                         inputRefs.current[index - 1]?.focus();
                                     }
                                 }}
@@ -77,26 +91,47 @@ export function OTPForm({ phoneNumber, onVerify, onResend, loading }: OTPFormPro
                     </Box>
                     <Box className="flex gap-4">
                         {secondsLeft > 0 ? (
-                            <div className="flex-1 text-gray-600 text-sm text-center" style={{ minWidth: 140, fontVariantNumeric: 'tabular-nums', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace' }}>
+                            <div
+                                className="flex-1 text-center text-sm text-gray-600"
+                                style={{
+                                    minWidth: 140,
+                                    fontVariantNumeric: 'tabular-nums',
+                                    fontFamily:
+                                        'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
+                                }}
+                            >
                                 {formatTime()}
                             </div>
                         ) : (
                             <button
                                 type="button"
-                                onClick={() => { onResend(); reset(120); }}
-                                className={`flex-1 text-blue-600 focus:outline-none px-0 py-0 text-sm`}
-                                style={{ background: 'transparent', border: 'none', padding: 0, minWidth: 140, display: 'inline-flex', justifyContent: 'center', alignItems: 'center' }}
+                                onClick={() => {
+                                    onResend();
+                                    reset(120);
+                                }}
+                                className={`flex-1 px-0 py-0 text-sm text-blue-600 focus:outline-none`}
+                                style={{
+                                    background: 'transparent',
+                                    border: 'none',
+                                    padding: 0,
+                                    minWidth: 140,
+                                    display: 'inline-flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
                             >
-                                <span style={{ fontVariantNumeric: 'tabular-nums', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace' }}>
+                                <span
+                                    style={{
+                                        fontVariantNumeric: 'tabular-nums',
+                                        fontFamily:
+                                            'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
+                                    }}
+                                >
                                     ارسال مجدد
                                 </span>
                             </button>
                         )}
-                        <Button
-                            type="submit"
-                            className="flex-1"
-                            disabled={!isValid || loading}
-                        >
+                        <Button type="submit" className="flex-1" disabled={!isValid || loading}>
                             {loading ? 'در حال بررسی...' : 'تأیید و ورود'}
                         </Button>
                     </Box>

@@ -1,5 +1,3 @@
-
-
 interface ApiResponse<T> {
     status: number;
     data?: unknown;
@@ -11,8 +9,8 @@ export const handleResponse = <T>(response: ApiResponse<T>): ApiResponse<T> => {
         case 200:
             return { status: 200, data: response?.data };
         case 400:
-            return { status: 400, data: response.data }
+            return { status: 400, data: response.data };
         default:
-            return { status: 500, response: "External Server Error" as T }
+            return { status: 500, response: 'External Server Error' as T };
     }
-}
+};

@@ -1,11 +1,7 @@
-"use client";
+'use client';
 
-import { SignatureCapture } from "@/components/ui";
+import { SignatureCapture } from '@/components/ui';
 
 export function SignatureStep() {
-    return (
-
-        <SignatureCapture />
-
-    );
+    return <SignatureCapture />;
 }

@@ -1,12 +1,22 @@
-"use client";
+'use client';
 
-import { useForm, Controller, Control, FieldValues } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { BanknotesIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { Button, Input, Card, CardContent, CardHeader, CardTitle, CardDescription, FormField, Select } from "@/components/ui";
-import ControlledInput from "@/components/ui/forms/ControlledInput";
-import ControlledSelect from "@/components/ui/forms/ControlledSelect";
-import { financialInfoSchema, type FinancialInfoFormData } from "@/lib/schemas/creditAssessment";
+import { useForm, Controller, Control, FieldValues } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { BanknotesIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import {
+    Button,
+    Input,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    FormField,
+    Select,
+} from '@/components/ui';
+import ControlledInput from '@/components/ui/forms/ControlledInput';
+import ControlledSelect from '@/components/ui/forms/ControlledSelect';
+import { financialInfoSchema, type FinancialInfoFormData } from '@/lib/schemas/creditAssessment';
 
 interface FinancialInfoStepProps {
     onNext: (data: FinancialInfoFormData) => void;
@@ -16,38 +26,37 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
     const {
         control,
         handleSubmit,
-        formState: { errors, isValid }
+        formState: { errors, isValid },
     } = useForm<FinancialInfoFormData>({
         resolver: zodResolver(financialInfoSchema),
-        mode: 'onChange'
+        mode: 'onChange',
     });
 
     return (
         <Card padding="lg">
             <CardHeader>
                 <CardTitle className="flex items-center gap-3">
-                    <BanknotesIcon className="w-6 h-6 text-blue-600" />
+                    <BanknotesIcon className="h-6 w-6 text-blue-600" />
                     اطلاعات مالی
                 </CardTitle>
-                <CardDescription>
-                    لطفاً اطلاعات درآمد و اشتغال خود را وارد کنید
-                </CardDescription>
+                <CardDescription>لطفاً اطلاعات درآمد و اشتغال خود را وارد کنید</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit(onNext)} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <FormField
                             label="درآمد ماهانه (تومان)"
                             required
                             error={errors.monthlyIncome?.message}
                         >
-                            <ControlledInput name="monthlyIncome" control={control as unknown as Control<FieldValues>} placeholder="مثال: 15000000" />
+                            <ControlledInput
+                                name="monthlyIncome"
+                                control={control as unknown as Control<FieldValues>}
+                                placeholder="مثال: 15000000"
+                            />
                         </FormField>
 
-                        <FormField
-                            label="سایر درآمدها (تومان)"
-                            error={errors.otherIncome?.message}
-                        >
+                        <FormField label="سایر درآمدها (تومان)" error={errors.otherIncome?.message}>
                             <Controller
                                 name="otherIncome"
                                 control={control}
@@ -100,10 +109,7 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                             />
                         </FormField>
 
-                        <FormField
-                            label="عنوان شغلی"
-                            error={errors.jobTitle?.message}
-                        >
+                        <FormField label="عنوان شغلی" error={errors.jobTitle?.message}>
                             <Controller
                                 name="jobTitle"
                                 control={control}
@@ -117,10 +123,7 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                             />
                         </FormField>
 
-                        <FormField
-                            label="نام شرکت"
-                            error={errors.companyName?.message}
-                        >
+                        <FormField label="نام شرکت" error={errors.companyName?.message}>
                             <Controller
                                 name="companyName"
                                 control={control}
@@ -135,10 +138,7 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                         </FormField>
                     </div>
 
-                    <FormField
-                        label="آدرس محل کار"
-                        error={errors.workAddress?.message}
-                    >
+                    <FormField label="آدرس محل کار" error={errors.workAddress?.message}>
                         <Controller
                             name="workAddress"
                             control={control}
@@ -152,7 +152,7 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                         />
                     </FormField>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <FormField
                             label="مبلغ درخواستی (تومان)"
                             required
@@ -171,11 +171,11 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
                             />
                         </FormField>
 
-                        <FormField
-                            label="هدف از دریافت وام"
-                            error={errors.loanPurpose?.message}
-                        >
-                            <ControlledSelect name="loanPurpose" control={control as unknown as Control<FieldValues>}>
+                        <FormField label="هدف از دریافت وام" error={errors.loanPurpose?.message}>
+                            <ControlledSelect
+                                name="loanPurpose"
+                                control={control as unknown as Control<FieldValues>}
+                            >
                                 <option value="">انتخاب کنید</option>
                                 <option value="home">خرید خانه</option>
                                 <option value="car">خرید خودرو</option>
@@ -189,11 +189,11 @@ export function FinancialInfoStep({ onNext }: FinancialInfoStepProps) {
 
                     <Button
                         type="submit"
-                        className="w-full flex items-center gap-2"
+                        className="flex w-full items-center gap-2"
                         disabled={!isValid}
                     >
                         مرحله بعد
-                        <ArrowLeftIcon className="w-4 h-4" />
+                        <ArrowLeftIcon className="h-4 w-4" />
                     </Button>
                 </form>
             </CardContent>

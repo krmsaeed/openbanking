@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { CheckIcon, VideoCameraIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { RefObject } from "react";
-import { Button } from "../ui/core/Button";
-import { Card, CardContent } from "../ui/core/Card";
-import { Box, Typography } from "../ui/core";
-import LoadingButton from "../ui/core/LoadingButton";
+import { CheckIcon, VideoCameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { RefObject } from 'react';
+import { Button } from '../ui/core/Button';
+import { Card, CardContent } from '../ui/core/Card';
+import { Box, Typography } from '../ui/core';
+import LoadingButton from '../ui/core/LoadingButton';
 
 interface VideoRecorderViewProps {
     videoRef: RefObject<HTMLVideoElement | null>;
@@ -44,23 +44,23 @@ export function VideoRecorderView({
 
     return (
         <Box className="space-y-6">
-            <Card >
+            <Card>
                 <CardContent>
                     <Box className="text-center">
                         {hasPreview ? (
-                            <Box className="space-y-4 w-full">
-                                <Box className="rounded-lg p-1 bg-gray-200 w-full">
+                            <Box className="w-full space-y-4">
+                                <Box className="w-full rounded-lg bg-gray-200 p-1">
                                     <video
                                         src={videoPreviewUrl ?? undefined}
                                         controls
-                                        className="w-full max-w-md mx-auto rounded-lg border border-gray-300"
-                                        style={{ maxHeight: "200px" }}
+                                        className="mx-auto w-full max-w-md rounded-lg border border-gray-300"
+                                        style={{ maxHeight: '200px' }}
                                     >
                                         مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
                                     </video>
                                 </Box>
-                                <Box className="bg-gray-100  rounded-xl p-4">
-                                    <ul className="text-sm text-error-800 space-y-1">
+                                <Box className="rounded-xl bg-gray-100 p-4">
+                                    <ul className="text-error-800 space-y-1 text-sm">
                                         <li> فیلم ضبط شده خود را بررسی کنید</li>
                                         <li> اگر فیلم مناسب است، روی «تایید» کلیک کنید</li>
                                         <li> برای رکورد جدید، روی «ضبط مجدد» کلیک کنید</li>
@@ -68,41 +68,55 @@ export function VideoRecorderView({
                                 </Box>
 
                                 <Box className="flex justify-center gap-3">
-                                    <Button variant="secondary" onClick={onRetake} className="flex items-center gap-2">
-                                        <VideoCameraIcon className="w-4 h-4" />
+                                    <Button
+                                        variant="secondary"
+                                        onClick={onRetake}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <VideoCameraIcon className="h-4 w-4" />
                                         ضبط مجدد
                                     </Button>
                                 </Box>
                             </Box>
                         ) : (
                             <Box className="space-y-4">
-                                <Box className="  ">
-                                    <Box className="relative border-dashed border-2 border-primary  bg-gray-300 rounded-lg overflow-hidden mb-4  p-1">
+                                <Box className=" ">
+                                    <Box className="border-primary relative mb-4 overflow-hidden rounded-lg border-2 border-dashed bg-gray-300 p-1">
                                         <video
                                             ref={videoRef}
                                             autoPlay
                                             muted
-                                            className="w-full h-64 object-cover rounded-lg"
-                                            style={{ transform: "scaleX(-1)" }}
+                                            className="h-64 w-full rounded-lg object-cover"
+                                            style={{ transform: 'scaleX(-1)' }}
                                         />
                                         <canvas ref={canvasRef} className="hidden" />
 
                                         {isRecording && (
-                                            <Box className="absolute top-4 left-4 flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full">
-                                                <Box className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                                            <Box className="absolute top-4 left-4 flex items-center gap-2 rounded-full bg-red-500 px-3 py-1 text-white">
+                                                <Box className="h-2 w-2 animate-pulse rounded-full bg-white" />
                                                 <span className="text-sm font-medium">
-                                                    ضبط: {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, "0")}
+                                                    ضبط: {Math.floor(recordingTime / 60)}:
+                                                    {(recordingTime % 60)
+                                                        .toString()
+                                                        .padStart(2, '0')}
                                                 </span>
                                             </Box>
                                         )}
                                     </Box>
 
-                                    <Box className="mb-4 p-3 bg-secondary-50 border-2 border-primary-300 rounded-lg">
+                                    <Box className="bg-secondary-50 border-primary-300 mb-4 rounded-lg border-2 p-3">
                                         {!isRecording ? (
-                                            <Box className="text-right space-y-2">
-                                                <Typography variant="h4" className="text-base  border border-primary-200 min-h-10 bg-secondary-100 rounded-lg leading-relaxed text-center mt-2 flex justify-center items-center">{randomText}</Typography>
-                                                <ul className="text-sm text-gray-700 list-disc list-inside leading-relaxed">
-                                                    <li className="font-bold text-primary">متن نمایش داده‌شده را واضح بخوانید</li>
+                                            <Box className="space-y-2 text-right">
+                                                <Typography
+                                                    variant="h4"
+                                                    className="border-primary-200 bg-secondary-100 mt-2 flex min-h-10 items-center justify-center rounded-lg border text-center text-base leading-relaxed"
+                                                >
+                                                    {randomText}
+                                                </Typography>
+                                                <ul className="list-inside list-disc text-sm leading-relaxed text-gray-700">
+                                                    <li className="text-primary font-bold">
+                                                        متن نمایش داده‌شده را واضح بخوانید
+                                                    </li>
                                                     <li>طول ویدیو: حدود 30 ثانیه.</li>
                                                     <li>صورت در مرکز قاب قرار گیرد.</li>
                                                     <li>از نور پشت سر پرهیز کنید.</li>
@@ -110,7 +124,9 @@ export function VideoRecorderView({
                                                 </ul>
                                             </Box>
                                         ) : (
-                                            <p className="text-base  leading-relaxed text-center mt-2">{randomText}</p>
+                                            <p className="mt-2 text-center text-base leading-relaxed">
+                                                {randomText}
+                                            </p>
                                         )}
                                     </Box>
 
@@ -118,22 +134,23 @@ export function VideoRecorderView({
                                         {!isRecording ? (
                                             <Button
                                                 onClick={onStartRecording}
-                                                className="flex items-center gap-2 bg-secondary hover:bg-secondary-600 px-6 py-3"
+                                                className="bg-secondary hover:bg-secondary-600 flex items-center gap-2 px-6 py-3"
                                                 disabled={!cameraActive}
                                             >
-                                                <VideoCameraIcon className="w-5 h-5" />
+                                                <VideoCameraIcon className="h-5 w-5" />
                                                 شروع ضبط
                                             </Button>
                                         ) : (
                                             <Button
                                                 onClick={onStopRecording}
                                                 disabled={!isRecording}
-                                                className={`flex items-center gap-2 px-6 py-3 transition-colors ${isRecording
-                                                    ? 'bg-error-500 hover:bg-error-600 text-white'
-                                                    : 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                                                    }`}
+                                                className={`flex items-center gap-2 px-6 py-3 transition-colors ${
+                                                    isRecording
+                                                        ? 'bg-error-500 hover:bg-error-600 text-white'
+                                                        : 'cursor-not-allowed bg-gray-400 text-gray-600'
+                                                }`}
                                             >
-                                                <XMarkIcon className="w-5 h-5" />
+                                                <XMarkIcon className="h-5 w-5" />
                                                 پایان ضبط
                                             </Button>
                                         )}
@@ -145,24 +162,24 @@ export function VideoRecorderView({
                 </CardContent>
             </Card>
 
-            <Box className="w-full flex gap-2 items-center">
+            <Box className="flex w-full items-center gap-2">
                 <Button
                     onClick={onBack}
                     variant="destructive"
-                    className="w-full flex justify-center gap-3 px-5 py-3 items-center text-white"
+                    className="flex w-full items-center justify-center gap-3 px-5 py-3 text-white"
                 >
-                    <XMarkIcon className="w-5 h-5 text-white" />
+                    <XMarkIcon className="h-5 w-5 text-white" />
                     بازگشت
                 </Button>
                 <LoadingButton
                     onClick={onConfirm}
                     loading={isUploading}
                     disabled={!hasPreview || isUploading}
-                    className="text-white gap-3 px-5 py-3 flex items-center justify-center w-full bg-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-primary flex w-full items-center justify-center gap-3 px-5 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {!isUploading && <CheckIcon className="h-5 w-5" />}
-                    <Typography variant="body1" className="text-white text-xs font-medium">
-                        {isUploading ? "در حال ارسال..." : "تایید"}
+                    <Typography variant="body1" className="text-xs font-medium text-white">
+                        {isUploading ? 'در حال ارسال...' : 'تایید'}
                     </Typography>
                 </LoadingButton>
             </Box>

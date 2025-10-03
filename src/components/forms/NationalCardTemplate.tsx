@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Box, Button, Typography } from "../ui/core";
-import LoadingButton from "../ui/core/LoadingButton";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useState } from 'react';
+import { Box, Button, Typography } from '../ui/core';
+import LoadingButton from '../ui/core/LoadingButton';
+import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface NationalCardTemplateProps {
     firstName: string;
@@ -28,68 +28,95 @@ export function NationalCardTemplate({
     };
     return (
         <Box className="space-y-6">
-            <Box className="relative rounded-2xl p-0 mx-auto max-w-sm shadow-lg overflow-hidden border border-gray-200">
-                <svg className="absolute left-4 top-4 w-28 opacity-10 rotate-6 pointer-events-none" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                    <circle cx="50" cy="50" r="48" stroke="none" style={{ fill: 'var(--color-primary-700)' }} />
-                    <path d="M50 18 L58 42 L82 42 L62 56 L70 80 L50 64 L30 80 L38 56 L18 42 L42 42 Z" style={{ fill: 'var(--color-white)' }} opacity={0.08} />
+            <Box className="relative mx-auto max-w-sm overflow-hidden rounded-2xl border border-gray-200 p-0 shadow-lg">
+                <svg
+                    className="pointer-events-none absolute top-4 left-4 w-28 rotate-6 opacity-10"
+                    viewBox="0 0 100 100"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden
+                >
+                    <circle
+                        cx="50"
+                        cy="50"
+                        r="48"
+                        stroke="none"
+                        style={{ fill: 'var(--color-primary-700)' }}
+                    />
+                    <path
+                        d="M50 18 L58 42 L82 42 L62 56 L70 80 L50 64 L30 80 L38 56 L18 42 L42 42 Z"
+                        style={{ fill: 'var(--color-white)' }}
+                        opacity={0.08}
+                    />
                 </svg>
 
-                <div className="absolute inset-0 overlay-stripes" />
+                <div className="overlay-stripes absolute inset-0" />
 
-                <div className="relative z-10 bg-gradient-to-r from-blue-300 to-blue-200 text-white p-3 px-5">
-                    <div className="flex items-center justify-center flex-col ">
-                        <Typography variant="body2" className="text-xs font-bold">کارت شناسایی ملی</Typography>
+                <div className="relative z-10 bg-gradient-to-r from-blue-300 to-blue-200 p-3 px-5 text-white">
+                    <div className="flex flex-col items-center justify-center">
+                        <Typography variant="body2" className="text-xs font-bold">
+                            کارت شناسایی ملی
+                        </Typography>
                     </div>
                 </div>
 
                 <div className="relative z-10 bg-gradient-to-br from-blue-50 to-white p-6">
-                    <div className="flex items-start gap-4 mb-4">
+                    <div className="mb-4 flex items-start gap-4">
                         <div className="flex-1 space-y-3">
                             <div className="flex flex-col gap-2">
-                                <div className="mt-2 flex gap-2 items-center">
-                                    <Typography variant="caption" className="text-xs text-emerald-700">شماره ملی:</Typography>
-                                    <Typography variant="h6" className="font-bold text-xs ">{nationalCode}</Typography>
+                                <div className="mt-2 flex items-center gap-2">
+                                    <Typography
+                                        variant="caption"
+                                        className="text-xs text-emerald-700"
+                                    >
+                                        شماره ملی:
+                                    </Typography>
+                                    <Typography variant="h6" className="text-xs font-bold">
+                                        {nationalCode}
+                                    </Typography>
                                 </div>
                                 <div className="flex gap-2">
-                                    <Typography variant="caption" className="text-xs text-emerald-700">تاریخ تولد:</Typography>
-                                    <Typography variant="body2" className="">{formatBirthDate(birthDate)}</Typography>
+                                    <Typography
+                                        variant="caption"
+                                        className="text-xs text-emerald-700"
+                                    >
+                                        تاریخ تولد:
+                                    </Typography>
+                                    <Typography variant="body2" className="">
+                                        {formatBirthDate(birthDate)}
+                                    </Typography>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="w-24 h-28 bg-white border-1 border-gray-100 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden">
-                            <div className="w-20 h-24 bg-gray-100 rounded-sm flex items-center justify-center text-gray-400">
+                        <div className="flex h-28 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-md border-1 border-gray-100 bg-white">
+                            <div className="flex h-24 w-20 items-center justify-center rounded-sm bg-gray-100 text-gray-400">
                                 عکس
                             </div>
                         </div>
                     </div>
-
-
                 </div>
 
-                <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-r from-emerald-100 to-transparent opacity-90 pointer-events-none" />
+                <div className="pointer-events-none absolute right-0 bottom-0 left-0 h-6 bg-gradient-to-r from-emerald-100 to-transparent opacity-90" />
             </Box>
 
             <Box className="text-center">
                 <Box className="mb-4">
-                    <label className="flex items-center justify-center gap-2 ">
+                    <label className="flex items-center justify-center gap-2">
                         <input
                             type="checkbox"
                             checked={confirmed}
                             onChange={(e) => {
                                 const val = e.target.checked;
                                 setConfirmed(val);
-
                             }}
-                            className="rounded border-gray-300 text-primary focus:ring-primary"
+                            className="text-primary focus:ring-primary rounded border-gray-300"
                         />
                         <Typography variant="body1" className="text-sm text-gray-700">
                             اطلاعات نمایش داده شده با کارت ملی من مطابقت دارد
                         </Typography>
                     </label>
                 </Box>
-
-
             </Box>
 
             <Box className="text-center">
@@ -97,22 +124,22 @@ export function NationalCardTemplate({
                     در صورت عدم مطابقت اطلاعات، به مرحله قبل بازگردید و اطلاعات را اصلاح کنید.
                 </Typography>
             </Box>
-            <Box className="w-full flex gap-2 items-center">
+            <Box className="flex w-full items-center gap-2">
                 <Button
                     onClick={onCancel}
                     variant="destructive"
-                    className="w-full flex justify-center gapo-3 px-5 py-3 items-center text-white"
+                    className="gapo-3 flex w-full items-center justify-center px-5 py-3 text-white"
                 >
-                    <XMarkIcon className="w-5 h-5 text-white" />
+                    <XMarkIcon className="h-5 w-5 text-white" />
                     انصراف
                 </Button>
                 <LoadingButton
                     onClick={onConfirm}
                     disabled={!confirmed}
-                    className="text-white gap-3 px-5 py-3 flex items-center justify-center w-full bg-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-primary flex w-full items-center justify-center gap-3 px-5 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <CheckIcon className="h-5 w-5" />
-                    <Typography variant="body1" className="text-white text-xs font-medium">
+                    <Typography variant="body1" className="text-xs font-medium text-white">
                         تایید
                     </Typography>
                 </LoadingButton>

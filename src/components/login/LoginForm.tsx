@@ -1,9 +1,18 @@
-"use client";
+'use client';
 
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Input, FormField } from "@/components/ui";
-import { loginFormSchema, type LoginFormData } from "@/lib/schemas/common";
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    Button,
+    Input,
+    FormField,
+} from '@/components/ui';
+import { loginFormSchema, type LoginFormData } from '@/lib/schemas/common';
 
 interface LoginFormProps {
     onNext: (data: LoginFormData) => void;
@@ -14,10 +23,10 @@ export function LoginForm({ onNext, loading }: LoginFormProps) {
     const {
         control,
         handleSubmit,
-        formState: { errors, isValid }
+        formState: { errors, isValid },
     } = useForm<LoginFormData>({
         resolver: zodResolver(loginFormSchema),
-        mode: 'onChange'
+        mode: 'onChange',
     });
 
     return (
@@ -32,11 +41,7 @@ export function LoginForm({ onNext, loading }: LoginFormProps) {
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit(onNext)} className="space-y-6">
-                    <FormField
-                        label="کد ملی"
-                        required
-                        error={errors.nationalCode?.message ?? ''}
-                    >
+                    <FormField label="کد ملی" required error={errors.nationalCode?.message ?? ''}>
                         <Controller
                             name="nationalCode"
                             control={control}
@@ -70,11 +75,7 @@ export function LoginForm({ onNext, loading }: LoginFormProps) {
                         />
                     </FormField>
 
-                    <Button
-                        type="submit"
-                        className="w-full"
-                        disabled={!isValid || loading}
-                    >
+                    <Button type="submit" className="w-full" disabled={!isValid || loading}>
                         {loading ? 'در حال ارسال...' : 'ارسال کد تأیید'}
                     </Button>
                 </form>

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React from 'react';
 import { NationalCardTemplate } from '@/components/forms';
 
@@ -10,11 +10,22 @@ interface Props {
     onBack?: () => void;
 }
 
-export default function NationalCardPreview({ nationalCode = '', birthDate = '', show, onConfirm }: Props) {
+export default function NationalCardPreview({
+    nationalCode = '',
+    birthDate = '',
+    show,
+    onConfirm,
+}: Props) {
     if (!show) return null;
     return (
         <div className="space-y-6">
-            <NationalCardTemplate firstName={''} lastName={''} nationalCode={nationalCode} birthDate={birthDate} onConfirm={onConfirm} />
+            <NationalCardTemplate
+                firstName={''}
+                lastName={''}
+                nationalCode={nationalCode}
+                birthDate={birthDate}
+                onConfirm={onConfirm}
+            />
         </div>
     );
 }

@@ -1,5 +1,5 @@
-"use client";
-import { useEffect, useRef, useState, useCallback } from "react";
+'use client';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 type UseOtpTimer = {
     secondsLeft: number;
@@ -30,18 +30,23 @@ export function useOtpTimer(initialSeconds = 120): UseOtpTimer {
         });
     }, [clear]);
 
-    const start = useCallback((duration = initialSeconds) => {
-        clear();
-        setSecondsLeft(duration);
-        intervalRef.current = window.setInterval(() => tick(), 1000);
-    }, [clear, tick, initialSeconds]);
+    const start = useCallback(
+        (duration = initialSeconds) => {
+            clear();
+            setSecondsLeft(duration);
+            intervalRef.current = window.setInterval(() => tick(), 1000);
+        },
+        [clear, tick, initialSeconds]
+    );
 
-    const reset = useCallback((duration = initialSeconds) => {
-        start(duration);
-    }, [start, initialSeconds]);
+    const reset = useCallback(
+        (duration = initialSeconds) => {
+            start(duration);
+        },
+        [start, initialSeconds]
+    );
 
     useEffect(() => {
-        
         start(initialSeconds);
         return () => clear();
     }, [start, initialSeconds, clear]);

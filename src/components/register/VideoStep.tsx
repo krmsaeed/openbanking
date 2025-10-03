@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React from 'react';
 import { VideoRecorder } from '@/components/new-user/VideoRecorder';
 export default function VideoStep() {
