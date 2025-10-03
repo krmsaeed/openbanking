@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { TrashIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Button } from "../core/Button";
+import LoadingButton from "../core/LoadingButton";
 import { Card, CardContent, CardHeader, CardTitle } from "../core/Card";
 import { Box, Typography } from "../core";
 import axios from "axios";
@@ -117,8 +118,8 @@ export function SignatureCapture() {
                 data.append('messageDTO', JSON.stringify(body));
                 data.append('files', file);
                 await axios.post('/api/bpms/deposit-files', data).then((res) => {
-                    const resData = JSON.parse(res.data.body.response)
-                    if (resData.uploaded) {
+                    const { data } = res
+                    if (data.body.success) {
                         setUserData({ ...userData, step: 5 });
                     }
                 }).finally(() => {
@@ -132,13 +133,11 @@ export function SignatureCapture() {
 
     return (
         <Card padding="sm">
-            <CardHeader>
-                <CardTitle>امضای دیجیتال</CardTitle>
-            </CardHeader>
+
 
             <CardContent>
                 <Box className="space-y-4">
-                    <Box className="border-2 border-dashed border-gray-300 rounded-lg p-1 bg-gray-50 w-80 h-96">
+                    <Box className="border-2 border-dashed border-gray-300 rounded-lg p-1 bg-gray-50 w-full h-96">
                         <canvas
                             ref={canvasRef}
                             className="w-full  h-full bg-gray-50 border border-gray-200 rounded cursor-crosshair touch-none"
@@ -180,8 +179,7 @@ export function SignatureCapture() {
                                 <XMarkIcon className="w-5 h-5 text-white" />
                                 بازگشت
                             </Button>
-                            <Button
-                                variant="primary"
+                            <LoadingButton
                                 onClick={saveSignature}
                                 disabled={!hasSignature || isLoading}
                                 loading={isLoading}
@@ -191,7 +189,7 @@ export function SignatureCapture() {
                                 <Typography variant="body1" className="text-white text-xs font-medium">
                                     {isLoading ? 'در حال ارسال...' : 'تایید'}
                                 </Typography>
-                            </Button>
+                            </LoadingButton>
 
                         </Box>
                     </Box>

@@ -69,24 +69,14 @@ export function SelfieCapture({
     const capturePhoto = () => {
         const video = videoRef.current;
         const canvas = canvasRef.current;
-
         if (!video || !canvas) return;
-
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
-
-
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-
-
         ctx.drawImage(video, 0, 0);
-
-
         const dataURL = canvas.toDataURL('image/jpeg', 0.8);
         setSelfieImage(dataURL);
-
-
         stopCamera();
     };
 
@@ -95,8 +85,6 @@ export function SelfieCapture({
         setSelfieImage(null);
         startCamera();
     };
-
-
     const confirmPhoto = async () => {
         if (!selfieImage) return;
         setLoading(true);
