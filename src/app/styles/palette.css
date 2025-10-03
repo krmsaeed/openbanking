@@ -164,52 +164,56 @@
   --color-dark-100: #1e293b;
   --color-dark-50: #0f172a;
 
-  --color-gray-900: #121212;
-  --color-gray-800: #1a1a1a;
-  --color-gray-700: #242424;
-  --color-gray-600: #2e2e2e;
-  --color-gray-500: #3b3b3b;
-  --color-gray-400: #4a4a4a;
-  --color-gray-300: #5b5b5b;
-  --color-gray-200: #6c6c6c;
-  --color-gray-100: #7d7d7d;
-  --color-gray-50: #8e8e8e;
+  /* رنگ‌های خاکستری روشن‌تر و نرم‌تر */
+  --color-gray-900: #2a2a3e;
+  --color-gray-800: #323250;
+  --color-gray-700: #3c3c58;
+  --color-gray-600: #464660;
+  --color-gray-500: #525268;
+  --color-gray-400: #626275;
+  --color-gray-300: #747485;
+  --color-gray-200: #888895;
+  --color-gray-100: #9c9ca5;
+  --color-gray-50: #b0b0b5;
 
-  --color-primary: #6c4ae2;
-  --color-primary-900: #e9e6ff;
-  --color-primary-800: #b9aaff;
-  --color-primary-700: #9b82ff;
-  --color-primary-600: #8b6ff3;
-  --color-primary-500: #6c4ae2;
-  --color-primary-400: #4b1480;
-  --color-primary-300: #3e116a;
-  --color-primary-200: #310d54;
-  --color-primary-100: #23093c;
-  --color-primary-50: #1a072d;
+  /* Primary روشن‌تر و جذاب‌تر */
+  --color-primary: #8b6ff5;
+  --color-primary-900: #edebff;
+  --color-primary-800: #ccc0ff;
+  --color-primary-700: #b5a5ff;
+  --color-primary-600: #a189f7;
+  --color-primary-500: #8b6ff5;
+  --color-primary-400: #6a3bb0;
+  --color-primary-300: #563090;
+  --color-primary-200: #422570;
+  --color-primary-100: #2e1a50;
+  --color-primary-50: #1f0f38;
 
-  --color-secondary: #9b86ff;
-  --color-secondary-900: #f6f5ff;
-  --color-secondary-800: #e9e6ff;
-  --color-secondary-700: #d2c8ff;
-  --color-secondary-600: #b79cff;
-  --color-secondary-500: #9b86ff;
-  --color-secondary-400: #2c2640;
-  --color-secondary-300: #161320;
-  --color-secondary-200: #0f0c18;
-  --color-secondary-100: #0a0810;
-  --color-secondary-50: #050406;
+  /* Secondary روشن‌تر و جذاب‌تر */
+  --color-secondary: #b8a6ff;
+  --color-secondary-900: #f9f8ff;
+  --color-secondary-800: #eeeaff;
+  --color-secondary-700: #ddd8ff;
+  --color-secondary-600: #c9c0ff;
+  --color-secondary-500: #b8a6ff;
+  --color-secondary-400: #484065;
+  --color-secondary-300: #363050;
+  --color-secondary-200: #28243a;
+  --color-secondary-100: #1a1828;
+  --color-secondary-50: #0f0d18;
 
-  --color-accent: #08a6a6;
-  --color-accent-900: #eafcfb;
-  --color-accent-800: #bff5f4;
-  --color-accent-700: #8feaea;
-  --color-accent-600: #49d8d8;
-  --color-accent-500: #08a6a6;
-  --color-accent-400: #076f6f;
-  --color-accent-300: #055454;
-  --color-accent-200: #043a3a;
-  --color-accent-100: #021f1f;
-  --color-accent-50: #010808;
+  /* Accent تیل بسیار روشن و جذاب */
+  --color-accent: #20c5c5;
+  --color-accent-900: #eefcfc;
+  --color-accent-800: #d0f8f8;
+  --color-accent-700: #a8ecec;
+  --color-accent-600: #6ee0e0;
+  --color-accent-500: #20c5c5;
+  --color-accent-400: #189090;
+  --color-accent-300: #126a6a;
+  --color-accent-200: #0d4848;
+  --color-accent-100: #062e2e;
+  --color-accent-50: #031818;
 
   --color-success: #22c55e;
   --color-success-900: #062016;
@@ -257,14 +261,15 @@
   --color-error-200: #ffd6d6;
   --color-error-100: #fff5f5;
 
-  --color-text: #e6eef8;
-  --color-bg: #0b1220;
+  /* پس‌زمینه و متن روشن‌تر برای راحتی بیشتر */
+  --color-text: #e8eaed;
+  --color-bg: #242438;
 
-  --color-surface: #141418;
+  --color-surface: #2d2d48;
   --color-surface-foreground: var(--color-text);
-  --color-border: rgba(255, 255, 255, 0.06);
-  --card-shadow: 0 8px 24px rgba(2, 6, 23, 0.6);
-  --scrollbar-thumb: rgba(255, 255, 255, 0.12);
+  --color-border: rgba(255, 255, 255, 0.12);
+  --card-shadow: 0 4px 16px rgba(20, 20, 35, 0.3);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.18);
   --color-muted: var(--color-gray-500);
   --color-muted-2: var(--color-gray-600);
   --color-bg-soft: var(--color-gray-200);
