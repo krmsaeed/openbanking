@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+.yarn/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Lock files
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+
+# Cache
+.cache/
+*.tsbuildinfo
+
+# Misc
+.git/
+.vscode/
+public/sw.js
