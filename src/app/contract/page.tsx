@@ -1,15 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import {
-    DocumentTextIcon,
-    PrinterIcon,
     ArrowDownTrayIcon,
     CheckCircleIcon,
-    XCircleIcon,
+    DocumentTextIcon,
+    PrinterIcon,
 } from '@heroicons/react/24/outline';
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function ContractPage() {
     const [agreed, setAgreed] = useState(false);
@@ -37,10 +36,6 @@ export default function ContractPage() {
         }, 2000);
     };
 
-    const handleReject = () => {
-        router.push('/');
-    };
-
     const handlePrint = () => {
         window.print();
     };
@@ -57,10 +52,9 @@ export default function ContractPage() {
 
     return (
         <div className="bg-dark-50 min-h-screen py-8">
-            <div className="mx-auto max-w-4xl px-4">
-                <div className="mb-8 text-center">
-                    <DocumentTextIcon className="text-primary-600 mx-auto mb-4 h-16 w-16" />
-                    <h1 className="text-dark mb-2 text-3xl font-bold">قرارداد تسهیلات بانکی</h1>
+            <div className="">
+                <div className="mb-2 text-center">
+                    <DocumentTextIcon className="text-primary-600 mx-auto mb-2 h-16 w-16" />
                     <p className="text-dark">قرارداد فی‌مابین مشتری و بانک اقتصاد نوین</p>
                 </div>
 
@@ -234,7 +228,7 @@ export default function ContractPage() {
                 </Card>
 
                 <div className="flex flex-col justify-center gap-4 sm:flex-row">
-                    <Button
+                    {/* <Button
                         variant="outline"
                         size="lg"
                         onClick={handleReject}
@@ -242,7 +236,7 @@ export default function ContractPage() {
                     >
                         <XCircleIcon className="ml-2 h-5 w-5" />
                         عدم تأیید قرارداد
-                    </Button>
+                    </Button> */}
 
                     <Button
                         size="lg"
@@ -251,7 +245,7 @@ export default function ContractPage() {
                         className="bg-secondary flex items-center"
                     >
                         {loading ? (
-                            <div className="ml-2 h-4 w-4 animate-spin rounded-full"></div>
+                            <div className="ml-2 h-4 w-10 animate-spin rounded-full"></div>
                         ) : (
                             <CheckCircleIcon className="ml-2 h-5 w-5" />
                         )}

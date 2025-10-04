@@ -113,6 +113,7 @@ export default function Register() {
     }, [setValue]);
 
     const handleOtp2Submit = () => {
+        setLoading(true);
         axios
             .post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',
@@ -128,6 +129,8 @@ export default function Register() {
                 if (data.body.success) {
                     toast.success('عملیات موفق');
                     setUserData({ step: 6 });
+                } else {
+                    toast.error('عملیات ناموفق');
                 }
             })
             .catch((error) => {
@@ -154,79 +157,62 @@ export default function Register() {
                 return '';
         }
     };
-
-    function handleNationalCardScanComplete(_file: File, _branch: string): void {
-        setUserData({ nationalCard: _file, branch: _branch, step: 7 });
-        toast.success('تصویر کارت ملی و شعبه ثبت شد');
-    }
-
     return (
-        <Box className="my-6 flex flex-col items-start gap-6 p-4 md:flex-row md:justify-center">
-            <Box className="w-full flex-shrink-0 md:w-64">
+        <Box className="my-6 flex w-full flex-col items-start gap-4 md:w-[45rem] md:flex-row md:justify-center">
+            <Box className="">
                 <Sidebar />
             </Box>
 
-            <Box className="w-full rounded-lg shadow-md">
-                <Box className="mx-auto w-full md:max-w-96">
-                    <Box className="flex flex-col gap-3 md:flex-row">
-                        <Box className="w-full">
-                            <Card padding="sm" className="w-full md:min-w-96">
-                                <CardHeader>
-                                    <CardTitle className="text-center">
-                                        {getStepDescription()}
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    {userData.step === 1 && <PersonalInfoForm />}
-                                    {userData.step === 2 && <SelfieStep />}
-                                    {userData.step === 3 && <VideoStep />}
-                                    {userData.step === 4 && <SignatureStep />}
-                                    {userData.step === 5 && (
-                                        <>
-                                            {!passwordSet && (
-                                                <PasswordStep
-                                                    setPassword={setPassword}
-                                                    setPasswordSet={setPasswordSet}
-                                                />
-                                            )}
-
-                                            {passwordSet && (
-                                                <Controller
-                                                    name="certOtp"
-                                                    control={control}
-                                                    defaultValue={''}
-                                                    render={({ field }) => (
-                                                        <CertificateStep
-                                                            otp={field.value ?? ''}
-                                                            setOtp={field.onChange}
-                                                            onIssue={() =>
-                                                                (field.value ?? '').length === 6
-                                                                    ? handleOtp2Submit()
-                                                                    : setError('certOtp', {
-                                                                          type: 'manual',
-                                                                          message:
-                                                                              'کد تایید را کامل وارد کنید',
-                                                                      })
-                                                            }
-                                                            loading={loading}
-                                                        />
-                                                    )}
-                                                />
-                                            )}
-                                        </>
-                                    )}
-                                    {userData.step === 6 && (
-                                        <NationalCardScanner
-                                            onComplete={() => handleNationalCardScanComplete}
-                                            onBack={() => setUserData({ step: 5 })}
+            <Box className="flex w-full flex-col gap-3 rounded-lg shadow-md md:flex-row">
+                <Box className={`mx-5 w-full ${userData.step === 7 && 'lg:w-[40rem]'} md:mx-0`}>
+                    <Card padding="sm" className="w-full">
+                        <CardHeader>
+                            <CardTitle className="text-center">{getStepDescription()}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="w-full">
+                            {userData.step === 1 && <PersonalInfoForm />}
+                            {userData.step === 2 && <SelfieStep />}
+                            {userData.step === 3 && <VideoStep />}
+                            {userData.step === 4 && <SignatureStep />}
+                            {userData.step === 5 && (
+                                <>
+                                    {!passwordSet && (
+                                        <PasswordStep
+                                            setPassword={setPassword}
+                                            setPasswordSet={setPasswordSet}
                                         />
                                     )}
 
-                                    {userData.step === 7 && <ContractPage />}
-                                </CardContent>
-                            </Card>
-                        </Box>
-                    </Box>
+                                    {passwordSet && (
+                                        <Controller
+                                            name="certOtp"
+                                            control={control}
+                                            defaultValue={''}
+                                            render={({ field }) => (
+                                                <CertificateStep
+                                                    otp={field.value ?? ''}
+                                                    setOtp={field.onChange}
+                                                    onIssue={() =>
+                                                        (field.value ?? '').length === 6
+                                                            ? handleOtp2Submit()
+                                                            : setError('certOtp', {
+                                                                  type: 'manual',
+                                                                  message:
+                                                                      'کد تایید را کامل وارد کنید',
+                                                              })
+                                                    }
+                                                    loading={loading}
+                                                />
+                                            )}
+                                        />
+                                    )}
+                                </>
+                            )}
+                            {userData.step === 6 && <NationalCardScanner />}
+
+                            {userData.step === 7 && <ContractPage />}
+                        </CardContent>
+                    </Card>
                 </Box>
             </Box>
         </Box>

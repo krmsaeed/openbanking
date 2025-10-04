@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/core/Button';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { Input } from '@/components/ui/forms';
 import { useUser } from '@/contexts/UserContext';
@@ -25,7 +24,7 @@ export default function PasswordStep({
     const {
         control,
         getValues,
-        formState: { errors },
+        formState: { errors, isValid },
         handleSubmit,
         reset,
     } = useForm({
@@ -110,6 +109,11 @@ export default function PasswordStep({
                                 className="text-left"
                                 dir="ltr"
                                 maxLength={200}
+                                autoComplete="off"
+                                autoCorrect="off"
+                                autoCapitalize="off"
+                                spellCheck={false}
+                                data-form-type="other"
                                 error={errors.ENFirstName?.message}
                             />
                         )}
@@ -133,6 +137,11 @@ export default function PasswordStep({
                                 placeholder="نام خانوادگی لاتین را وارد کنید"
                                 required
                                 fullWidth
+                                autoComplete="new"
+                                autoCorrect="off"
+                                autoCapitalize="off"
+                                spellCheck={false}
+                                data-form-type="other"
                                 className="text-left"
                                 dir="ltr"
                                 maxLength={200}
@@ -161,6 +170,11 @@ export default function PasswordStep({
                                 fullWidth
                                 className="text-left"
                                 dir="ltr"
+                                autoComplete="new-password"
+                                autoCorrect="off"
+                                autoCapitalize="off"
+                                spellCheck={false}
+                                data-form-type="other"
                                 error={errors.password?.message}
                                 startAdornment={
                                     <Box onClick={() => setShowPassword(!showPassword)}>
@@ -194,6 +208,11 @@ export default function PasswordStep({
                                 dir="ltr"
                                 label="تایید رمز عبور"
                                 placeholder="تکرار رمز عبور"
+                                autoComplete="new-password"
+                                autoCorrect="off"
+                                autoCapitalize="off"
+                                spellCheck={false}
+                                data-form-type="other"
                                 error={errors.confirmPassword?.message}
                                 startAdornment={
                                     <Box onClick={() => setShowPassword(!showPassword)}>
@@ -208,17 +227,17 @@ export default function PasswordStep({
                         )}
                     />
                     <Box className="mt-4 flex gap-2">
-                        <Button
+                        {/* <Button
                             onClick={() => reset({ password: '', confirmPassword: '' })}
                             className="bg-error-200 w-full"
                             disabled={isLoading}
                         >
                             بازنشانی
-                        </Button>
+                        </Button> */}
                         <LoadingButton
                             type="submit"
                             loading={isLoading}
-                            disabled={isLoading}
+                            disabled={isLoading || !isValid}
                             className="w-full"
                         >
                             تعیین رمز عبور

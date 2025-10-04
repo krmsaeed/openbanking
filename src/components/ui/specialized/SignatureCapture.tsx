@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { TrashIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { Button } from '../core/Button';
-import LoadingButton from '../core/LoadingButton';
-import { Card, CardContent, CardHeader, CardTitle } from '../core/Card';
-import { Box, Typography } from '../core';
-import axios from 'axios';
 import { useUser } from '@/contexts/UserContext';
+import { CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
+import axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { Box, Typography } from '../core';
+import { Button } from '../core/Button';
+import { Card, CardContent } from '../core/Card';
+import LoadingButton from '../core/LoadingButton';
 
 export function SignatureCapture() {
     const { userData, setUserData } = useUser();
@@ -139,10 +139,10 @@ export function SignatureCapture() {
         <Card padding="sm">
             <CardContent>
                 <Box className="space-y-4">
-                    <Box className="h-96 w-full rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-1">
+                    <Box className="h-96 w-full rounded-lg border-2 border-dashed border-gray-300 bg-gray-100 p-1">
                         <canvas
                             ref={canvasRef}
-                            className="h-full w-full cursor-crosshair touch-none rounded border border-gray-200 bg-gray-50"
+                            className="h-full w-full cursor-crosshair touch-none rounded border border-gray-200 bg-white"
                             onMouseDown={startDrawing}
                             onMouseMove={draw}
                             onMouseUp={stopDrawing}
@@ -175,14 +175,14 @@ export function SignatureCapture() {
                     </Box>
                     <Box className="flex items-center justify-between gap-4">
                         <Box className="flex w-full items-center gap-2">
-                            <Button
+                            {/* <Button
                                 onClick={() => setUserData({ ...userData, step: 4 })}
                                 variant="destructive"
                                 className="gapo-3 flex w-full items-center justify-center px-5 py-3 text-white"
                             >
                                 <XMarkIcon className="h-5 w-5 text-white" />
                                 بازگشت
-                            </Button>
+                            </Button> */}
                             <LoadingButton
                                 onClick={saveSignature}
                                 disabled={!hasSignature || isLoading}

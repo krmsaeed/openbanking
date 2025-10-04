@@ -35,7 +35,7 @@ function HomeLoader() {
             .then((response) => {
                 const { data } = response.data as ResponseBody;
                 if (data.body.isCustomer) {
-                    setUserData({ nationalCode, step: 2, processId: data.processId });
+                    setUserData({ nationalCode, step: 1, processId: data.processId });
                     router.push('/register');
                 } else {
                     setUserData({ nationalCode, processId: data.processId });

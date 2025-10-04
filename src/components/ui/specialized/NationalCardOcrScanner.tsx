@@ -4,7 +4,7 @@ import { Box } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
 import { Modal } from '@/components/ui/overlay';
 import { OcrFields, ocrRecognizeFile, parseNationalCardFields } from '@/lib/ocr';
-import { ArrowPathIcon, CameraIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { CameraIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -214,6 +214,16 @@ export default function NationalCardOcrScanner({
             setOcrLoading(false);
         }
     };
+
+    // Utility: convert Blob to File (keeps type and allows naming)
+    const blobToFile = (blob: Blob, fileName: string) => {
+        try {
+            return new File([blob], fileName, { type: blob.type });
+        } catch {
+            // File constructor may not be available in some older environments; fallback to Blob cast
+            return new Blob([blob], { type: blob.type }) as unknown as File;
+        }
+    };
     const handleCapture = () => {
         if (ocrLoading) return;
         if (!videoRef.current) return;
@@ -229,23 +239,37 @@ export default function NationalCardOcrScanner({
         canvas.toBlob(
             (blob) => {
                 if (!blob) return;
-                const file = new File([blob], `national-card-${Date.now()}.jpg`, {
-                    type: blob.type,
-                });
+                // Convert blob -> File explicitly using helper
+                type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
+                const maybe = globalThis as unknown as MaybeCrypto;
+                const uuid =
+                    maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
+                        ? maybe.crypto.randomUUID()
+                        : Date.now().toString(36);
+                const fileName = `selfie_${uuid}.jpg`;
+                const file = blobToFile(blob, fileName);
                 const url = URL.createObjectURL(file);
                 if (capturedUrl) URL.revokeObjectURL(capturedUrl);
                 setCapturedUrl(url);
+                processOcr(file).then((res) => {
+                    try {
+                        if (onConfirm) onConfirm(file, !!res.valid);
 
-                processOcr(file);
-
-                try {
-                    if (streamRef.current) {
-                        streamRef.current.getTracks().forEach((t) => t.stop());
-                        streamRef.current = null;
-                        setIsCameraOpen(false);
+                        // Only stop camera if OCR is successful
+                        if (res.valid) {
+                            try {
+                                if (streamRef.current) {
+                                    streamRef.current.getTracks().forEach((t) => t.stop());
+                                    streamRef.current = null;
+                                    setIsCameraOpen(false);
+                                }
+                                if (videoRef.current) videoRef.current.srcObject = null;
+                            } catch {}
+                        }
+                    } catch (e) {
+                        console.warn('onConfirm handler failed', e);
                     }
-                    if (videoRef.current) videoRef.current.srcObject = null;
-                } catch {}
+                });
             },
             'image/jpeg',
             0.9
@@ -354,9 +378,7 @@ export default function NationalCardOcrScanner({
                 )}
             </div>
 
-            <div className="mt-2">
-                {/* پیام وضعیت حذف شد - حالا آیکون روی عکس نمایش داده می‌شود */}
-            </div>
+            <div className="mt-2"></div>
 
             <div className="flex items-center justify-center gap-2">
                 {!capturedUrl && (
@@ -374,7 +396,7 @@ export default function NationalCardOcrScanner({
                     </Button>
                 )}
 
-                {capturedUrl && (
+                {/* {capturedUrl && (
                     <Button
                         size="sm"
                         onClick={handleReset}
@@ -384,7 +406,7 @@ export default function NationalCardOcrScanner({
                         <ArrowPathIcon className="ml-2 h-5 w-5" />
                         <span>بازنشانی</span>
                     </Button>
-                )}
+                )} */}
             </div>
 
             {/* Modal for Camera Permission */}

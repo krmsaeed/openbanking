@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 
 interface UserData {
     step?: number;
@@ -21,6 +21,8 @@ interface UserData {
     branch?: string;
     nationalFile?: File;
     processId: number | null;
+    customerNumber?: string;
+    accountNumber?: string;
 }
 
 interface UserContextType {
@@ -62,6 +64,8 @@ const initialState: UserData = {
     branch: '',
     nationalFile: undefined,
     processId: null,
+    customerNumber: undefined,
+    accountNumber: undefined,
 };
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const [userData, setUserDataState] = useState<UserData>(initialState);

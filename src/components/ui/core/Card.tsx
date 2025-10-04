@@ -1,5 +1,5 @@
-import { HTMLAttributes, forwardRef } from 'react';
 import { cn } from '@/lib/utils';
+import { HTMLAttributes, forwardRef } from 'react';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
     variant?: 'default' | 'elevated' | 'outline';
@@ -39,7 +39,7 @@ Card.displayName = 'Card';
 
 const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
     ({ className, ...props }, ref) => (
-        <div ref={ref} className={cn('flex flex-col space-y-1.5 pb-6', className)} {...props} />
+        <div ref={ref} className={cn('flex flex-col py-4', className)} {...props} />
     )
 );
 CardHeader.displayName = 'CardHeader';
@@ -74,4 +74,4 @@ const CardFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
 );
 CardFooter.displayName = 'CardFooter';
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };
+export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle };

@@ -25,7 +25,7 @@ export default function Sidebar() {
     const { userData, setUserData } = useUser();
     return (
         <nav
-            className="mx-auto h-full w-full max-w-md rounded-lg bg-white p-4 shadow-lg dark:bg-gray-600"
+            className="mx-auto h-full w-[90%] rounded-lg bg-gray-50 p-4 shadow-lg md:w-[13rem] dark:bg-gray-600"
             aria-label="مراحل ثبت‌نام"
         >
             <h3 className="mb-2 text-center text-lg font-semibold text-gray-800 dark:text-white">
@@ -46,7 +46,7 @@ export default function Sidebar() {
                                 <Box className="relative flex items-center justify-center">
                                     <Typography
                                         variant="span"
-                                        className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-sm md:h-10 md:w-10 ${index < STEP_META.length - 1 && ((userData?.step ?? 0) > index + 1 ? 'md:connector md:connector-primary' : 'md:connector md:connector-gray')} ${completed && 'bg-primary-400 scale-100 text-white'} ${current ? 'bg-dark-100 text-primary scale-105' : 'bg-dark-200 border-dark-200 text-gray-400 dark:border-gray-500 dark:text-gray-400'}`}
+                                        className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-sm md:h-10 md:w-10 ${index < STEP_META.length - 1 && ((userData?.step ?? 0) > index + 1 ? 'md:connector md:connector-primary' : 'md:connector md:connector-gray')} ${completed && 'bg-primary scale-100 text-white'} ${current ? 'bg-primary-300 scale-105 text-gray-50' : 'border-primary-200 bg-gray text-gray-400 dark:text-gray-200'}`}
                                     >
                                         {completed ? (
                                             <CheckCircleIcon className="text-dark-100 mx-auto h-6 w-6" />

@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
-import './styles/globals.css';
-import localFont from 'next/font/local';
 import { ToastProvider } from '@/components/ui/feedback/Toast';
 import ThemeProvider from '@/lib/ThemeProvider';
-import ThemeToggle from '@/components/ui/ThemeToggle';
+import type { Metadata } from 'next';
+import localFont from 'next/font/local';
+import './styles/globals.css';
+// import ThemeToggle from '@/components/ui/ThemeToggle';
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
 import { UserProvider } from '@/contexts/UserContext';
@@ -78,7 +78,7 @@ export default function RootLayout({
                 <ThemeProvider>
                     <UserProvider>
                         <ToastProvider>
-                            <ThemeToggle />
+                            {/* <ThemeToggle /> */}
                             {process.env.NODE_ENV === 'development' ? (
                                 <ServiceWorkerUnregistrar />
                             ) : (

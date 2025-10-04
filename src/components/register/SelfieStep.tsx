@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { CameraIcon, ArrowPathIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useUser } from '@/contexts/UserContext';
+import { ArrowPathIcon, CameraIcon, CheckIcon } from '@heroicons/react/24/outline';
+import axios from 'axios';
+import Image from 'next/image';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
+import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
 import LoadingButton from '../ui/core/LoadingButton';
-import { Box, Typography } from '../ui/core';
-import Image from 'next/image';
-import { useUser } from '@/contexts/UserContext';
-import axios from 'axios';
-import toast from 'react-hot-toast';
 export default function CameraSelfie() {
     const { userData, setUserData } = useUser();
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -25,6 +25,7 @@ export default function CameraSelfie() {
     const [error, setError] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    const [cameraLoading, setCameraLoading] = useState(true);
     const [faceDetected, setFaceDetected] = useState(false);
     const [faceTooFar, setFaceTooFar] = useState(false);
     const [eyesCentered, setEyesCentered] = useState(true);
@@ -702,6 +703,7 @@ export default function CameraSelfie() {
 
     const startCamera = useCallback(async () => {
         setError(null);
+        setCameraLoading(true);
 
         try {
             if (stream) {
@@ -728,6 +730,7 @@ export default function CameraSelfie() {
 
                 const handleCanPlay = () => {
                     video.play().catch(() => {});
+                    setCameraLoading(false);
                 };
 
                 if (video.readyState >= 3) {
@@ -746,6 +749,8 @@ export default function CameraSelfie() {
                           : 'خطا در دسترسی به دوربین. لطفاً دوباره تلاش کنید.';
                 setError(errorMessage);
             }
+        } finally {
+            setCameraLoading(false);
         }
     }, [stream, initWebGL]);
 
@@ -930,6 +935,7 @@ export default function CameraSelfie() {
 
     const retakePhoto = useCallback(() => {
         setCapturedPhoto(null);
+        setCameraLoading(true);
         startCamera();
     }, [startCamera]);
 
@@ -961,6 +967,7 @@ export default function CameraSelfie() {
 
     // Auto-start camera on mount
     useEffect(() => {
+        setCameraLoading(true);
         startCamera();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -1085,13 +1092,30 @@ export default function CameraSelfie() {
     return (
         <Box className="mx-auto max-w-md space-y-4">
             <Box className="bg-dark relative mx-auto h-70 w-70 overflow-hidden rounded-full">
+                {/* Camera Loading State */}
+                {cameraLoading && (
+                    <Box className="absolute inset-0 z-30 flex flex-col items-center justify-center space-y-4 bg-gray-900 text-white">
+                        <Box className="border-t-primary-500 h-12 w-12 animate-spin rounded-full border-4 border-gray-300"></Box>
+                        <Box className="text-center">
+                            <Typography variant="h3" className="mb-2 text-lg font-semibold">
+                                در حال روشن کردن دوربین
+                            </Typography>
+                            <Typography variant="body1" className="text-sm text-gray-300">
+                                لطفاً صبر کنید...
+                            </Typography>
+                        </Box>
+                    </Box>
+                )}
+
                 <video
                     ref={videoRef}
                     autoPlay
                     playsInline
                     muted
                     className={`absolute top-0 left-0 z-10 h-full w-full -scale-x-100 transform bg-black object-cover ${
-                        stream && !capturedPhoto ? 'visible opacity-100' : 'invisible opacity-0'
+                        stream && !capturedPhoto && !cameraLoading
+                            ? 'visible opacity-100'
+                            : 'invisible opacity-0'
                     }`}
                     controls={false}
                     disablePictureInPicture
@@ -1111,7 +1135,7 @@ export default function CameraSelfie() {
                         <Box className="border-opacity-20 pointer-events-none absolute inset-0 rounded-full border-2 border-white"></Box>
                     </Box>
                 )}
-                {!capturedPhoto && stream && (
+                {!capturedPhoto && stream && !cameraLoading && (
                     <svg className="pointer-events-none absolute inset-0 z-30 h-full w-full -rotate-90">
                         <circle
                             className="transition-all duration-300"
@@ -1140,7 +1164,7 @@ export default function CameraSelfie() {
                 <Box className="flex justify-center gap-4">
                     <Button
                         onClick={retakePhoto}
-                        className="w-fu bg-success hover:bg-primary-300 flex items-center justify-center px-5 py-3"
+                        className="w-fu bg-success-400 hover:bg-primary-300 flex items-center justify-center px-5 py-3 opacity-50 hover:opacity-100"
                     >
                         <ArrowPathIcon className="h-6 w-6 text-white" />
                         <Typography variant="body1" className="text-xs font-medium text-white">
@@ -1149,8 +1173,8 @@ export default function CameraSelfie() {
                     </Button>
                 </Box>
             )}
-            {!capturedPhoto && stream && closenessPercent <= 80 && (
-                <Box className="space-y-3 text-center">
+            {!capturedPhoto && stream && !cameraLoading && closenessPercent <= 80 ? (
+                <Box className="h-3 space-y-3 text-center">
                     <Typography
                         variant="body1"
                         className={`text-center text-sm font-medium transition-colors duration-300 ${!faceDetected && 'text-red-500'} ${faceDetected && closenessPercent >= 85 && 'text-green-500'}`}
@@ -1165,9 +1189,11 @@ export default function CameraSelfie() {
                                     : 'صورت خود را در مقابل دوربین قرار دهید')}
                     </Typography>
                 </Box>
+            ) : (
+                <Box className="h-3"></Box>
             )}
 
-            {!capturedPhoto && stream && (
+            {!capturedPhoto && stream && !cameraLoading && (
                 <Box className="flex flex-col items-center space-y-2">
                     <Button
                         onClick={(e) => {
@@ -1191,19 +1217,11 @@ export default function CameraSelfie() {
                     </Button>
                 </Box>
             )}
-            <Box className="rounded-xl bg-gray-300 p-4">
+            <Box className="rounded-xl bg-gray-100 p-4">
                 {!capturedPhoto ? (
                     <>
-                        <Typography
-                            variant="body1"
-                            className="text-dark mb-2 text-center font-semibold"
-                        >
-                            راهنمای عکس سلفی
-                        </Typography>
                         <ul className="text-dark [&_li]:text-dark space-y-1 text-sm">
                             <li>• صورت خود را کاملاً در قاب قرار دهید</li>
-                            <li>• از نور کافی استفاده کنید</li>
-                            <li>• عینک آفتابی نداشته باشید</li>
                             <li>• مستقیم به دوربین نگاه کنید</li>
                             <li>• منتظر بمانید تا صورت شما تشخیص داده شود</li>
                             <li>• روی دکمه سبز کلیک کنید تا عکس بگیرید</li>
@@ -1219,14 +1237,14 @@ export default function CameraSelfie() {
             </Box>
 
             <Box className="flex w-full items-center gap-2">
-                <Button
+                {/* <Button
                     onClick={() => setUserData({ step: 1 })}
                     variant="destructive"
                     className="gapo-3 flex w-full items-center justify-center px-5 py-3 text-white"
                 >
                     <XMarkIcon className="h-5 w-5 text-white" />
                     انصراف
-                </Button>
+                </Button> */}
                 <LoadingButton
                     onClick={handleConfirm}
                     loading={isUploading}
