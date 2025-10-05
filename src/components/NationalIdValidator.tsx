@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
+import { Box } from '@/components/ui';
 import { convertPersianToEnglish } from '@/lib/utils';
 
 export function cleanNationalId(input: string): string {
@@ -54,12 +55,12 @@ export function NationalIdValidation({
     const cleaned = cleanNationalId(v);
     if (!isValidNationalId(cleaned)) {
         return (
-            <div className="flex w-full max-w-lg flex-col items-center justify-center gap-4 rounded-2xl bg-red-50 p-4 shadow-sm">
-                <div className="font-medium text-red-600">کد ملی نامعتبر است</div>
-                <div className="text-sm text-red-500">
+            <Box className="flex w-full max-w-lg flex-col items-center justify-center gap-4 rounded-2xl bg-red-50 p-4 shadow-sm">
+                <Box className="font-medium text-red-600">کد ملی نامعتبر است</Box>
+                <Box className="text-sm text-red-500">
                     لطفاً لینک را بررسی کنید یا کد ملی را اصلاح کنید.
-                </div>
-            </div>
+                </Box>
+            </Box>
         );
     }
 

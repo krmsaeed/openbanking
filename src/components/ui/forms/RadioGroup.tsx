@@ -1,5 +1,6 @@
 'use client';
 
+import { Box } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import React, { forwardRef } from 'react';
 
@@ -38,8 +39,8 @@ function RadioGroupInner<T>(
     };
 
     return (
-        <div className={cn('space-y-2', className)}>
-            <div
+        <Box className={cn('space-y-2', className)}>
+            <Box
                 className={cn(
                     'flex gap-3',
                     direction === 'vertical' ? 'flex-col' : 'flex-row flex-wrap'
@@ -71,7 +72,7 @@ function RadioGroupInner<T>(
                                 {option.label}
                             </span>
 
-                            <div className="relative">
+                            <Box className="relative">
                                 <input
                                     ref={isSelected ? ref : undefined}
                                     type="radio"
@@ -82,9 +83,9 @@ function RadioGroupInner<T>(
                                     className="sr-only"
                                     {...props}
                                 />
-                                <div
+                                <Box
                                     className={cn(
-                                        'h-[19px] w-[19px] rounded-full border-1 transition-all duration-200',
+                                        'h-[1.01rem] w-[1.01rem] rounded-full border-1 transition-all duration-200',
                                         'flex items-center justify-center',
                                         isSelected
                                             ? 'border-primary-500 bg-white'
@@ -92,16 +93,16 @@ function RadioGroupInner<T>(
                                     )}
                                 >
                                     {isSelected && (
-                                        <div className="bg-primary-500 h-2.5 w-2.5 rounded-full" />
+                                        <Box className="bg-primary-500 h-2.5 w-2.5 rounded-full" />
                                     )}
-                                </div>
-                            </div>
+                                </Box>
+                            </Box>
                         </label>
                     );
                 })}
-            </div>
+            </Box>
             {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
-        </div>
+        </Box>
     );
 }
 

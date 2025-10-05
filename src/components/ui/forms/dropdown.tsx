@@ -238,7 +238,7 @@ const DropdownCustom = ({
 
                 {isOpen && (
                     <Box
-                        className={`absolute z-50 mt-0 max-h-60 w-full overflow-auto rounded-lg bg-white shadow-sm ${props.menuClassName} `}
+                        className={`absolute top-full right-0 left-0 z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg ${props.menuClassName} `}
                     >
                         {searchable && (
                             <Box className="sticky top-0 border-b bg-white p-2">

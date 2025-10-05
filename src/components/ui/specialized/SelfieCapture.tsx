@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { CameraIcon, ArrowPathIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { Button } from '../core/Button';
-import { Card, CardContent, CardHeader } from '../core/Card';
-import { Box, Typography } from '../core';
-import { Loading } from '../feedback/Loading';
+import { ArrowPathIcon, CameraIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Box, Typography } from '../core';
+import { Button } from '../core/Button';
+import { Loading } from '../feedback/Loading';
 
 interface SelfieCaptureProps {
     onComplete: (selfieFile: File) => void;
@@ -110,147 +109,140 @@ export function SelfieCapture({
     }, [stopCamera]);
 
     return (
-        <Card padding="lg" className="mx-auto w-full max-w-md">
-            <CardHeader>
-                <Box className="text-center">
-                    <Box className="bg-primary mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-                        <CameraIcon className="h-8 w-8 text-white" />
-                    </Box>
-                    <Typography variant="h6" className="mb-2">
-                        {title}
-                    </Typography>
-                    <Typography variant="body2" color="secondary">
-                        {description}
-                    </Typography>
+        <Box>
+            <Box className="text-center">
+                <Box className="bg-primary mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+                    <CameraIcon className="h-8 w-8 text-white" />
                 </Box>
-            </CardHeader>
+                <Typography variant="h6" className="mb-2">
+                    {title}
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                    {description}
+                </Typography>
+            </Box>
 
-            <CardContent>
-                <Box className="space-y-6">
-                    {error && (
-                        <Box className="rounded-lg border border-red-200 bg-red-50 p-3">
+            <Box className="space-y-6">
+                {error && (
+                    <Box className="rounded-lg border border-red-200 bg-red-50 p-3">
+                        <Typography variant="caption" className="block text-center text-red-800">
+                            {error}
+                        </Typography>
+                    </Box>
+                )}
+
+                {!cameraStarted && !selfieImage && (
+                    <Box className="space-y-4 text-center">
+                        <Box className="rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-12">
+                            <CameraIcon className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+                            <Typography variant="body2" color="secondary" className="mb-4">
+                                برای شروع گرفتن عکس، روی دکمه زیر کلیک کنید
+                            </Typography>
+                            <Button
+                                onClick={startCamera}
+                                disabled={loading}
+                                className="flex items-center gap-2"
+                            >
+                                {loading ? (
+                                    <Loading size="sm" />
+                                ) : (
+                                    <CameraIcon className="h-5 w-5" />
+                                )}
+                                شروع دوربین
+                            </Button>
+                        </Box>
+                    </Box>
+                )}
+
+                {cameraStarted && stream && !selfieImage && (
+                    <Box className="space-y-4">
+                        <Box className="relative">
+                            <video
+                                ref={videoRef}
+                                autoPlay
+                                playsInline
+                                muted
+                                className="w-full rounded-xl border border-gray-300 bg-black"
+                                style={{ transform: 'scaleX(-1)' }}
+                            />
+                            <Box className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                                <Box className="h-60 w-48 rounded-full border-2 border-dashed border-white opacity-50"></Box>
+                            </Box>
+                        </Box>
+
+                        <Box className="bg-primary-50 border-primary-200 rounded-lg border p-3">
                             <Typography
                                 variant="caption"
-                                className="block text-center text-red-800"
+                                className="text-primary-800 block text-center"
                             >
-                                {error}
+                                صورت خود را داخل دایره قرار دهید و روی دکمه عکس کلیک کنید
                             </Typography>
                         </Box>
-                    )}
 
-                    {!cameraStarted && !selfieImage && (
-                        <Box className="space-y-4 text-center">
-                            <Box className="rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-12">
-                                <CameraIcon className="mx-auto mb-4 h-16 w-16 text-gray-400" />
-                                <Typography variant="body2" color="secondary" className="mb-4">
-                                    برای شروع گرفتن عکس، روی دکمه زیر کلیک کنید
-                                </Typography>
-                                <Button
-                                    onClick={startCamera}
-                                    disabled={loading}
-                                    className="flex items-center gap-2"
-                                >
-                                    {loading ? (
-                                        <Loading size="sm" />
-                                    ) : (
-                                        <CameraIcon className="h-5 w-5" />
-                                    )}
-                                    شروع دوربین
-                                </Button>
-                            </Box>
+                        <Box className="flex gap-3">
+                            <Button variant="outline" onClick={stopCamera} className="flex-1">
+                                <XMarkIcon className="ml-2 h-4 w-4" />
+                                لغو
+                            </Button>
+                            <Button
+                                onClick={capturePhoto}
+                                className="flex-1 bg-green-600 hover:bg-green-700"
+                            >
+                                <CameraIcon className="ml-2 h-5 w-5" />
+                                عکس بگیر
+                            </Button>
                         </Box>
-                    )}
-
-                    {cameraStarted && stream && !selfieImage && (
-                        <Box className="space-y-4">
-                            <Box className="relative">
-                                <video
-                                    ref={videoRef}
-                                    autoPlay
-                                    playsInline
-                                    muted
-                                    className="w-full rounded-xl border border-gray-300 bg-black"
-                                    style={{ transform: 'scaleX(-1)' }}
-                                />
-                                <Box className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                                    <Box className="h-60 w-48 rounded-full border-2 border-dashed border-white opacity-50"></Box>
-                                </Box>
-                            </Box>
-
-                            <Box className="bg-primary-50 border-primary-200 rounded-lg border p-3">
-                                <Typography
-                                    variant="caption"
-                                    className="text-primary-800 block text-center"
-                                >
-                                    صورت خود را داخل دایره قرار دهید و روی دکمه عکس کلیک کنید
-                                </Typography>
-                            </Box>
-
-                            <Box className="flex gap-3">
-                                <Button variant="outline" onClick={stopCamera} className="flex-1">
-                                    <XMarkIcon className="ml-2 h-4 w-4" />
-                                    لغو
-                                </Button>
-                                <Button
-                                    onClick={capturePhoto}
-                                    className="flex-1 bg-green-600 hover:bg-green-700"
-                                >
-                                    <CameraIcon className="ml-2 h-5 w-5" />
-                                    عکس بگیر
-                                </Button>
-                            </Box>
-                        </Box>
-                    )}
-
-                    {selfieImage && (
-                        <Box className="space-y-4">
-                            <Box className="relative">
-                                <Image
-                                    src={selfieImage}
-                                    alt="Selfie"
-                                    width={400}
-                                    height={300}
-                                    className="w-full rounded-xl border border-gray-300"
-                                    style={{ transform: 'scaleX(-1)' }}
-                                />
-                            </Box>
-
-                            <Box className="rounded-lg border border-green-200 bg-green-50 p-3">
-                                <Typography
-                                    variant="caption"
-                                    className="block text-center text-green-800"
-                                >
-                                    عکس با موفقیت گرفته شد. اگر از کیفیت راضی هستید تأیید کنید
-                                </Typography>
-                            </Box>
-
-                            <Box className="flex gap-3">
-                                <Button variant="outline" onClick={retakePhoto} className="flex-1">
-                                    <ArrowPathIcon className="ml-2 h-4 w-4" />
-                                    عکس دوباره
-                                </Button>
-                                <Button
-                                    onClick={confirmPhoto}
-                                    className="flex-1 bg-green-600 hover:bg-green-700"
-                                    loading={loading}
-                                    disabled={loading}
-                                >
-                                    {!loading && <CheckIcon className="ml-2 h-4 w-4" />}
-                                    {loading ? 'در حال ارسال...' : 'تأیید عکس'}
-                                </Button>
-                            </Box>
-                        </Box>
-                    )}
-
-                    <Box className="border-t border-gray-200 pt-4 text-center">
-                        <Button variant="ghost" onClick={onCancel}>
-                            انصراف و بازگشت
-                        </Button>
                     </Box>
+                )}
+
+                {selfieImage && (
+                    <Box className="space-y-4">
+                        <Box className="relative">
+                            <Image
+                                src={selfieImage}
+                                alt="Selfie"
+                                width={400}
+                                height={300}
+                                className="w-full rounded-xl border border-gray-300"
+                                style={{ transform: 'scaleX(-1)' }}
+                            />
+                        </Box>
+
+                        <Box className="rounded-lg border border-green-200 bg-green-50 p-3">
+                            <Typography
+                                variant="caption"
+                                className="block text-center text-green-800"
+                            >
+                                عکس با موفقیت گرفته شد. اگر از کیفیت راضی هستید تأیید کنید
+                            </Typography>
+                        </Box>
+
+                        <Box className="flex gap-3">
+                            <Button variant="outline" onClick={retakePhoto} className="flex-1">
+                                <ArrowPathIcon className="ml-2 h-4 w-4" />
+                                عکس دوباره
+                            </Button>
+                            <Button
+                                onClick={confirmPhoto}
+                                className="flex-1 bg-green-600 hover:bg-green-700"
+                                loading={loading}
+                                disabled={loading}
+                            >
+                                {!loading && <CheckIcon className="ml-2 h-4 w-4" />}
+                                {loading ? 'در حال ارسال...' : 'تأیید عکس'}
+                            </Button>
+                        </Box>
+                    </Box>
+                )}
+
+                <Box className="border-t border-gray-200 pt-4 text-center">
+                    <Button variant="ghost" onClick={onCancel}>
+                        انصراف و بازگشت
+                    </Button>
                 </Box>
-            </CardContent>
+            </Box>
 
             <canvas ref={canvasRef} className="hidden" />
-        </Card>
+        </Box>
     );
 }

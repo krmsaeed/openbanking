@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 import { Box } from '../core/Box';
 
 interface PageHeaderProps {

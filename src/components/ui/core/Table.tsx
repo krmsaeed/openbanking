@@ -1,5 +1,6 @@
-import { HTMLAttributes, forwardRef } from 'react';
 import { cn } from '@/lib/utils';
+import { HTMLAttributes, forwardRef } from 'react';
+import { Box } from './Box';
 
 type TableVariant = 'default' | 'bordered' | 'striped' | 'hover' | 'compact';
 type TableSize = 'sm' | 'md' | 'lg';
@@ -163,7 +164,7 @@ export const Table = forwardRef<HTMLTableElement, TableProps>(
         );
 
         if (responsive) {
-            return <div className="overflow-x-auto">{TableComponent}</div>;
+            return <Box className="overflow-x-auto">{TableComponent}</Box>;
         }
 
         return TableComponent;

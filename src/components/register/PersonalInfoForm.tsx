@@ -65,7 +65,7 @@ export default function PersonalInfoForm() {
             });
     };
     return (
-        <div className="space-y-6">
+        <div className="w-full">
             {showNationalCardTemplate ? null : (
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
                     <Input

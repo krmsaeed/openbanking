@@ -6,7 +6,6 @@ import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography } from '../core';
 import { Button } from '../core/Button';
-import { Card, CardContent } from '../core/Card';
 import LoadingButton from '../core/LoadingButton';
 
 export function SignatureCapture() {
@@ -136,46 +135,41 @@ export function SignatureCapture() {
     };
 
     return (
-        <Card padding="sm">
-            <CardContent>
-                <Box className="space-y-4">
-                    <Box className="h-96 w-full rounded-lg border-2 border-dashed border-gray-300 bg-gray-100 p-1">
-                        <canvas
-                            ref={canvasRef}
-                            className="h-full w-full cursor-crosshair touch-none rounded border border-gray-200 bg-white"
-                            onMouseDown={startDrawing}
-                            onMouseMove={draw}
-                            onMouseUp={stopDrawing}
-                            onMouseLeave={stopDrawing}
-                            onTouchStart={startDrawing}
-                            onTouchMove={draw}
-                            onTouchEnd={stopDrawing}
-                            height={568}
-                        />
-                    </Box>
+        <Box className="space-y-4">
+            <Box className="h-[25rem] w-full rounded-lg border-2 border-dashed border-gray-300 bg-gray-100 p-1 md:h-96">
+                <canvas
+                    ref={canvasRef}
+                    className="h-full w-full cursor-crosshair touch-none rounded border border-gray-200 bg-white"
+                    onMouseDown={startDrawing}
+                    onMouseMove={draw}
+                    onMouseUp={stopDrawing}
+                    onMouseLeave={stopDrawing}
+                    onTouchStart={startDrawing}
+                    onTouchMove={draw}
+                    onTouchEnd={stopDrawing}
+                    height={500}
+                />
+            </Box>
 
-                    <Box className="rounded-lg bg-gray-100 p-3">
-                        <Typography
-                            variant="caption"
-                            className="block text-center font-bold text-gray-800"
-                        >
-                            امضای خود را با ماوس یا انگشت در کادر بالا بکشید
-                        </Typography>
-                    </Box>
-                    <Box className="w-full">
-                        <Button
-                            variant="secondary"
-                            onClick={clearSignature}
-                            disabled={!hasSignature}
-                            className="mx-auto flex items-center gap-2"
-                        >
-                            <TrashIcon className="h-4 w-4" />
-                            پاک کردن
-                        </Button>
-                    </Box>
-                    <Box className="flex items-center justify-between gap-4">
-                        <Box className="flex w-full items-center gap-2">
-                            {/* <Button
+            <Box className="rounded-lg bg-gray-100 p-3">
+                <Typography variant="caption" className="block text-center font-bold text-gray-800">
+                    امضای خود را با ماوس یا انگشت در کادر بالا بکشید
+                </Typography>
+            </Box>
+            <Box className="w-full">
+                <Button
+                    variant="secondary"
+                    onClick={clearSignature}
+                    disabled={!hasSignature}
+                    className="mx-auto flex items-center gap-2"
+                >
+                    <TrashIcon className="h-4 w-4" />
+                    پاک کردن
+                </Button>
+            </Box>
+            <Box className="flex items-center justify-between gap-4">
+                <Box className="flex w-full items-center gap-2">
+                    {/* <Button
                                 onClick={() => setUserData({ ...userData, step: 4 })}
                                 variant="destructive"
                                 className="gapo-3 flex w-full items-center justify-center px-5 py-3 text-white"
@@ -183,24 +177,19 @@ export function SignatureCapture() {
                                 <XMarkIcon className="h-5 w-5 text-white" />
                                 بازگشت
                             </Button> */}
-                            <LoadingButton
-                                onClick={saveSignature}
-                                disabled={!hasSignature || isLoading}
-                                loading={isLoading}
-                                className="bg-primary-600 hover:bg-primary-700 flex w-full items-center justify-center gap-3 px-5 py-3 text-white"
-                            >
-                                {!isLoading && <CheckIcon className="h-5 w-5" />}
-                                <Typography
-                                    variant="body1"
-                                    className="text-xs font-medium text-white"
-                                >
-                                    {isLoading ? 'در حال ارسال...' : 'تایید'}
-                                </Typography>
-                            </LoadingButton>
-                        </Box>
-                    </Box>
+                    <LoadingButton
+                        onClick={saveSignature}
+                        disabled={!hasSignature || isLoading}
+                        loading={isLoading}
+                        className="bg-primary-600 hover:bg-primary-700 flex w-full items-center justify-center gap-3 px-5 py-3 text-white"
+                    >
+                        {!isLoading && <CheckIcon className="h-5 w-5" />}
+                        <Typography variant="body1" className="text-xs font-medium text-white">
+                            {isLoading ? 'در حال ارسال...' : 'تایید'}
+                        </Typography>
+                    </LoadingButton>
                 </Box>
-            </CardContent>
-        </Card>
+            </Box>
+        </Box>
     );
 }

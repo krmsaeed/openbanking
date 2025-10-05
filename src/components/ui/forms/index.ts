@@ -1,3 +1,4 @@
+export { Checkbox } from './checkbox';
 export { NationalCodeInput, PhoneNumberInput } from './CommonInputs';
 export { default as FormField } from './FormField';
 export { default as Input } from './Input';

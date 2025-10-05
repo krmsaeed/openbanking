@@ -1,12 +1,13 @@
 'use client';
-import React, { createContext, useContext } from 'react';
-import toast, { Toaster, Toast } from 'react-hot-toast';
+import { Box } from '@/components/ui';
 import {
     CheckCircleIcon,
-    XCircleIcon,
     ExclamationTriangleIcon,
     InformationCircleIcon,
+    XCircleIcon,
 } from '@heroicons/react/24/solid';
+import React, { createContext, useContext } from 'react';
+import toast, { Toast, Toaster } from 'react-hot-toast';
 
 interface ToastContextType {
     success: (message: string, options?: object) => void;
@@ -46,24 +47,24 @@ const CustomToast: React.FC<{ t: Toast; type: 'success' | 'error' | 'warning' | 
     };
 
     return (
-        <div
+        <Box
             className={`${
                 t.visible ? 'animate-enter' : 'animate-leave'
             } flex items-center rounded-xl border p-4 ${colors[type]} max-w-md shadow-lg`}
         >
-            <div className="flex items-center space-x-3 space-x-reverse">
+            <Box className="flex items-center space-x-3 space-x-reverse">
                 {icons[type]}
                 <p className="text-sm font-medium text-gray-900">
                     {typeof t.message === 'function' ? t.message(t) : t.message}
                 </p>
-            </div>
+            </Box>
             <button
                 onClick={() => toast.dismiss(t.id)}
                 className="mr-auto text-gray-400 transition-colors hover:text-gray-600"
             >
                 <XCircleIcon className="h-5 w-5" />
             </button>
-        </div>
+        </Box>
     );
 };
 

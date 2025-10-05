@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Box, Button, Typography } from '@/components/ui';
 import {
     ArrowDownTrayIcon,
     CheckCircleIcon,
@@ -51,183 +51,167 @@ export default function ContractPage() {
     };
 
     return (
-        <div className="bg-dark-50 min-h-screen py-8">
-            <div className="">
-                <div className="mb-2 text-center">
+        <Box className="bg-dark-50 min-h-screen py-4">
+            <Box className="">
+                <Box className="mb-2 text-center">
                     <DocumentTextIcon className="text-primary-600 mx-auto mb-2 h-16 w-16" />
                     <p className="text-dark">قرارداد فی‌مابین مشتری و بانک اقتصاد نوین</p>
-                </div>
+                </Box>
 
-                <Card className="mb-6">
-                    <CardHeader>
-                        <CardTitle className="flex items-center justify-between">
-                            <span>مشخصات قرارداد</span>
-                            <div className="flex gap-2">
-                                <Button variant="secondary" size="sm" onClick={handlePrint}>
-                                    <PrinterIcon className="ml-2 h-4 w-4" />
-                                    چاپ
-                                </Button>
-                                <Button variant="secondary" size="sm" onClick={handleDownload}>
-                                    <ArrowDownTrayIcon className="ml-2 h-4 w-4" />
-                                    دانلود
-                                </Button>
-                            </div>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid gap-6 md:grid-cols-2">
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="text-dark text-sm font-medium">
-                                        شماره قرارداد
-                                    </label>
-                                    <p className="text-primary-600 text-lg font-bold">
-                                        {contractDetails.contractNumber}
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="text-dark text-sm font-medium">
-                                        تاریخ قرارداد
-                                    </label>
-                                    <p className="text-dark-800">{contractDetails.date}</p>
-                                </div>
-                                <div>
-                                    <label className="text-dark text-sm font-medium">
-                                        نام مشتری
-                                    </label>
-                                    <p className="text-dark-800">{contractDetails.customerName}</p>
-                                </div>
-                                <div>
-                                    <label className="text-dark text-sm font-medium">کد ملی</label>
-                                    <p className="text-dark-800">{contractDetails.nationalId}</p>
-                                </div>
-                            </div>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="text-dark text-sm font-medium">
-                                        مبلغ تسهیلات
-                                    </label>
-                                    <p className="text-success text-lg font-bold">
-                                        {contractDetails.facilityAmount} ریال
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="text-dark text-sm font-medium">نرخ سود</label>
-                                    <p className="text-dark-800">
-                                        {contractDetails.interestRate}% سالانه
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="text-dark text-sm font-medium">
-                                        مدت بازپرداخت
-                                    </label>
-                                    <p className="text-dark-800">{contractDetails.duration} ماه</p>
-                                </div>
-                                <div>
-                                    <label className="text-dark text-sm font-medium">
-                                        قسط ماهانه
-                                    </label>
-                                    <p className="text-lg font-bold text-orange-600">
-                                        {contractDetails.monthlyPayment} ریال
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="mb-6">
-                    <CardHeader>
-                        <CardTitle>شرایط و ضوابط قرارداد</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-6 text-justify leading-relaxed">
-                            <div>
-                                <h3 className="text-dark-800 mb-2 font-bold">
-                                    ماده ۱ - موضوع قرارداد
-                                </h3>
-                                <p className="text-dark">
-                                    بانک اقتصاد نوین متعهد می‌شود مبلغ{' '}
-                                    {contractDetails.facilityAmount} ریال را به عنوان تسهیلات بانکی
-                                    در اختیار مشتری قرار دهد. این مبلغ باید طی مدت{' '}
-                                    {contractDetails.duration} ماه به صورت اقساط ماهانه بازپرداخت
-                                    شود.
+                <Box className="mb-6">
+                    <Box className="flex flex-col items-center">
+                        <Box className="flex gap-2 text-center">
+                            <Button variant="secondary" size="sm" onClick={handlePrint}>
+                                <PrinterIcon className="ml-2 h-4 w-4" />
+                                چاپ
+                            </Button>
+                            <Button variant="secondary" size="sm" onClick={handleDownload}>
+                                <ArrowDownTrayIcon className="ml-2 h-4 w-4" />
+                                دانلود
+                            </Button>
+                        </Box>
+                        <Typography variant="h5" className="my-3">
+                            مشخصات قرارداد
+                        </Typography>
+                    </Box>
+                    <Box className="grid gap-6 md:grid-cols-2">
+                        <Box className="space-y-4">
+                            <Box>
+                                <label className="text-dark text-sm font-medium">
+                                    شماره قرارداد
+                                </label>
+                                <p className="text-primary-600 text-lg font-bold">
+                                    {contractDetails.contractNumber}
                                 </p>
-                            </div>
-
-                            <div>
-                                <h3 className="text-dark-800 mb-2 font-bold">
-                                    ماده ۲ - نحوه بازپرداخت
-                                </h3>
-                                <p className="text-dark">
-                                    مشتری متعهد است مبلغ {contractDetails.monthlyPayment} ریال را در
-                                    هر ماه تا تاریخ ۵ هر ماه به حساب بانک واریز نماید. در صورت تأخیر
-                                    در پرداخت، جریمه تأخیر طبق نرخ‌های مصوب بانک مرکزی محاسبه خواهد
-                                    شد.
+                            </Box>
+                            <Box>
+                                <label className="text-dark text-sm font-medium">
+                                    تاریخ قرارداد
+                                </label>
+                                <p className="text-dark-800">{contractDetails.date}</p>
+                            </Box>
+                            <Box>
+                                <label className="text-dark text-sm font-medium">نام مشتری</label>
+                                <p className="text-dark-800">{contractDetails.customerName}</p>
+                            </Box>
+                            <Box>
+                                <label className="text-dark text-sm font-medium">کد ملی</label>
+                                <p className="text-dark-800">{contractDetails.nationalId}</p>
+                            </Box>
+                        </Box>
+                        <Box className="space-y-4">
+                            <Box>
+                                <label className="text-dark text-sm font-medium">
+                                    مبلغ تسهیلات
+                                </label>
+                                <p className="text-success text-lg font-bold">
+                                    {contractDetails.facilityAmount} ریال
                                 </p>
-                            </div>
-
-                            <div>
-                                <h3 className="text-dark-800 mb-2 font-bold">ماده ۳ - نرخ سود</h3>
-                                <p className="text-dark">
-                                    نرخ سود این تسهیلات {contractDetails.interestRate}% در سال بوده
-                                    که طبق مقررات بانک مرکزی جمهوری اسلامی ایران تعیین شده است. این
-                                    نرخ ممکن است طبق تصمیمات بانک مرکزی تغییر یابد.
+                            </Box>
+                            <Box>
+                                <label className="text-dark text-sm font-medium">نرخ سود</label>
+                                <p className="text-dark-800">
+                                    {contractDetails.interestRate}% سالانه
                                 </p>
-                            </div>
-
-                            <div>
-                                <h3 className="text-dark-800 mb-2 font-bold">ماده ۴ - تضامین</h3>
-                                <p className="text-dark">
-                                    مشتری متعهد است تضامین لازم شامل اسناد و مدارک مورد نیاز بانک را
-                                    ارائه داده و در طول مدت قرارداد حفظ نماید. در صورت کاهش ارزش
-                                    تضامین، بانک حق درخواست تضامین اضافی را دارد.
+                            </Box>
+                            <Box>
+                                <label className="text-dark text-sm font-medium">
+                                    مدت بازپرداخت
+                                </label>
+                                <p className="text-dark-800">{contractDetails.duration} ماه</p>
+                            </Box>
+                            <Box>
+                                <label className="text-dark text-sm font-medium">قسط ماهانه</label>
+                                <p className="text-lg font-bold text-orange-600">
+                                    {contractDetails.monthlyPayment} ریال
                                 </p>
-                            </div>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Box>
 
-                            <div>
-                                <h3 className="text-dark-800 mb-2 font-bold">
-                                    ماده ۵ - فسخ قرارداد
-                                </h3>
-                                <p className="text-dark">
-                                    در صورت عدم رعایت شرایط قرارداد از سوی مشتری، بانک حق فسخ
-                                    قرارداد و مطالبه کل مبلغ باقیمانده را دارد. همچنین مشتری
-                                    می‌تواند در هر زمان نسبت به تسویه زودهنگام اقدام نماید.
-                                </p>
-                            </div>
+                <Box className="mb-6">
+                    <Typography variant="h5" className="mb-5">
+                        شرایط و ضوابط قرارداد
+                    </Typography>
+                    <Box className="space-y-6 text-justify leading-relaxed">
+                        <Box>
+                            <h3 className="text-dark-800 mb-2 font-bold">ماده ۱ - موضوع قرارداد</h3>
+                            <p className="text-dark">
+                                بانک اقتصاد نوین متعهد می‌شود مبلغ {contractDetails.facilityAmount}{' '}
+                                ریال را به عنوان تسهیلات بانکی در اختیار مشتری قرار دهد. این مبلغ
+                                باید طی مدت {contractDetails.duration} ماه به صورت اقساط ماهانه
+                                بازپرداخت شود.
+                            </p>
+                        </Box>
 
-                            <div>
-                                <h3 className="text-dark-800 mb-2 font-bold">ماده ۶ - حل اختلاف</h3>
-                                <p className="text-dark">
-                                    کلیه اختلافات ناشی از این قرارداد در مراجع ذی‌صلاح قضایی تهران
-                                    قابل رسیدگی است. قوانین جمهوری اسلامی ایران بر این قرارداد حاکم
-                                    خواهد بود.
-                                </p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        <Box>
+                            <h3 className="text-dark-800 mb-2 font-bold">
+                                ماده ۲ - نحوه بازپرداخت
+                            </h3>
+                            <p className="text-dark">
+                                مشتری متعهد است مبلغ {contractDetails.monthlyPayment} ریال را در هر
+                                ماه تا تاریخ ۵ هر ماه به حساب بانک واریز نماید. در صورت تأخیر در
+                                پرداخت، جریمه تأخیر طبق نرخ‌های مصوب بانک مرکزی محاسبه خواهد شد.
+                            </p>
+                        </Box>
 
-                <Card className="mb-6">
-                    <CardContent className="pt-6">
-                        <div className="flex items-start gap-2 space-x-3 space-x-reverse">
-                            <input
-                                type="checkbox"
-                                id="agreement"
-                                checked={agreed}
-                                onChange={(e) => setAgreed(e.target.checked)}
-                                className="text-primary-500 h-7 w-7 rounded-lg bg-white"
-                            />
-                            <label htmlFor="agreement" className="text-dark leading-relaxed">
-                                با مطالعه کامل متن قرارداد، تمامی شرایط و ضوابط آن را پذیرفته و
-                                متعهد به رعایت آن می‌باشم. اطلاعات ارائه شده صحیح بوده و در صورت عدم
-                                صحت، مسئولیت کامل بر عهده من خواهد بود.
-                            </label>
-                        </div>
-                    </CardContent>
-                </Card>
+                        <Box>
+                            <h3 className="text-dark-800 mb-2 font-bold">ماده ۳ - نرخ سود</h3>
+                            <p className="text-dark">
+                                نرخ سود این تسهیلات {contractDetails.interestRate}% در سال بوده که
+                                طبق مقررات بانک مرکزی جمهوری اسلامی ایران تعیین شده است. این نرخ
+                                ممکن است طبق تصمیمات بانک مرکزی تغییر یابد.
+                            </p>
+                        </Box>
 
-                <div className="flex flex-col justify-center gap-4 sm:flex-row">
+                        <Box>
+                            <h3 className="text-dark-800 mb-2 font-bold">ماده ۴ - تضامین</h3>
+                            <p className="text-dark">
+                                مشتری متعهد است تضامین لازم شامل اسناد و مدارک مورد نیاز بانک را
+                                ارائه داده و در طول مدت قرارداد حفظ نماید. در صورت کاهش ارزش تضامین،
+                                بانک حق درخواست تضامین اضافی را دارد.
+                            </p>
+                        </Box>
+
+                        <Box>
+                            <h3 className="text-dark-800 mb-2 font-bold">ماده ۵ - فسخ قرارداد</h3>
+                            <p className="text-dark">
+                                در صورت عدم رعایت شرایط قرارداد از سوی مشتری، بانک حق فسخ قرارداد و
+                                مطالبه کل مبلغ باقیمانده را دارد. همچنین مشتری می‌تواند در هر زمان
+                                نسبت به تسویه زودهنگام اقدام نماید.
+                            </p>
+                        </Box>
+
+                        <Box>
+                            <h3 className="text-dark-800 mb-2 font-bold">ماده ۶ - حل اختلاف</h3>
+                            <p className="text-dark">
+                                کلیه اختلافات ناشی از این قرارداد در مراجع ذی‌صلاح قضایی تهران قابل
+                                رسیدگی است. قوانین جمهوری اسلامی ایران بر این قرارداد حاکم خواهد
+                                بود.
+                            </p>
+                        </Box>
+                    </Box>
+                </Box>
+
+                <Box className="mb-6">
+                    <Box className="flex gap-2 pt-6">
+                        <input
+                            type="checkbox"
+                            id="agreement"
+                            checked={agreed}
+                            onChange={(e) => setAgreed(e.target.checked)}
+                            className="text-secondary-500 bg-secondary-800 h-10 w-10 rounded-lg"
+                        />
+                        <label htmlFor="agreement" className="text-dark leading-relaxed">
+                            با مطالعه کامل متن قرارداد، تمامی شرایط و ضوابط آن را پذیرفته و متعهد به
+                            رعایت آن می‌باشم. اطلاعات ارائه شده صحیح بوده و در صورت عدم صحت، مسئولیت
+                            کامل بر عهده من خواهد بود.
+                        </label>
+                    </Box>
+                </Box>
+
+                <Box className="flex flex-col justify-center gap-4 sm:flex-row">
                     {/* <Button
                         variant="outline"
                         size="lg"
@@ -245,20 +229,20 @@ export default function ContractPage() {
                         className="bg-secondary flex items-center"
                     >
                         {loading ? (
-                            <div className="ml-2 h-4 w-10 animate-spin rounded-full"></div>
+                            <Box className="ml-2 h-4 w-10 animate-spin rounded-full"></Box>
                         ) : (
                             <CheckCircleIcon className="ml-2 h-5 w-5" />
                         )}
                         {loading ? 'در حال پردازش...' : 'ثبت نهایی'}
                     </Button>
-                </div>
+                </Box>
 
-                <div className="mt-8 text-center">
+                <Box className="mt-8 text-center">
                     <p className="text-sm text-gray-500">
                         با تأیید این قرارداد، به مرحله پرداخت هدایت خواهید شد
                     </p>
-                </div>
-            </div>
-        </div>
+                </Box>
+            </Box>
+        </Box>
     );
 }

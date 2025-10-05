@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { Box } from '@/components/ui';
 import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useRef, useState } from 'react';
 
 interface PhotoUploadProps {
     label: string;
@@ -47,11 +48,11 @@ export function PhotoUpload({
     };
 
     return (
-        <div className="space-y-4">
+        <Box className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">{label}</label>
 
             {!selectedPhoto ? (
-                <div
+                <Box
                     onClick={() => fileInputRef.current?.click()}
                     className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
                         error
@@ -62,11 +63,11 @@ export function PhotoUpload({
                     <PhotoIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                     <p className="text-gray-600">برای انتخاب عکس کلیک کنید</p>
                     <p className="mt-2 text-xs text-gray-500">فرمت‌های مجاز: JPG، PNG</p>
-                </div>
+                </Box>
             ) : (
-                <div className="relative">
+                <Box className="relative">
                     {preview && previewUrl && (
-                        <div className="relative inline-block">
+                        <Box className="relative inline-block">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={previewUrl}
@@ -80,10 +81,10 @@ export function PhotoUpload({
                             >
                                 <XMarkIcon className="h-4 w-4" />
                             </button>
-                        </div>
+                        </Box>
                     )}
 
-                    <div className="mt-2 flex items-center space-x-4 space-x-reverse">
+                    <Box className="mt-2 flex items-center space-x-4 space-x-reverse">
                         <p className="text-sm text-gray-600">{selectedPhoto.name}</p>
                         <button
                             type="button"
@@ -92,8 +93,8 @@ export function PhotoUpload({
                         >
                             تغییر عکس
                         </button>
-                    </div>
-                </div>
+                    </Box>
+                </Box>
             )}
 
             <input
@@ -105,6 +106,6 @@ export function PhotoUpload({
             />
 
             {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
-        </div>
+        </Box>
     );
 }

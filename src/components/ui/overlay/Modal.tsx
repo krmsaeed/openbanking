@@ -1,5 +1,6 @@
 'use client';
 
+import { Box } from '@/components/ui';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { ReactNode, useEffect } from 'react';
 
@@ -58,21 +59,21 @@ export default function Modal({
     };
 
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
+        <Box className="fixed inset-0 z-50 overflow-y-auto">
             {/* Backdrop */}
-            <div
+            <Box
                 className="fixed inset-0 bg-black/30 backdrop-blur-sm transition-all duration-300"
                 onClick={onClose}
             />
 
             {/* Modal */}
-            <div className="flex min-h-full items-center justify-center p-4">
-                <div
+            <Box className="flex min-h-full items-center justify-center p-4">
+                <Box
                     className={`relative w-full ${sizeClasses[size]} transform overflow-hidden rounded-lg border border-gray-200/20 bg-white/95 shadow-xl backdrop-blur-md transition-all duration-300 dark:border-gray-50/20 dark:bg-gray-50/95`}
                 >
                     {/* Header */}
                     {(title || showCloseButton) && (
-                        <div className="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700">
+                        <Box className="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700">
                             {title && (
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                     {title}
@@ -86,13 +87,13 @@ export default function Modal({
                                     <XMarkIcon className="h-5 w-5" />
                                 </button>
                             )}
-                        </div>
+                        </Box>
                     )}
 
                     {/* Content */}
-                    <div className="p-4">{children}</div>
-                </div>
-            </div>
-        </div>
+                    <Box className="p-4">{children}</Box>
+                </Box>
+            </Box>
+        </Box>
     );
 }

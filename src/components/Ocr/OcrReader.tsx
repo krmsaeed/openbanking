@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Box } from '@/components/ui';
 import { ocrRecognizeFile, parseNationalCardFields } from '@/lib/ocr';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 type Props = {
     onRecognize?: (text: string, file?: File) => void;
@@ -151,9 +152,9 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
     };
 
     return (
-        <div className="space-y-4">
-            <div className="mx-auto w-full max-w-xl">
-                <div className="relative overflow-hidden rounded bg-black">
+        <Box className="space-y-4">
+            <Box className="mx-auto w-full max-w-xl">
+                <Box className="relative overflow-hidden rounded bg-black">
                     <video
                         ref={videoRef}
                         autoPlay
@@ -162,9 +163,9 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
                         className="h-64 w-full object-cover"
                     />
                     <canvas ref={canvasRef} style={{ display: 'none' }} />
-                </div>
+                </Box>
                 {showControls && (
-                    <div className="mt-3 flex gap-2">
+                    <Box className="mt-3 flex gap-2">
                         <button
                             onClick={capture}
                             disabled={loading}
@@ -203,20 +204,20 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
                                 className="hidden"
                             />
                         </label>
-                    </div>
+                    </Box>
                 )}
 
                 {loading && <p className="text-sm">Processing...</p>}
                 {ocrChecked && (
-                    <div className="mt-3">
-                        <div
+                    <Box className="mt-3">
+                        <Box
                             className={`inline-block rounded px-3 py-1 ${ocrValid ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}
                         >
                             {ocrValid ? 'کارت ملی معتبر' : 'کارت ملی نامعتبر'}
-                        </div>
-                    </div>
+                        </Box>
+                    </Box>
                 )}
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

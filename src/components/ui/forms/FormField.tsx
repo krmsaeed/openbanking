@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '../core';
+import Input from './Input';
 
 interface FormFieldProps {
     label: string;
@@ -28,6 +29,14 @@ const FormField: React.FC<FormFieldProps> = ({
     children,
     inputProps,
 }) => {
+    // Normalize inputProps value type for our Input component (string | number)
+    const { value: rawValue, ...restInputProps } = (inputProps || {}) as {
+        value?: string | number | readonly string[];
+    } & React.InputHTMLAttributes<HTMLInputElement>;
+    const normalizedValue = Array.isArray(rawValue)
+        ? (rawValue as readonly string[]).join(', ')
+        : rawValue;
+
     return (
         <Box className="w-full">
             <Typography
@@ -46,11 +55,12 @@ const FormField: React.FC<FormFieldProps> = ({
             {children ? (
                 children
             ) : (
-                <input
+                <Input
                     {...(id ? { id } : {})}
                     disabled={disabled}
-                    {...(inputProps || {})}
-                    className={`border-light block w-full border-b bg-gray-800 px-4 py-3 focus:outline-none sm:text-sm ${disabled ? 'cursor-not-allowed bg-gray-100 dark:bg-gray-700' : 'bg-white dark:bg-gray-800'} ${error ? 'border border-red-500' : 'border-b border-gray-300 dark:border-gray-600'} ${className}`}
+                    {...(restInputProps as React.InputHTMLAttributes<HTMLInputElement>)}
+                    value={normalizedValue as string | number | undefined}
+                    className={className}
                 />
             )}
 

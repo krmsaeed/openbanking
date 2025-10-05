@@ -20,9 +20,9 @@ const getCardClasses = (
 
     const paddingClasses = {
         none: 'p-0',
-        sm: 'p-4',
-        md: 'p-6',
-        lg: 'p-8',
+        sm: 'md:p-4 p-2 ',
+        md: 'md:p-6 p-4',
+        lg: 'md:p-8 p-6',
     };
 
     return `${baseClasses} ${variantClasses[variant]} ${paddingClasses[padding]}`;

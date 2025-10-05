@@ -1,3 +1,4 @@
+import { Box } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 interface LoadingProps {
@@ -15,7 +16,7 @@ const Loading = ({ size = 'md', variant = 'spinner', className }: LoadingProps) 
 
     if (variant === 'spinner') {
         return (
-            <div
+            <Box
                 className={cn(
                     'border-t-primary animate-spin rounded-full border-2 border-gray-300',
                     sizeClasses[size],
@@ -27,26 +28,26 @@ const Loading = ({ size = 'md', variant = 'spinner', className }: LoadingProps) 
 
     if (variant === 'dots') {
         return (
-            <div className={cn('flex space-x-1', className)}>
-                <div
+            <Box className={cn('flex space-x-1', className)}>
+                <Box
                     className="bg-primary h-2 w-2 animate-bounce rounded-full"
                     style={{ animationDelay: '0ms' }}
                 />
-                <div
+                <Box
                     className="bg-primary h-2 w-2 animate-bounce rounded-full"
                     style={{ animationDelay: '150ms' }}
                 />
-                <div
+                <Box
                     className="bg-primary h-2 w-2 animate-bounce rounded-full"
                     style={{ animationDelay: '300ms' }}
                 />
-            </div>
+            </Box>
         );
     }
 
     if (variant === 'pulse') {
         return (
-            <div
+            <Box
                 className={cn('animate-pulse rounded bg-gray-300', sizeClasses[size], className)}
             />
         );

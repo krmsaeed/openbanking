@@ -25,10 +25,10 @@ export default function Sidebar() {
     const { userData, setUserData } = useUser();
     return (
         <nav
-            className="mx-auto h-full w-[90%] rounded-lg bg-gray-50 p-4 shadow-lg md:w-[13rem] dark:bg-gray-600"
+            className="mx-auto w-[95%] rounded-lg bg-gray-50 px-4 py-6 shadow-lg md:w-[18rem] dark:bg-gray-600"
             aria-label="مراحل ثبت‌نام"
         >
-            <h3 className="mb-2 text-center text-lg font-semibold text-gray-800 dark:text-white">
+            <h3 className="mb-2 hidden text-center text-lg font-semibold text-gray-800 md:block dark:text-white">
                 مراحل ثبت‌ نام
             </h3>
             <ul className="flex flex-row items-center justify-start gap-2 overflow-auto px-1 py-2 md:flex-col md:justify-start md:gap-3 md:py-0 md:pl-0">
@@ -44,23 +44,22 @@ export default function Sidebar() {
                         >
                             <Box className="flex w-full flex-col items-center md:flex-row md:items-center">
                                 <Box className="relative flex items-center justify-center">
-                                    <Typography
-                                        variant="span"
-                                        className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-sm md:h-10 md:w-10 ${index < STEP_META.length - 1 && ((userData?.step ?? 0) > index + 1 ? 'md:connector md:connector-primary' : 'md:connector md:connector-gray')} ${completed && 'bg-primary scale-100 text-white'} ${current ? 'bg-primary-300 scale-105 text-gray-50' : 'border-primary-200 bg-gray text-gray-400 dark:text-gray-200'}`}
+                                    <span
+                                        className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-sm transition-all duration-200 md:h-10 md:w-10 ${index < STEP_META.length - 1 ? (step > index + 1 ? 'md:connector md:connector-primary' : 'md:connector md:connector-gray') : ''} ${completed ? 'bg-primary border-primary scale-100 text-white' : ''} ${current ? 'border-primary text-primary scale-105 bg-white' : 'border-gray-300 bg-white text-gray-400'}`}
                                     >
                                         {completed ? (
-                                            <CheckCircleIcon className="text-dark-100 mx-auto h-6 w-6" />
+                                            <CheckCircleIcon className="mx-auto h-6 w-6" />
                                         ) : (
-                                            <Icon className="mx-auto h-6 w-6" />
+                                            <Icon className="mx-auto h-5 w-5" />
                                         )}
-                                    </Typography>
+                                    </span>
+                                    {/* connector on mobile between items: render to the left of current item (so first item has none) */}
                                     {index > 0 && (
                                         <span
-                                            className={`S relative ${step > index ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-600'}`}
+                                            className={`absolute top-1/2 left-[55px] z-0 h-0.5 w-10 -translate-y-1/2 transform md:-top-[10px] md:left-0 md:rotate-90 ${step > index ? 'bg-primary' : 'bg-gray-200'}`}
                                         />
                                     )}
                                 </Box>
-
                                 <Typography
                                     className={`mt-2 text-xs font-medium transition-colors duration-150 md:mt-0 md:text-sm ${current ? 'text-primary' : 'text-gray-500 dark:text-gray-300'} ${completed ? 'text-primary-500' : ''} group-hover:text-primary px-2 text-center md:text-right`}
                                     onClick={() => setUserData({ step: index + 1 })}

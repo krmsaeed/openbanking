@@ -1,10 +1,10 @@
 'use client';
-import React, { useState } from 'react';
-import { Box, Typography } from '@/components/ui';
+import { Box, Checkbox, Typography } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
 import LoadingButton from '@/components/ui/core/LoadingButton';
-import Image from 'next/image';
 import { Loading } from '@/components/ui/feedback/Loading';
+import Image from 'next/image';
+import { useState } from 'react';
 
 type Props = {
     onConfirm: () => void;
@@ -56,8 +56,8 @@ export default function FinalConfirmation({ onConfirm, loading = false }: Props)
                     لطفا فایل قرارداد را دانلود و نگهداری کنید.
                 </Typography>
 
-                <div className="mt-4 flex justify-center">
-                    <div className="h-56 w-80 overflow-hidden rounded border">
+                <Box className="mt-4 flex justify-center">
+                    <Box className="h-56 w-80 overflow-hidden rounded border">
                         <Image
                             src={'/bank-contract-preview.jpg'}
                             alt="contract preview"
@@ -65,10 +65,10 @@ export default function FinalConfirmation({ onConfirm, loading = false }: Props)
                             height={420}
                             style={{ objectFit: 'contain' }}
                         />
-                    </div>
-                </div>
+                    </Box>
+                </Box>
 
-                <div className="mx-auto mt-4 flex w-full justify-center gap-2 md:w-[75%]">
+                <Box className="mx-auto mt-4 flex w-full justify-center gap-2 md:w-[75%]">
                     <Button
                         onClick={() =>
                             downloadAsFile(
@@ -91,17 +91,14 @@ export default function FinalConfirmation({ onConfirm, loading = false }: Props)
                         {downloading === 'pdf' ? <Loading size="sm" className="ml-1" /> : null}
                         دانلود قرارداد (PDF)
                     </Button>
-                </div>
+                </Box>
             </Box>
 
-            <label className="flex items-center gap-3">
-                <input
-                    type="checkbox"
-                    checked={accepted}
-                    onChange={(e) => setAccepted(e.target.checked)}
-                />
-                <span className="text-sm">من قرارداد را مطالعه کردم و موافقم</span>
-            </label>
+            <Checkbox
+                checked={accepted}
+                onChange={() => setAccepted(!accepted)}
+                label="من قرارداد را مطالعه کردم و موافقم"
+            />
 
             <LoadingButton
                 onClick={() => accepted && onConfirm()}

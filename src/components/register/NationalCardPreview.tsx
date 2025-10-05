@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import { NationalCardTemplate } from '@/components/forms';
 
 interface Props {
@@ -18,14 +17,12 @@ export default function NationalCardPreview({
 }: Props) {
     if (!show) return null;
     return (
-        <div className="space-y-6">
-            <NationalCardTemplate
-                firstName={''}
-                lastName={''}
-                nationalCode={nationalCode}
-                birthDate={birthDate}
-                onConfirm={onConfirm}
-            />
-        </div>
+        <NationalCardTemplate
+            firstName={''}
+            lastName={''}
+            nationalCode={nationalCode}
+            birthDate={birthDate}
+            onConfirm={onConfirm}
+        />
     );
 }

@@ -1,9 +1,10 @@
 'use client';
 
+import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import { Box, Button, Typography } from '../ui/core';
 import LoadingButton from '../ui/core/LoadingButton';
-import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Checkbox } from '../ui/forms';
 
 interface NationalCardTemplateProps {
     firstName: string;
@@ -102,20 +103,12 @@ export function NationalCardTemplate({
 
             <Box className="text-center">
                 <Box className="mb-4">
-                    <label className="flex items-center justify-center gap-2">
-                        <input
-                            type="checkbox"
-                            checked={confirmed}
-                            onChange={(e) => {
-                                const val = e.target.checked;
-                                setConfirmed(val);
-                            }}
-                            className="text-primary focus:ring-primary rounded border-gray-300"
-                        />
-                        <Typography variant="body1" className="text-sm text-gray-700">
-                            اطلاعات نمایش داده شده با کارت ملی من مطابقت دارد
-                        </Typography>
-                    </label>
+                    <Checkbox
+                        checked={confirmed}
+                        onChange={() => setConfirmed(!confirmed)}
+                        label="اطلاعات نمایش داده شده با کارت ملی من مطابقت دارد"
+                        size="md"
+                    />
                 </Box>
             </Box>
 

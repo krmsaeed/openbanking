@@ -1,5 +1,6 @@
 'use client';
 
+import { Box } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
 import axios from 'axios';
 import Image from 'next/image';
@@ -52,12 +53,12 @@ function HomeLoader() {
 
     if (error) {
         return (
-            <div className="flex w-full max-w-lg flex-col items-center justify-center gap-6 rounded-2xl bg-red-50 p-8 shadow-lg">
-                <div className="rounded-2xl bg-white p-6 shadow-md">
+            <Box className="flex w-full max-w-lg flex-col items-center justify-center gap-6 rounded-2xl bg-red-50 p-8 shadow-lg">
+                <Box className="rounded-2xl bg-white p-6 shadow-md">
                     <h3 className="text-lg font-semibold text-red-600">خطا در اطلاعات</h3>
                     <p className="mt-2 text-sm text-red-500">{error}</p>
-                </div>
-                <div className="flex gap-2">
+                </Box>
+                <Box className="flex gap-2">
                     u
                     <button
                         className="rounded bg-gray-100 px-4 py-2"
@@ -71,15 +72,15 @@ function HomeLoader() {
                     >
                         رفتن به ثبت‌نام
                     </button>
-                </div>
-            </div>
+                </Box>
+            </Box>
         );
     }
 
     return (
-        <div className="from-primary-50 flex w-full max-w-lg flex-col items-center justify-center gap-6 rounded-2xl bg-gradient-to-r to-indigo-50 p-8 shadow-lg">
-            <div className="flex h-32 w-32 items-center justify-center rounded-3xl bg-white shadow-md">
-                <div className="animate-spin-slow">
+        <Box className="from-primary-50 flex w-full max-w-lg flex-col items-center justify-center gap-6 rounded-2xl bg-gradient-to-r to-indigo-50 p-8 shadow-lg">
+            <Box className="flex h-32 w-32 items-center justify-center rounded-3xl bg-white shadow-md">
+                <Box className="animate-spin-slow">
                     <Image
                         src="/icons/EnBankNewVerticalLogo_100x100 (1).png"
                         alt="Logo"
@@ -87,20 +88,20 @@ function HomeLoader() {
                         height={100}
                         className="text-primary w-[32rem] p-2"
                     />
-                </div>
-            </div>
+                </Box>
+            </Box>
 
-            <div className="text-center">
+            <Box className="text-center">
                 <h3 className="text-lg font-semibold">در حال بررسی اطلاعات شما...</h3>
                 <p className="text-sm text-gray-500">لطفا چند لحظه صبر کنید </p>
-            </div>
+            </Box>
 
-            <div className="flex items-center gap-2">
+            <Box className="flex items-center gap-2">
                 <span className="bg-primary h-3 w-3 animate-pulse rounded-full delay-75" />
                 <span className="h-3 w-3 animate-pulse rounded-full bg-indigo-500 delay-100" />
                 <span className="h-3 w-3 animate-pulse rounded-full bg-purple-500 delay-150" />
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }
 

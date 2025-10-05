@@ -1185,7 +1185,7 @@ export default function CameraSelfie() {
                                 : obstructionRatio <= MAX_OBSTRUCTION
                                   ? 'عدم وضوح '
                                   : eyeFeatureRatio < MIN_EYE_RATIO
-                                    ? 'لطفاً مطمئن شوید چشم‌ها و ابروها به وضوح دیده می‌شوند'
+                                    ? ' مطمئن شوید چشم‌ها و ابروها به وضوح دیده می‌شوند'
                                     : 'صورت خود را در مقابل دوربین قرار دهید')}
                     </Typography>
                 </Box>

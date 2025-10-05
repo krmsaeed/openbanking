@@ -1,21 +1,21 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
+    Box,
+    Button,
     Card,
     CardContent,
+    CardDescription,
     CardHeader,
     CardTitle,
-    CardDescription,
-    Button,
     Input,
-    Box,
 } from '@/components/ui';
-import { convertPersianToEnglish } from '@/lib/utils';
-import { otpFormSchema, type PaymentOtpFormData } from '@/lib/schemas/payment';
 import { useOtpTimer } from '@/hooks/useOtpTimer';
+import { otpFormSchema, type PaymentOtpFormData } from '@/lib/schemas/payment';
+import { convertPersianToEnglish } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
 
 interface PaymentOTPFormProps {
     cardNumber: string;
@@ -102,7 +102,7 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
                     </Box>
 
                     <Box className="flex items-center gap-4">
-                        <div className="flex flex-1 items-center justify-center">
+                        <Box className="flex flex-1 items-center justify-center">
                             {secondsLeft > 0 ? (
                                 <div
                                     className="text-sm text-gray-500"
@@ -134,7 +134,7 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
                                     ارسال مجدد رمز
                                 </button>
                             )}
-                        </div>
+                        </Box>
                         <Button
                             type="submit"
                             className="flex-1 bg-green-600 hover:bg-green-700"
