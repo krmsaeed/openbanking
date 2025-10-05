@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
-import axios from 'axios';
-import toast from 'react-hot-toast';
 import { useUser } from '@/contexts/UserContext';
+import axios from 'axios';
+import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
+import toast from 'react-hot-toast';
 
 interface UseVideoRecorderOptions {
     processId?: string | number | null;
@@ -148,10 +148,6 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
 
     const handleUpload = useCallback(async () => {
         if (!videoFile) return;
-        if (!processId) {
-            toast.error('شناسه فرآیند یافت نشد');
-            return;
-        }
 
         if (streamRef.current) {
             streamRef.current.getTracks().forEach((track) => track.stop());

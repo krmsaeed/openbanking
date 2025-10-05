@@ -1,7 +1,4 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
@@ -12,17 +9,17 @@
             "env": {
                 "PORT": "3000"
             },
-            "preLaunchTask": "kill -9 $(fuser -k -n tcp 3000) || true",
+            "preLaunchTask": "Kill port 3000"
         },
-        // {
-        //     "name": "Next.js: debug frontend",
-        //     "type": "chrome",
-        //     "request": "launch",
-        //     "url": "http://localhost:3000",
-        //     "webRoot": "${workspaceFolder}",
-        //     "sourceMapPathOverrides": {
-        //         "webpack://_N_E/*": "${webRoot}/*"
-        //     }
-        // }
+        {
+            "name": "Next.js: debug frontend",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}",
+            "sourceMapPathOverrides": {
+                "webpack://_N_E/*": "${workRoot}/*"
+            }
+        }
     ]
 }

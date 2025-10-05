@@ -4,7 +4,7 @@ import { Box } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
 import { Modal } from '@/components/ui/overlay';
 import { OcrFields, ocrRecognizeFile, parseNationalCardFields } from '@/lib/ocr';
-import { CameraIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, CameraIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -15,7 +15,6 @@ type Props = {
     autoOpen?: boolean;
     showConfirmButton?: boolean;
 };
-
 export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen = true }: Props) {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -23,12 +22,11 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
     const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
+    const [capturedFile, setCapturedFile] = useState<File | null>(null);
     const [capturedUrl, setCapturedUrl] = useState<string | null>(null);
-    // const [capturedFile, setCapturedFile] = useState<File | null>(null);
     const [ocrValid, setOcrValid] = useState<boolean>(false);
     const [ocrLoading, setOcrLoading] = useState<boolean>(false);
     const [showPermissionModal, setShowPermissionModal] = useState<boolean>(false);
-
     const refreshDevices = useCallback(async () => {
         try {
             if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
@@ -43,9 +41,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                 vids = allVids;
             }
             if (!selectedDeviceId && vids.length > 0) setSelectedDeviceId(vids[0].deviceId);
-        } catch {
-            // Device enumeration failed
-        }
+        } catch {}
     }, [selectedDeviceId]);
 
     const openDeviceById = useCallback(
@@ -209,12 +205,10 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
         }
     };
 
-    // Utility: convert Blob to File (keeps type and allows naming)
     const blobToFile = (blob: Blob, fileName: string) => {
         try {
             return new File([blob], fileName, { type: blob.type });
         } catch {
-            // File constructor may not be available in some older environments; fallback to Blob cast
             return new Blob([blob], { type: blob.type }) as unknown as File;
         }
     };
@@ -233,7 +227,6 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
         canvas.toBlob(
             (blob) => {
                 if (!blob) return;
-                // Convert blob -> File explicitly using helper
                 type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
                 const maybe = globalThis as unknown as MaybeCrypto;
                 const uuid =
@@ -249,7 +242,6 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                     try {
                         if (onConfirm) onConfirm(file, !!res.valid);
 
-                        // Only stop camera if OCR is successful
                         if (res.valid) {
                             try {
                                 if (streamRef.current) {
@@ -269,32 +261,30 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
             0.9
         );
     };
-
-    // const handleReset = async () => {
-    //     if (capturedUrl) {
-    //         URL.revokeObjectURL(capturedUrl);
-    //         setCapturedUrl(null);
-    //         setCapturedFile(null);
-    //         setOcrValid(false);
-    //     }
-    //     try {
-    //         if (selectedDeviceId) {
-    //             const s = await navigator.mediaDevices.getUserMedia({
-    //                 video: { deviceId: { exact: selectedDeviceId } },
-    //                 audio: false,
-    //             });
-    //             streamRef.current = s;
-    //             if (videoRef.current) videoRef.current.srcObject = s;
-    //             setIsCameraOpen(true);
-    //         } else {
-    //             toast.error('وبکم انتخاب نشده');
-    //         }
-    //     } catch (err) {
-    //         console.warn('failed to restart camera', err);
-    //         toast.error('دوربین بازنشانی نشد');
-    //     }
-    // };
-
+    const handleReset = async () => {
+        if (capturedUrl) {
+            URL.revokeObjectURL(capturedUrl);
+            setCapturedUrl(null);
+            setCapturedFile(null);
+            setOcrValid(false);
+        }
+        try {
+            if (selectedDeviceId) {
+                const s = await navigator.mediaDevices.getUserMedia({
+                    video: { deviceId: { exact: selectedDeviceId } },
+                    audio: false,
+                });
+                streamRef.current = s;
+                if (videoRef.current) videoRef.current.srcObject = s;
+                setIsCameraOpen(true);
+            } else {
+                toast.error('وبکم انتخاب نشده');
+            }
+        } catch (err) {
+            console.warn('failed to restart camera', err);
+            toast.error('دوربین بازنشانی نشد');
+        }
+    };
     return (
         <Box className="space-y-3">
             <Box className="relative overflow-hidden rounded-md">
@@ -327,7 +317,6 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                             style={{ objectFit: 'contain' }}
                             unoptimized
                         />
-                        {/* آیکون وضعیت OCR - طراحی جدید */}
                         {!ocrLoading && (
                             <Box className="absolute bottom-4 left-1/2 -translate-x-1/2 transform">
                                 {ocrValid ? (
@@ -389,7 +378,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                     </Button>
                 )}
 
-                {/* {capturedUrl && (
+                {capturedUrl && (
                     <Button
                         size="sm"
                         onClick={handleReset}
@@ -399,10 +388,9 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                         <ArrowPathIcon className="ml-2 h-5 w-5" />
                         <span>بازنشانی</span>
                     </Button>
-                )} */}
+                )}
             </Box>
 
-            {/* Modal for Camera Permission */}
             <Modal
                 isOpen={showPermissionModal}
                 onClose={() => setShowPermissionModal(false)}

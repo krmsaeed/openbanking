@@ -36,7 +36,6 @@ export function VideoRecorderView({
     onStopRecording,
     onRetake,
     onConfirm,
-    onBack,
     randomText,
 }: VideoRecorderViewProps) {
     const hasPreview = Boolean(videoFile && videoPreviewUrl);

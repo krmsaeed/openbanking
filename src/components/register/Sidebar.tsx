@@ -16,7 +16,7 @@ const STEP_META = [
     { title: 'عکس سلفی', icon: CameraIcon },
     { title: 'فیلم احراز هویت', icon: VideoCameraIcon },
     { title: 'ثبت امضا', icon: PencilIcon },
-    { title: 'ارسال کد تایید', icon: EnvelopeIcon },
+    { title: 'تعیین رمز', icon: EnvelopeIcon },
     { title: 'اسکن کارت ملی', icon: DocumentMagnifyingGlassIcon },
     { title: 'تأیید نهایی', icon: CheckCircleIcon },
 ];
@@ -53,7 +53,6 @@ export default function Sidebar() {
                                             <Icon className="mx-auto h-5 w-5" />
                                         )}
                                     </span>
-                                    {/* connector on mobile between items: render to the left of current item (so first item has none) */}
                                     {index > 0 && (
                                         <span
                                             className={`absolute top-1/2 left-[55px] z-0 h-0.5 w-10 -translate-y-1/2 transform md:-top-[10px] md:left-0 md:rotate-90 ${step > index ? 'bg-primary' : 'bg-gray-200'}`}

@@ -10,7 +10,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export default function ContractPage() {
+export default function ContractStep() {
     const [agreed, setAgreed] = useState(false);
     const [loading, setLoading] = useState(false);
     const router = useRouter();

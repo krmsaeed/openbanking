@@ -1,12 +1,11 @@
+import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
+import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
 import { ToastProvider } from '@/components/ui/feedback/Toast';
+import { UserProvider } from '@/contexts/UserContext';
 import ThemeProvider from '@/lib/ThemeProvider';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './styles/globals.css';
-// import ThemeToggle from '@/components/ui/ThemeToggle';
-import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
-import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
-import { UserProvider } from '@/contexts/UserContext';
 
 export const metadata: Metadata = {
     title: '...اقتصاد نوین | هوشمندانه پرداخت کنید',
@@ -65,9 +64,7 @@ export default function RootLayout({
       document.body.classList.remove('dark');
       document.documentElement.setAttribute('data-theme', 'light');
     }
-  } catch (e) {
-    // ignore
-  }
+  } catch (e) {}
 })();`,
                     }}
                 />
@@ -78,7 +75,6 @@ export default function RootLayout({
                 <ThemeProvider>
                     <UserProvider>
                         <ToastProvider>
-                            {/* <ThemeToggle /> */}
                             {process.env.NODE_ENV === 'development' ? (
                                 <ServiceWorkerUnregistrar />
                             ) : (

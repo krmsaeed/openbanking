@@ -965,7 +965,6 @@ export default function CameraSelfie() {
         };
     }, [stopCamera]);
 
-    // Auto-start camera on mount
     useEffect(() => {
         setCameraLoading(true);
         startCamera();
@@ -1092,7 +1091,6 @@ export default function CameraSelfie() {
     return (
         <Box className="mx-auto max-w-md space-y-4">
             <Box className="bg-dark relative mx-auto h-70 w-70 overflow-hidden rounded-full">
-                {/* Camera Loading State */}
                 {cameraLoading && (
                     <Box className="absolute inset-0 z-30 flex flex-col items-center justify-center space-y-4 bg-gray-900 text-white">
                         <Box className="border-t-primary-500 h-12 w-12 animate-spin rounded-full border-4 border-gray-300"></Box>

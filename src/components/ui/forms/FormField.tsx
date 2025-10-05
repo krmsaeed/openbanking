@@ -29,7 +29,6 @@ const FormField: React.FC<FormFieldProps> = ({
     children,
     inputProps,
 }) => {
-    // Normalize inputProps value type for our Input component (string | number)
     const { value: rawValue, ...restInputProps } = (inputProps || {}) as {
         value?: string | number | readonly string[];
     } & React.InputHTMLAttributes<HTMLInputElement>;

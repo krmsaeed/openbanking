@@ -13,14 +13,11 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
+import NationalCardOcrScanner from '../specialized/NationalCardOcrScanner';
 import LoadingButton from '../ui/core/LoadingButton';
 import { Select } from '../ui/forms/Select';
 import Textarea from '../ui/forms/Textarea';
-import NationalCardOcrScanner from '../ui/specialized/NationalCardOcrScanner';
 
-type BranchOption = { label: string; value: string };
-
-// Zod Schema
 const formSchema = z.object({
     isMarried: z.boolean('وضعیت تاهل الزامی است').refine((val) => typeof val === 'boolean', {
         message: 'وضعیت تاهل نامعتبر است',
@@ -48,15 +45,6 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-type Props = {
-    branches?: BranchOption[];
-    onComplete: (file: File, formData: FormData) => void;
-    /** Optional endpoint to upload the scanned file + form data as multipart/form-data */
-    uploadUrl?: string;
-    onBack?: () => void;
-};
-
-// Define outside the component (before the export)
 const gradeOptions = [
     { value: 'diploma', label: 'دیپلم' },
     { value: 'associate', label: 'کاردانی' },
@@ -86,7 +74,7 @@ export default function NationalCardScanner() {
     const [ocrValid, setOcrValid] = useState<boolean>(false);
     const [provinces, setProvinces] = useState<Province[]>([]);
     const [cities, setCities] = useState<City[]>([]);
-    const [formName, setFormName] = useState<string>('GovahResult');
+    const formName = 'GovahResult';
     const [showWelcomeModal, setShowWelcomeModal] = useState(false);
     const getProvinceList = async () => {
         try {
@@ -128,7 +116,6 @@ export default function NationalCardScanner() {
             return;
         }
 
-        // Save the captured file
         setCapturedFile(file);
         setOcrValid(true);
         toast.success('تصویر کارت ملی با موفقیت دریافت شد');
@@ -167,7 +154,7 @@ export default function NationalCardScanner() {
                 });
                 setShowWelcomeModal(true);
             })
-            .catch((error) => {
+            .catch(() => {
                 toast.error('خطا در ارسال اطلاعات');
             })
             .finally(() => setIsLoading(false));
@@ -229,6 +216,39 @@ export default function NationalCardScanner() {
                         )}
                     />
                 </Box>
+                <Box>
+                    <Controller
+                        name="branch"
+                        control={control}
+                        rules={{ required: 'لطفا یک شعبه انتخاب کنید' }}
+                        render={({ field }) => (
+                            <>
+                                <Select
+                                    label="شعبه"
+                                    placeholder="انتخاب کنید"
+                                    value={field.value ? field.value.toString() : ''}
+                                    onChange={(e) => {
+                                        const selectedValue = (e.target as HTMLSelectElement).value;
+                                        const numericValue = selectedValue ? +selectedValue : null;
+                                        field.onChange(numericValue);
+                                    }}
+                                    error={errors.branch?.message}
+                                >
+                                    {defaultBranches.map((b) => (
+                                        <option key={b.value} value={b.value}>
+                                            {b.label}
+                                        </option>
+                                    ))}
+                                </Select>
+                                {errors.branch?.message && (
+                                    <Typography variant="p" className="mt-2 text-sm text-red-600">
+                                        {String(errors.branch.message)}
+                                    </Typography>
+                                )}
+                            </>
+                        )}
+                    />
+                </Box>
 
                 <Box className="flex gap-4">
                     <Box className="flex-1">
@@ -246,13 +266,11 @@ export default function NationalCardScanner() {
                                         const numericValue = selectedValue ? +selectedValue : null;
                                         field.onChange(numericValue);
 
-                                        // Find selected province and update cities
                                         const selectedProvince = provinces.find(
                                             (p: Province) => p.id === +selectedValue
                                         );
                                         setCities(selectedProvince?.cities || []);
 
-                                        // Reset city selection when province changes
                                         setValue('cityId', null);
                                     }}
                                     error={errors.provinceId?.message}
@@ -299,39 +317,6 @@ export default function NationalCardScanner() {
                         />
                     </Box>
                 </Box>
-                <Box>
-                    <Controller
-                        name="branch"
-                        control={control}
-                        rules={{ required: 'لطفا یک شعبه انتخاب کنید' }}
-                        render={({ field }) => (
-                            <>
-                                <Select
-                                    label="شعبه"
-                                    placeholder="انتخاب کنید"
-                                    value={field.value ? field.value.toString() : ''}
-                                    onChange={(e) => {
-                                        const selectedValue = (e.target as HTMLSelectElement).value;
-                                        const numericValue = selectedValue ? +selectedValue : null;
-                                        field.onChange(numericValue);
-                                    }}
-                                    error={errors.branch?.message}
-                                >
-                                    {defaultBranches.map((b) => (
-                                        <option key={b.value} value={b.value}>
-                                            {b.label}
-                                        </option>
-                                    ))}
-                                </Select>
-                                {errors.branch?.message && (
-                                    <Typography variant="p" className="mt-2 text-sm text-red-600">
-                                        {String(errors.branch.message)}
-                                    </Typography>
-                                )}
-                            </>
-                        )}
-                    />
-                </Box>
 
                 <Box>
                     <Controller
@@ -343,7 +328,7 @@ export default function NationalCardScanner() {
                                 {...field}
                                 label="آدرس"
                                 placeholder="آدرس کامل خود را وارد کنید"
-                                rows={3}
+                                rows={1}
                                 error={errors.address?.message}
                             />
                         )}
@@ -373,7 +358,6 @@ export default function NationalCardScanner() {
                 </LoadingButton>
             </Box>
 
-            {/* Welcome Modal */}
             <Modal
                 isOpen={showWelcomeModal}
                 onClose={() => {

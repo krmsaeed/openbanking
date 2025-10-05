@@ -234,7 +234,6 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
                     {...props}
                 />
 
-                {/* If selected label is a ReactNode (not plain string), show it when closed */}
                 {!isOpen && hasNodeLabel && (
                     <div className="pointer-events-none absolute top-8 right-8 flex items-center text-sm text-gray-700 dark:text-gray-300">
                         {effectiveLabel}

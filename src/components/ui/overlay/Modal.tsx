@@ -60,18 +60,15 @@ export default function Modal({
 
     return (
         <Box className="fixed inset-0 z-50 overflow-y-auto">
-            {/* Backdrop */}
             <Box
                 className="fixed inset-0 bg-black/30 backdrop-blur-sm transition-all duration-300"
                 onClick={onClose}
             />
 
-            {/* Modal */}
             <Box className="flex min-h-full items-center justify-center p-4">
                 <Box
                     className={`relative w-full ${sizeClasses[size]} transform overflow-hidden rounded-lg border border-gray-200/20 bg-white/95 shadow-xl backdrop-blur-md transition-all duration-300 dark:border-gray-50/20 dark:bg-gray-50/95`}
                 >
-                    {/* Header */}
                     {(title || showCloseButton) && (
                         <Box className="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700">
                             {title && (
@@ -90,7 +87,6 @@ export default function Modal({
                         </Box>
                     )}
 
-                    {/* Content */}
                     <Box className="p-4">{children}</Box>
                 </Box>
             </Box>

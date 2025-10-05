@@ -1,12 +1,13 @@
 'use client';
 import CertificateStep from '@/components/register/CertificateStep';
-import NationalCardScanner from '@/components/register/NationalCardScanner';
+import ContractStep from '@/components/register/contractStep';
+import NationalCardScanner from '@/components/register/NationalCardStep';
 import PasswordStep from '@/components/register/PasswordStep';
-import PersonalInfoForm from '@/components/register/PersonalInfoForm';
+import PersonalInfo from '@/components/register/PersonalInfoStep';
 import SelfieStep from '@/components/register/SelfieStep';
 import Sidebar from '@/components/register/Sidebar';
-import SignatureStep from '@/components/register/SignatureStep';
-import VideoStep from '@/components/register/VideoStep';
+import { SignatureStep } from '@/components/register/SignatureStep';
+import { VideoRecorderStep } from '@/components/register/VideoStep';
 import { Box, Card, Typography } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
 import { convertPersianToEnglish } from '@/lib/utils';
@@ -16,7 +17,6 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
-import ContractPage from '../contract/page';
 
 const registrationSchema = z.object({
     nationalCode: z
@@ -47,14 +47,14 @@ const extendedRegistrationSchema = registrationSchema
         if ((pw !== undefined && pw !== '') || (cpw !== undefined && cpw !== '')) {
             if (!pw || pw.length < 8) {
                 ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
+                    code: 'custom',
                     path: ['password'],
                     message: 'رمز عبور باید حداقل 8 کاراکتر باشد',
                 });
             }
             if (pw !== cpw) {
                 ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
+                    code: 'custom',
                     path: ['confirmPassword'],
                     message: 'رمز عبور و تایید آن باید یکسان باشند',
                 });
@@ -106,9 +106,7 @@ export default function Register() {
                     }
                 }
             })();
-        } catch {
-            // Prefill failed - not critical
-        }
+        } catch {}
     }, [setValue]);
 
     const handleOtp2Submit = () => {
@@ -147,7 +145,7 @@ export default function Register() {
             case 4:
                 return 'ثبت امضای دیجیتال';
             case 5:
-                return 'ارسال فرم';
+                return 'تعیین رمز';
             case 6:
                 return 'اطلاعات هویتی';
             case 7:
@@ -168,9 +166,9 @@ export default function Register() {
                         <Typography variant="h4" className="text-center text-gray-800">
                             {getStepDescription()}
                         </Typography>
-                        {userData.step === 1 && <PersonalInfoForm />}
+                        {userData.step === 1 && <PersonalInfo />}
                         {userData.step === 2 && <SelfieStep />}
-                        {userData.step === 3 && <VideoStep />}
+                        {userData.step === 3 && <VideoRecorderStep />}
                         {userData.step === 4 && <SignatureStep />}
                         {userData.step === 5 && (
                             <>
@@ -207,7 +205,7 @@ export default function Register() {
                         )}
                         {userData.step === 6 && <NationalCardScanner />}
 
-                        {userData.step === 7 && <ContractPage />}
+                        {userData.step === 7 && <ContractStep />}
                     </Card>
                 </Box>
             </Box>

@@ -1,10 +1,46 @@
 'use client';
-import React from 'react';
-import { VideoRecorder } from '@/components/new-user/VideoRecorder';
-export default function VideoStep() {
+
+import { useUser } from '@/contexts/UserContext';
+import { useVideoRecorder } from '@/hooks/useVideoRecorder';
+import { VideoRecorderView } from '../videoRecorder/VideoRecorderView';
+
+export const VideoRecorderStep: React.FC = () => {
+    const { userData, setUserData } = useUser();
+
+    const {
+        videoRef,
+        canvasRef,
+        isRecording,
+        recordingTime,
+        videoFile,
+        videoPreviewUrl,
+        isUploading,
+        cameraActive,
+        startVideoRecording,
+        stopVideoRecording,
+        handleUpload,
+        handleRetake,
+    } = useVideoRecorder({
+        processId: userData.processId,
+        onSuccess: () => setUserData({ step: 4 }),
+    });
+
     return (
-        <div className="space-y-6">
-            <VideoRecorder />
-        </div>
+        <VideoRecorderView
+            videoRef={videoRef}
+            canvasRef={canvasRef}
+            isRecording={isRecording}
+            recordingTime={recordingTime}
+            videoFile={videoFile}
+            videoPreviewUrl={videoPreviewUrl}
+            isUploading={isUploading}
+            cameraActive={cameraActive}
+            onStartRecording={startVideoRecording}
+            onStopRecording={stopVideoRecording}
+            onRetake={handleRetake}
+            onConfirm={handleUpload}
+            onBack={() => setUserData({ step: 2 })}
+            randomText={userData.randomText ?? undefined}
+        />
     );
-}
+};
