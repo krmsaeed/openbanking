@@ -26,7 +26,6 @@ export default function PasswordStep({
         getValues,
         formState: { errors, isValid },
         handleSubmit,
-        reset,
     } = useForm({
         defaultValues: {
             ENFirstName: '',

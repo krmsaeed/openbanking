@@ -22,7 +22,6 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
     const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
-    const [capturedFile, setCapturedFile] = useState<File | null>(null);
     const [capturedUrl, setCapturedUrl] = useState<string | null>(null);
     const [ocrValid, setOcrValid] = useState<boolean>(false);
     const [ocrLoading, setOcrLoading] = useState<boolean>(false);
@@ -265,7 +264,6 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
         if (capturedUrl) {
             URL.revokeObjectURL(capturedUrl);
             setCapturedUrl(null);
-            setCapturedFile(null);
             setOcrValid(false);
         }
         try {
