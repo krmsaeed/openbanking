@@ -3,6 +3,7 @@
 import { Box } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
 import { Modal } from '@/components/ui/overlay';
+import { useUser } from '@/contexts/UserContext';
 import { OcrFields, ocrRecognizeFile, parseNationalCardFields } from '@/lib/ocr';
 import { ArrowPathIcon, CameraIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
@@ -16,6 +17,7 @@ type Props = {
     showConfirmButton?: boolean;
 };
 export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen = true }: Props) {
+    const { userData } = useUser();
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
@@ -162,6 +164,29 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
             } catch {}
         };
     }, [refreshDevices, requestCameraPermission]);
+
+    useEffect(() => {
+        const localVideo = videoRef.current;
+        console.log('🎴 NationalCardOcrScanner: userData.step changed to:', userData.step);
+        return () => {
+            console.log('🎴 NationalCardOcrScanner: Cleaning up camera due to step change');
+            try {
+                if (streamRef.current) {
+                    console.log('🎴 NationalCardOcrScanner: Stopping stream tracks');
+                    streamRef.current.getTracks().forEach((t) => t.stop());
+                    streamRef.current = null;
+                    setIsCameraOpen(false);
+                }
+                if (localVideo) {
+                    console.log('🎴 NationalCardOcrScanner: Clearing video srcObject');
+                    localVideo.srcObject = null;
+                }
+                console.log('🎴 NationalCardOcrScanner: Camera cleanup complete');
+            } catch (e) {
+                console.error('🎴 NationalCardOcrScanner: Error during cleanup:', e);
+            }
+        };
+    }, [userData.step]);
 
     useEffect(() => {
         if (!permissionGranted || !selectedDeviceId) return;

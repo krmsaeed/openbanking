@@ -1,6 +1,7 @@
 'use client';
 
 import { useUser } from '@/contexts/UserContext';
+import { useCamera } from '@/hooks/useCamera';
 import { ArrowPathIcon, CameraIcon, CheckIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import Image from 'next/image';
@@ -11,7 +12,24 @@ import { Button } from '../ui/core/Button';
 import LoadingButton from '../ui/core/LoadingButton';
 export default function CameraSelfie() {
     const { userData, setUserData } = useUser();
-    const videoRef = useRef<HTMLVideoElement>(null);
+
+    // Use centralized camera hook
+    const {
+        stream,
+        videoRef,
+        isLoading: cameraLoading,
+        error: cameraError,
+        startCamera,
+        stopCamera,
+    } = useCamera({
+        video: {
+            facingMode: 'user',
+            width: { ideal: 640, min: 480 },
+            height: { ideal: 480, min: 360 },
+        },
+        audio: false,
+    });
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const procCanvasRef = useRef<HTMLCanvasElement | null>(null);
     const glRef = useRef<WebGL2RenderingContext | null>(null);
@@ -20,12 +38,9 @@ export default function CameraSelfie() {
     const webglProgRef = useRef<WebGLProgram | null>(null);
     const webglVaoRef = useRef<WebGLVertexArrayObject | null>(null);
     const webglVboRef = useRef<WebGLBuffer | null>(null);
-    const [stream, setStream] = useState<MediaStream | null>(null);
     const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [isClient, setIsClient] = useState(false);
-    const [cameraLoading, setCameraLoading] = useState(true);
     const [faceDetected, setFaceDetected] = useState(false);
     const [faceTooFar, setFaceTooFar] = useState(false);
     const [eyesCentered, setEyesCentered] = useState(true);
@@ -446,7 +461,7 @@ export default function CameraSelfie() {
         }
 
         const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
+        const context = canvas.getContext('2d', { willReadFrequently: true });
 
         if (!context) return;
 
@@ -679,7 +694,7 @@ export default function CameraSelfie() {
         } catch (error) {
             console.error('Face detection error:', error);
         }
-    }, [stream, targetSkin]);
+    }, [stream, targetSkin, videoRef]);
 
     useEffect(() => {
         if (!stream || !videoRef.current) return;
@@ -699,71 +714,19 @@ export default function CameraSelfie() {
             }
             detectFaceThrottleRef.current = null;
         };
-    }, [stream, detectFace, createThrottled]);
+    }, [stream, detectFace, createThrottled, videoRef]);
 
-    const startCamera = useCallback(async () => {
-        setError(null);
-        setCameraLoading(true);
-
-        try {
-            if (stream) {
-                stream.getTracks().forEach((track) => track.stop());
-            }
-
-            const mediaStream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: 'user',
-                    width: { ideal: 640, min: 480 },
-                    height: { ideal: 480, min: 360 },
-                },
-                audio: false,
-            });
-            if (videoRef.current) {
-                videoRef.current.srcObject = mediaStream;
-                setStream(mediaStream);
-
-                try {
-                    initWebGL();
-                } catch {}
-
-                const video = videoRef.current;
-
-                const handleCanPlay = () => {
-                    video.play().catch(() => {});
-                    setCameraLoading(false);
-                };
-
-                if (video.readyState >= 3) {
-                    handleCanPlay();
-                } else {
-                    video.addEventListener('canplay', handleCanPlay, { once: true });
-                }
-            }
-        } catch (err) {
-            if (err instanceof Error) {
-                const errorMessage =
-                    err.name === 'NotAllowedError'
-                        ? 'دسترسی به دوربین رد شد. لطفاً دسترسی را اجازه دهید.'
-                        : err.name === 'NotFoundError'
-                          ? 'دوربین یافت نشد. لطفاً از وجود دوربین اطمینان حاصل کنید.'
-                          : 'خطا در دسترسی به دوربین. لطفاً دوباره تلاش کنید.';
-                setError(errorMessage);
-            }
-        } finally {
-            setCameraLoading(false);
+    // Initialize WebGL when camera starts
+    useEffect(() => {
+        if (stream && videoRef.current) {
+            try {
+                initWebGL();
+            } catch {}
         }
-    }, [stream, initWebGL]);
+    }, [stream, initWebGL, videoRef]);
 
-    const stopCamera = useCallback(() => {
-        if (stream) {
-            stream.getTracks().forEach((track) => {
-                track.stop();
-            });
-            setStream(null);
-        }
-        if (videoRef.current) {
-            videoRef.current.srcObject = null;
-        }
+    // Cleanup WebGL resources when stopping camera
+    const cleanupWebGL = useCallback(() => {
         try {
             const gl = glRef.current;
             if (gl) {
@@ -782,7 +745,14 @@ export default function CameraSelfie() {
         webglVboRef.current = null;
         if (procCanvasRef.current) procCanvasRef.current.width = 0;
         procCanvasRef.current = null;
-    }, [stream]);
+    }, []);
+
+    // Cleanup WebGL when component unmounts or camera stops
+    useEffect(() => {
+        return () => {
+            cleanupWebGL();
+        };
+    }, [cleanupWebGL]);
 
     const compressImage = useCallback(
         (canvas: HTMLCanvasElement, maxWidth = 800, maxHeight = 600, quality = 0.7): string => {
@@ -872,7 +842,7 @@ export default function CameraSelfie() {
         setTimeout(() => {
             stopCamera();
         }, 200);
-    }, [stream, stopCamera, compressImage]);
+    }, [stream, stopCamera, compressImage, videoRef]);
     const handleConfirm = async () => {
         if (!capturedPhoto) {
             toast.error('عکسی برای ارسال وجود ندارد');
@@ -935,7 +905,6 @@ export default function CameraSelfie() {
 
     const retakePhoto = useCallback(() => {
         setCapturedPhoto(null);
-        setCameraLoading(true);
         startCamera();
     }, [startCamera]);
 
@@ -957,7 +926,7 @@ export default function CameraSelfie() {
                 video.addEventListener('loadeddata', playVideo, { once: true });
             }
         }
-    }, [stream]);
+    }, [stream, videoRef]);
 
     useEffect(() => {
         return () => {
@@ -966,7 +935,13 @@ export default function CameraSelfie() {
     }, [stopCamera]);
 
     useEffect(() => {
-        setCameraLoading(true);
+        return () => {
+            stopCamera();
+        };
+    }, [userData.step, stopCamera]);
+
+    // Start camera on component mount
+    useEffect(() => {
         startCamera();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -1022,7 +997,7 @@ export default function CameraSelfie() {
         capturePhoto,
     ]);
 
-    if (error) {
+    if (cameraError) {
         return (
             <Box className="mx-auto max-w-md space-y-4 text-center">
                 <Box className="bg-error-50 border-error-200 rounded-xl border p-6">
@@ -1031,7 +1006,7 @@ export default function CameraSelfie() {
                         خطا در دسترسی به دوربین
                     </Typography>
                     <Typography variant="body1" className="text-error-700 mb-4 text-sm">
-                        {error}
+                        {cameraError}
                     </Typography>
                     <Box className="space-y-2">
                         <Typography variant="body1" className="text-error-600 text-xs">

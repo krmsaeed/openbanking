@@ -1,7 +1,7 @@
 'use client';
-import { ButtonHTMLAttributes, forwardRef } from 'react';
-import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
+import { ButtonHTMLAttributes, forwardRef } from 'react';
 
 type ButtonVariant =
     | 'default'
@@ -118,7 +118,17 @@ const Spinner = ({ className }: { className?: string }) => (
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     (
-        { as = 'button', className, variant, size = 'default', children, type, href, ...props },
+        {
+            as = 'button',
+            className,
+            variant,
+            size = 'default',
+            children,
+            type,
+            href,
+            loading,
+            ...props
+        },
         ref
     ) => {
         let resolvedVariant: ButtonVariant = (variant as ButtonVariant) || 'default';
@@ -134,7 +144,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         }
         return (
             <button type={type} className={classNames} ref={ref} {...props}>
-                {props.loading && <Spinner className="mr-2" />}
+                {loading && <Spinner className="mr-2" />}
                 {children}
             </button>
         );

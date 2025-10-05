@@ -51,21 +51,21 @@ export default function RootLayout({
                 <script
                     dangerouslySetInnerHTML={{
                         __html: `(() => {
-  try {
-    const stored = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = stored || (prefersDark ? 'dark' : 'light');
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.body.classList.add('dark');
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('dark');
-      document.documentElement.setAttribute('data-theme', 'light');
-    }
-  } catch (e) {}
-})();`,
+                            try {
+                                const stored = localStorage.getItem('theme');
+                                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                                const theme = stored || (prefersDark ? 'dark' : 'light');
+                                if (theme === 'dark') {
+                                document.documentElement.classList.add('dark');
+                                document.body.classList.add('dark');
+                                document.documentElement.setAttribute('data-theme', 'dark');
+                                } else {
+                                document.documentElement.classList.remove('dark');
+                                document.body.classList.remove('dark');
+                                document.documentElement.setAttribute('data-theme', 'light');
+                                }
+                            } catch (e) {}
+                            })();`,
                     }}
                 />
             </head>

@@ -10,10 +10,11 @@ import { SignatureStep } from '@/components/register/SignatureStep';
 import { VideoRecorderStep } from '@/components/register/VideoStep';
 import { Box, Card, Typography } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
+import { mediaStreamManager } from '@/lib/mediaStreamManager';
 import { convertPersianToEnglish } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
@@ -76,12 +77,31 @@ export default function Register() {
 
     const [passwordSet, setPasswordSet] = useState(false);
     const [, setPassword] = useState('');
+    const prevStepRef = useRef<number | undefined>(userData.step);
 
     const { control, setValue, setError, getValues } = useForm<ExtendedRegistrationForm>({
         resolver: zodResolver(extendedRegistrationSchema),
         mode: 'onBlur',
     });
 
+    // Global camera cleanup when step changes
+    useEffect(() => {
+        const prevStep = prevStepRef.current;
+        const currentStep = userData.step ?? 1;
+
+        // Camera steps that use camera: 2 (selfie), 3 (video), 6 (national card)
+        const cameraSteps = [2, 3, 6];
+        const wasCameraStep = prevStep !== undefined && cameraSteps.includes(prevStep);
+        const isCameraStep = cameraSteps.includes(currentStep);
+
+        // If we're leaving a camera step, stop all cameras using the centralized manager
+        if (wasCameraStep && !isCameraStep) {
+            mediaStreamManager.stopAll();
+        }
+
+        // Update previous step
+        prevStepRef.current = currentStep;
+    }, [userData.step]);
     useEffect(() => {
         try {
             const params = new URLSearchParams(window.location.search);

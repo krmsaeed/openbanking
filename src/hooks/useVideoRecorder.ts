@@ -1,4 +1,5 @@
 import { useUser } from '@/contexts/UserContext';
+import { mediaStreamManager } from '@/lib/mediaStreamManager';
 import axios from 'axios';
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import toast from 'react-hot-toast';
@@ -35,7 +36,7 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
     const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
     const [cameraActive, setCameraActive] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-
+    const { userData } = useUser();
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -46,6 +47,10 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
     const startCamera = useCallback(async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
+            // Register stream with global manager
+            mediaStreamManager.register(stream);
+
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
                 streamRef.current = stream;
@@ -73,6 +78,29 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
             }
         };
     }, [videoPreviewUrl]);
+
+    useEffect(() => {
+        const currentVideoRef = videoRef.current;
+        const currentStream = streamRef.current;
+
+        return () => {
+            // Unregister and stop both current and ref streams
+            if (currentStream) {
+                mediaStreamManager.unregister(currentStream);
+            }
+
+            if (streamRef.current && streamRef.current !== currentStream) {
+                mediaStreamManager.unregister(streamRef.current);
+            }
+
+            streamRef.current = null;
+
+            if (currentVideoRef) {
+                currentVideoRef.srcObject = null;
+            }
+            setCameraActive(false);
+        };
+    }, [userData.step]);
 
     const startVideoRecording = useCallback(async () => {
         if (!streamRef.current) return;
