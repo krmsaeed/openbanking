@@ -101,7 +101,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraResult {
         setIsActive(false);
     }, []);
 
-    // Cleanup on unmount
     useEffect(() => {
         return () => {
             stopCamera();
