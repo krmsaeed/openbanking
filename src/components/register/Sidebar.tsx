@@ -45,12 +45,12 @@ export default function Sidebar() {
                             <Box className="flex w-full flex-col items-center md:flex-row md:items-center">
                                 <Box className="relative flex items-center justify-center">
                                     <span
-                                        className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-sm transition-all duration-200 md:h-10 md:w-10 ${index < STEP_META.length - 1 ? (step > index + 1 ? 'md:connector md:connector-primary' : '') : ''} ${completed ? 'bg-primary text-primary scale-100' : ''} ${current ? 'border-primary-200 bg-primary-400 dark:bg-secondary-200 scale-105 text-gray-100' : 'border-primary-100 bg-white text-gray-400'}`}
+                                        className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-sm transition-all duration-200 md:h-10 md:w-10 ${index < STEP_META.length - 1 ? (step > index + 1 ? 'md:connector md:connector-primary' : '') : ''} ${completed ? 'bg-primary-600 text-primary scale-100' : ''} ${current ? 'bg-primary-400 scale-105' : 'border-secondary-900 bg-secondary-600 text-gray-200'}`}
                                     >
                                         {completed ? (
-                                            <CheckCircleIcon className="mx-auto h-6 w-6 text-white" />
+                                            <CheckCircleIcon className="mx-auto h-6 w-6 text-gray-200" />
                                         ) : (
-                                            <Icon className="mx-auto h-5 w-5" />
+                                            <Icon className="mx-auto h-5 w-5 text-gray-200" />
                                         )}
                                     </span>
                                     {index > 0 && (
