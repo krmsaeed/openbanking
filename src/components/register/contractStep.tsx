@@ -51,11 +51,11 @@ export default function ContractStep() {
     };
 
     return (
-        <Box className="bg-dark-50 min-h-screen py-4">
+        <Box className="h-full py-4">
             <Box className="">
                 <Box className="mb-2 text-center">
                     <DocumentTextIcon className="text-primary-600 mx-auto mb-2 h-16 w-16" />
-                    <p className="text-dark">قرارداد فی‌مابین مشتری و بانک اقتصاد نوین</p>
+                    <p className="text-gray-800">قرارداد فی‌مابین مشتری و بانک اقتصاد نوین</p>
                 </Box>
 
                 <Box className="mb-6">
@@ -88,15 +88,15 @@ export default function ContractStep() {
                                 <label className="text-dark text-sm font-medium">
                                     تاریخ قرارداد
                                 </label>
-                                <p className="text-dark-800">{contractDetails.date}</p>
+                                <p className="text-gray-900">{contractDetails.date}</p>
                             </Box>
                             <Box>
                                 <label className="text-dark text-sm font-medium">نام مشتری</label>
-                                <p className="text-dark-800">{contractDetails.customerName}</p>
+                                <p className="text-gray-900">{contractDetails.customerName}</p>
                             </Box>
                             <Box>
                                 <label className="text-dark text-sm font-medium">کد ملی</label>
-                                <p className="text-dark-800">{contractDetails.nationalId}</p>
+                                <p className="text-gray-900">{contractDetails.nationalId}</p>
                             </Box>
                         </Box>
                         <Box className="space-y-4">
@@ -110,7 +110,7 @@ export default function ContractStep() {
                             </Box>
                             <Box>
                                 <label className="text-dark text-sm font-medium">نرخ سود</label>
-                                <p className="text-dark-800">
+                                <p className="text-gray-900">
                                     {contractDetails.interestRate}% سالانه
                                 </p>
                             </Box>
@@ -118,7 +118,7 @@ export default function ContractStep() {
                                 <label className="text-dark text-sm font-medium">
                                     مدت بازپرداخت
                                 </label>
-                                <p className="text-dark-800">{contractDetails.duration} ماه</p>
+                                <p className="text-gray-900">{contractDetails.duration} ماه</p>
                             </Box>
                             <Box>
                                 <label className="text-dark text-sm font-medium">قسط ماهانه</label>
@@ -136,8 +136,8 @@ export default function ContractStep() {
                     </Typography>
                     <Box className="space-y-6 text-justify leading-relaxed">
                         <Box>
-                            <h3 className="text-dark-800 mb-2 font-bold">ماده ۱ - موضوع قرارداد</h3>
-                            <p className="text-dark">
+                            <h3 className="mb-2 font-bold text-gray-900">ماده ۱ - موضوع قرارداد</h3>
+                            <p className="text-gray-800">
                                 بانک اقتصاد نوین متعهد می‌شود مبلغ {contractDetails.facilityAmount}{' '}
                                 ریال را به عنوان تسهیلات بانکی در اختیار مشتری قرار دهد. این مبلغ
                                 باید طی مدت {contractDetails.duration} ماه به صورت اقساط ماهانه
@@ -146,10 +146,10 @@ export default function ContractStep() {
                         </Box>
 
                         <Box>
-                            <h3 className="text-dark-800 mb-2 font-bold">
+                            <h3 className="mb-2 font-bold text-gray-900">
                                 ماده ۲ - نحوه بازپرداخت
                             </h3>
-                            <p className="text-dark">
+                            <p className="text-gray-800">
                                 مشتری متعهد است مبلغ {contractDetails.monthlyPayment} ریال را در هر
                                 ماه تا تاریخ ۵ هر ماه به حساب بانک واریز نماید. در صورت تأخیر در
                                 پرداخت، جریمه تأخیر طبق نرخ‌های مصوب بانک مرکزی محاسبه خواهد شد.
@@ -157,8 +157,8 @@ export default function ContractStep() {
                         </Box>
 
                         <Box>
-                            <h3 className="text-dark-800 mb-2 font-bold">ماده ۳ - نرخ سود</h3>
-                            <p className="text-dark">
+                            <h3 className="mb-2 font-bold text-gray-900">ماده ۳ - نرخ سود</h3>
+                            <p className="text-gray-800">
                                 نرخ سود این تسهیلات {contractDetails.interestRate}% در سال بوده که
                                 طبق مقررات بانک مرکزی جمهوری اسلامی ایران تعیین شده است. این نرخ
                                 ممکن است طبق تصمیمات بانک مرکزی تغییر یابد.
@@ -166,8 +166,8 @@ export default function ContractStep() {
                         </Box>
 
                         <Box>
-                            <h3 className="text-dark-800 mb-2 font-bold">ماده ۴ - تضامین</h3>
-                            <p className="text-dark">
+                            <h3 className="mb-2 font-bold text-gray-900">ماده ۴ - تضامین</h3>
+                            <p className="text-gray-800">
                                 مشتری متعهد است تضامین لازم شامل اسناد و مدارک مورد نیاز بانک را
                                 ارائه داده و در طول مدت قرارداد حفظ نماید. در صورت کاهش ارزش تضامین،
                                 بانک حق درخواست تضامین اضافی را دارد.
@@ -175,8 +175,8 @@ export default function ContractStep() {
                         </Box>
 
                         <Box>
-                            <h3 className="text-dark-800 mb-2 font-bold">ماده ۵ - فسخ قرارداد</h3>
-                            <p className="text-dark">
+                            <h3 className="mb-2 font-bold text-gray-900">ماده ۵ - فسخ قرارداد</h3>
+                            <p className="text-gray-800">
                                 در صورت عدم رعایت شرایط قرارداد از سوی مشتری، بانک حق فسخ قرارداد و
                                 مطالبه کل مبلغ باقیمانده را دارد. همچنین مشتری می‌تواند در هر زمان
                                 نسبت به تسویه زودهنگام اقدام نماید.
@@ -184,8 +184,8 @@ export default function ContractStep() {
                         </Box>
 
                         <Box>
-                            <h3 className="text-dark-800 mb-2 font-bold">ماده ۶ - حل اختلاف</h3>
-                            <p className="text-dark">
+                            <h3 className="mb-2 font-bold text-gray-900">ماده ۶ - حل اختلاف</h3>
+                            <p className="text-gray-800">
                                 کلیه اختلافات ناشی از این قرارداد در مراجع ذی‌صلاح قضایی تهران قابل
                                 رسیدگی است. قوانین جمهوری اسلامی ایران بر این قرارداد حاکم خواهد
                                 بود.
@@ -195,15 +195,18 @@ export default function ContractStep() {
                 </Box>
 
                 <Box className="mb-6">
-                    <Box className="flex gap-2 pt-6">
+                    <Box className="flex gap-4 pt-6">
                         <input
                             type="checkbox"
                             id="agreement"
                             checked={agreed}
                             onChange={(e) => setAgreed(e.target.checked)}
-                            className="text-secondary-500 bg-secondary-800 h-10 w-10 rounded-lg"
+                            className="text-primary bg-primary mt-2 h-5 w-5 flex-shrink-0 cursor-pointer rounded-lg"
                         />
-                        <label htmlFor="agreement" className="text-dark leading-relaxed">
+                        <label
+                            htmlFor="agreement"
+                            className="text-dark cursor-pointer leading-relaxed"
+                        >
                             با مطالعه کامل متن قرارداد، تمامی شرایط و ضوابط آن را پذیرفته و متعهد به
                             رعایت آن می‌باشم. اطلاعات ارائه شده صحیح بوده و در صورت عدم صحت، مسئولیت
                             کامل بر عهده من خواهد بود.
@@ -235,12 +238,6 @@ export default function ContractStep() {
                         )}
                         {loading ? 'در حال پردازش...' : 'ثبت نهایی'}
                     </Button>
-                </Box>
-
-                <Box className="mt-8 text-center">
-                    <p className="text-sm text-gray-500">
-                        با تأیید این قرارداد، به مرحله پرداخت هدایت خواهید شد
-                    </p>
                 </Box>
             </Box>
         </Box>

@@ -73,9 +73,9 @@ export default function PasswordStep({
     return (
         <>
             <Box className="space-y-6">
-                <Box className="rounded-xl bg-gray-100 p-4">
+                <Box className="rounded-xl bg-gray-200 p-4 dark:bg-gray-800">
                     <List className="text-error-800 space-y-1 text-center text-sm">
-                        <ListItem className="text-bold text-lg text-red-500">
+                        <ListItem className="text-bold dark- text-lg text-red-500">
                             در نگهداری رمز عبور خود دقت کنید{' '}
                         </ListItem>
                         <ListItem>رمز عبور باید حداقل 8 کاراکتر باشد</ListItem>
@@ -112,6 +112,7 @@ export default function PasswordStep({
                                 autoCorrect="off"
                                 autoCapitalize="off"
                                 spellCheck={false}
+                                text-dark
                                 data-form-type="other"
                                 error={errors.ENFirstName?.message}
                             />
@@ -178,9 +179,9 @@ export default function PasswordStep({
                                 startAdornment={
                                     <Box onClick={() => setShowPassword(!showPassword)}>
                                         {showPassword ? (
-                                            <EyeSlashIcon className="h-5 w-5" />
+                                            <EyeSlashIcon className="dark:text-dark h-5 w-5" />
                                         ) : (
-                                            <EyeIcon className="h-5 w-5" />
+                                            <EyeIcon className="dark:text-dark h-5 w-5" />
                                         )}
                                     </Box>
                                 }

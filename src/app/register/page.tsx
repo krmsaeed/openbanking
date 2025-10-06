@@ -177,12 +177,12 @@ export default function Register() {
     return (
         <Box className="container flex justify-center">
             <Box
-                className={`my-2 flex w-full flex-col items-start gap-4 md:my-8 md:max-w-[45rem] md:flex-row md:justify-center`}
+                className={`my-2 flex w-full flex-col items-start gap-4 md:my-8 md:max-w-[50rem] md:flex-row md:justify-center`}
             >
                 <Sidebar />
 
                 <Box className="w-full">
-                    <Card padding="md" className="space-y-8">
+                    <Card className="space-y-8">
                         <Typography variant="h4" className="text-center text-gray-800">
                             {getStepDescription()}
                         </Typography>

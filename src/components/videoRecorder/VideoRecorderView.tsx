@@ -66,9 +66,11 @@ export function VideoRecorderView({
                                 ضبط مجدد
                             </Button>
                         </Box>
-                        <Box className="rounded-xl bg-gray-100 p-4">
-                            <ul className="text-error-800 space-y-1 text-sm">
-                                <li className="font-bold"> فیلم ضبط شده خود را بررسی کنید</li>
+                        <Box className="rounded-xl bg-gray-200 p-4">
+                            <ul className="space-y-1 text-sm">
+                                <li className="text-error-400 font-bold">
+                                    فیلم ضبط شده خود را بررسی کنید
+                                </li>
                                 <li> اگر فیلم مناسب است، روی «تایید» کلیک کنید</li>
                                 <li> برای رکورد جدید، روی «ضبط مجدد» کلیک کنید</li>
                             </ul>
@@ -124,16 +126,16 @@ export function VideoRecorderView({
                                 )}
                             </Box>
                             {!isRecording ? (
-                                <Box className="mb-4 rounded-lg bg-gray-50">
+                                <Box className="mb-4 rounded-lg bg-gray-100">
                                     <Box className="space-y-2 text-right">
                                         <Typography
                                             variant="h4"
-                                            className="border-primary-100 mt-2 flex min-h-10 items-center justify-center rounded-lg border bg-gray-50 text-center text-base leading-relaxed"
+                                            className="border-primary-100 mt-2 flex min-h-10 items-center justify-center rounded-lg border bg-gray-200 text-center text-base leading-relaxed"
                                         >
-                                            {randomText}
+                                            {randomText ?? 'test'}
                                         </Typography>
-                                        <ul className="mt-2 list-inside list-disc rounded-lg bg-gray-100 p-2 text-sm leading-relaxed text-gray-800">
-                                            <li className="text-primary font-bold">
+                                        <ul className="mt-2 list-inside list-disc rounded-lg bg-gray-200 p-2 text-sm leading-relaxed text-gray-800">
+                                            <li className="text-primary-800 font-bold">
                                                 متن نمایش داده‌شده را واضح بخوانید
                                             </li>
                                             <li>طول ویدیو: حدود 30 ثانیه.</li>
@@ -148,7 +150,7 @@ export function VideoRecorderView({
                                     variant="h4"
                                     className="border-primary-100 mt-2 mb-2 flex min-h-10 items-center justify-center rounded-lg border bg-gray-50 text-center text-base leading-relaxed"
                                 >
-                                    {randomText}
+                                    {randomText ?? 'test'}
                                 </Typography>
                             )}
                         </Box>

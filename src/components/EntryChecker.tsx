@@ -1,6 +1,5 @@
 'use client';
 
-import { bankingService } from '@/services/banking';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -36,21 +35,7 @@ export default function EntryChecker() {
                     return;
                 }
 
-                try {
-                    const accountsResp = await bankingService.getAccounts();
-                    if (
-                        accountsResp &&
-                        accountsResp.success &&
-                        accountsResp.data &&
-                        accountsResp.data.length > 0
-                    ) {
-                        router.push('/credit-assessment');
-                        return;
-                    }
-                } catch (err) {
-                    console.error('bankingService error', err);
-                }
-
+                // Directly redirect to register since banking service is removed
                 router.push('/register');
             } catch (err) {
                 console.error('EntryChecker error:', err);

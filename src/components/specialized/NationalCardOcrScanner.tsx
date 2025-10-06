@@ -343,14 +343,15 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                         {!ocrLoading && (
                             <Box className="absolute bottom-4 left-1/2 -translate-x-1/2 transform">
                                 {ocrValid ? (
-                                    <Box className="flex items-center gap-2 rounded-2xl border-2 border-white bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2 text-white shadow-xl backdrop-blur-sm">
+                                    <Box className="flex items-center gap-2 rounded-full border-2 border-white bg-gradient-to-r from-green-500 to-emerald-500 p-2 text-white shadow-xl backdrop-blur-sm">
                                         <CheckIcon className="h-5 w-5" />
-                                        <span className="text-sm font-medium">تایید شد</span>
                                     </Box>
                                 ) : (
-                                    <Box className="flex items-center gap-2 rounded-2xl border-2 border-white bg-gradient-to-r from-red-500 to-rose-500 px-4 py-2 text-white shadow-xl backdrop-blur-sm">
+                                    <Box
+                                        onClick={handleReset}
+                                        className="flex items-center gap-2 rounded-full border-2 border-white bg-gradient-to-r from-red-500 to-rose-500 p-2 text-white shadow-xl backdrop-blur-sm"
+                                    >
                                         <XMarkIcon className="h-5 w-5" />
-                                        <span className="text-sm font-medium">نامعتبر</span>
                                     </Box>
                                 )}
                             </Box>
@@ -407,6 +408,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                         onClick={handleReset}
                         disabled={ocrLoading}
                         loading={ocrLoading}
+                        className="bg-error"
                     >
                         <ArrowPathIcon className="ml-2 h-5 w-5" />
                         <span>بازنشانی</span>

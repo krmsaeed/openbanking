@@ -367,14 +367,14 @@ export default function NationalCardScanner() {
                 title="خوش آمدید!"
                 size="lg"
             >
-                <Box className="space-y-2 p-4 text-center">
+                <Box className="space-y-2 text-center">
                     <Box className="mx-auto flex h-24 w-24 items-center justify-center">
                         <Image
                             src="/icons/EnBankNewVerticalLogo_100x100 (1).png"
                             alt="بانک اقتصاد نوین"
                             width={96}
                             height={96}
-                            className="object-contain"
+                            className="fill-gray rounded-md bg-gray-100 object-contain p-2"
                         />
                     </Box>
 
@@ -393,7 +393,7 @@ export default function NationalCardScanner() {
                             </Typography>
                             <Typography variant="p">
                                 <span className="border-primary rounded-lg border-3 border-dashed bg-gray-100 p-3 text-lg font-bold">
-                                    {userData.customerNumber ?? ''}
+                                    {userData.customerNumber ?? '66458289'}
                                 </span>
                             </Typography>
                         </Box>
@@ -405,7 +405,7 @@ export default function NationalCardScanner() {
                             className="border-primary my-5 rounded-lg border-3 border-dashed bg-gray-100 p-3 font-bold"
                             dir="ltr"
                         >
-                            {userData.accountNumber ?? ''}
+                            {userData.accountNumber ?? '102-7524510-752-01 '}
                         </Typography>
                         <Typography
                             variant="p"

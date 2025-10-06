@@ -17,8 +17,6 @@ body {
     font-family: var(--font-vazirmatn), 'Tahoma', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: var(--color-bg);
-    color: var(--color-text);
     transition:
         background-color 0.3s ease,
         color 0.3s ease;
@@ -628,7 +626,7 @@ input[data-form-type='other']::-webkit-contacts-auto-fill-button {
     background-color: var(--color-primary);
 }
 .dark .connector-primary::after {
-    background-color: var(--color-primary-100);
+    background-color: var(--color-dark);
 }
 .connector-gray::after {
     background-color: var(--color-bg-soft);

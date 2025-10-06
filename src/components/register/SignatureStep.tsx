@@ -136,10 +136,10 @@ export function SignatureStep() {
 
     return (
         <Box className="space-y-4">
-            <Box className="h-[25rem] w-full rounded-lg border-2 border-dashed border-gray-300 bg-gray-100 p-1 md:h-96">
+            <Box className="dark:bg-primary h-[25rem] w-full rounded-lg border-2 border-dashed border-gray-300 bg-gray-100 p-1 md:h-96">
                 <canvas
                     ref={canvasRef}
-                    className="h-full w-full cursor-crosshair touch-none rounded border border-gray-200 bg-white"
+                    className="bg-dark-900 h-full w-full cursor-crosshair touch-none rounded"
                     onMouseDown={startDrawing}
                     onMouseMove={draw}
                     onMouseUp={stopDrawing}
@@ -151,17 +151,16 @@ export function SignatureStep() {
                 />
             </Box>
 
-            <Box className="rounded-lg bg-gray-100 p-3">
+            <Box className="rounded-lg bg-gray-200 p-3">
                 <Typography variant="caption" className="block text-center font-bold text-gray-800">
                     امضای خود را با ماوس یا انگشت در کادر بالا بکشید
                 </Typography>
             </Box>
             <Box className="w-full">
                 <Button
-                    variant="secondary"
                     onClick={clearSignature}
                     disabled={!hasSignature}
-                    className="mx-auto flex items-center gap-2"
+                    className="bg-error-400 mx-auto flex items-center gap-2"
                 >
                     <TrashIcon className="h-4 w-4" />
                     پاک کردن

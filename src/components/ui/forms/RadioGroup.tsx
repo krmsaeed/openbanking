@@ -57,8 +57,8 @@ function RadioGroupInner<T>(
                                 'rounded-xl border-2 px-4 py-3 transition-all duration-200',
                                 'hover:shadow-sm',
                                 isSelected
-                                    ? 'border-primary-500 bg-primary-50 shadow-sm'
-                                    : 'border-gray-200 bg-white hover:border-gray-300',
+                                    ? 'border-primary-500 bg-secondary shadow-sm dark:bg-gray-100'
+                                    : 'border-gray-300 bg-gray-100 hover:border-gray-300',
                                 error && !isSelected && 'border-red-300',
                                 direction === 'horizontal' ? 'min-w-[120px] flex-1' : 'w-full'
                             )}
@@ -66,7 +66,7 @@ function RadioGroupInner<T>(
                             <span
                                 className={cn(
                                     'text-sm font-medium transition-colors',
-                                    isSelected ? 'text-primary-700' : 'text-gray-700'
+                                    isSelected ? 'text-gray-50' : 'text-primary-700'
                                 )}
                             >
                                 {option.label}
@@ -93,7 +93,7 @@ function RadioGroupInner<T>(
                                     )}
                                 >
                                     {isSelected && (
-                                        <Box className="bg-primary-500 h-2.5 w-2.5 rounded-full" />
+                                        <Box className="bg-primary-900 h-2.5 w-2.5 rounded-full" />
                                     )}
                                 </Box>
                             </Box>

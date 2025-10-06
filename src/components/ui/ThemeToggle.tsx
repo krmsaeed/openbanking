@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/core/Button';
+import { MoonIcon, SunIcon } from '@heroicons/react/24/outline';
+import React, { useEffect, useState } from 'react';
 
 export const ThemeToggle: React.FC = React.memo(() => {
     const [theme, setTheme] = useState<'light' | 'dark'>(() => {
@@ -32,7 +32,7 @@ export const ThemeToggle: React.FC = React.memo(() => {
     }, []);
 
     return (
-        <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 60 }}>
+        <div className="fixed top-4 right-4 z-50">
             <Button onClick={toggle} variant="secondary" aria-label="تغییر تم">
                 {theme === 'dark' ? (
                     <SunIcon className="h-5 w-5" />

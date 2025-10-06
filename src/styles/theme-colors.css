@@ -1,0 +1,209 @@
+/* CSS Variables for Theme Colors */
+:root {
+    /* Default Light Theme */
+    --color-background: #f8fafc;
+    --color-text: #334155;
+    --color-surface: #ffffff;
+    --color-border: #e2e8f0;
+    --color-bg: #f8fafc;
+    --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+
+    /* Gray Scale */
+    --color-gray-50: #f7f7f7;
+    --color-gray-100: #ededed;
+    --color-gray-200: #e4e4e4;
+    --color-gray-300: #c8c8c8;
+    --color-gray-400: #adadad;
+    --color-gray-500: #999999;
+    --color-gray-600: #888888;
+    --color-gray-700: #7b7b7b;
+    --color-gray-800: #545454;
+    --color-gray-900: #1f2937;
+
+    /* Primary Colors */
+    --color-primary: #45196e;
+    --color-primary-50: #eee7f4;
+    --color-primary-100: #dac1f1;
+    --color-primary-200: #b584e3;
+    --color-primary-300: #9046d5;
+    --color-primary-400: #6a26aa;
+    --color-primary-500: #45196e;
+    --color-primary-600: #361456;
+    --color-primary-700: #290f41;
+    --color-primary-800: #1b0a2b;
+    --color-primary-900: #0e0516;
+
+    /* Secondary Colors */
+    --color-secondary: #6d5ea0;
+    --color-secondary-50: #fbf8ff;
+    --color-secondary-100: #e2dfec;
+    --color-secondary-200: #c5bfd9;
+    --color-secondary-300: #a89fc6;
+    --color-secondary-400: #8b7eb4;
+    --color-secondary-500: #6d5ea0;
+    --color-secondary-600: #584b81;
+    --color-secondary-700: #423960;
+    --color-secondary-800: #2c2640;
+    --color-secondary-900: #161320;
+
+    /* Success Colors */
+    --color-success: #22c55e;
+    --color-success-50: #f3fbf6;
+    --color-success-100: #e6f6ee;
+    --color-success-200: #cff0dc;
+    --color-success-300: #9fe6b8;
+    --color-success-400: #56d78a;
+    --color-success-500: #22c55e;
+    --color-success-600: #1da052;
+    --color-success-700: #17803f;
+    --color-success-800: #125f30;
+    --color-success-900: #0c3e20;
+
+    /* Info Colors */
+    --color-info: #3b82f6;
+    --color-info-50: #f0f7ff;
+    --color-info-100: #e3f0ff;
+    --color-info-200: #c7e1ff;
+    --color-info-300: #9bc7ff;
+    --color-info-400: #61a9ff;
+    --color-info-500: #3b82f6;
+    --color-info-600: #316fd6;
+    --color-info-700: #2759b0;
+    --color-info-800: #1d4388;
+    --color-info-900: #142c60;
+
+    /* Warning Colors */
+    --color-warning: #f59e0b;
+    --color-warning-50: #fffbf0;
+    --color-warning-100: #fff6e6;
+    --color-warning-200: #ffe8bf;
+    --color-warning-300: #ffd480;
+    --color-warning-400: #ffc055;
+    --color-warning-500: #f59e0b;
+    --color-warning-600: #d68809;
+    --color-warning-700: #a36406;
+    --color-warning-800: #764604;
+    --color-warning-900: #4c2e02;
+
+    /* Error Colors */
+    --color-error: #ef4444;
+    --color-error-50: #fff5f5;
+    --color-error-100: #ffefef;
+    --color-error-200: #ffd6d6;
+    --color-error-300: #ffb1b1;
+    --color-error-400: #ff8a8a;
+    --color-error-500: #ef4444;
+    --color-error-600: #d03b3b;
+    --color-error-700: #ad2f2f;
+    --color-error-800: #8b2323;
+    --color-error-900: #601616;
+}
+
+/* Dark Theme Override */
+[data-theme='dark'] {
+    --color-background: #0f172a;
+    --color-text: #e2e8f0;
+    --color-surface: #1e293b;
+    --color-border: #475569;
+    --color-bg: #0f172a;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+
+    /* Gray Scale - Dark */
+    --color-gray-50: #1f2937;
+    --color-gray-100: #374151;
+    --color-gray-200: #4b5563;
+    --color-gray-300: #6b7280;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #d1d5db;
+    --color-gray-600: #e5e7eb;
+    --color-gray-700: #f3f4f6;
+    --color-gray-800: #f9fafb;
+    --color-gray-900: #ffffff;
+
+    /* Primary Colors - Dark */
+    --color-primary: #9046d5;
+    --color-primary-50: #0e0516;
+    --color-primary-100: #1b0a2b;
+    --color-primary-200: #290f41;
+    --color-primary-300: #361456;
+    --color-primary-400: #45196e;
+    --color-primary-500: #6a26aa;
+    --color-primary-600: #9046d5;
+    --color-primary-700: #b584e3;
+    --color-primary-800: #dac1f1;
+    --color-primary-900: #eee7f4;
+
+    /* Secondary Colors - Dark */
+    --color-secondary: #a89fc6;
+    --color-secondary-50: #161320;
+    --color-secondary-100: #2c2640;
+    --color-secondary-200: #423960;
+    --color-secondary-300: #584b81;
+    --color-secondary-400: #6d5ea0;
+    --color-secondary-500: #8b7eb4;
+    --color-secondary-600: #a89fc6;
+    --color-secondary-700: #c5bfd9;
+    --color-secondary-800: #e2dfec;
+    --color-secondary-900: #fbf8ff;
+
+    /* Success Colors - Dark */
+    --color-success: #56d78a;
+    --color-success-50: #0c3e20;
+    --color-success-100: #125f30;
+    --color-success-200: #17803f;
+    --color-success-300: #1da052;
+    --color-success-400: #22c55e;
+    --color-success-500: #56d78a;
+    --color-success-600: #9fe6b8;
+    --color-success-700: #cff0dc;
+    --color-success-800: #e6f6ee;
+    --color-success-900: #f3fbf6;
+
+    /* Info Colors - Dark */
+    --color-info: #61a9ff;
+    --color-info-50: #142c60;
+    --color-info-100: #1d4388;
+    --color-info-200: #2759b0;
+    --color-info-300: #316fd6;
+    --color-info-400: #3b82f6;
+    --color-info-500: #61a9ff;
+    --color-info-600: #9bc7ff;
+    --color-info-700: #c7e1ff;
+    --color-info-800: #e3f0ff;
+    --color-info-900: #f0f7ff;
+
+    /* Warning Colors - Dark */
+    --color-warning: #ffc055;
+    --color-warning-50: #4c2e02;
+    --color-warning-100: #764604;
+    --color-warning-200: #a36406;
+    --color-warning-300: #d68809;
+    --color-warning-400: #f59e0b;
+    --color-warning-500: #ffc055;
+    --color-warning-600: #ffd480;
+    --color-warning-700: #ffe8bf;
+    --color-warning-800: #fff6e6;
+    --color-warning-900: #fffbf0;
+
+    /* Error Colors - Dark */
+    --color-error: #ff8a8a;
+    --color-error-50: #601616;
+    --color-error-100: #8b2323;
+    --color-error-200: #ad2f2f;
+    --color-error-300: #d03b3b;
+    --color-error-400: #ef4444;
+    --color-error-500: #ff8a8a;
+    --color-error-600: #ffb1b1;
+    --color-error-700: #ffd6d6;
+    --color-error-800: #ffefef;
+    --color-error-900: #fff5f5;
+}
+
+/* Body base styling */
+body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+}

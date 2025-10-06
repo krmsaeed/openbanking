@@ -92,7 +92,7 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>((props, ref) 
             })()}
         >
             {label && (
-                <Box className="pl-1 text-right text-sm text-gray-900 dark:text-gray-50" dir="rtl">
+                <Box className="pl-1 text-right text-sm text-gray-900" dir="rtl">
                     {label}
                     {required && <span className="text-error mr-1">*</span>}
                 </Box>
@@ -103,7 +103,7 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>((props, ref) 
                     autoComplete={autoComplete}
                     autoFocus={autoFocus}
                     className={mergeClasses(
-                        'text-gray w-full rounded-md bg-white p-3 px-8 shadow-md focus:border-none focus:outline-none',
+                        'w-full rounded-md bg-gray-50 p-3 px-8 text-gray-900 shadow-md focus:border-none focus:outline-none',
                         props.className,
                         color
                     )}
@@ -122,12 +122,12 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>((props, ref) 
                     {...inputProps}
                 />
                 {startAdornment && (
-                    <Box className="absolute right-[1rem] bottom-1/2 translate-y-1/2 transform">
+                    <Box className="dark:text-secondary absolute right-[1rem] bottom-1/2 translate-y-1/2 transform">
                         {startAdornment}
                     </Box>
                 )}
                 {endAdornment && (
-                    <Box className="absolute bottom-1/2 left-[1rem] translate-y-1/2 transform">
+                    <Box className="dark:text-secondary absolute bottom-1/2 left-[1rem] translate-y-1/2 transform">
                         {endAdornment}
                     </Box>
                 )}

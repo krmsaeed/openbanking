@@ -1,5 +1,6 @@
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
+import SimpleThemeToggle from '@/components/SimpleThemeToggle';
 import { ToastProvider } from '@/components/ui/feedback/Toast';
 import { UserProvider } from '@/contexts/UserContext';
 import ThemeProvider from '@/lib/ThemeProvider';
@@ -69,12 +70,11 @@ export default function RootLayout({
                     }}
                 />
             </head>
-            <body
-                className={` ${iranYekan.className} flex w-full flex-col items-center bg-white text-gray-900 dark:bg-gray-900 dark:text-white`}
-            >
+            <body className={` ${iranYekan.className} bg-gray flex w-full flex-col items-center`}>
                 <ThemeProvider>
                     <UserProvider>
                         <ToastProvider>
+                            <SimpleThemeToggle />
                             {process.env.NODE_ENV === 'development' ? (
                                 <ServiceWorkerUnregistrar />
                             ) : (

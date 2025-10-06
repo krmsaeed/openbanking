@@ -10,7 +10,7 @@ const getCardClasses = (
     variant: 'default' | 'elevated' | 'outline',
     padding: 'none' | 'sm' | 'md' | 'lg'
 ) => {
-    const baseClasses = 'rounded-lg  bg-gray-50';
+    const baseClasses = 'rounded-lg  bg-gray-100';
 
     const variantClasses = {
         default: '',
