@@ -619,15 +619,18 @@ input[data-form-type='other']::-webkit-contacts-auto-fill-button {
     width: 2px;
 
     border-radius: 1px;
-    background-color: var(--color-primary);
+    background-color: var(--color-primary-200);
+    color: var(--color-gray-100);
     transition: background-color 200ms ease;
 }
 .connector-primary::after {
     background-color: var(--color-primary);
+    color: var(--color-gray-100);
 }
 
 .connector-gray::after {
     background-color: var(--color-bg-soft);
+    color: var(--color-gray-100);
 }
 
 .container {

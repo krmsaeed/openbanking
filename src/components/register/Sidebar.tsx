@@ -25,7 +25,7 @@ export default function Sidebar() {
     const { userData, setUserData } = useUser();
     return (
         <nav
-            className="mx-auto w-[95%] rounded-lg bg-gray-100 px-4 py-6 shadow-lg md:w-[18rem]"
+            className="mx-auto w-[95%] rounded-lg bg-gray-100 px-4 py-6 shadow-lg md:w-[18rem] dark:bg-gray-800"
             aria-label="مراحل ثبت‌نام"
         >
             <h3 className="mb-2 hidden text-center text-lg font-semibold text-gray-800 md:block dark:text-white">
@@ -43,24 +43,40 @@ export default function Sidebar() {
                             className="group relative min-w-[96px] flex-shrink-0 items-center py-2 md:flex md:w-auto md:min-w-full md:flex-shrink md:flex-row md:gap-3"
                         >
                             <Box className="flex w-full flex-col items-center md:flex-row md:items-center">
-                                <Box className="relative flex items-center justify-center">
+                                <Box className="relative flex items-center justify-center text-gray-900">
                                     <span
-                                        className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-sm transition-all duration-200 md:h-10 md:w-10 ${index < STEP_META.length - 1 ? (step > index + 1 ? 'md:connector md:connector-primary' : 'text-gray-700') : 'text-gray-900'} ${completed ? 'bg-primary-400 text-primary scale-100' : ''} ${current ? 'bg-primary-800 scale-105' : 'border-primary-700 bg-secondary-300 text-gray-500'}`}
+                                        className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-sm transition-all duration-200 md:h-10 md:w-10 ${
+                                            completed
+                                                ? 'bg-primary-600 text-white dark:text-white'
+                                                : current
+                                                  ? 'bg-primary-600 text-white'
+                                                  : 'bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                                        }`}
                                     >
                                         {completed ? (
-                                            <CheckCircleIcon className="text-secondary-500 mx-auto h-6 w-6" />
+                                            <CheckCircleIcon className="mx-auto h-6 w-6 text-white" />
                                         ) : (
-                                            <Icon className="mx-auto h-5 w-5 text-gray-700" />
+                                            <Icon className="mx-auto h-5 w-5" />
                                         )}
                                     </span>
                                     {index > 0 && (
                                         <span
-                                            className={`absolute top-1/2 left-[55px] z-0 h-0.5 w-10 -translate-y-1/2 transform md:-top-[10px] md:left-0 md:rotate-90 ${step > index ? 'bg-primary' : 'bg-gray-400'}`}
+                                            className={`absolute top-1/2 left-[55px] z-0 h-0.5 w-10 -translate-y-1/2 transform md:-top-[10px] md:left-0 md:rotate-90 ${
+                                                step > index
+                                                    ? 'bg-primary-600'
+                                                    : 'bg-gray-400 dark:bg-gray-600'
+                                            }`}
                                         />
                                     )}
                                 </Box>
                                 <Typography
-                                    className={`mt-2 text-xs font-medium transition-colors duration-150 md:mt-0 md:text-sm ${current ? 'text-secondary-600' : 'text-gray dark:text-gray-600'} ${completed ? 'text-primary-700' : 'text-gray'} group-hover:text-primary px-2 text-center md:text-right`}
+                                    className={`group-hover:text-primary mt-2 px-2 text-center text-xs font-medium transition-colors duration-150 md:mt-0 md:text-right md:text-sm ${
+                                        completed
+                                            ? 'text-primary-700 dark:text-white'
+                                            : current
+                                              ? 'text-secondary-600 dark:text-secondary-400'
+                                              : 'text-gray-600 dark:text-gray-400'
+                                    }`}
                                     onClick={() => setUserData({ step: index + 1 })}
                                     tabIndex={0}
                                     aria-current={current ? 'step' : undefined}
