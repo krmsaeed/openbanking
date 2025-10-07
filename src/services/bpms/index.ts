@@ -1,4 +1,4 @@
-import axios from 'axios';
+import bpmsApiClient from '@/lib/bpmsApiClient';
 import { handleResponse } from '../setResponse';
 
 export interface ApiResponse<T = unknown> {
@@ -6,17 +6,27 @@ export interface ApiResponse<T = unknown> {
     data: T;
     response: T;
 }
-const baseUrl = process.env.BASE_URL;
+
+/**
+ * Send a message via BPMS (with Bearer token authentication)
+ */
 export async function virtualOpenDepositSendMessage<T>(payload: T) {
-    const apiResponse = await axios.post(`${baseUrl}/bpms/sendMessage/`, payload);
+    const apiResponse = await bpmsApiClient.post('/sendMessage/', payload);
     return handleResponse(apiResponse);
 }
 
+/**
+ * Upload user files to BPMS (with Bearer token authentication)
+ */
 export async function virtualOpenDepositKeKycUserFiles<T>(payload: T) {
-    const baseUrl = process.env.BASE_URL;
-    const response = await axios.post(`${baseUrl}/bpms/sendMultiPartMessage`, payload);
+    const response = await bpmsApiClient.post('/sendMultiPartMessage', payload, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
     return handleResponse(response);
 }
+
 const bpms = {
     virtualOpenDepositSendMessage,
     virtualOpenDepositKeKycUserFiles,

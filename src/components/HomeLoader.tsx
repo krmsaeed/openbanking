@@ -79,7 +79,7 @@ function HomeLoader() {
 
     return (
         <Box className="from-primary-50 flex w-full max-w-lg flex-col items-center justify-center gap-6 rounded-2xl bg-gradient-to-r to-indigo-50 p-8 shadow-lg">
-            <Box className="flex h-32 w-32 items-center justify-center rounded-3xl bg-white shadow-md">
+            <Box className="flex h-32 w-32 items-center justify-center rounded-3xl bg-gray-50 shadow-md">
                 <Box className="animate-spin-slow">
                     <Image
                         src="/icons/EnBankNewVerticalLogo_100x100 (1).png"
