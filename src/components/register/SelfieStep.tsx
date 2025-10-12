@@ -6,7 +6,6 @@ import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
 import { ArrowPathIcon, CameraIcon, CheckIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import Image from 'next/image';
-import toast from 'react-hot-toast';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
 import LoadingButton from '../ui/core/LoadingButton';
@@ -36,42 +35,21 @@ export default function CameraSelfie() {
     } = useSelfieStep();
 
     const handleConfirm = async () => {
-        if (!capturedPhoto) {
-            toast.error('عکسی برای ارسال وجود ندارد');
-            return;
-        }
-
         setIsUploading(true);
-
-        try {
-            // Convert captured photo to File
-            const file = await convertToFile(capturedPhoto, 'selfie', 'image/jpeg', 0.8);
-
-            if (!file) {
-                toast.error('امکان ایجاد تصویر برای آپلود وجود ندارد');
-                return;
-            }
-
-            // Create FormData for BPMS upload
-            const formData = createBPMSFormData(
-                file,
-                'virtual-open-deposit',
-                userData.processId,
-                'GovahInquiry'
-            );
-
-            // Upload to BPMS
-            const response = await axios.post('/api/bpms/deposit-files', formData);
-            const { data } = response.data;
-
-            // Update user state and move to next step
-            setUserData({ ...userData, step: 3, randomText: data.body.randomText });
-        } catch (err) {
-            console.error('upload error', err);
-            toast.error('آپلود عکس با مشکل مواجه شد');
-        } finally {
-            setIsUploading(false);
-        }
+        const file = await convertToFile(capturedPhoto, 'selfie', 'image/jpeg', 0.8);
+        const formData = createBPMSFormData(
+            file!,
+            'virtual-open-deposit',
+            userData.processId,
+            'GovahInquiry'
+        );
+        await axios
+            .post('/api/bpms/deposit-files', formData)
+            .then((response) => {
+                const { data } = response.data;
+                setUserData({ ...userData, step: 3, randomText: data.body.randomText });
+            })
+            .finally(() => setIsUploading(false));
     };
 
     if (error) {
@@ -144,7 +122,7 @@ export default function CameraSelfie() {
         <Box className="mx-auto max-w-md space-y-4">
             <Box className="bg-dark relative mx-auto h-70 w-70 overflow-hidden rounded-full">
                 {cameraLoading && (
-                    <Box className="absolute inset-0 z-30 flex flex-col items-center justify-center space-y-4 bg-gray-900 text-white">
+                    <Box className="absolute inset-0 z-30 flex flex-col items-center justify-center space-y-4 rounded-full bg-gray-900 text-white">
                         <Box className="border-t-primary-500 h-12 w-12 animate-spin rounded-full border-4 border-gray-300"></Box>
                         <Box className="text-center">
                             <Typography variant="h3" className="mb-2 text-lg font-semibold">
@@ -172,7 +150,7 @@ export default function CameraSelfie() {
                     disableRemotePlayback
                 />
 
-                {!capturedPhoto ? null : (
+                {capturedPhoto && (
                     <Box className="relative z-20 h-full w-full">
                         <Image
                             src={capturedPhoto ?? ''}
@@ -210,20 +188,8 @@ export default function CameraSelfie() {
                 )}
                 <canvas ref={canvasRef} style={{ display: 'none' }} />
             </Box>
-            {capturedPhoto && (
-                <Box className="flex justify-center gap-4">
-                    <Button
-                        onClick={retakePhoto}
-                        className="w-fu bg-success-400 hover:bg-primary-300 flex items-center justify-center px-5 py-3 opacity-50 hover:opacity-100"
-                    >
-                        <ArrowPathIcon className="h-6 w-6 text-white" />
-                        <Typography variant="body1" className="text-xs font-medium text-white">
-                            عکس جدید
-                        </Typography>
-                    </Button>
-                </Box>
-            )}
-            {!capturedPhoto && stream && !cameraLoading && closenessPercent <= 80 ? (
+
+            {!capturedPhoto && stream && !cameraLoading && closenessPercent <= 80 && (
                 <Box className="h-3 space-y-3 text-center">
                     <Typography
                         variant="body1"
@@ -239,8 +205,6 @@ export default function CameraSelfie() {
                                     : 'صورت خود را در مقابل دوربین قرار دهید')}
                     </Typography>
                 </Box>
-            ) : (
-                <Box className="h-3"></Box>
             )}
 
             {!capturedPhoto && stream && !cameraLoading && (
@@ -269,20 +233,37 @@ export default function CameraSelfie() {
             )}
             <Box className="rounded-xl bg-gray-200 p-4">
                 {!capturedPhoto ? (
-                    <>
-                        <ul className="text-dark [&_li]:text-dark space-y-1 text-sm">
-                            <li>• صورت خود را کاملاً در قاب قرار دهید</li>
-                            <li>• مستقیم به دوربین نگاه کنید</li>
-                            <li>• منتظر بمانید تا صورت شما تشخیص داده شود</li>
-                            <li>• روی دکمه سبز کلیک کنید تا عکس بگیرید</li>
-                        </ul>
-                    </>
-                ) : (
-                    <ul className="text-error-800 space-y-1 text-sm">
-                        <li>• عکس خود را بررسی کنید</li>
-                        <li>• اگر عکس مناسب است، روی «تایید» کلیک کنید</li>
-                        <li>• برای گرفتن عکس جدید، روی «عکس جدید» کلیک کنید</li>
+                    <ul className="space-y-1 text-center text-sm">
+                        <li className="text-primary-600 font-bold">
+                            {' '}
+                            صورت خود را کاملاً در قاب قرار دهید
+                        </li>
+                        <li> مستقیم به دوربین نگاه کنید</li>
+                        <li> منتظر بمانید تا صورت شما تشخیص داده شود</li>
+                        <li> زمانی که دکمه گرفتن عکس سبز شد، کلیک کنید </li>
                     </ul>
+                ) : (
+                    <>
+                        <ul className="space-y-1 text-center text-sm">
+                            <li className="text-error-800 font-bold"> عکس خود را بررسی کنید</li>
+                            <li> اگر عکس مناسب است، روی «تایید» کلیک کنید</li>
+                            <li> برای گرفتن عکس جدید، روی «عکس جدید» کلیک کنید</li>
+                        </ul>
+                        <Box className="mt-3 flex justify-center gap-4">
+                            <Button
+                                onClick={retakePhoto}
+                                className="w-fu bg-primary-200 hover:bg-primary-300 flex items-center justify-center px-5 py-3"
+                            >
+                                <ArrowPathIcon className="h-6 w-6 text-white" />
+                                <Typography
+                                    variant="body1"
+                                    className="text-xs font-medium text-white"
+                                >
+                                    عکس جدید
+                                </Typography>
+                            </Button>
+                        </Box>
+                    </>
                 )}
             </Box>
 

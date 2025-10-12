@@ -42,7 +42,7 @@ export function VideoRecorderView({
     return (
         <Box className="space-y-6">
             <Box className="text-center">
-                {hasPreview ? (
+                {hasPreview && (
                     <Box className="w-full space-y-4">
                         <Box className="w-full rounded-lg bg-gray-50 p-2">
                             <video
@@ -72,7 +72,9 @@ export function VideoRecorderView({
                             </Button>
                         </Box>
                     </Box>
-                ) : (
+                )}
+
+                {!hasPreview && (
                     <Box className="space-y-4">
                         <Box className=" ">
                             <Box className="border-primary relative mb-4 overflow-hidden rounded-lg border-2 border-dashed bg-gray-200 p-1">
@@ -101,23 +103,21 @@ export function VideoRecorderView({
                                     <Box className="space-y-2 text-right">
                                         <Typography
                                             variant="h4"
-                                            className="border-primary-100 mt-2 flex min-h-10 items-center justify-center rounded-lg border bg-gray-200 text-center text-base leading-relaxed"
+                                            className="border-primary-100 mt-2 flex min-h-10 flex-col items-center justify-center rounded-lg border bg-gray-200 text-center text-base leading-relaxed"
                                         >
                                             {randomText ?? 'test'}
                                         </Typography>
-                                        <Box className="mt-2 flex justify-between rounded-lg bg-gray-200 p-2">
-                                            <ul className="list-inside list-disc p-2 text-sm leading-relaxed text-gray-800">
+                                        <Box className="mt-2 flex flex-col items-center justify-between rounded-lg bg-gray-200 p-2">
+                                            <ul className="p-2 text-center text-sm leading-relaxed text-gray-800">
                                                 <li className="text-primary-800 font-bold">
                                                     متن نمایش داده‌شده را واضح بخوانید
                                                 </li>
                                                 <li>طول ویدیو: حدود 30 ثانیه.</li>
                                                 <li>صورت در مرکز قاب قرار گیرد.</li>
-                                                <li>از نور پشت سر پرهیز کنید.</li>
-                                                <li>در محیطی کم‌صدا صحبت کنید.</li>
                                             </ul>
                                             <Button
                                                 onClick={onStartRecording}
-                                                className="bg-success-400 hover:bg-success-600 flex items-center gap-2 px-6 py-3 opacity-50 hover:opacity-100"
+                                                className="bg-primary-200 hover:bg-primary-300 flex items-center gap-2 px-6 py-3"
                                                 disabled={!cameraActive}
                                             >
                                                 <VideoCameraIcon className="h-5 w-5" />

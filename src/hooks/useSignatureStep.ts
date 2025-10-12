@@ -1,12 +1,6 @@
-import { useUser } from '@/contexts/UserContext';
-import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
-import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
-import toast from 'react-hot-toast';
 
 export function useSignatureStep() {
-    const { userData, setUserData } = useUser();
-    const [isLoading, setIsLoading] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [hasSignature, setHasSignature] = useState(false);
@@ -25,7 +19,7 @@ export function useSignatureStep() {
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
             ctx.strokeStyle = '#1f2937';
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 4;
         }
     }, []);
 
@@ -87,53 +81,13 @@ export function useSignatureStep() {
         setHasSignature(false);
     };
 
-    const handleSubmit = async () => {
-        setIsLoading(true);
-        const canvas = canvasRef.current;
-        if (!canvas || !hasSignature) {
-            setIsLoading(false);
-            return;
-        }
-
-        try {
-            const file = await convertToFile(canvas, 'signature', 'image/png', 1.0);
-
-            if (!file) {
-                toast.error('امکان ایجاد تصویر امضا وجود ندارد');
-                setIsLoading(false);
-                return;
-            }
-
-            const formData = createBPMSFormData(
-                file,
-                'virtual-open-deposit',
-                userData.processId,
-                'VideoInquiry'
-            );
-
-            const response = await axios.post('/api/bpms/deposit-files', formData);
-            const { data } = response.data;
-
-            if (data.body.success) {
-                setUserData({ ...userData, step: 5 });
-            }
-        } catch (error) {
-            console.error('Signature upload error:', error);
-            toast.error('آپلود امضا با مشکل مواجه شد');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     return {
         canvasRef,
-        isLoading,
         isDrawing,
         hasSignature,
         startDrawing,
         draw,
         stopDrawing,
         clearSignature,
-        handleSubmit,
     };
 }

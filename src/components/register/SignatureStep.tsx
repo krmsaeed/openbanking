@@ -1,22 +1,39 @@
 'use client';
 
+import { useUser } from '@/contexts/UserContext';
 import { useSignatureStep } from '@/hooks/useSignatureStep';
+import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
 import { CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
+import axios from 'axios';
+import { useState } from 'react';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
 import LoadingButton from '../ui/core/LoadingButton';
 
 export function SignatureStep() {
-    const {
-        canvasRef,
-        isLoading,
-        hasSignature,
-        startDrawing,
-        draw,
-        stopDrawing,
-        clearSignature,
-        handleSubmit,
-    } = useSignatureStep();
+    const { canvasRef, hasSignature, startDrawing, draw, stopDrawing, clearSignature } =
+        useSignatureStep();
+    const { userData, setUserData } = useUser();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSubmit = async () => {
+        setIsLoading(true);
+        const canvas = canvasRef.current;
+        const file = await convertToFile(canvas, 'signature', 'image/png', 1.0);
+        const formData = createBPMSFormData(
+            file!,
+            'virtual-open-deposit',
+            userData.processId,
+            'VideoInquiry'
+        );
+
+        await axios
+            .post('/api/bpms/deposit-files', formData)
+            .then(() => {
+                setUserData({ ...userData, step: 5 });
+            })
+            .finally(() => setIsLoading(false));
+    };
 
     return (
         <Box className="space-y-4">
