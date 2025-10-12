@@ -1,14 +1,7 @@
 'use client';
 
-import { useUser } from '@/contexts/UserContext';
-import { ArrowPathIcon, CameraIcon, CheckIcon } from '@heroicons/react/24/outline';
-import axios from 'axios';
+import { Button } from '@/components/ui/core/Button';
 import Image from 'next/image';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import toast from 'react-hot-toast';
-import { Box, Typography } from '../ui/core';
-import { Button } from '../ui/core/Button';
-import LoadingButton from '../ui/core/LoadingButton';
 export default function CameraSelfie() {
     const { userData, setUserData } = useUser();
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -1042,7 +1035,7 @@ export default function CameraSelfie() {
                             <li>از https استفاده کنید</li>
                         </ul>
                     </Box>
-                    <Box className="space-x mt-4 flex space-x-3">
+                    <Box className="mt-4 flex space-x-3 space-x-reverse">
                         <Button onClick={startCamera} size="sm" variant="outline">
                             تلاش مجدد
                         </Button>
@@ -1215,7 +1208,7 @@ export default function CameraSelfie() {
                     </Button>
                 </Box>
             )}
-            <Box className="rounded-xl bg-gray-100 p-4">
+            <Box className="rounded-xl bg-gray-200 p-4">
                 {!capturedPhoto ? (
                     <>
                         <ul className="text-dark [&_li]:text-dark space-y-1 text-sm">

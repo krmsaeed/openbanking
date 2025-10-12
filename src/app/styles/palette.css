@@ -1,7 +1,4 @@
-/* Color palette variables */
 :root {
-    /* TEST: This should make everything red if CSS is working */
-    /* Light theme colors (default) */
     --color-background: #f8fafc;
     --color-foreground: #3d3d3d;
     --color-surface: #ffffff;
@@ -11,16 +8,13 @@
     --color-text: #334155;
     --color-te: #64748b;
 
-    /* Legacy aliases for compatibility */
     --color-bg: var(--color-background);
     --color-bg-soft: var(--color-surface-variant);
 
-    /* Additional utility variables */
     --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     --scrollbar-thumb: var(--color-gray-400);
     --overlay-rgb: 0, 0, 0;
 
-    /* Light theme - Dark scale */
     --color-dark: #f8fafc;
     --color-dark-900: #3d3d3d;
     --color-dark-800: #0f172a;
@@ -33,7 +27,6 @@
     --color-dark-100: #e2e8f0;
     --color-dark-50: #f1f5f9;
 
-    /* Gray scale */
     --color-gray: #999999;
     --color-gray-50: #f7f7f7;
     --color-gray-100: #ededed;
@@ -119,9 +112,7 @@
     --color-error-900: #601616;
 }
 
-/* Dark theme */
 [data-theme='dark'] {
-    /* Dark theme colors */
     --color-background: #0f172a;
     --color-foreground: #f8fafc;
     --color-surface: #1e293b;
@@ -131,16 +122,13 @@
     --color-text: #e2e8f0;
     --color-text-secondary: #cbd5e1;
 
-    /* Legacy aliases for compatibility */
     --color-bg: var(--color-background);
     --color-bg-soft: var(--color-surface-variant);
 
-    /* Additional utility variables for dark mode */
     --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
     --scrollbar-thumb: var(--color-gray-600);
     --overlay-rgb: 255, 255, 255;
 
-    /* Dark theme - Dark scale (inverted for dark mode) */
     --color-dark: #0f172a;
     --color-dark-900: #f8fafc;
     --color-dark-800: #f1f5f9;
@@ -153,7 +141,6 @@
     --color-dark-100: #1e293b;
     --color-dark-50: #3d3d3d;
 
-    /* Gray scale for dark mode */
     --color-gray: #6b7280;
     --color-gray-50: #1f2937;
     --color-gray-100: #374151;
@@ -166,7 +153,6 @@
     --color-gray-800: #f9fafb;
     --color-gray-900: #ffffff;
 
-    /* Primary colors for dark mode - adjusted for better contrast */
     --color-primary: #9046d5;
     --color-primary-50: #0e0516;
     --color-primary-100: #1b0a2b;
@@ -179,7 +165,6 @@
     --color-primary-800: #dac1f1;
     --color-primary-900: #eee7f4;
 
-    /* Secondary colors for dark mode */
     --color-secondary: #a89fc6;
     --color-secondary-50: #161320;
     --color-secondary-100: #2c2640;
@@ -192,7 +177,6 @@
     --color-secondary-800: #e2dfec;
     --color-secondary-900: #fbf8ff;
 
-    /* Success colors for dark mode */
     --color-success: #56d78a;
     --color-success-50: #0c3e20;
     --color-success-100: #125f30;
@@ -205,7 +189,6 @@
     --color-success-800: #e6f6ee;
     --color-success-900: #f3fbf6;
 
-    /* Info colors for dark mode */
     --color-info: #61a9ff;
     --color-info-50: #142c60;
     --color-info-100: #1d4388;
@@ -218,7 +201,6 @@
     --color-info-800: #e3f0ff;
     --color-info-900: #f0f7ff;
 
-    /* Warning colors for dark mode */
     --color-warning: #ffc055;
     --color-warning-50: #4c2e02;
     --color-warning-100: #764604;
@@ -231,7 +213,6 @@
     --color-warning-800: #fff6e6;
     --color-warning-900: #fffbf0;
 
-    /* Error colors for dark mode */
     --color-error: #ff8a8a;
     --color-error-50: #601616;
     --color-error-100: #8b2323;
@@ -245,10 +226,8 @@
     --color-error-900: #fff5f5;
 }
 
-/* System preference based theme */
 @media (prefers-color-scheme: dark) {
     :root {
-        /* Dark theme colors */
         --color-background: #0f172a;
         --color-foreground: #f8fafc;
         --color-surface: #1e293b;
@@ -258,16 +237,13 @@
         --color-text: #e2e8f0;
         --color-text-secondary: #cbd5e1;
 
-        /* Legacy aliases for compatibility */
         --color-bg: var(--color-background);
         --color-bg-soft: var(--color-surface-variant);
 
-        /* Additional utility variables for dark mode */
         --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
         --scrollbar-thumb: var(--color-gray-600);
         --overlay-rgb: 255, 255, 255;
 
-        /* Dark theme - Dark scale (inverted for dark mode) */
         --color-dark: #0f172a;
         --color-dark-900: #f8fafc;
         --color-dark-800: #f1f5f9;
@@ -280,7 +256,6 @@
         --color-dark-100: #1e293b;
         --color-dark-50: #3d3d3d;
 
-        /* Gray scale for dark mode */
         --color-gray: #6b7280;
         --color-gray-50: #1f2937;
         --color-gray-100: #374151;
@@ -293,7 +268,6 @@
         --color-gray-800: #f9fafb;
         --color-gray-900: #ffffff;
 
-        /* Primary colors for dark mode - adjusted for better contrast */
         --color-primary: #9046d5;
         --color-primary-50: #0e0516;
         --color-primary-100: #1b0a2b;
@@ -306,7 +280,6 @@
         --color-primary-800: #dac1f1;
         --color-primary-900: #eee7f4;
 
-        /* Secondary colors for dark mode */
         --color-secondary: #a89fc6;
         --color-secondary-50: #161320;
         --color-secondary-100: #2c2640;
@@ -319,7 +292,6 @@
         --color-secondary-800: #e2dfec;
         --color-secondary-900: #fbf8ff;
 
-        /* Success colors for dark mode */
         --color-success: #56d78a;
         --color-success-50: #0c3e20;
         --color-success-100: #125f30;
@@ -332,7 +304,6 @@
         --color-success-800: #e6f6ee;
         --color-success-900: #f3fbf6;
 
-        /* Info colors for dark mode */
         --color-info: #61a9ff;
         --color-info-50: #142c60;
         --color-info-100: #1d4388;
@@ -345,7 +316,6 @@
         --color-info-800: #e3f0ff;
         --color-info-900: #f0f7ff;
 
-        /* Warning colors for dark mode */
         --color-warning: #ffc055;
         --color-warning-50: #4c2e02;
         --color-warning-100: #764604;
@@ -358,7 +328,6 @@
         --color-warning-800: #fff6e6;
         --color-warning-900: #fffbf0;
 
-        /* Error colors for dark mode */
         --color-error: #ff8a8a;
         --color-error-50: #601616;
         --color-error-100: #8b2323;
@@ -373,7 +342,6 @@
     }
 }
 
-/* Debug styles - remove after testing */
 .theme-debug {
     background: red !important;
     color: white !important;

@@ -11,65 +11,18 @@ import { VideoRecorderStep } from '@/components/register/VideoStep';
 import { Box, Card, Typography } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
 import { mediaStreamManager } from '@/lib/mediaStreamManager';
+import {
+    extendedRegistrationSchema,
+    type ExtendedRegistrationForm,
+} from '@/lib/schemas/registration';
 import { convertPersianToEnglish } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { z } from 'zod';
 
-const registrationSchema = z.object({
-    nationalCode: z
-        .string('کد ملی الزامی است')
-        .length(10, 'کد ملی باید 10 رقم باشد')
-        .regex(/^\d+$/, 'کد ملی باید فقط شامل اعداد باشد'),
-    phoneNumber: z
-        .string('شماره همراه الزامی است')
-        .min(10, 'شماره همراه نامعتبر است')
-        .regex(/^\d+$/, 'شماره همراه باید فقط شامل اعداد باشد'),
-    birthDate: z.string('تاریخ تولد الزامی است').min(1, 'تاریخ تولد الزامی است'),
-    postalCode: z
-        .string('کد پستی الزامی است')
-        .length(10, 'کد پستی باید 10 رقم باشد')
-        .regex(/^\d+$/, 'کد پستی باید فقط شامل اعداد باشد'),
-});
-
-const extendedRegistrationSchema = registrationSchema
-    .extend({
-        password: z.string().optional(),
-        confirmPassword: z.string().optional(),
-        otp: z.string().optional(),
-        certOtp: z.string().optional(),
-    })
-    .superRefine((data, ctx) => {
-        const pw = data.password;
-        const cpw = data.confirmPassword;
-        if ((pw !== undefined && pw !== '') || (cpw !== undefined && cpw !== '')) {
-            if (!pw || pw.length < 8) {
-                ctx.addIssue({
-                    code: 'custom',
-                    path: ['password'],
-                    message: 'رمز عبور باید حداقل 8 کاراکتر باشد',
-                });
-            }
-            if (pw !== cpw) {
-                ctx.addIssue({
-                    code: 'custom',
-                    path: ['confirmPassword'],
-                    message: 'رمز عبور و تایید آن باید یکسان باشند',
-                });
-            }
-        }
-    });
-
-type RegistrationForm = z.infer<typeof registrationSchema>;
-type ExtendedRegistrationForm = RegistrationForm & {
-    otp?: string;
-    certOtp?: string;
-    password?: string;
-    confirmPassword?: string;
-};
+// Schemas now imported from consolidated validation files
 
 export default function Register() {
     const { userData, setUserData } = useUser();
@@ -84,22 +37,18 @@ export default function Register() {
         mode: 'onBlur',
     });
 
-    // Global camera cleanup when step changes
     useEffect(() => {
         const prevStep = prevStepRef.current;
         const currentStep = userData.step ?? 1;
 
-        // Camera steps that use camera: 2 (selfie), 3 (video), 6 (national card)
         const cameraSteps = [2, 3, 6];
         const wasCameraStep = prevStep !== undefined && cameraSteps.includes(prevStep);
         const isCameraStep = cameraSteps.includes(currentStep);
 
-        // If we're leaving a camera step, stop all cameras using the centralized manager
         if (wasCameraStep && !isCameraStep) {
             mediaStreamManager.stopAll();
         }
 
-        // Update previous step
         prevStepRef.current = currentStep;
     }, [userData.step]);
     useEffect(() => {

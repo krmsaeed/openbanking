@@ -2,7 +2,6 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-    // produce a standalone build (server + minimal node_modules) in .next/standalone
     output: 'standalone',
     images: {
         formats: ['image/webp', 'image/avif'],

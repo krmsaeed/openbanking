@@ -11,7 +11,10 @@ import {
     Input,
 } from '@/components/ui';
 import { useOtpTimer } from '@/hooks/useOtpTimer';
-import { otpFormSchema, type PaymentOtpFormData } from '@/lib/schemas/payment';
+import {
+    paymentOTPFormSchema as otpFormSchema,
+    type PaymentOtpFormData,
+} from '@/lib/schemas/payment';
 import { convertPersianToEnglish } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef } from 'react';

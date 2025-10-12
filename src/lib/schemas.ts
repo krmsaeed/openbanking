@@ -1,4 +1,2 @@
-﻿export * from './schemas/creditAssessment';
-export * from './schemas/login';
-export * from './schemas/newUser';
-export * from './schemas/payment';
+﻿// All schemas are now consolidated in ./schemas
+export * from './schemas';

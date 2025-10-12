@@ -48,7 +48,6 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
 
-            // Register stream with global manager
             mediaStreamManager.register(stream);
 
             if (videoRef.current) {
@@ -84,7 +83,6 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
         const currentStream = streamRef.current;
 
         return () => {
-            // Unregister and stop both current and ref streams
             if (currentStream) {
                 mediaStreamManager.unregister(currentStream);
             }

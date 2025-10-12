@@ -3,7 +3,9 @@
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { Input } from '@/components/ui/forms';
 import { useUser } from '@/contexts/UserContext';
+import { passwordStepSchema, type PasswordStepForm } from '@/lib/schemas/personal';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -23,10 +25,10 @@ export default function PasswordStep({
     const [isLoading, setIsLoading] = useState(false);
     const {
         control,
-        getValues,
         formState: { errors, isValid },
         handleSubmit,
-    } = useForm({
+    } = useForm<PasswordStepForm>({
+        resolver: zodResolver(passwordStepSchema),
         defaultValues: {
             ENFirstName: '',
             ENLastName: '',
@@ -34,12 +36,7 @@ export default function PasswordStep({
             confirmPassword: '',
         },
     });
-    const onSubmit = async (data: {
-        ENFirstName: string;
-        ENLastName: string;
-        password: string;
-        confirmPassword: string;
-    }) => {
+    const onSubmit = async (data: PasswordStepForm) => {
         const { ENFirstName, ENLastName, password } = data;
         setIsLoading(true);
         axios
@@ -89,14 +86,6 @@ export default function PasswordStep({
                     <Controller
                         name="ENFirstName"
                         control={control}
-                        rules={{
-                            required: ' نام  لاتین الزامی است',
-                            minLength: { value: 4, message: 'نام لاتین باید حداقل 4 کاراکتر باشد' },
-                            pattern: {
-                                value: /^[a-zA-Z ]+$/,
-                                message: 'نام لاتین باید شامل حروف کوچک باشد',
-                            },
-                        }}
                         render={({ field }) => (
                             <Input
                                 {...field}
@@ -121,14 +110,6 @@ export default function PasswordStep({
                     <Controller
                         name="ENLastName"
                         control={control}
-                        rules={{
-                            required: ' نام خانوادگی لاتین الزامی است',
-                            minLength: { value: 4, message: ' حداقل 4 کاراکتر باید باشد' },
-                            pattern: {
-                                value: /^[a-zA-Z ]+$/,
-                                message: 'فقط شامل حروف کوچک و بزرگ لاتین باید باشد',
-                            },
-                        }}
                         render={({ field }) => (
                             <Input
                                 {...field}
@@ -152,14 +133,6 @@ export default function PasswordStep({
                     <Controller
                         name="password"
                         control={control}
-                        rules={{
-                            required: 'رمز عبور الزامی است',
-                            minLength: { value: 8, message: 'باید حداقل 8 کاراکتر باشد' },
-                            pattern: {
-                                value: /^[a-zA-Z0-9]+$/,
-                                message: ' فقط شامل حروف انگلیسی و اعداد باشد',
-                            },
-                        }}
                         render={({ field }) => (
                             <Input
                                 {...field}
@@ -192,12 +165,6 @@ export default function PasswordStep({
                     <Controller
                         name="confirmPassword"
                         control={control}
-                        rules={{
-                            required: 'تکرار رمز عبور الزامی است',
-                            validate: (value) =>
-                                value === getValues('password') ||
-                                'رمز عبور و تایید آن باید یکسان نمی‌باشد',
-                        }}
                         render={({ field }) => (
                             <Input
                                 {...field}

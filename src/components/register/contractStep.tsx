@@ -205,7 +205,7 @@ export default function ContractStep() {
                         />
                         <label
                             htmlFor="agreement"
-                            className="text-dark cursor-pointer leading-relaxed"
+                            className="cursor-pointer leading-relaxed font-bold text-gray-900"
                         >
                             با مطالعه کامل متن قرارداد، تمامی شرایط و ضوابط آن را پذیرفته و متعهد به
                             رعایت آن می‌باشم. اطلاعات ارائه شده صحیح بوده و در صورت عدم صحت، مسئولیت

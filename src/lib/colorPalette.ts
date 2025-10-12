@@ -1,4 +1,3 @@
-// Color Palette for Dark and Light Themes
 export interface ColorPalette {
     background: string;
     text: string;
@@ -98,7 +97,6 @@ export interface ColorPalette {
     };
 }
 
-// Dark Theme Color Palette
 export const darkTheme: ColorPalette = {
     background: '#0f172a',
     text: '#e2e8f0',
@@ -205,7 +203,6 @@ export const darkTheme: ColorPalette = {
     },
 };
 
-// Light Theme Color Palette
 export const lightTheme: ColorPalette = {
     background: '#f8fafc',
     text: '#334155',
@@ -312,16 +309,13 @@ export const lightTheme: ColorPalette = {
     },
 };
 
-// Theme utility functions
 export const getTheme = (isDark: boolean): ColorPalette => {
     return isDark ? darkTheme : lightTheme;
 };
 
-// Apply theme colors to CSS variables
 export const applyThemeColors = (theme: ColorPalette): void => {
     const root = document.documentElement;
 
-    // Main theme colors
     root.style.setProperty('--color-background', theme.background);
     root.style.setProperty('--color-text', theme.text);
     root.style.setProperty('--color-surface', theme.surface);
@@ -329,12 +323,10 @@ export const applyThemeColors = (theme: ColorPalette): void => {
     root.style.setProperty('--color-bg', theme.bg);
     root.style.setProperty('--card-shadow', theme.cardShadow);
 
-    // Gray colors
     Object.entries(theme.gray).forEach(([key, value]) => {
         root.style.setProperty(`--color-gray-${key}`, value);
     });
 
-    // Primary colors
     root.style.setProperty('--color-primary', theme.primary.main);
     Object.entries(theme.primary).forEach(([key, value]) => {
         if (key !== 'main') {
@@ -342,7 +334,6 @@ export const applyThemeColors = (theme: ColorPalette): void => {
         }
     });
 
-    // Secondary colors
     root.style.setProperty('--color-secondary', theme.secondary.main);
     Object.entries(theme.secondary).forEach(([key, value]) => {
         if (key !== 'main') {
@@ -350,7 +341,6 @@ export const applyThemeColors = (theme: ColorPalette): void => {
         }
     });
 
-    // Success colors
     root.style.setProperty('--color-success', theme.success.main);
     Object.entries(theme.success).forEach(([key, value]) => {
         if (key !== 'main') {
@@ -358,7 +348,6 @@ export const applyThemeColors = (theme: ColorPalette): void => {
         }
     });
 
-    // Info colors
     root.style.setProperty('--color-info', theme.info.main);
     Object.entries(theme.info).forEach(([key, value]) => {
         if (key !== 'main') {
@@ -366,7 +355,6 @@ export const applyThemeColors = (theme: ColorPalette): void => {
         }
     });
 
-    // Warning colors
     root.style.setProperty('--color-warning', theme.warning.main);
     Object.entries(theme.warning).forEach(([key, value]) => {
         if (key !== 'main') {
@@ -374,7 +362,6 @@ export const applyThemeColors = (theme: ColorPalette): void => {
         }
     });
 
-    // Error colors
     root.style.setProperty('--color-error', theme.error.main);
     Object.entries(theme.error).forEach(([key, value]) => {
         if (key !== 'main') {
@@ -382,7 +369,6 @@ export const applyThemeColors = (theme: ColorPalette): void => {
         }
     });
 
-    // Apply body styles
     document.body.style.backgroundColor = theme.background;
     document.body.style.color = theme.text;
 };

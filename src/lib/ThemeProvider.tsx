@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { getCookie } from './utils';
 
 interface ThemeProviderProps {
     children: React.ReactNode;
@@ -9,7 +10,7 @@ interface ThemeProviderProps {
 export function ThemeProvider({ children }: ThemeProviderProps) {
     useEffect(() => {
         try {
-            const stored = typeof window !== 'undefined' ? localStorage.getItem('theme') : null;
+            const stored = typeof window !== 'undefined' ? getCookie('theme') : null;
             const prefersDark =
                 typeof window !== 'undefined' &&
                 window.matchMedia &&

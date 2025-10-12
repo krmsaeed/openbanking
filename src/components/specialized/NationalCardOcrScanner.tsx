@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/core/Button';
 import { Modal } from '@/components/ui/overlay';
 import { useUser } from '@/contexts/UserContext';
 import { OcrFields, ocrRecognizeFile, parseNationalCardFields } from '@/lib/ocr';
+import { setCookie } from '@/lib/utils';
 import { ArrowPathIcon, CameraIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -70,7 +71,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                 }
 
                 if (remember && process.env.NODE_ENV === 'development') {
-                    localStorage.setItem('preferredUsbCameraId', deviceId);
+                    setCookie('preferredUsbCameraId', deviceId);
                 }
                 try {
                     await refreshDevices();
@@ -167,24 +168,17 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
 
     useEffect(() => {
         const localVideo = videoRef.current;
-        console.log('🎴 NationalCardOcrScanner: userData.step changed to:', userData.step);
         return () => {
-            console.log('🎴 NationalCardOcrScanner: Cleaning up camera due to step change');
             try {
                 if (streamRef.current) {
-                    console.log('🎴 NationalCardOcrScanner: Stopping stream tracks');
                     streamRef.current.getTracks().forEach((t) => t.stop());
                     streamRef.current = null;
                     setIsCameraOpen(false);
                 }
                 if (localVideo) {
-                    console.log('🎴 NationalCardOcrScanner: Clearing video srcObject');
                     localVideo.srcObject = null;
                 }
-                console.log('🎴 NationalCardOcrScanner: Camera cleanup complete');
-            } catch (e) {
-                console.error('🎴 NationalCardOcrScanner: Error during cleanup:', e);
-            }
+            } catch {}
         };
     }, [userData.step]);
 

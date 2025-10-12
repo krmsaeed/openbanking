@@ -1,13 +1,14 @@
 'use client';
 
 import { Button } from '@/components/ui/core/Button';
+import { getCookie, setCookie } from '@/lib/utils';
 import { MoonIcon, SunIcon } from '@heroicons/react/24/outline';
 import React, { useEffect, useState } from 'react';
 
 export const ThemeToggle: React.FC = React.memo(() => {
     const [theme, setTheme] = useState<'light' | 'dark'>(() => {
         if (typeof window === 'undefined') return 'light';
-        const stored = localStorage.getItem('theme');
+        const stored = getCookie('theme');
         if (stored === 'dark' || stored === 'light') return stored as 'light' | 'dark';
         return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
     });
@@ -18,12 +19,12 @@ export const ThemeToggle: React.FC = React.memo(() => {
             document.documentElement.classList.add('dark');
             document.body.classList.add('dark');
             document.documentElement.setAttribute('data-theme', 'dark');
-            localStorage.setItem('theme', 'dark');
+            setCookie('theme', 'dark');
         } else {
             document.documentElement.classList.remove('dark');
             document.body.classList.remove('dark');
             document.documentElement.setAttribute('data-theme', 'light');
-            localStorage.setItem('theme', 'light');
+            setCookie('theme', 'light');
         }
     }, [theme]);
 

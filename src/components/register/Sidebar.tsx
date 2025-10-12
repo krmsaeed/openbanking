@@ -40,21 +40,21 @@ export default function Sidebar() {
                     return (
                         <li
                             key={item.title}
-                            className="group relative min-w-[96px] flex-shrink-0 items-center py-2 md:flex md:w-auto md:min-w-full md:flex-shrink md:flex-row md:gap-3"
+                            className="group relative min-w-[5.5rem] flex-shrink-0 items-center py-2 md:flex md:w-auto md:min-w-full md:flex-shrink md:flex-row md:gap-3"
                         >
                             <Box className="flex w-full flex-col items-center md:flex-row md:items-center">
                                 <Box className="relative flex items-center justify-center text-gray-900">
                                     <span
                                         className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-sm transition-all duration-200 md:h-10 md:w-10 ${
                                             completed
-                                                ? 'bg-primary-600 text-white dark:text-white'
+                                                ? 'bg-primary-600 border-2 border-gray-100 text-gray-100'
                                                 : current
-                                                  ? 'bg-primary-600 text-white'
-                                                  : 'bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                                                  ? 'bg-primary-400 text-white'
+                                                  : 'bg-gray-300 text-gray-700 dark:text-gray-300'
                                         }`}
                                     >
                                         {completed ? (
-                                            <CheckCircleIcon className="mx-auto h-6 w-6 text-white" />
+                                            <CheckCircleIcon className="mx-auto h-6 w-6 border-gray-100 text-white" />
                                         ) : (
                                             <Icon className="mx-auto h-5 w-5" />
                                         )}

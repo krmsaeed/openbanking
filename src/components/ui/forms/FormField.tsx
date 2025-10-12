@@ -11,10 +11,7 @@ interface FormFieldProps {
     required?: boolean;
     description?: string;
     children?: React.ReactNode;
-    /**
-     * If you want FormField to render a native input (instead of providing children),
-     * pass input attributes here.
-     */
+
     inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 

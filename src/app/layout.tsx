@@ -1,11 +1,13 @@
+import AuthInitializer from '@/components/AuthInitializer';
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
-import SimpleThemeToggle from '@/components/SimpleThemeToggle';
+import ThemeToggle from '@/components/ThemeToggle';
 import { ToastProvider } from '@/components/ui/feedback/Toast';
 import { UserProvider } from '@/contexts/UserContext';
 import ThemeProvider from '@/lib/ThemeProvider';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import { Suspense } from 'react';
 import './styles/globals.css';
 
 export const metadata: Metadata = {
@@ -53,7 +55,11 @@ export default function RootLayout({
                     dangerouslySetInnerHTML={{
                         __html: `(() => {
                             try {
-                                const stored = localStorage.getItem('theme');
+                                const getCookie = (name) => {
+                                    const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+                                    return match ? match[1] : null;
+                                };
+                                const stored = getCookie('theme');
                                 const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
                                 const theme = stored || (prefersDark ? 'dark' : 'light');
                                 if (theme === 'dark') {
@@ -74,13 +80,17 @@ export default function RootLayout({
                 <ThemeProvider>
                     <UserProvider>
                         <ToastProvider>
-                            <SimpleThemeToggle />
-                            {process.env.NODE_ENV === 'development' ? (
-                                <ServiceWorkerUnregistrar />
-                            ) : (
-                                <ServiceWorkerRegistrar />
-                            )}
-                            {children}
+                            <Suspense fallback={<div>Loading...</div>}>
+                                <AuthInitializer requireAuth={false}>
+                                    <ThemeToggle />
+                                    {process.env.NODE_ENV === 'development' ? (
+                                        <ServiceWorkerUnregistrar />
+                                    ) : (
+                                        <ServiceWorkerRegistrar />
+                                    )}
+                                    {children}
+                                </AuthInitializer>
+                            </Suspense>
                         </ToastProvider>
                     </UserProvider>
                 </ThemeProvider>

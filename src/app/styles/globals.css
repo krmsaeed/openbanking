@@ -22,7 +22,6 @@ body {
         color 0.3s ease;
 }
 
-/* برای تست راحت‌تر Dark Mode */
 .dark-mode-preview {
     background-color: var(--color-bg) !important;
     color: var(--color-text) !important;
@@ -127,7 +126,6 @@ select {
     --tw-ring-color: var(--color-primary-500);
 }
 
-/* Repeat for secondary */
 .bg-secondary {
     background-color: var(--color-secondary-500) !important;
 }
@@ -138,7 +136,6 @@ select {
     border-color: var(--color-secondary-500) !important;
 }
 
-/* Teal / accent */
 .bg-teal {
     background-color: var(--color-teal-500) !important;
 }
@@ -149,7 +146,6 @@ select {
     border-color: var(--color-teal-500) !important;
 }
 
-/* CTA / accent2 */
 .bg-cta {
     background-color: var(--color-cta-500) !important;
 }
@@ -160,7 +156,6 @@ select {
     border-color: var(--color-cta-500) !important;
 }
 
-/* Status colors */
 .bg-success {
     background-color: var(--color-success-500) !important;
 }
@@ -201,7 +196,6 @@ select {
     border-color: var(--color-error-500) !important;
 }
 
-/* Generic text/bg helpers */
 .text-body {
     color: var(--color-text) !important;
 }
@@ -209,7 +203,6 @@ select {
     background-color: var(--color-bg) !important;
 }
 
-/* Hover helpers (useful for buttons) */
 .hover\:bg-primary:hover {
     background-color: var(--color-primary-600) !important;
 }
@@ -223,7 +216,6 @@ select {
     color: var(--color-primary-600) !important;
 }
 
-/* Utility for gradients */
 .from-primary {
     --tw-gradient-from: var(--color-primary-500);
 }
@@ -231,12 +223,6 @@ select {
     --tw-gradient-to: var(--color-primary-700);
 }
 
-/* Map common Tailwind palette utility classes to semantic variables
-  This ensures existing class names (bg-blue-600, text-red-600, bg-green-600, etc.)
-  match the project's palette without changing component code.
-*/
-
-/* blue -> info */
 .bg-blue-50 {
     background-color: var(--color-info-50) !important;
 }
@@ -274,7 +260,6 @@ select {
     color: var(--color-info-500) !important;
 }
 
-/* red -> error */
 .bg-red-50 {
     background-color: var(--color-error-50) !important;
 }
@@ -309,7 +294,6 @@ select {
     color: var(--color-error-600) !important;
 }
 
-/* green -> success */
 .bg-green-50 {
     background-color: var(--color-success-50) !important;
 }
@@ -344,7 +328,6 @@ select {
     color: var(--color-success-600) !important;
 }
 
-/* yellow -> warning */
 .bg-yellow-50 {
     background-color: var(--color-warning-50) !important;
 }
@@ -379,7 +362,6 @@ select {
     color: var(--color-warning-600) !important;
 }
 
-/* gray -> neutral text/background */
 .bg-gray-50 {
     background-color: var(--color-gray-50) !important;
 }
@@ -448,7 +430,6 @@ select:focus {
     outline: none !important;
 }
 
-/* RTL adjustments */
 [dir='rtl'] input {
     text-align: right;
 }
@@ -457,7 +438,6 @@ select:focus {
     text-align: center !important;
 }
 
-/* LTR for OTP inputs */
 .otp-container {
     direction: ltr;
 }
@@ -467,7 +447,6 @@ select:focus {
     text-align: center;
 }
 
-/* Toast Animations */
 @keyframes enter {
     0% {
         opacity: 0;
@@ -498,7 +477,6 @@ select:focus {
     animation: leave 0.35s ease-in forwards;
 }
 
-/* File Upload Drag & Drop */
 .file-upload-drag {
     border: 2px dashed var(--color-bg-soft);
     transition: all 0.2s ease-in-out;
@@ -515,7 +493,6 @@ select:focus {
     transform: scale(1.02);
 }
 
-/* Form improvements */
 .form-field-group {
     position: relative;
 }
@@ -526,7 +503,6 @@ select:focus {
     color: var(--color-info-500);
 }
 
-/* Loading spinner improvements */
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -540,7 +516,6 @@ select:focus {
     animation: spin 1s linear infinite;
 }
 
-/* Progress steps */
 .step-connector {
     position: relative;
     flex: 1;
@@ -571,12 +546,10 @@ select:focus {
     );
 }
 
-/* CVV input masking */
 .cvv-input {
     -webkit-text-security: disc;
 }
 
-/* Disable autofill highlighting */
 form[autocomplete='off'] input:-webkit-autofill,
 form[autocomplete='off'] input:-webkit-autofill:hover,
 form[autocomplete='off'] input:-webkit-autofill:focus,
@@ -586,13 +559,11 @@ form[autocomplete='off'] input:-webkit-autofill:active {
     transition: background-color 5000s ease-in-out 0s;
 }
 
-/* Hide browser suggestion dropdowns */
 form[autocomplete='off'] input::-webkit-credentials-auto-fill-button,
 form[autocomplete='off'] input::-webkit-strong-password-auto-fill-button {
     display: none !important;
 }
 
-/* Additional autocomplete prevention */
 input[data-form-type='other'] {
     background: transparent !important;
 }

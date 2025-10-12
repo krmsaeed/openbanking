@@ -4,7 +4,7 @@ import { applyThemeColors, getTheme } from '@/lib/colorPalette';
 import { getCookie, setCookie } from '@/lib/utils';
 import React, { useEffect, useState } from 'react';
 
-const SimpleThemeToggle: React.FC = () => {
+const ThemeToggle: React.FC = () => {
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
     const [mounted, setMounted] = useState(false);
 
@@ -80,4 +80,4 @@ const SimpleThemeToggle: React.FC = () => {
     );
 };
 
-export default SimpleThemeToggle;
+export default ThemeToggle;

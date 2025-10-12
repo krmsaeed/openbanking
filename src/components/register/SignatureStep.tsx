@@ -151,21 +151,20 @@ export function SignatureStep() {
                 />
             </Box>
 
-            <Box className="rounded-lg bg-gray-200 p-3">
-                <Typography variant="caption" className="block text-center font-bold text-gray-800">
-                    امضای خود را با ماوس یا انگشت در کادر بالا بکشید
+            <Box className="flex items-center justify-between rounded-lg bg-gray-200 px-3 py-2">
+                <Typography variant="caption" className="font-bold text-gray-800">
+                    امضای خود را در کادر بالا بکشید
                 </Typography>
-            </Box>
-            <Box className="w-full">
                 <Button
                     onClick={clearSignature}
                     disabled={!hasSignature}
-                    className="bg-error-400 mx-auto flex items-center gap-2"
+                    className="bg-error-400 items-between flex gap-x-2 gap-y-4"
                 >
                     <TrashIcon className="h-4 w-4" />
                     پاک کردن
                 </Button>
             </Box>
+            <Box className="w-full"></Box>
             <Box className="flex items-center justify-between gap-4">
                 <Box className="flex w-full items-center gap-2">
                     {/* <Button

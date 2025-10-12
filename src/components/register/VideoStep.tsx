@@ -2,7 +2,7 @@
 
 import { useUser } from '@/contexts/UserContext';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
-import { VideoRecorderView } from '../videoRecorder/VideoRecorderView';
+import { VideoRecorderView } from '../specialized/VideoRecorderView';
 
 export const VideoRecorderStep: React.FC = () => {
     const { userData, setUserData } = useUser();

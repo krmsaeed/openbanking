@@ -1215,7 +1215,7 @@ export default function CameraSelfie() {
                     </Button>
                 </Box>
             )}
-            <Box className="rounded-xl bg-gray-100 p-4">
+            <Box className="rounded-xl bg-gray-200 p-4">
                 {!capturedPhoto ? (
                     <>
                         <ul className="text-dark [&_li]:text-dark space-y-1 text-sm">

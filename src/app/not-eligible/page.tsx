@@ -1,31 +1,80 @@
 'use client';
-import Link from 'next/link';
 import {
-    XCircleIcon,
-    ArrowLeftIcon,
-    PhoneIcon,
-    EnvelopeIcon,
-    XMarkIcon,
-} from '@heroicons/react/24/outline';
-import {
+    Box,
     Button,
     Card,
     CardContent,
     CardHeader,
     CardTitle,
-    Box,
-    Typography,
     List,
     ListItem,
+    Typography,
 } from '@/components/ui';
+import {
+    ArrowLeftIcon,
+    EnvelopeIcon,
+    ExclamationTriangleIcon,
+    PhoneIcon,
+    XCircleIcon,
+    XMarkIcon,
+} from '@heroicons/react/24/outline';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 export default function NotEligiblePage() {
-    const reasons = [
-        'سابقه اعتباری نامناسب',
-        'عدم تطبیق درآمد با حداقل مورد نیاز',
-        'مدارک ارائه شده ناکافی',
-        'عدم پاسخگویی در بررسی‌های اولیه',
-    ];
+    const searchParams = useSearchParams();
+    const error = searchParams.get('error');
+
+    const getErrorContent = () => {
+        switch (error) {
+            case 'missing_params':
+                return {
+                    title: 'اطلاعات ناکافی',
+                    description: 'لینک ورود شما ناقص است و توکن یا کد ملی را شامل نمی‌شود',
+                    icon: ExclamationTriangleIcon,
+                    iconBg: 'bg-yellow-100',
+                    iconColor: 'text-yellow-500',
+                    reasons: ['توکن احراز هویت موجود نیست', 'کد ملی ارائه نشده است'],
+                };
+            case 'invalid_national_id':
+                return {
+                    title: 'کد ملی نامعتبر',
+                    description: 'کد ملی ارائه شده معتبر نیست',
+                    icon: ExclamationTriangleIcon,
+                    iconBg: 'bg-yellow-100',
+                    iconColor: 'text-yellow-500',
+                    reasons: ['فرمت کد ملی صحیح نیست', 'کد ملی چک‌سام صحیحی ندارد'],
+                };
+            case 'not_authenticated':
+                return {
+                    title: 'عدم احراز هویت',
+                    description: 'برای دسترسی به این سرویس باید احراز هویت شده باشید',
+                    icon: ExclamationTriangleIcon,
+                    iconBg: 'bg-red-100',
+                    iconColor: 'text-red-500',
+                    reasons: ['توکن احراز هویت موجود نیست', 'جلسه شما منقضی شده است'],
+                };
+            default:
+                return {
+                    title: 'عدم واجد شرایط دریافت تسهیلات',
+                    description: 'متأسفانه در حال حاضر شرایط لازم برای دریافت تسهیلات را ندارید',
+                    icon: XCircleIcon,
+                    iconBg: 'bg-red-100',
+                    iconColor: 'text-red-500',
+                    reasons: [
+                        'سابقه اعتباری نامناسب',
+                        'عدم تطبیق درآمد با حداقل مورد نیاز',
+                        'مدارک ارائه شده ناکافی',
+                        'عدم پاسخگویی در بررسی‌های اولیه',
+                    ],
+                };
+        }
+    };
+
+    const content = getErrorContent();
+    const IconComponent = content.icon;
+
+    const reasons = content.reasons;
 
     const nextSteps = [
         {
@@ -46,25 +95,31 @@ export default function NotEligiblePage() {
         <Box className="my-10 flex items-center justify-center rounded-lg border border-gray-100 bg-white from-red-50 p-4 shadow-md">
             <Box className="w-full max-w-2xl">
                 <Box className="mb-5 text-center">
-                    <Box className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-                        <XCircleIcon className="h-10 w-10 text-red-500" />
+                    <Box
+                        className={`mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full ${content.iconBg}`}
+                    >
+                        <IconComponent className={`h-10 w-10 ${content.iconColor}`} />
                     </Box>
                     <Typography
                         variant="h4"
                         className="mb-2 text-center text-3xl font-bold text-gray-900"
                     >
-                        عدم واجد شرایط دریافت تسهیلات
+                        {content.title}
                     </Typography>
                     <Typography variant="p" className="text-secondary text-center text-lg">
-                        متأسفانه در حال حاضر شرایط لازم برای دریافت تسهیلات را ندارید
+                        {content.description}
                     </Typography>
                 </Box>
 
                 <Box className="mb-8 grid gap-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-xl text-red-600">
-                                دلایل عدم واجد شرایط بودن
+                            <CardTitle
+                                className={`text-xl ${error && error !== 'service_error' ? 'text-yellow-600' : 'text-red-600'}`}
+                            >
+                                {error && error !== 'service_error'
+                                    ? 'علت خطا'
+                                    : 'دلایل عدم واجد شرایط بودن'}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>

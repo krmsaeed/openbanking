@@ -39,41 +39,37 @@ export function VideoRecorderView({
     randomText,
 }: VideoRecorderViewProps) {
     const hasPreview = Boolean(videoFile && videoPreviewUrl);
-
     return (
         <Box className="space-y-6">
             <Box className="text-center">
                 {hasPreview ? (
                     <Box className="w-full space-y-4">
-                        <Box className="w-full rounded-lg bg-gray-50 p-1">
+                        <Box className="w-full rounded-lg bg-gray-50 p-2">
                             <video
                                 src={videoPreviewUrl ?? undefined}
                                 controls
-                                className="mx-auto w-full max-w-md rounded-lg border border-gray-100 !bg-gray-50"
-                                style={{ maxHeight: '200px' }}
+                                className="mx-auto w-full rounded-lg !bg-gray-50"
                             >
                                 مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
                             </video>
                         </Box>
 
-                        <Box className="flex justify-center gap-3">
-                            <Button
-                                variant="secondary"
-                                onClick={onRetake}
-                                className="bg-success-400 flex items-center gap-2 text-white opacity-50 hover:opacity-100"
-                            >
-                                <VideoCameraIcon className="h-4 w-4" />
-                                ضبط مجدد
-                            </Button>
-                        </Box>
-                        <Box className="rounded-xl bg-gray-200 p-4">
+                        <Box className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl bg-gray-200 p-4">
                             <ul className="space-y-1 text-sm">
-                                <li className="text-error-400 font-bold">
+                                <li className="text-error font-bold">
                                     فیلم ضبط شده خود را بررسی کنید
                                 </li>
                                 <li> اگر فیلم مناسب است، روی «تایید» کلیک کنید</li>
                                 <li> برای رکورد جدید، روی «ضبط مجدد» کلیک کنید</li>
                             </ul>
+                            <Button
+                                variant="secondary"
+                                onClick={onRetake}
+                                className="bg-success-400 flex max-w-32 items-center gap-2 text-white"
+                            >
+                                <VideoCameraIcon className="h-4 w-4" />
+                                ضبط مجدد
+                            </Button>
                         </Box>
                     </Box>
                 ) : (

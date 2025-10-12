@@ -2,26 +2,11 @@
 import { PersianCalendar } from '@/components/forms';
 import { Input } from '@/components/ui/forms';
 import { useUser } from '@/contexts/UserContext';
+import { personalInfoStepSchema, type PersonalInfoStepForm } from '@/lib/schemas/personal';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { Button } from '../ui';
-
-const PersonalInfoFormData = z.object({
-    phoneNumber: z
-        .string('شماره تلفن اجباری است')
-        .min(11, 'شماره تلفن باید 11 رقم باشد')
-        .max(11, 'شماره تلفن باید 11 رقم باشد')
-        .regex(/^09\d{9}$/, 'شماره تلفن باید با 09 شروع شود و فقط شامل اعداد باشد'),
-    birthDate: z.string().min(1, 'تاریخ تولد اجباری است'),
-    postalCode: z
-        .string('کد پستی اجباری است')
-        .min(10, 'کد پستی باید 10 رقم باشد')
-        .max(10, 'کد پستی باید 10 رقم باشد')
-        .regex(/^\d+$/, 'کد پستی باید فقط شامل اعداد باشد'),
-});
-type PersonalInfoFormData = z.infer<typeof PersonalInfoFormData>;
 
 export default function PersonalInfo() {
     const { userData, setUserData } = useUser();
@@ -30,8 +15,8 @@ export default function PersonalInfo() {
         handleSubmit,
         formState: { errors, isSubmitting },
         control,
-    } = useForm<PersonalInfoFormData>({
-        resolver: zodResolver(PersonalInfoFormData),
+    } = useForm<PersonalInfoStepForm>({
+        resolver: zodResolver(personalInfoStepSchema),
         mode: 'all',
         defaultValues: {
             phoneNumber: '',
@@ -39,7 +24,7 @@ export default function PersonalInfo() {
             postalCode: '',
         },
     });
-    const onSubmit = async (data: PersonalInfoFormData) => {
+    const onSubmit = async (data: PersonalInfoStepForm) => {
         await axios
             .post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',

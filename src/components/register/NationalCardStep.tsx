@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/core/Button';
 import { RadioGroup } from '@/components/ui/forms';
 import { Modal } from '@/components/ui/overlay';
 import { useUser } from '@/contexts/UserContext';
+import { nationalCardInfoSchema, type NationalCardInfoForm } from '@/lib/schemas/identity';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
@@ -12,38 +13,14 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { z } from 'zod';
+
 import NationalCardOcrScanner from '../specialized/NationalCardOcrScanner';
 import LoadingButton from '../ui/core/LoadingButton';
 import { Select } from '../ui/forms/Select';
 import Textarea from '../ui/forms/Textarea';
 
-const formSchema = z.object({
-    isMarried: z.boolean('وضعیت تاهل الزامی است').refine((val) => typeof val === 'boolean', {
-        message: 'وضعیت تاهل نامعتبر است',
-    }),
-    grade: z
-        .string()
-        .min(1, { message: 'مدرک تحصیلی الزامی است' })
-        .refine((val) => ['diploma', 'associate', 'BA', 'MA', 'PHD'].includes(val), {
-            message: 'مدرک تحصیلی نامعتبر است',
-        }),
-    provinceId: z
-        .number()
-        .nullable()
-        .refine((val) => val !== null, { message: 'استان الزامی است' }),
-    cityId: z
-        .number()
-        .nullable()
-        .refine((val) => val !== null, { message: 'شهر الزامی است' }),
-    address: z.string().min(1, { message: 'آدرس الزامی است' }),
-    branch: z
-        .number()
-        .nullable()
-        .refine((val) => val !== null, { message: 'انتخاب شعبه الزامی است' }),
-});
-
-type FormData = z.infer<typeof formSchema>;
+// Using consolidated schema from /lib/schemas/identity
+type FormData = NationalCardInfoForm;
 
 const gradeOptions = [
     { value: 'diploma', label: 'دیپلم' },
@@ -98,7 +75,7 @@ export default function NationalCardScanner() {
         setValue,
         formState: { errors, isValid },
     } = useForm<FormData>({
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(nationalCardInfoSchema),
         defaultValues: {
             isMarried: false,
             grade: '',

@@ -16,10 +16,6 @@ interface UseCameraResult {
     stopCamera: () => void;
 }
 
-/**
- * Centralized camera management hook
- * Handles camera lifecycle with global stream tracking
- */
 export function useCamera(options: UseCameraOptions = {}): UseCameraResult {
     const { video = true, audio = false } = options;
 
@@ -36,28 +32,23 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraResult {
         setIsLoading(true);
 
         try {
-            // Stop existing stream if any
             if (streamRef.current) {
                 mediaStreamManager.unregister(streamRef.current);
                 streamRef.current = null;
             }
 
-            // Request new stream
             const mediaStream = await navigator.mediaDevices.getUserMedia({
                 video,
                 audio,
             });
 
-            // Register with global manager
             mediaStreamManager.register(mediaStream);
             streamRef.current = mediaStream;
             setStream(mediaStream);
 
-            // Attach to video element
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
 
-                // Wait for video to be ready
                 if (videoRef.current.readyState >= 2) {
                     videoRef.current.play().catch(() => {});
                 } else {

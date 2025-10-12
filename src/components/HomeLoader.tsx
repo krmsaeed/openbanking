@@ -2,54 +2,122 @@
 
 import { Box } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
+import { useAuth } from '@/hooks/useAuth';
+import { initializeAuth } from '@/lib/auth';
 import axios from 'axios';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { memo, useCallback, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { memo, useCallback, useEffect, useRef } from 'react';
+
+// Cache BPMS requests per national code during the current page session
+const requestCache: Map<string, Promise<void> | true> = new Map();
 type ResponseBody = {
     data: {
         body: {
             isCustomer: boolean;
+            isDeposit: boolean;
         };
         processId: number;
     };
 };
 function HomeLoader() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { setUserData } = useUser();
+    const { nationalId, isAuthenticated } = useAuth();
     const error: string | null = null;
 
-    const checkAndRedirect = useCallback(async () => {
-        const params = new URLSearchParams(
-            typeof window !== 'undefined' ? window.location.search : ''
-        );
-        const nationalCode = params.get('nationalId');
-        if (!nationalCode) {
-            router.push('/register');
-            return;
-        }
-        await axios
-            .post('/api/bpms/send-message', {
-                serviceName: 'virtual-open-deposit',
-                body: { code: nationalCode },
-            })
-            .then((response) => {
-                const { data } = response.data as ResponseBody;
-                if (data.body.isCustomer) {
-                    setUserData({ nationalCode, step: 1, processId: data.processId });
-                    router.push('/register');
-                } else {
-                    setUserData({ nationalCode, processId: data.processId });
-                    router.push('/register');
+    const makeApiCall = useCallback(
+        async (code: string) => {
+            const cached = requestCache.get(code);
+            if (cached === true) return;
+            if (cached && typeof (cached as Promise<void>).then === 'function') {
+                return cached as Promise<void>;
+            }
+
+            const requestPromise = (async () => {
+                try {
+                    const response = await axios.post('/api/bpms/send-message', {
+                        serviceName: 'virtual-open-deposit',
+                        body: { code },
+                    });
+
+                    const { data } = response.data as ResponseBody;
+
+                    if (data.body.isCustomer) {
+                        router.push('/register');
+                        setUserData({ nationalCode: code, step: 1, processId: data.processId });
+                    }
+
+                    if (data.body.isDeposit) {
+                        setUserData({ nationalCode: code, step: 7, processId: data.processId });
+                        // router.push('/register');
+                    }
+
+                    requestCache.set(code, true);
+                } catch (err) {
+                    requestCache.delete(code);
+                    throw err;
                 }
-            })
-            .catch((error) => {
-                console.error('Error sending message:', error);
-            });
-    }, [router, setUserData]);
+            })();
+
+            requestCache.set(code, requestPromise);
+            return requestPromise;
+        },
+        [router, setUserData]
+    );
+
+    // prevent duplicate requests within the same page load / React Strict Mode double-invoke
+    const calledRef = useRef(false);
+
     useEffect(() => {
-        checkAndRedirect();
-    }, [checkAndRedirect]);
+        let isActive = true;
+
+        const run = async () => {
+            if (!isActive || calledRef.current) return;
+
+            let codeToUse: string | null = null;
+
+            if (!isAuthenticated || !nationalId) {
+                const tokenFromUrl = searchParams.get('token');
+                const codeFromUrl = searchParams.get('code');
+
+                if (tokenFromUrl && codeFromUrl) {
+                    const { isValidNationalId, cleanNationalId } = await import(
+                        '@/components/NationalIdValidator'
+                    );
+                    const cleanedCode = cleanNationalId(codeFromUrl);
+
+                    if (isValidNationalId(cleanedCode)) {
+                        initializeAuth({ token: tokenFromUrl, nationalId: cleanedCode });
+
+                        const url = new URL(window.location.href);
+                        url.searchParams.delete('token');
+                        window.history.replaceState({}, '', url.toString());
+
+                        codeToUse = cleanedCode;
+                    }
+                }
+            } else {
+                codeToUse = nationalId;
+            }
+
+            if (!codeToUse || !isActive) return;
+
+            calledRef.current = true;
+            try {
+                await makeApiCall(codeToUse);
+            } catch {
+                calledRef.current = false;
+            }
+        };
+
+        void run();
+
+        return () => {
+            isActive = false;
+        };
+    }, [isAuthenticated, nationalId, makeApiCall, searchParams]);
 
     if (error) {
         return (
@@ -59,7 +127,6 @@ function HomeLoader() {
                     <p className="mt-2 text-sm text-red-500">{error}</p>
                 </Box>
                 <Box className="flex gap-2">
-                    u
                     <button
                         className="rounded bg-gray-100 px-4 py-2"
                         onClick={() => router.push('/')}
@@ -78,8 +145,8 @@ function HomeLoader() {
     }
 
     return (
-        <Box className="from-primary-50 flex w-full max-w-lg flex-col items-center justify-center gap-6 rounded-2xl bg-gradient-to-r to-indigo-50 p-8 shadow-lg">
-            <Box className="flex h-32 w-32 items-center justify-center rounded-3xl bg-gray-50 shadow-md">
+        <Box className="from-primary-50 flex w-full max-w-lg flex-col items-center justify-center gap-6 rounded-2xl bg-gradient-to-br to-gray-600 p-8 shadow-lg">
+            <Box className="flex h-32 w-32 items-center justify-center">
                 <Box className="animate-spin-slow">
                     <Image
                         src="/icons/EnBankNewVerticalLogo_100x100 (1).png"
@@ -93,7 +160,7 @@ function HomeLoader() {
 
             <Box className="text-center">
                 <h3 className="text-lg font-semibold">در حال بررسی اطلاعات شما...</h3>
-                <p className="text-sm text-gray-500">لطفا چند لحظه صبر کنید </p>
+                <p className="text-gray text-sm">لطفا چند لحظه صبر کنید </p>
             </Box>
 
             <Box className="flex items-center gap-2">

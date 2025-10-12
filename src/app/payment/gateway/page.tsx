@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import toast from 'react-hot-toast';
 import { PaymentForm, PaymentOTPForm } from '@/components/payment';
 import { Box } from '@/components/ui';
-import { type CardFormData } from '@/lib/schemas/payment';
 import { Loading } from '@/components/ui/feedback/Loading';
+import { type CardFormData } from '@/lib/schemas/payment';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import toast from 'react-hot-toast';
 
 function PaymentGatewayContent() {
     const router = useRouter();

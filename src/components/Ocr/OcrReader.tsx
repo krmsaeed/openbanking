@@ -2,6 +2,7 @@
 
 import { Box } from '@/components/ui';
 import { ocrRecognizeFile, parseNationalCardFields } from '@/lib/ocr';
+import { getCookie, setCookie } from '@/lib/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 type Props = {
@@ -22,7 +23,7 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
     const startStream = useCallback(async () => {
         try {
             try {
-                const saved = localStorage.getItem('preferredUsbCameraId');
+                const saved = getCookie('preferredUsbCameraId');
                 if (saved) {
                     try {
                         const s = await navigator.mediaDevices.getUserMedia({
@@ -56,7 +57,7 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
                     streamRef.current = s;
                     if (videoRef.current) videoRef.current.srcObject = s;
                     try {
-                        localStorage.setItem('preferredUsbCameraId', usbDeviceId);
+                        setCookie('preferredUsbCameraId', usbDeviceId);
                     } catch {}
                     return;
                 } catch (e) {

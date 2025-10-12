@@ -56,7 +56,6 @@
     border-radius: 9999px;
 }
 
-/* Semantic color utilities */
 .bg-primary {
     background-color: var(--color-primary-500) !important;
 }
@@ -710,7 +709,6 @@
     --tw-gradient-to: var(--color-primary-700);
 }
 
-/* Map some palette names to Tailwind-like blue/red/green/yellow classes */
 .bg-blue-50 {
     background-color: var(--color-info-50) !important;
 }
@@ -908,7 +906,6 @@
     color: var(--color-gray-900) !important;
 }
 
-/* Legacy mappings for components that still use bg-white / border-gray-* */
 .bg-white {
     background-color: var(--color-surface) !important;
 }
