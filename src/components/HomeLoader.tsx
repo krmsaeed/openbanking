@@ -51,7 +51,6 @@ function HomeLoader() {
 
                     if (data.body.isDeposit) {
                         setUserData({ nationalCode: code, step: 7, processId: data.processId });
-                        // router.push('/register');
                     }
 
                     requestCache.set(code, true);

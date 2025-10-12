@@ -21,6 +21,8 @@ interface UseSelfieStepReturn {
     closenessPercent: number;
     obstructionRatio: number;
     eyeFeatureRatio: number;
+    lastBoxSkin: number | null;
+    targetSkin: number | null;
 
     // Actions
     startCamera: () => Promise<void>;
@@ -32,13 +34,9 @@ interface UseSelfieStepReturn {
     // Constants
     MIN_EYE_RATIO: number;
     MAX_OBSTRUCTION: number;
-    closenessThreshold: number;
-    obstructionThreshold: number;
 }
 
 export interface UseSelfieStepConfig {
-    closenessThreshold?: number;
-    obstructionThreshold?: number;
     minEyeRatio?: number;
     maxObstruction?: number;
 }
@@ -56,7 +54,8 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
     const webglProgRef = useRef<WebGLProgram | null>(null);
     const webglVaoRef = useRef<WebGLVertexArrayObject | null>(null);
     const webglVboRef = useRef<WebGLBuffer | null>(null);
-    // auto-capture disabled (manual capture only)
+    const autoCaptureTriggeredRef = useRef(false);
+    const autoCaptureTimerRef = useRef<number | null>(null);
 
     // State
     const [stream, setStream] = useState<MediaStream | null>(null);
@@ -69,20 +68,23 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
     const [faceTooFar, setFaceTooFar] = useState(false);
     const [eyesCentered, setEyesCentered] = useState(true);
     const [closenessPercent, setClosenessPercent] = useState(0);
+    const [lastBoxSkin, setLastBoxSkin] = useState<number | null>(null);
+    const [targetSkin, setTargetSkin] = useState<number | null>(null);
     const [obstructionRatio, setObstructionRatio] = useState(0);
     const [eyeFeatureRatio, setEyeFeatureRatio] = useState(0);
 
     // Constants (configurable)
     const MIN_EYE_RATIO = config?.minEyeRatio ?? 0.03;
     const MAX_OBSTRUCTION = config?.maxObstruction ?? 0.08;
-    // UI thresholds (returned so callers can use the same values)
-    const CLOSENESS_THRESHOLD = config?.closenessThreshold ?? 90;
-    const OBSTRUCTION_THRESHOLD = config?.obstructionThreshold ?? 0.25;
     const PROC_W = 128;
     const PROC_H = 96;
 
     // Face detection refs
     const detectFaceThrottleRef = useRef<((() => void) & { cancel?: () => void }) | null>(null);
+
+    useEffect(() => {
+        void setTargetSkin;
+    }, [lastBoxSkin, targetSkin, setTargetSkin]);
 
     // Throttle function
     type ThrottledFn = (() => void) & { cancel?: () => void };
@@ -239,25 +241,483 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         }
     }, []);
 
-    // Face detection logic (simplified version - the full version is too long for this response)
+    // Face detection logic (complete implementation from SelfieStep)
     const detectFace = useCallback(() => {
         if (!videoRef.current || !stream) return;
 
         const video = videoRef.current;
-        if (video.readyState < 2 || video.paused) return;
 
-        // Face detection implementation would go here
-        // This is a simplified version for brevity
-        const mockFaceDetected = Math.random() > 0.3;
-        const mockCloseness = Math.floor(Math.random() * 100);
+        if (video.readyState < 2 || video.paused) {
+            return;
+        }
 
-        setFaceDetected(mockFaceDetected);
-        setClosenessPercent(mockCloseness);
-        setFaceTooFar(mockCloseness < 75);
-        setEyesCentered(mockFaceDetected);
-        setObstructionRatio(Math.random() * 0.1);
-        setEyeFeatureRatio(Math.random() * 0.1);
-    }, [stream]);
+        const gl = glRef.current;
+        if (
+            gl &&
+            procCanvasRef.current &&
+            webglProgRef.current &&
+            webglTexRef.current &&
+            webglFboRef.current
+        ) {
+            try {
+                gl.bindFramebuffer(gl.FRAMEBUFFER, webglFboRef.current);
+                gl.viewport(0, 0, PROC_W, PROC_H);
+                gl.useProgram(webglProgRef.current as WebGLProgram);
+
+                gl.bindTexture(gl.TEXTURE_2D, webglTexRef.current);
+                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+
+                gl.bindVertexArray(webglVaoRef.current);
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, webglTexRef.current);
+                const loc = gl.getUniformLocation(webglProgRef.current as WebGLProgram, 'u_tex');
+                gl.uniform1i(loc, 0);
+                gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+                const readBuf = new Uint8Array(PROC_W * PROC_H * 4);
+                gl.readPixels(0, 0, PROC_W, PROC_H, gl.RGBA, gl.UNSIGNED_BYTE, readBuf);
+
+                const faceX = Math.floor(PROC_W * 0.5);
+                const faceY = Math.floor(PROC_H * 0.4);
+                const faceRadius = Math.min(PROC_W, PROC_H) * 0.15;
+
+                const cSize = Math.floor(faceRadius * 2);
+                let skinPixels = 0;
+                let darkFeatures = 0;
+                let darkUpper = 0;
+                let darkLower = 0;
+                let eyeFeatures = 0;
+                let eyeFeatureXSum = 0;
+                let eyeFeatureCount = 0;
+                let symmetryScore = 0;
+                let obstructionPixels = 0;
+                let circularPixelCount = 0;
+                let avgBrightness = 0;
+
+                for (let y = 0; y < cSize; y++) {
+                    for (let x = 0; x < cSize; x++) {
+                        const dx = x - faceRadius;
+                        const dy = y - faceRadius;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance <= faceRadius) {
+                            const px = Math.max(
+                                0,
+                                Math.min(PROC_W - 1, Math.floor(faceX - faceRadius + x))
+                            );
+                            const py = Math.max(
+                                0,
+                                Math.min(PROC_H - 1, Math.floor(faceY - faceRadius + y))
+                            );
+                            const i = (py * PROC_W + px) * 4;
+                            const r = readBuf[i];
+                            const g = readBuf[i + 1];
+                            const b = readBuf[i + 2];
+                            const gray = (r + g + b) / 3;
+                            circularPixelCount++;
+                            avgBrightness += gray;
+                            if (r > g && r > b && r > 80 && g > 50 && g < 180 && b > 30 && b < 150)
+                                skinPixels++;
+                            if (gray < 60) {
+                                const isUpperHalf = y < faceRadius;
+                                if (isUpperHalf) {
+                                    darkFeatures++;
+                                    darkUpper++;
+                                } else {
+                                    darkLower++;
+                                }
+                            }
+                            const eyeUpperBound = faceRadius * 0.7;
+                            let localSum = 0;
+                            let localCount = 0;
+                            for (
+                                let ny = Math.max(0, py - 1);
+                                ny <= Math.min(PROC_H - 1, py + 1);
+                                ny++
+                            ) {
+                                for (
+                                    let nx = Math.max(0, px - 1);
+                                    nx <= Math.min(PROC_W - 1, px + 1);
+                                    nx++
+                                ) {
+                                    const ni = (ny * PROC_W + nx) * 4;
+                                    localSum +=
+                                        (readBuf[ni] + readBuf[ni + 1] + readBuf[ni + 2]) / 3;
+                                    localCount++;
+                                }
+                            }
+                            const localAvg = localCount > 0 ? localSum / localCount : gray;
+                            const isDarkRelative = gray < Math.min(60, localAvg * 0.85);
+                            const isUpperRegion = y < eyeUpperBound;
+                            if (isUpperRegion && isDarkRelative) {
+                                eyeFeatures++;
+                                eyeFeatureXSum += x;
+                                eyeFeatureCount++;
+                            }
+                            const isBright = gray > 220;
+                            const isDark = gray < 30;
+                            if (isBright || isDark) obstructionPixels++;
+                            if (x < faceRadius) {
+                                const mirrorX = cSize - 1 - x;
+                                const mirrorPx = Math.max(
+                                    0,
+                                    Math.min(PROC_W - 1, Math.floor(faceX - faceRadius + mirrorX))
+                                );
+                                const mirrorI = (py * PROC_W + mirrorPx) * 4;
+                                const mirrorGray =
+                                    (readBuf[mirrorI] +
+                                        readBuf[mirrorI + 1] +
+                                        readBuf[mirrorI + 2]) /
+                                    3;
+                                const diff = Math.abs(gray - mirrorGray);
+                                symmetryScore += (50 - Math.min(diff, 50)) / 50;
+                            }
+                        }
+                    }
+                }
+
+                if (circularPixelCount === 0) return;
+
+                avgBrightness = avgBrightness / circularPixelCount;
+                const skinRatio = skinPixels / circularPixelCount;
+                const featureRatio = darkFeatures / circularPixelCount;
+                const darkUpperRatio = darkUpper / circularPixelCount;
+                const darkLowerRatio = darkLower / circularPixelCount;
+                const eyeRatio = eyeFeatures / circularPixelCount;
+                const obstructionRatio = obstructionPixels / circularPixelCount;
+                const symmetryRatio = symmetryScore / (circularPixelCount / 3);
+
+                let centerBoxClose = true;
+                let currentClosenessPercent: number | null = null;
+                try {
+                    const boxW = Math.max(4, Math.floor(PROC_W * 0.5));
+                    const boxH = Math.max(4, Math.floor(PROC_H * 0.6));
+                    const boxX = Math.max(0, Math.floor(PROC_W * 0.5 - boxW / 2));
+                    const boxY = Math.max(0, Math.floor(PROC_H * 0.4 - boxH / 2));
+                    let boxSkin = 0;
+                    let boxTotal = 0;
+                    for (let yy = boxY; yy < boxY + boxH; yy++) {
+                        for (let xx = boxX; xx < boxX + boxW; xx++) {
+                            const bi = (yy * PROC_W + xx) * 4;
+                            const r = readBuf[bi];
+                            const g = readBuf[bi + 1];
+                            const b = readBuf[bi + 2];
+                            if (r > g && r > b && r > 80 && g > 40 && b > 30) boxSkin++;
+                            boxTotal++;
+                        }
+                    }
+                    const boxSkinRatio = boxTotal > 0 ? boxSkin / boxTotal : 0;
+                    setLastBoxSkin(boxSkinRatio);
+                    if (targetSkin !== null) {
+                        const rawRel = boxSkinRatio / Math.max(1e-6, targetSkin);
+                        const percentRel = Math.round(Math.max(0, Math.min(1.5, rawRel)) * 100);
+                        currentClosenessPercent = percentRel;
+                        setClosenessPercent(percentRel);
+                        centerBoxClose = percentRel >= 80;
+                    } else {
+                        const minSkin = 0.08;
+                        const maxSkin = 0.35;
+                        const raw = Math.max(
+                            0,
+                            Math.min(1, (boxSkinRatio - minSkin) / (maxSkin - minSkin))
+                        );
+                        const percent = Math.round(raw * 100);
+                        currentClosenessPercent = percent;
+                        setClosenessPercent(percent);
+                        centerBoxClose = percent >= 80;
+                    }
+                    setFaceTooFar(!centerBoxClose);
+                } catch {
+                    centerBoxClose = true;
+                }
+
+                const skinFactor = Math.min(skinRatio * 4, 1);
+                const featureFactor = Math.min(featureRatio * 10, 1);
+                const eyeFactor = Math.min(eyeRatio * 20, 1);
+                const brightnessFactor = avgBrightness > 50 && avgBrightness < 200 ? 1 : 0;
+                const symmetryFactor = Math.min(symmetryRatio * 2, 1);
+                const obstructionFactor = obstructionRatio < 0.1 ? 1 : 0;
+
+                const confidence =
+                    skinFactor * 0.25 +
+                    featureFactor * 0.2 +
+                    eyeFactor * 0.3 +
+                    brightnessFactor * 0.15 +
+                    symmetryFactor * 0.05 +
+                    obstructionFactor * 0.05;
+
+                const MIN_DARK_HALF_RATIO = 0.005;
+                const detected =
+                    confidence > 0.45 &&
+                    obstructionRatio < 0.15 &&
+                    centerBoxClose &&
+                    skinRatio >= 0.15 &&
+                    symmetryRatio >= 0.4 &&
+                    eyeRatio >= MIN_EYE_RATIO &&
+                    darkUpperRatio >= MIN_DARK_HALF_RATIO &&
+                    darkLowerRatio >= MIN_DARK_HALF_RATIO &&
+                    (currentClosenessPercent ?? 0) >= 75;
+
+                setFaceDetected(detected);
+                setFaceTooFar(!centerBoxClose);
+                setObstructionRatio(obstructionRatio);
+                setEyeFeatureRatio(eyeRatio);
+
+                if (eyeFeatureCount > 0) {
+                    const avgX = eyeFeatureXSum / eyeFeatureCount;
+                    const centerX = faceRadius;
+                    const offset = (avgX - centerX) / faceRadius;
+                    const centered = Math.abs(offset) <= 0.18;
+                    setEyesCentered(centered);
+                } else {
+                    setEyesCentered(false);
+                }
+
+                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+                gl.bindVertexArray(null);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+                return;
+            } catch (err) {
+                console.warn('WebGL processing failed, falling back to 2D path', err);
+            }
+        }
+
+        // 2D Canvas fallback
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+
+        if (!context) return;
+
+        try {
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+
+            if (canvas.width === 0 || canvas.height === 0) {
+                return;
+            }
+
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const faceX = Math.floor(canvas.width * 0.5);
+            const faceY = Math.floor(canvas.height * 0.4);
+            const faceRadius = Math.min(canvas.width, canvas.height) * 0.15;
+            const circularData = context.getImageData(
+                faceX - faceRadius,
+                faceY - faceRadius,
+                faceRadius * 2,
+                faceRadius * 2
+            );
+            const cData = circularData.data;
+            const cSize = faceRadius * 2;
+
+            let skinPixels = 0;
+            let darkFeatures = 0;
+            let darkUpper = 0;
+            let darkLower = 0;
+            let eyeFeatures = 0;
+            let eyeFeatureXSum = 0;
+            let eyeFeatureCount = 0;
+            let symmetryScore = 0;
+            let obstructionPixels = 0;
+            let circularPixelCount = 0;
+            let avgBrightness = 0;
+
+            for (let y = 0; y < cSize; y++) {
+                for (let x = 0; x < cSize; x++) {
+                    const dx = x - faceRadius;
+                    const dy = y - faceRadius;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance <= faceRadius) {
+                        const i = (y * cSize + x) * 4;
+                        if (i < cData.length) {
+                            const r = cData[i];
+                            const g = cData[i + 1];
+                            const b = cData[i + 2];
+                            const gray = (r + g + b) / 3;
+
+                            circularPixelCount++;
+                            avgBrightness += gray;
+
+                            if (
+                                r > g &&
+                                r > b &&
+                                r > 80 &&
+                                r < 220 &&
+                                g > 50 &&
+                                g < 180 &&
+                                b > 30 &&
+                                b < 150
+                            ) {
+                                skinPixels++;
+                            }
+
+                            if (gray < 60) {
+                                const isUpperHalf = y < faceRadius;
+                                if (isUpperHalf) {
+                                    darkFeatures++;
+                                    darkUpper++;
+                                } else {
+                                    darkLower++;
+                                }
+                            }
+                            let localAvg = gray;
+                            try {
+                                let localSum = 0;
+                                let localCount = 0;
+                                for (
+                                    let ny = Math.max(0, y - 1);
+                                    ny <= Math.min(cSize - 1, y + 1);
+                                    ny++
+                                ) {
+                                    for (
+                                        let nx = Math.max(0, x - 1);
+                                        nx <= Math.min(cSize - 1, x + 1);
+                                        nx++
+                                    ) {
+                                        const ni = (ny * cSize + nx) * 4;
+                                        if (ni < cData.length) {
+                                            localSum +=
+                                                (cData[ni] + cData[ni + 1] + cData[ni + 2]) / 3;
+                                            localCount++;
+                                        }
+                                    }
+                                }
+                                if (localCount > 0) localAvg = localSum / localCount;
+                            } catch {
+                                localAvg = gray;
+                            }
+                            const eyeUpperBound = faceRadius * 0.7;
+                            const isDarkRelative = gray < Math.min(60, localAvg * 0.85);
+                            const isUpperRegion = y < eyeUpperBound;
+                            if (isUpperRegion && isDarkRelative) {
+                                eyeFeatures++;
+                                eyeFeatureXSum += x;
+                                eyeFeatureCount++;
+                            }
+
+                            const isBright = gray > 220;
+                            const isDark = gray < 30;
+                            if (isBright || isDark) {
+                                obstructionPixels++;
+                            }
+
+                            if (x < faceRadius) {
+                                const mirrorX = cSize - 1 - x;
+                                const mirrorI = (y * cSize + mirrorX) * 4;
+                                if (mirrorI < cData.length) {
+                                    const mirrorGray =
+                                        (cData[mirrorI] + cData[mirrorI + 1] + cData[mirrorI + 2]) /
+                                        3;
+                                    const diff = Math.abs(gray - mirrorGray);
+                                    symmetryScore += (50 - Math.min(diff, 50)) / 50;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (circularPixelCount === 0) return;
+
+            avgBrightness = avgBrightness / circularPixelCount;
+            const skinRatio = skinPixels / circularPixelCount;
+            const featureRatio = darkFeatures / circularPixelCount;
+            const eyeRatio = eyeFeatures / circularPixelCount;
+            const obstructionRatio = obstructionPixels / circularPixelCount;
+            const symmetryRatio = symmetryScore / (circularPixelCount / 3);
+            const darkUpperRatio = darkUpper / circularPixelCount;
+            const darkLowerRatio = darkLower / circularPixelCount;
+
+            let centerBoxClose = true;
+            let currentClosenessPercent: number | null = null;
+            try {
+                const boxW = Math.max(10, Math.floor(canvas.width * 0.5));
+                const boxH = Math.max(10, Math.floor(canvas.height * 0.6));
+                const boxX = Math.max(0, Math.floor(faceX - boxW / 2));
+                const boxY = Math.max(0, Math.floor(faceY - boxH / 2));
+                const boxData = context.getImageData(boxX, boxY, boxW, boxH).data;
+                let boxSkin = 0;
+                let boxTotal = 0;
+                for (let i = 0; i < boxData.length; i += 4) {
+                    const r = boxData[i];
+                    const g = boxData[i + 1];
+                    const b = boxData[i + 2];
+                    if (r > g && r > b && r > 80 && g > 40 && b > 30) boxSkin++;
+                    boxTotal++;
+                }
+                const boxSkinRatio = boxTotal > 0 ? boxSkin / boxTotal : 0;
+                setLastBoxSkin(boxSkinRatio);
+
+                currentClosenessPercent = 0;
+                if (targetSkin !== null) {
+                    const rawRel = boxSkinRatio / Math.max(1e-6, targetSkin);
+                    const percentRel = Math.round(Math.max(0, Math.min(1.5, rawRel)) * 100);
+                    currentClosenessPercent = percentRel;
+                    setClosenessPercent(percentRel);
+                    centerBoxClose = percentRel >= 90;
+                } else {
+                    const minSkin = 0.08;
+                    const maxSkin = 0.35;
+                    const raw = Math.max(
+                        0,
+                        Math.min(1, (boxSkinRatio - minSkin) / (maxSkin - minSkin))
+                    );
+                    const percent = Math.round(raw * 100);
+                    currentClosenessPercent = percent;
+                    setClosenessPercent(percent);
+                    if (percent < 75) centerBoxClose = false;
+                    else centerBoxClose = true;
+                }
+                setFaceTooFar(!centerBoxClose);
+            } catch {
+                centerBoxClose = true;
+            }
+
+            const skinFactor = Math.min(skinRatio * 4, 1);
+            const featureFactor = Math.min(featureRatio * 10, 1);
+            const eyeFactor = Math.min(eyeRatio * 20, 1);
+            const brightnessFactor = avgBrightness > 50 && avgBrightness < 200 ? 1 : 0;
+            const symmetryFactor = Math.min(symmetryRatio * 2, 1);
+            const obstructionFactor = obstructionRatio < 0.1 ? 1 : 0;
+
+            const confidence =
+                skinFactor * 0.25 +
+                featureFactor * 0.2 +
+                eyeFactor * 0.3 +
+                brightnessFactor * 0.15 +
+                symmetryFactor * 0.05 +
+                obstructionFactor * 0.05;
+
+            const MIN_DARK_HALF_RATIO = 0.005;
+            const detected =
+                confidence > 0.45 &&
+                obstructionRatio < 0.15 &&
+                centerBoxClose &&
+                skinRatio >= 0.15 &&
+                symmetryRatio >= 0.4 &&
+                eyeRatio >= MIN_EYE_RATIO &&
+                darkUpperRatio >= MIN_DARK_HALF_RATIO &&
+                darkLowerRatio >= MIN_DARK_HALF_RATIO &&
+                (currentClosenessPercent ?? 0) >= 75;
+            setFaceDetected(detected);
+            setFaceTooFar(!centerBoxClose);
+            setObstructionRatio(obstructionRatio);
+            setEyeFeatureRatio(eyeRatio);
+
+            if (eyeFeatureCount > 0) {
+                const avgX = eyeFeatureXSum / eyeFeatureCount;
+                const centerX = faceRadius;
+                const offset = (avgX - centerX) / faceRadius;
+                const centered = Math.abs(offset) <= 0.18;
+                setEyesCentered(centered);
+            } else {
+                setEyesCentered(false);
+            }
+        } catch (error) {
+            console.error('Face detection error:', error);
+        }
+    }, [stream, targetSkin, MIN_EYE_RATIO]);
 
     // Start camera
     const startCamera = useCallback(async () => {
@@ -537,14 +997,43 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         }
     }, [stream]);
 
-    // Auto-capture intentionally disabled: user must press the capture button.
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
-    // Initial camera start
     useEffect(() => {
         setCameraLoading(true);
         startCamera();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        const canAuto = !capturedPhoto && faceDetected && eyesCentered;
+        if (canAuto && !autoCaptureTriggeredRef.current) {
+            autoCaptureTriggeredRef.current = true;
+            if (autoCaptureTimerRef.current) window.clearTimeout(autoCaptureTimerRef.current);
+            autoCaptureTimerRef.current = window.setTimeout(() => {
+                capturePhoto();
+                autoCaptureTimerRef.current = null;
+            }, 300) as unknown as number;
+        }
+
+        if (!canAuto) {
+            autoCaptureTriggeredRef.current = false;
+            if (autoCaptureTimerRef.current) {
+                window.clearTimeout(autoCaptureTimerRef.current);
+                autoCaptureTimerRef.current = null;
+            }
+        }
+    }, [
+        capturedPhoto,
+        stream,
+        faceDetected,
+        eyesCentered,
+        closenessPercent,
+        obstructionRatio,
+        capturePhoto,
+    ]);
 
     // Cleanup on unmount
     useEffect(() => {
@@ -552,6 +1041,30 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
             stopCamera();
         };
     }, [stopCamera]);
+
+    // WebGL cleanup on unmount
+    useEffect(() => {
+        return () => {
+            try {
+                const gl = glRef.current;
+                if (gl) {
+                    if (webglTexRef.current) gl.deleteTexture(webglTexRef.current);
+                    if (webglFboRef.current) gl.deleteFramebuffer(webglFboRef.current);
+                    if (webglProgRef.current) gl.deleteProgram(webglProgRef.current);
+                    if (webglVaoRef.current) gl.deleteVertexArray(webglVaoRef.current);
+                    if (webglVboRef.current) gl.deleteBuffer(webglVboRef.current);
+                }
+            } catch {}
+            glRef.current = null;
+            webglTexRef.current = null;
+            webglFboRef.current = null;
+            webglProgRef.current = null;
+            webglVaoRef.current = null;
+            webglVboRef.current = null;
+            if (procCanvasRef.current) procCanvasRef.current.width = 0;
+            procCanvasRef.current = null;
+        };
+    }, []);
 
     return {
         // Refs
@@ -571,6 +1084,8 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         closenessPercent,
         obstructionRatio,
         eyeFeatureRatio,
+        lastBoxSkin,
+        targetSkin,
 
         // Actions
         startCamera,
@@ -582,7 +1097,5 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         // Constants
         MIN_EYE_RATIO,
         MAX_OBSTRUCTION,
-        closenessThreshold: CLOSENESS_THRESHOLD,
-        obstructionThreshold: OBSTRUCTION_THRESHOLD,
     };
 }

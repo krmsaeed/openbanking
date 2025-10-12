@@ -65,7 +65,7 @@ export function VideoRecorderView({
                             <Button
                                 variant="secondary"
                                 onClick={onRetake}
-                                className="bg-success-400 flex max-w-32 items-center gap-2 text-white"
+                                className="bg-error-400 flex max-w-32 items-center gap-2 text-white"
                             >
                                 <VideoCameraIcon className="h-4 w-4" />
                                 ضبط مجدد
@@ -96,17 +96,47 @@ export function VideoRecorderView({
                                 )}
                             </Box>
 
+                            {!isRecording && (
+                                <Box className="mb-4 rounded-lg bg-gray-100">
+                                    <Box className="space-y-2 text-right">
+                                        <Typography
+                                            variant="h4"
+                                            className="border-primary-100 mt-2 flex min-h-10 items-center justify-center rounded-lg border bg-gray-200 text-center text-base leading-relaxed"
+                                        >
+                                            {randomText ?? 'test'}
+                                        </Typography>
+                                        <Box className="mt-2 flex justify-between rounded-lg bg-gray-200 p-2">
+                                            <ul className="list-inside list-disc p-2 text-sm leading-relaxed text-gray-800">
+                                                <li className="text-primary-800 font-bold">
+                                                    متن نمایش داده‌شده را واضح بخوانید
+                                                </li>
+                                                <li>طول ویدیو: حدود 30 ثانیه.</li>
+                                                <li>صورت در مرکز قاب قرار گیرد.</li>
+                                                <li>از نور پشت سر پرهیز کنید.</li>
+                                                <li>در محیطی کم‌صدا صحبت کنید.</li>
+                                            </ul>
+                                            <Button
+                                                onClick={onStartRecording}
+                                                className="bg-success-400 hover:bg-success-600 flex items-center gap-2 px-6 py-3 opacity-50 hover:opacity-100"
+                                                disabled={!cameraActive}
+                                            >
+                                                <VideoCameraIcon className="h-5 w-5" />
+                                                شروع ضبط
+                                            </Button>
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            )}
+                            {isRecording && (
+                                <Typography
+                                    variant="h4"
+                                    className="border-primary-100 mt-2 mb-2 flex min-h-10 items-center justify-center rounded-lg border bg-gray-50 text-center text-base leading-relaxed"
+                                >
+                                    {randomText ?? 'test'}
+                                </Typography>
+                            )}
                             <Box className="flex justify-center gap-3">
-                                {!isRecording ? (
-                                    <Button
-                                        onClick={onStartRecording}
-                                        className="bg-success-400 hover:bg-success-600 flex items-center gap-2 px-6 py-3 opacity-50 hover:opacity-100"
-                                        disabled={!cameraActive}
-                                    >
-                                        <VideoCameraIcon className="h-5 w-5" />
-                                        شروع ضبط
-                                    </Button>
-                                ) : (
+                                {isRecording && (
                                     <Button
                                         onClick={onStopRecording}
                                         disabled={!isRecording}
@@ -121,34 +151,6 @@ export function VideoRecorderView({
                                     </Button>
                                 )}
                             </Box>
-                            {!isRecording ? (
-                                <Box className="mb-4 rounded-lg bg-gray-100">
-                                    <Box className="space-y-2 text-right">
-                                        <Typography
-                                            variant="h4"
-                                            className="border-primary-100 mt-2 flex min-h-10 items-center justify-center rounded-lg border bg-gray-200 text-center text-base leading-relaxed"
-                                        >
-                                            {randomText ?? 'test'}
-                                        </Typography>
-                                        <ul className="mt-2 list-inside list-disc rounded-lg bg-gray-200 p-2 text-sm leading-relaxed text-gray-800">
-                                            <li className="text-primary-800 font-bold">
-                                                متن نمایش داده‌شده را واضح بخوانید
-                                            </li>
-                                            <li>طول ویدیو: حدود 30 ثانیه.</li>
-                                            <li>صورت در مرکز قاب قرار گیرد.</li>
-                                            <li>از نور پشت سر پرهیز کنید.</li>
-                                            <li>در محیطی کم‌صدا صحبت کنید.</li>
-                                        </ul>
-                                    </Box>
-                                </Box>
-                            ) : (
-                                <Typography
-                                    variant="h4"
-                                    className="border-primary-100 mt-2 mb-2 flex min-h-10 items-center justify-center rounded-lg border bg-gray-50 text-center text-base leading-relaxed"
-                                >
-                                    {randomText ?? 'test'}
-                                </Typography>
-                            )}
                         </Box>
                     </Box>
                 )}

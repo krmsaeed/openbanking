@@ -152,7 +152,6 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
             }
 
             setCameraActive(false);
-            toast.success('ضبط ویدیو متوقف شد و دوربین خاموش شد');
         }
     }, [isRecording]);
 
@@ -237,7 +236,6 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
             setVideoPreviewUrl(null);
         }
 
-        toast.success('آماده برای ضبط مجدد');
         void startCamera();
     }, [videoPreviewUrl, startCamera]);
 
