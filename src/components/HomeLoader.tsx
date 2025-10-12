@@ -9,7 +9,6 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { memo, useCallback, useEffect, useRef } from 'react';
 
-// Cache BPMS requests per national code during the current page session
 const requestCache: Map<string, Promise<void> | true> = new Map();
 type ResponseBody = {
     data: {
@@ -66,7 +65,6 @@ function HomeLoader() {
         [router, setUserData]
     );
 
-    // prevent duplicate requests within the same page load / React Strict Mode double-invoke
     const calledRef = useRef(false);
 
     useEffect(() => {

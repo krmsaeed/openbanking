@@ -1,7 +1,5 @@
 import { z } from 'zod';
 import { otpSchema } from './personal';
-
-// Card validation schemas
 export const cardNumberSchema = z
     .string({ message: 'شماره کارت اجباری است' })
     .length(16, 'شماره کارت باید ۱۶ رقم باشد')
@@ -29,7 +27,6 @@ export const captchaInputSchema = z
     .string({ message: 'کد امنیتی اجباری است' })
     .min(1, 'کد امنیتی نمی‌تواند خالی باشد');
 
-// Payment form schemas - matching existing component structure
 export const paymentFormSchema = z.object({
     cardNumber: cardNumberSchema,
     expiryMonth: expiryMonthSchema,
@@ -39,7 +36,6 @@ export const paymentFormSchema = z.object({
     captchaInput: captchaInputSchema,
 });
 
-// Alternative combined expiry date schema for other uses
 export const expiryDateSchema = z
     .string({ message: 'تاریخ انقضا اجباری است' })
     .regex(/^(0[1-9]|1[0-2])\/\d{2}$/, 'فرمت تاریخ انقضا نامعتبر است (MM/YY)');
@@ -53,16 +49,13 @@ export const paymentOTPFormSchema = z.object({
     digit6: z.string().regex(/^\d$/, 'رقم معتبر وارد کنید').optional(),
 });
 
-// Alternative single OTP field schema for other uses
 export const singleOtpSchema = z.object({
     otp: otpSchema,
 });
 
-// Type exports
 export type PaymentForm = z.infer<typeof paymentFormSchema>;
 export type PaymentOTPForm = z.infer<typeof paymentOTPFormSchema>;
 
-// Backward compatibility aliases
 export const cardFormSchema = paymentFormSchema;
 export type CardFormData = PaymentForm;
 export type PaymentOtpFormData = PaymentOTPForm;

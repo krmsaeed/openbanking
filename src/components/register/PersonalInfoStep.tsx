@@ -1,12 +1,14 @@
 'use client';
 import { PersianCalendar } from '@/components/forms';
+import LoadingButton from '@/components/ui/core/LoadingButton';
 import { Input } from '@/components/ui/forms';
 import { useUser } from '@/contexts/UserContext';
 import { personalInfoStepSchema, type PersonalInfoStepForm } from '@/lib/schemas/personal';
+import { CheckIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
-import { Button } from '../ui';
+import { Typography } from '../ui';
 
 export default function PersonalInfo() {
     const { userData, setUserData } = useUser();
@@ -108,15 +110,17 @@ export default function PersonalInfo() {
                         />
                     )}
                 />
-
-                <Button
+                <LoadingButton
                     type="submit"
-                    className="btn bg-primary mt-8 w-full"
                     loading={isSubmitting}
                     disabled={isSubmitting}
+                    className="bg-primary-400 mt-5 flex w-full items-center justify-center gap-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                    ادامه
-                </Button>
+                    {!isSubmitting && <CheckIcon className="h-5 w-5" />}
+                    <Typography variant="body1" className="text-xs font-medium text-white">
+                        {isSubmitting ? 'در حال ارسال...' : 'مرحله بعد'}
+                    </Typography>
+                </LoadingButton>
             </form>
         </div>
     );

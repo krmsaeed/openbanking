@@ -51,8 +51,6 @@ export function useSignatureStep() {
         ctx.beginPath();
         ctx.moveTo(x, y);
 
-        // register global move/up handlers so drawing continues outside the canvas
-        // store handlers in refs so we can remove them on stop
         globalMoveRef.current = (ev: MouseEvent | TouchEvent) => {
             if (!canvasRef.current) return;
             const c = canvasRef.current;
@@ -74,10 +72,9 @@ export function useSignatureStep() {
             const ctx = c.getContext('2d');
             if (!ctx) return;
 
-            // if user didn't move, draw a filled dot at the start position
             if (!movedRef.current && startPosRef.current) {
                 const { x: sx, y: sy } = startPosRef.current;
-                // draw a small filled circle
+
                 ctx.beginPath();
                 ctx.arc(sx, sy, 2, 0, Math.PI * 2);
                 ctx.fillStyle = ctx.strokeStyle || '#1f2937';
@@ -88,7 +85,6 @@ export function useSignatureStep() {
 
             setIsDrawing(false);
 
-            // cleanup
             startPosRef.current = null;
             if (globalMoveRef.current) {
                 window.removeEventListener('mousemove', globalMoveRef.current as EventListener);
@@ -102,7 +98,6 @@ export function useSignatureStep() {
 
         globalUpRef.current = finish;
 
-        // use non-passive for touchmove to allow preventing default if needed
         window.addEventListener('mousemove', globalMoveRef.current as EventListener);
         window.addEventListener('mouseup', globalUpRef.current as EventListener);
         window.addEventListener(

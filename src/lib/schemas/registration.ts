@@ -11,12 +11,10 @@ import {
     postalCodeSchema,
 } from './personal';
 
-// File validation schema
 const fileSchema = z.instanceof(File).refine((file) => file instanceof File, {
     message: 'فایل اجباری است',
 });
 
-// Registration step schemas
 export const step1Schema = z.object({
     firstName: firstNameSchema,
     lastName: lastNameSchema,
@@ -70,7 +68,6 @@ export const step9Schema = z.object({
     digitalSignature: z.boolean({ message: 'امضای دیجیتال اجباری است' }),
 });
 
-// Complete registration form schema
 export const registrationFormSchema = step1Schema
     .merge(step2Schema)
     .merge(step6Schema.omit({ confirmPassword: true }))
@@ -81,7 +78,6 @@ export const registrationFormSchema = step1Schema
         digitalSignature: step9Schema.shape.digitalSignature,
     });
 
-// Main registration schemas (used in register page.tsx)
 export const mainRegistrationSchema = z.object({
     nationalCode: nationalCodeSchema,
     phoneNumber: phoneNumberSchema,
@@ -117,7 +113,6 @@ export const extendedRegistrationSchema = mainRegistrationSchema
         }
     });
 
-// Type exports
 export type Step1Data = z.infer<typeof step1Schema>;
 export type Step2Data = z.infer<typeof step2Schema>;
 export type Step3Data = z.infer<typeof step3Schema>;

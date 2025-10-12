@@ -19,7 +19,6 @@ import LoadingButton from '../ui/core/LoadingButton';
 import { Select } from '../ui/forms/Select';
 import Textarea from '../ui/forms/Textarea';
 
-// Using consolidated schema from /lib/schemas/identity
 type FormData = NationalCardInfoForm;
 
 const gradeOptions = [

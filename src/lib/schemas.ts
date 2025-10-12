@@ -1,2 +1,1 @@
-﻿// All schemas are now consolidated in ./schemas
-export * from './schemas';
+﻿export * from './schemas';

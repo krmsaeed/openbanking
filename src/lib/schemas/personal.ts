@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Base field schemas - reusable building blocks
 export const firstNameSchema = z
     .string({ message: 'نام اجباری است' })
     .min(2, 'نام باید حداقل ۲ حرف باشد')
@@ -46,7 +45,6 @@ export const otpSchema = z
     .length(5, 'کد تایید باید ۵ رقم باشد')
     .regex(/^\d+$/, 'کد تایید باید فقط شامل اعداد باشد');
 
-// English name validations
 export const englishFirstNameSchema = z
     .string({ message: 'نام لاتین الزامی است' })
     .min(4, 'نام لاتین باید حداقل ۴ کاراکتر باشد')
@@ -57,13 +55,11 @@ export const englishLastNameSchema = z
     .min(4, 'حداقل ۴ کاراکتر باید باشد')
     .regex(/^[a-zA-Z ]+$/, 'فقط شامل حروف انگلیسی باید باشد');
 
-// Simple password schema (for components that don't need complex validation)
 export const simplePasswordSchema = z
     .string({ message: 'رمز عبور الزامی است' })
     .min(8, 'باید حداقل ۸ کاراکتر باشد')
     .regex(/^[a-zA-Z0-9]+$/, 'فقط شامل حروف انگلیسی و اعداد باشد');
 
-// Composite schemas for different forms
 export const basicPersonalInfoSchema = z.object({
     firstName: firstNameSchema,
     lastName: lastNameSchema,
@@ -91,14 +87,12 @@ export const otpFormSchema = z.object({
     otp: otpSchema,
 });
 
-// Personal info form from PersonalInfoStep component
 export const personalInfoStepSchema = z.object({
     phoneNumber: phoneNumberSchema,
     birthDate: z.string().min(1, 'تاریخ تولد اجباری است'),
     postalCode: postalCodeSchema,
 });
 
-// Password step form from PasswordStep component
 export const passwordStepSchema = z
     .object({
         ENFirstName: englishFirstNameSchema,
@@ -111,12 +105,10 @@ export const passwordStepSchema = z
         path: ['confirmPassword'],
     });
 
-// Certificate OTP form
 export const certificateOtpSchema = z.object({
     certOtp: z.string().min(1, 'کد تایید اجباری است'),
 });
 
-// Type exports
 export type BasicPersonalInfo = z.infer<typeof basicPersonalInfoSchema>;
 export type DetailedPersonalInfo = z.infer<typeof detailedPersonalInfoSchema>;
 export type PasswordWithConfirm = z.infer<typeof passwordWithConfirmSchema>;

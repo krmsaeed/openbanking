@@ -234,7 +234,7 @@ export default function CameraSelfie() {
             <Box className="rounded-xl bg-gray-200 p-4">
                 {!capturedPhoto ? (
                     <ul className="space-y-1 text-center text-sm">
-                        <li className="text-primary-600 font-bold">
+                        <li className="text-primary-800 font-bold">
                             {' '}
                             صورت خود را کاملاً در قاب قرار دهید
                         </li>

@@ -1,6 +1,4 @@
 import { z } from 'zod';
-
-// Financial information schemas
 export const financialInfoSchema = z.object({
     monthlyIncome: z
         .string({ message: 'درآمد ماهانه ضروری است' })
@@ -22,7 +20,6 @@ export const financialInfoSchema = z.object({
     loanPurpose: z.string().optional(),
 });
 
-// Document upload schemas
 export const identityFilesSchema = z.object({
     nationalCardFront: z.array(z.instanceof(File)).min(1, 'تصویر جلوی کارت ملی ضروری است'),
     nationalCardBack: z.array(z.instanceof(File)).min(1, 'تصویر پشت کارت ملی ضروری است'),
@@ -33,12 +30,10 @@ export const jobFilesSchema = z.object({
     salarySlips: z.array(z.instanceof(File)).min(1, 'حداقل یک فیش حقوقی ضروری است'),
 });
 
-// Complete credit assessment schema
 export const creditAssessmentSchema = financialInfoSchema
     .merge(identityFilesSchema)
     .merge(jobFilesSchema);
 
-// Type exports
 export type FinancialInfoFormData = z.infer<typeof financialInfoSchema>;
 export type IdentityFilesFormData = z.infer<typeof identityFilesSchema>;
 export type JobFilesFormData = z.infer<typeof jobFilesSchema>;

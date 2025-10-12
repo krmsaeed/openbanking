@@ -18,18 +18,14 @@ export async function convertToFile(
 ): Promise<File | null> {
     try {
         if (source == null) {
-            // caller passed no source (null/undefined) — nothing to convert
             console.warn('convertToFile called with null/undefined source');
             return null;
         }
         let blob: Blob | null = null;
 
-        // If source is already a Blob
         if (source instanceof Blob) {
             blob = source;
-        }
-        // If source is a data URL string
-        else if (typeof source === 'string') {
+        } else if (typeof source === 'string') {
             try {
                 const response = await fetch(source);
                 blob = await response.blob();
@@ -37,12 +33,9 @@ export async function convertToFile(
                 console.error('Failed to fetch data URL:', error);
                 return null;
             }
-        }
-        // If source is a Canvas element
-        else if (source instanceof HTMLCanvasElement) {
+        } else if (source instanceof HTMLCanvasElement) {
             blob = await new Promise<Blob | null>((resolve) => {
                 source.toBlob((b) => resolve(b), mimeType, quality);
-                // Timeout after 2 seconds
                 setTimeout(() => resolve(null), 2000);
             });
         }
@@ -51,12 +44,10 @@ export async function convertToFile(
             return null;
         }
 
-        // Generate UUID for filename
         const uuid = generateUUID();
         const extension = mimeType.split('/')[1] || 'jpg';
         const fullFilename = `${filename}_${uuid}.${extension}`;
 
-        // Create and return File object
         return new File([blob], fullFilename, { type: mimeType });
     } catch (error) {
         console.error('Error converting to file:', error);
@@ -76,7 +67,6 @@ export function generateUUID(): string {
         return maybe.crypto.randomUUID();
     }
 
-    // Fallback to timestamp-based ID
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
 }
 

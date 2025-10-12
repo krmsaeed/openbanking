@@ -22,8 +22,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-// Schemas now imported from consolidated validation files
-
 export default function Register() {
     const { userData, setUserData } = useUser();
     const [loading, setLoading] = useState(false);

@@ -1,11 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface UseSelfieStepReturn {
-    // Video and stream refs
     videoRef: React.RefObject<HTMLVideoElement | null>;
     canvasRef: React.RefObject<HTMLCanvasElement | null>;
-
-    // State
     stream: MediaStream | null;
     capturedPhoto: string | null;
     error: string | null;
@@ -20,15 +17,11 @@ interface UseSelfieStepReturn {
     eyeFeatureRatio: number;
     lastBoxSkin: number | null;
     targetSkin: number | null;
-
-    // Actions
     startCamera: () => Promise<void>;
     stopCamera: () => void;
     capturePhoto: () => Promise<void>;
     retakePhoto: () => void;
     setIsUploading: React.Dispatch<React.SetStateAction<boolean>>;
-
-    // Constants
     MIN_EYE_RATIO: number;
     MAX_OBSTRUCTION: number;
 }
@@ -39,7 +32,6 @@ export interface UseSelfieStepConfig {
 }
 
 export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn {
-    // Refs
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const procCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -52,7 +44,6 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
     const autoCaptureTriggeredRef = useRef(false);
     const autoCaptureTimerRef = useRef<number | null>(null);
 
-    // State
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -68,20 +59,17 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
     const [obstructionRatio, setObstructionRatio] = useState(0);
     const [eyeFeatureRatio, setEyeFeatureRatio] = useState(0);
 
-    // Constants (configurable)
     const MIN_EYE_RATIO = config?.minEyeRatio ?? 0.03;
     const MAX_OBSTRUCTION = config?.maxObstruction ?? 0.08;
     const PROC_W = 128;
     const PROC_H = 96;
 
-    // Face detection refs
     const detectFaceThrottleRef = useRef<((() => void) & { cancel?: () => void }) | null>(null);
 
     useEffect(() => {
         void setTargetSkin;
     }, [lastBoxSkin, targetSkin, setTargetSkin]);
 
-    // Throttle function
     type ThrottledFn = (() => void) & { cancel?: () => void };
     const createThrottled = useCallback((fn: () => void, wait = 250): ThrottledFn => {
         let last = 0;
@@ -109,7 +97,6 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         return wrapped;
     }, []);
 
-    // Initialize WebGL for optimized face detection
     const initWebGL = useCallback(() => {
         try {
             if (glRef.current) return;
@@ -236,7 +223,6 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         }
     }, []);
 
-    // Face detection logic (complete implementation from SelfieStep)
     const detectFace = useCallback(() => {
         if (!videoRef.current || !stream) return;
 
@@ -477,7 +463,6 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
             }
         }
 
-        // 2D Canvas fallback
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
 
@@ -714,7 +699,6 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         }
     }, [stream, targetSkin, MIN_EYE_RATIO]);
 
-    // Start camera
     const startCamera = useCallback(async () => {
         setError(null);
         setCameraLoading(true);
@@ -768,7 +752,6 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         }
     }, [stream, initWebGL]);
 
-    // Stop camera
     const stopCamera = useCallback(() => {
         if (stream) {
             stream.getTracks().forEach((track) => {
@@ -780,7 +763,6 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
             videoRef.current.srcObject = null;
         }
 
-        // Cleanup WebGL resources
         try {
             const gl = glRef.current;
             if (gl) {
@@ -802,7 +784,6 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         procCanvasRef.current = null;
     }, [stream]);
 
-    // Image compression
     const compressImage = useCallback(
         (canvas: HTMLCanvasElement, maxWidth = 800, maxHeight = 600, quality = 0.7): string => {
             const compressCanvas = document.createElement('canvas');
@@ -831,7 +812,6 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         []
     );
 
-    // Capture photo
     const capturePhoto = useCallback(async () => {
         if (!videoRef.current || !canvasRef.current || !stream) {
             console.warn('capturePhoto: missing video/canvas/stream');
@@ -877,19 +857,16 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         }, 200);
     }, [stream, stopCamera, compressImage]);
 
-    // Retake photo
     const retakePhoto = useCallback(() => {
         setCapturedPhoto(null);
         setCameraLoading(true);
         startCamera();
     }, [startCamera]);
 
-    // Effects
     useEffect(() => {
         setIsClient(true);
     }, []);
 
-    // Face detection interval
     useEffect(() => {
         if (!stream || !videoRef.current) return;
 
@@ -910,7 +887,6 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         };
     }, [stream, detectFace, createThrottled]);
 
-    // Video stream setup
     useEffect(() => {
         if (stream && videoRef.current) {
             const video = videoRef.current;
@@ -969,14 +945,12 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         capturePhoto,
     ]);
 
-    // Cleanup on unmount
     useEffect(() => {
         return () => {
             stopCamera();
         };
     }, [stopCamera]);
 
-    // WebGL cleanup on unmount
     useEffect(() => {
         return () => {
             try {
@@ -1001,11 +975,8 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
     }, []);
 
     return {
-        // Refs
         videoRef,
         canvasRef,
-
-        // State
         stream,
         capturedPhoto,
         error,
@@ -1020,15 +991,11 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         eyeFeatureRatio,
         lastBoxSkin,
         targetSkin,
-
-        // Actions
         startCamera,
         stopCamera,
         capturePhoto,
         retakePhoto,
         setIsUploading,
-
-        // Constants
         MIN_EYE_RATIO,
         MAX_OBSTRUCTION,
     };
