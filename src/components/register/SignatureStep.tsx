@@ -1,138 +1,22 @@
 'use client';
 
-import { useUser } from '@/contexts/UserContext';
-import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
+import { useSignatureStep } from '@/hooks/useSignatureStep';
 import { CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
-import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
-import toast from 'react-hot-toast';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
 import LoadingButton from '../ui/core/LoadingButton';
 
 export function SignatureStep() {
-    const { userData, setUserData } = useUser();
-    const [isLoading, setIsLoading] = useState(false);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [isDrawing, setIsDrawing] = useState(false);
-    const [hasSignature, setHasSignature] = useState(false);
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * 2;
-        canvas.height = rect.height * 2;
-
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-            ctx.scale(2, 2);
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.strokeStyle = '#1f2937';
-            ctx.lineWidth = 3;
-        }
-    }, []);
-
-    const startDrawing = (
-        e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
-    ) => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const rect = canvas.getBoundingClientRect();
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        setIsDrawing(true);
-        setHasSignature(true);
-
-        const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-        const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
-
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-    };
-
-    const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-        if (!isDrawing) return;
-
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const rect = canvas.getBoundingClientRect();
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-        const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
-
-        ctx.lineTo(x, y);
-        ctx.stroke();
-    };
-
-    const stopDrawing = () => {
-        setIsDrawing(false);
-    };
-
-    const clearSignature = () => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        ctx.clearRect(0, 0, canvas.width / 2, canvas.height / 2);
-        setHasSignature(false);
-    };
-
-    const handleSubmit = async () => {
-        setIsLoading(true);
-        const canvas = canvasRef.current;
-        if (!canvas || !hasSignature) {
-            setIsLoading(false);
-            return;
-        }
-
-        try {
-            // Convert canvas to File
-            const file = await convertToFile(canvas, 'signature', 'image/png', 1.0);
-
-            if (!file) {
-                toast.error('امکان ایجاد تصویر امضا وجود ندارد');
-                setIsLoading(false);
-                return;
-            }
-
-            // Create FormData for BPMS upload
-            const formData = createBPMSFormData(
-                file,
-                'virtual-open-deposit',
-                userData.processId,
-                'VideoInquiry'
-            );
-
-            // Upload to BPMS
-            const response = await axios.post('/api/bpms/deposit-files', formData);
-            const { data } = response.data;
-
-            if (data.body.success) {
-                setUserData({ ...userData, step: 5 });
-            }
-        } catch (error) {
-            console.error('Signature upload error:', error);
-            toast.error('آپلود امضا با مشکل مواجه شد');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const {
+        canvasRef,
+        isLoading,
+        hasSignature,
+        startDrawing,
+        draw,
+        stopDrawing,
+        clearSignature,
+        handleSubmit,
+    } = useSignatureStep();
 
     return (
         <Box className="space-y-4">
@@ -164,17 +48,10 @@ export function SignatureStep() {
                     پاک کردن
                 </Button>
             </Box>
-            <Box className="w-full"></Box>
+
+            <Box className="w-full" />
             <Box className="flex items-center justify-between gap-4">
                 <Box className="flex w-full items-center gap-2">
-                    {/* <Button
-                                onClick={() => setUserData({ ...userData, step: 4 })}
-                                variant="destructive"
-                                className="gapo-3 flex w-full items-center justify-center px-5 py-3 text-white"
-                            >
-                                <XMarkIcon className="h-5 w-5 text-white" />
-                                بازگشت
-                            </Button> */}
                     <LoadingButton
                         onClick={handleSubmit}
                         disabled={!hasSignature || isLoading}
