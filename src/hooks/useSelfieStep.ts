@@ -1,7 +1,4 @@
-import { useUser } from '@/contexts/UserContext';
-import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface UseSelfieStepReturn {
     // Video and stream refs
@@ -29,7 +26,7 @@ interface UseSelfieStepReturn {
     stopCamera: () => void;
     capturePhoto: () => Promise<void>;
     retakePhoto: () => void;
-    handleConfirm: () => Promise<void>;
+    setIsUploading: React.Dispatch<React.SetStateAction<boolean>>;
 
     // Constants
     MIN_EYE_RATIO: number;
@@ -42,8 +39,6 @@ export interface UseSelfieStepConfig {
 }
 
 export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn {
-    const { userData, setUserData } = useUser();
-
     // Refs
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -889,67 +884,6 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         startCamera();
     }, [startCamera]);
 
-    // Handle confirm and upload
-    const handleConfirm = useCallback(async () => {
-        if (!capturedPhoto) {
-            toast.error('عکسی برای ارسال وجود ندارد');
-            return;
-        }
-
-        setIsUploading(true);
-
-        const body = {
-            serviceName: 'virtual-open-deposit',
-            processId: userData.processId,
-            formName: 'GovahInquiry',
-            body: {},
-        };
-
-        const data = new FormData();
-        try {
-            let blob: Blob | null = null;
-            try {
-                const res = await fetch(capturedPhoto);
-                blob = await res.blob();
-            } catch {
-                if (canvasRef.current) {
-                    blob = await new Promise<Blob | null>((resolve) => {
-                        canvasRef.current!.toBlob((b) => resolve(b), 'image/jpeg', 0.8);
-                        setTimeout(() => resolve(null), 2000);
-                    });
-                }
-            }
-
-            if (!blob) {
-                toast.error('امکان ایجاد تصویر برای آپلود وجود ندارد');
-                return;
-            }
-
-            type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
-            const maybe = globalThis as unknown as MaybeCrypto;
-            const uuid =
-                maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
-                    ? maybe.crypto.randomUUID()
-                    : Date.now().toString(36);
-            const filename = `selfie_${uuid}.jpg`;
-
-            const file = new File([blob], filename, { type: 'image/jpeg' });
-
-            data.append('messageDTO', JSON.stringify(body));
-            data.append('files', file);
-
-            await axios.post('/api/bpms/deposit-files', data).then((res) => {
-                const { data } = res;
-                setUserData({ ...userData, step: 3, randomText: data.body.randomText });
-            });
-        } catch (err) {
-            console.error('upload error', err);
-            toast.error('آپلود عکس با مشکل مواجه شد');
-        } finally {
-            setIsUploading(false);
-        }
-    }, [capturedPhoto, userData, setUserData]);
-
     // Effects
     useEffect(() => {
         setIsClient(true);
@@ -1092,7 +1026,7 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         stopCamera,
         capturePhoto,
         retakePhoto,
-        handleConfirm,
+        setIsUploading,
 
         // Constants
         MIN_EYE_RATIO,

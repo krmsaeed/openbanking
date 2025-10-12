@@ -1,9 +1,11 @@
 'use client';
 
 import { useUser } from '@/contexts/UserContext';
+import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
 import { CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
 import LoadingButton from '../ui/core/LoadingButton';
@@ -91,7 +93,7 @@ export function SignatureStep() {
         setHasSignature(false);
     };
 
-    const saveSignature = async () => {
+    const handleSubmit = async () => {
         setIsLoading(true);
         const canvas = canvasRef.current;
         if (!canvas || !hasSignature) {
@@ -99,39 +101,37 @@ export function SignatureStep() {
             return;
         }
 
-        canvas.toBlob(async (blob) => {
-            if (blob) {
-                type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
-                const maybe = globalThis as unknown as MaybeCrypto;
-                const uuid =
-                    maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
-                        ? maybe.crypto.randomUUID()
-                        : Date.now().toString(36);
-                const filename = `signature_${uuid}.jpg`;
+        try {
+            // Convert canvas to File
+            const file = await convertToFile(canvas, 'signature', 'image/png', 1.0);
 
-                const file = new File([blob], filename, { type: 'image/jpeg' });
-                const body = {
-                    serviceName: 'virtual-open-deposit',
-                    processId: userData.processId,
-                    formName: 'VideoInquiry',
-                    body: {},
-                };
-                const data = new FormData();
-                data.append('messageDTO', JSON.stringify(body));
-                data.append('files', file);
-                await axios
-                    .post('/api/bpms/deposit-files', data)
-                    .then((res) => {
-                        const { data } = res;
-                        if (data.body.success) {
-                            setUserData({ ...userData, step: 5 });
-                        }
-                    })
-                    .finally(() => {
-                        setIsLoading(false);
-                    });
+            if (!file) {
+                toast.error('امکان ایجاد تصویر امضا وجود ندارد');
+                setIsLoading(false);
+                return;
             }
-        }, 'image/png');
+
+            // Create FormData for BPMS upload
+            const formData = createBPMSFormData(
+                file,
+                'virtual-open-deposit',
+                userData.processId,
+                'VideoInquiry'
+            );
+
+            // Upload to BPMS
+            const response = await axios.post('/api/bpms/deposit-files', formData);
+            const { data } = response.data;
+
+            if (data.body.success) {
+                setUserData({ ...userData, step: 5 });
+            }
+        } catch (error) {
+            console.error('Signature upload error:', error);
+            toast.error('آپلود امضا با مشکل مواجه شد');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -176,7 +176,7 @@ export function SignatureStep() {
                                 بازگشت
                             </Button> */}
                     <LoadingButton
-                        onClick={saveSignature}
+                        onClick={handleSubmit}
                         disabled={!hasSignature || isLoading}
                         loading={isLoading}
                         className="bg-primary-600 hover:bg-primary-700 flex w-full items-center justify-center gap-3 px-5 py-3 text-white"

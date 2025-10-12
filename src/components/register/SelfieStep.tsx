@@ -2,14 +2,17 @@
 
 import { useUser } from '@/contexts/UserContext';
 import { useSelfieStep } from '@/hooks/useSelfieStep';
+import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
 import { ArrowPathIcon, CameraIcon, CheckIcon } from '@heroicons/react/24/outline';
+import axios from 'axios';
 import Image from 'next/image';
+import toast from 'react-hot-toast';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
 import LoadingButton from '../ui/core/LoadingButton';
 
 export default function CameraSelfie() {
-    const { setUserData } = useUser();
+    const { userData, setUserData } = useUser();
     const {
         videoRef,
         canvasRef,
@@ -29,8 +32,47 @@ export default function CameraSelfie() {
         startCamera,
         capturePhoto,
         retakePhoto,
-        handleConfirm,
+        setIsUploading,
     } = useSelfieStep();
+
+    const handleConfirm = async () => {
+        if (!capturedPhoto) {
+            toast.error('عکسی برای ارسال وجود ندارد');
+            return;
+        }
+
+        setIsUploading(true);
+
+        try {
+            // Convert captured photo to File
+            const file = await convertToFile(capturedPhoto, 'selfie', 'image/jpeg', 0.8);
+
+            if (!file) {
+                toast.error('امکان ایجاد تصویر برای آپلود وجود ندارد');
+                return;
+            }
+
+            // Create FormData for BPMS upload
+            const formData = createBPMSFormData(
+                file,
+                'virtual-open-deposit',
+                userData.processId,
+                'GovahInquiry'
+            );
+
+            // Upload to BPMS
+            const response = await axios.post('/api/bpms/deposit-files', formData);
+            const { data } = response.data;
+
+            // Update user state and move to next step
+            setUserData({ ...userData, step: 3, randomText: data.body.randomText });
+        } catch (err) {
+            console.error('upload error', err);
+            toast.error('آپلود عکس با مشکل مواجه شد');
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     if (error) {
         return (

@@ -1,13 +1,6 @@
-import { useUser } from '@/contexts/UserContext';
 import { mediaStreamManager } from '@/lib/mediaStreamManager';
-import axios from 'axios';
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import toast from 'react-hot-toast';
-
-interface UseVideoRecorderOptions {
-    processId?: string | number | null;
-    onSuccess?: () => void;
-}
 
 interface VideoRecorderResult {
     videoRef: RefObject<HTMLVideoElement | null>;
@@ -21,22 +14,17 @@ interface VideoRecorderResult {
     startCamera: () => Promise<void>;
     startVideoRecording: () => Promise<void>;
     stopVideoRecording: () => void;
-    handleUpload: () => Promise<void>;
     handleRetake: () => void;
+    setIsUploading: (value: boolean) => void;
 }
 
-type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
-
-export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRecorderResult {
-    const { processId, onSuccess } = options;
-    const { setUserData } = useUser();
+export function useVideoRecorder(): VideoRecorderResult {
     const [isRecording, setIsRecording] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
     const [cameraActive, setCameraActive] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const { userData } = useUser();
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -98,7 +86,7 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
             }
             setCameraActive(false);
         };
-    }, [userData.step]);
+    }, []);
 
     const startVideoRecording = useCallback(async () => {
         if (!streamRef.current) return;
@@ -171,53 +159,6 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
         };
     }, [recordingTime, isRecording, stopVideoRecording]);
 
-    const handleUpload = useCallback(async () => {
-        if (!videoFile) return;
-
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track) => track.stop());
-            streamRef.current = null;
-        }
-
-        if (videoRef.current) {
-            videoRef.current.srcObject = null;
-        }
-        const maybe = globalThis as unknown as MaybeCrypto;
-        const uuid =
-            maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
-                ? maybe.crypto.randomUUID()
-                : Date.now().toString(36);
-        const videoName = `verification_video_${uuid}.webm`;
-        const video = new File([videoFile], videoName, { type: 'video/webm' });
-
-        const body = {
-            serviceName: 'virtual-open-deposit',
-            processId,
-            formName: 'ImageInquiry',
-            body: {},
-        };
-
-        const data = new FormData();
-        data.append('messageDTO', JSON.stringify(body));
-        data.append('files', video);
-
-        setCameraActive(false);
-        setIsUploading(true);
-
-        await axios
-            .post('/api/bpms/deposit-files', data)
-            .then((res) => {
-                const { data } = res;
-                if (data?.body?.verified) {
-                    setUserData({ step: 4 });
-                    onSuccess?.();
-                }
-            })
-            .finally(() => {
-                setIsUploading(false);
-            });
-    }, [processId, videoFile, onSuccess, setUserData]);
-
     const handleRetake = useCallback(() => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach((track) => track.stop());
@@ -247,11 +188,11 @@ export function useVideoRecorder(options: UseVideoRecorderOptions = {}): VideoRe
         videoFile,
         videoPreviewUrl,
         isUploading,
+        setIsUploading,
         cameraActive,
         startCamera,
         startVideoRecording,
         stopVideoRecording,
-        handleUpload,
         handleRetake,
     };
 }

@@ -2,6 +2,8 @@
 
 import { useUser } from '@/contexts/UserContext';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
+import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
+import axios from 'axios';
 import { VideoRecorderView } from '../specialized/VideoRecorderView';
 
 export const VideoRecorderStep: React.FC = () => {
@@ -15,15 +17,28 @@ export const VideoRecorderStep: React.FC = () => {
         videoFile,
         videoPreviewUrl,
         isUploading,
+        setIsUploading,
         cameraActive,
         startVideoRecording,
         stopVideoRecording,
-        handleUpload,
         handleRetake,
-    } = useVideoRecorder({
-        processId: userData.processId,
-        onSuccess: () => setUserData({ step: 4 }),
-    });
+    } = useVideoRecorder();
+
+    const handleUpload = async () => {
+        setIsUploading(true);
+
+        const file = await convertToFile(videoFile, 'verification_video', 'video/webm');
+        const formData = createBPMSFormData(
+            file!,
+            'virtual-open-deposit',
+            userData.processId,
+            'ImageInquiry'
+        );
+        await axios
+            .post('/api/bpms/deposit-files', formData)
+            .then(() => setUserData({ step: 4 }))
+            .finally(() => setIsUploading(false));
+    };
 
     return (
         <VideoRecorderView
