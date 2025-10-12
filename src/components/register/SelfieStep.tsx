@@ -252,7 +252,7 @@ export default function CameraSelfie() {
                         <Box className="mt-3 flex justify-center gap-4">
                             <Button
                                 onClick={retakePhoto}
-                                className="w-fu bg-primary-200 hover:bg-primary-300 flex items-center justify-center px-5 py-3"
+                                className="w-fu bg-error-400 flex items-center justify-center px-5 py-3"
                             >
                                 <ArrowPathIcon className="h-6 w-6 text-white" />
                                 <Typography
@@ -280,11 +280,11 @@ export default function CameraSelfie() {
                     onClick={handleConfirm}
                     loading={isUploading}
                     disabled={!capturedPhoto || isUploading}
-                    className="bg-primary flex w-full items-center justify-center gap-3 px-5 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="bg-primary-400 flex w-full items-center justify-center gap-3 px-5 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {!isUploading && <CheckIcon className="h-5 w-5" />}
                     <Typography variant="body1" className="text-xs font-medium text-white">
-                        {isUploading ? 'در حال ارسال...' : 'تایید'}
+                        {isUploading ? 'در حال ارسال...' : 'مرحله بعد'}
                     </Typography>
                 </LoadingButton>
             </Box>

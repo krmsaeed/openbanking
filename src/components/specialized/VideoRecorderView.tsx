@@ -117,7 +117,7 @@ export function VideoRecorderView({
                                             </ul>
                                             <Button
                                                 onClick={onStartRecording}
-                                                className="bg-primary-200 hover:bg-primary-300 flex items-center gap-2 px-6 py-3"
+                                                className="bg-success-600 flex items-center gap-2 px-6 py-3"
                                                 disabled={!cameraActive}
                                             >
                                                 <VideoCameraIcon className="h-5 w-5" />
@@ -173,7 +173,7 @@ export function VideoRecorderView({
                 >
                     {!isUploading && <CheckIcon className="h-5 w-5" />}
                     <Typography variant="body1" className="text-xs font-medium text-white">
-                        {isUploading ? 'در حال ارسال...' : 'تایید'}
+                        {isUploading ? 'در حال ارسال...' : 'مرحله بعد'}
                     </Typography>
                 </LoadingButton>
             </Box>
