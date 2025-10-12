@@ -9,7 +9,8 @@ async function handler(request: AuthenticatedRequest) {
         const requestBody = {
             ...body,
         };
-        const response = await virtualOpenDepositSendMessage(requestBody);
+        const authToken = request.auth?.token;
+        const response = await virtualOpenDepositSendMessage(requestBody, authToken);
 
         if (response.status === 200) {
             return NextResponse.json({ ...response }, { status: 200 });

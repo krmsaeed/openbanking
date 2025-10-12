@@ -50,13 +50,10 @@ export function createAuthenticatedAxios() {
 httpClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
         const token = getAccessToken();
-
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-
         config.withCredentials = true;
-
         return config;
     },
     (error: AxiosError) => {
@@ -71,7 +68,6 @@ httpClient.interceptors.response.use(
     (error: AxiosError) => {
         if (error.response?.status === 401) {
             console.warn('Unauthorized request detected:', error.config?.url);
-            // Clear tokens and redirect to login on 401 without refresh token logic
             clearAuthTokens();
             if (typeof window !== 'undefined') {
                 window.location.href = '/';

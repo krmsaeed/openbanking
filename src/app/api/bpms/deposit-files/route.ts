@@ -5,7 +5,8 @@ import { NextResponse } from 'next/server';
 async function handler(request: AuthenticatedRequest) {
     try {
         const data = await request.formData();
-        const response = await virtualOpenDepositKeKycUserFiles(data);
+        const authToken = request.auth?.token;
+        const response = await virtualOpenDepositKeKycUserFiles(data, authToken);
 
         if (response.status === 200) {
             return NextResponse.json({ ...(response.data || {}) }, { status: 200 });

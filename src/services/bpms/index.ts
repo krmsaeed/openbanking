@@ -7,16 +7,21 @@ export interface ApiResponse<T = unknown> {
     response: T;
 }
 
-export async function virtualOpenDepositSendMessage<T>(payload: T) {
-    const apiResponse = await httpClient.post('/sendMessage', payload);
+export async function virtualOpenDepositSendMessage<T>(payload: T, authToken?: string) {
+    const config = authToken ? { headers: { Authorization: `Bearer ${authToken}` } } : undefined;
+
+    const apiResponse = await httpClient.post('/sendMessage', payload, config);
     return handleResponse(apiResponse);
 }
 
-export async function virtualOpenDepositKeKycUserFiles<T>(payload: T) {
+export async function virtualOpenDepositKeKycUserFiles<T>(payload: T, authToken?: string) {
+    const headers: Record<string, string> = {
+        'Content-Type': 'multipart/form-data',
+    };
+    if (authToken) headers.Authorization = `Bearer ${authToken}`;
+
     const response = await httpClient.post('/sendMultiPartMessage', payload, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
+        headers,
     });
     return handleResponse(response);
 }
