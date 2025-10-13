@@ -13,7 +13,7 @@ function PaymentGatewayContent() {
     const searchParams = useSearchParams();
     const amount = searchParams.get('amount') || '150,000';
 
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useState(2);
     const [cardNumber, setCardNumber] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -21,8 +21,8 @@ function PaymentGatewayContent() {
         setLoading(true);
         try {
             setCardNumber(data.cardNumber);
-            toast.success('رمز دوم ارسال شد');
             setStep(2);
+            toast.success('رمز دوم ارسال شد');
         } catch {
             toast.error('خطا در پردازش پرداخت');
         } finally {
@@ -47,12 +47,11 @@ function PaymentGatewayContent() {
     };
 
     return (
-        <Box className="flex min-h-screen items-center justify-center bg-gray-50 p-6">
+        <Box className="flex min-h-screen items-center justify-center p-6">
             <Box className="w-full max-w-md">
                 {step === 1 && (
                     <PaymentForm amount={amount} onNext={handlePaymentSubmit} loading={loading} />
                 )}
-
                 {step === 2 && (
                     <PaymentOTPForm
                         cardNumber={cardNumber}

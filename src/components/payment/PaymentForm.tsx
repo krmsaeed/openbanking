@@ -308,7 +308,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                             onChange={handleCardNumberChange}
                             placeholder="xxxx-xxxx-xxxx-xxxx"
                             maxLength={19}
-                            className="text-center font-mono font-bold tracking-wider outline-none"
+                            className="text-center font-bold tracking-wider outline-none"
                             variant={errors.cardNumber ? 'error' : 'default'}
                             dir="ltr"
                             autoComplete="off"
@@ -336,7 +336,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                                 placeholder="***"
                                 maxLength={4}
                                 variant={errors.cvv2 ? 'error' : 'default'}
-                                className="cvv-input pr-12 outline-none"
+                                className="cvv-input pr-12 text-left outline-none"
                                 autoComplete="off"
                                 autoCorrect="off"
                                 autoCapitalize="off"
@@ -409,7 +409,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                         </FormField>
                     </Box>
 
-                    <Box variant="secondary" className="rounded-lg">
+                    <Box variant="secondary" className="rounded-lg p-2">
                         <Box className="mb-2 flex items-center justify-between">
                             <Typography variant="body2" weight="medium" color="secondary">
                                 کد امنیتی *
@@ -451,7 +451,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
                     <Button
                         type="submit"
                         className="w-full bg-green-600 hover:bg-green-700"
-                        disabled={!isValid || loading}
+                        disabled={loading}
                     >
                         {loading ? 'در حال پردازش...' : 'درخواست رمز دوم'}
                     </Button>

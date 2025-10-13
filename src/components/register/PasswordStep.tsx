@@ -75,11 +75,12 @@ export default function PasswordStep({
                         <ListItem className="text-bold dark- text-lg text-red-500">
                             در نگهداری رمز عبور خود دقت کنید{' '}
                         </ListItem>
+                        <ListItem>نام و نام خانوادگی را به صورت حروف لاتین وارد کنید</ListItem>
                         <ListItem>رمز عبور باید حداقل 8 کاراکتر باشد</ListItem>
-                        <ListItem>
+                        {/* <ListItem>
                             رمز عبور باید شامل حداقل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک کاراکتر
                             ویژه باشد
-                        </ListItem>
+                        </ListItem> */}
                     </List>
                 </Box>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

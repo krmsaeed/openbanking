@@ -1,5 +1,6 @@
 'use client';
 
+import { MultiOTPInput } from '@/components/forms';
 import {
     Box,
     Button,
@@ -8,7 +9,6 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-    Input,
 } from '@/components/ui';
 import { useOtpTimer } from '@/hooks/useOtpTimer';
 import {
@@ -78,30 +78,11 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
                     className="space-y-6"
                 >
                     <Box className="flex justify-center gap-2" dir="ltr">
-                        {[0, 1, 2, 3, 4, 5].map((index) => (
-                            <Input
-                                key={index}
-                                ref={(el) => {
-                                    inputRefs.current[index] = el;
-                                }}
-                                type="text"
-                                maxLength={1}
-                                inputMode="numeric"
-                                dir="ltr"
-                                className="h-10 w-10 text-center text-lg font-bold"
-                                value={digits[index] || ''}
-                                onChange={(e) => handleDigitChange(e.target.value, index)}
-                                onKeyDown={(e) => {
-                                    if (
-                                        e.key === 'Backspace' &&
-                                        !e.currentTarget.value &&
-                                        index > 0
-                                    ) {
-                                        inputRefs.current[index - 1]?.focus();
-                                    }
-                                }}
-                            />
-                        ))}
+                        <MultiOTPInput
+                            onChange={() => handleDigitChange}
+                            length={5}
+                            value={digits.join('')}
+                        />
                     </Box>
 
                     <Box className="flex items-center gap-4">
@@ -111,9 +92,6 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
                                     className="text-sm text-gray-500"
                                     style={{
                                         minWidth: 140,
-                                        fontVariantNumeric: 'tabular-nums',
-                                        fontFamily:
-                                            'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
                                     }}
                                 >
                                     ارسال مجدد رمز در {formatTime()}
@@ -125,12 +103,10 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
                                         onResend();
                                         reset(120);
                                     }}
-                                    className="text-primary"
+                                    className="text-primary min-w-48"
                                     style={{
                                         background: 'transparent',
                                         border: 'none',
-                                        padding: 0,
-                                        minWidth: 140,
                                     }}
                                     aria-label="ارسال مجدد رمز"
                                 >

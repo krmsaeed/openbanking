@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Box, Button, Card, CardContent, CardHeader, Loading, Typography } from '@/components/ui';
 import { CreditCardIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
-import { Button, Card, CardHeader, CardContent, Loading, Box, Typography } from '@/components/ui';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function CreditAssessmentPayment() {
     const router = useRouter();
@@ -17,13 +17,13 @@ export default function CreditAssessmentPayment() {
         setTimeout(() => {
             setLoading(false);
             router.push(
-                `/payment/gateway?amount=${amount}&merchant=${encodeURIComponent('پرداخت نوین')}`
+                `/payment/gateway?amount=${amount}&merchant=${encodeURIComponent('اقتصاد نوین')}`
             );
         }, 600);
     };
 
     return (
-        <Box className="flex min-h-screen items-center justify-center bg-gray-50 p-6">
+        <Box className="flex min-h-screen items-center justify-center p-6">
             <Box className="w-full max-w-md">
                 <Card padding="lg">
                     <CardHeader>
