@@ -1,5 +1,4 @@
 'use client';
-
 import { CheckIcon, VideoCameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { RefObject } from 'react';
 import { Box, Typography } from '../ui/core';
@@ -105,7 +104,7 @@ export function VideoRecorderView({
                                             variant="h4"
                                             className="border-primary-100 mt-2 flex min-h-10 flex-col items-center justify-center rounded-lg border bg-gray-200 text-center text-base leading-relaxed"
                                         >
-                                            {randomText ?? 'test'}
+                                            {randomText ?? ''}
                                         </Typography>
                                         <Box className="mt-2 flex flex-col items-center justify-between rounded-lg bg-gray-200 p-2">
                                             <ul className="p-2 text-center text-sm leading-relaxed text-gray-800">
@@ -132,7 +131,7 @@ export function VideoRecorderView({
                                     variant="h4"
                                     className="border-primary-100 mt-2 mb-2 flex min-h-10 items-center justify-center rounded-lg border bg-gray-50 text-center text-base leading-relaxed"
                                 >
-                                    {randomText ?? 'test'}
+                                    {randomText ?? ''}
                                 </Typography>
                             )}
                             <Box className="flex justify-center gap-3">

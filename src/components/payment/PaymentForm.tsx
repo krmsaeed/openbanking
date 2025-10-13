@@ -42,7 +42,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
         handleSubmit,
         setValue,
         watch,
-        formState: { errors, isValid },
+        formState: { errors },
     } = useForm<CardFormData>({
         resolver: zodResolver(cardFormSchema),
         mode: 'onChange',
