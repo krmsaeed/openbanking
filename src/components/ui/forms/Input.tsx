@@ -92,7 +92,7 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>((props, ref) 
             })()}
         >
             {label && (
-                <Box className="pl-1 text-right text-sm text-gray-900" dir="rtl">
+                <Box className="mb-1 pl-1 text-right text-sm text-gray-900" dir="rtl">
                     {label}
                     {required && <span className="text-error mr-1">*</span>}
                 </Box>

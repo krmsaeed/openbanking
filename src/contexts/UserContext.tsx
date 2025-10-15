@@ -23,6 +23,8 @@ interface UserData {
     processId: number | null;
     customerNumber?: string;
     accountNumber?: string;
+    isCustomer?: boolean;
+    isDeposit?: boolean;
 }
 
 interface UserContextType {

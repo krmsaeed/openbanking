@@ -9,6 +9,9 @@
 !.yarn/plugins
 !.yarn/releases 
 !.yarn/versions
+.yarn
+yarn.lock
+.yarnrc.yml
 # testing
 /coverage
 
@@ -27,9 +30,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.yarn
-yarn.lock
-.yarnrc.yml
+
 .pnpm-debug.log*
 
 package-lock.json
@@ -47,5 +48,5 @@ next-env.d.ts
 .github
 .lsp
 .qodo
-
-.vscode
+.vscode/
+.vscode/launch.json

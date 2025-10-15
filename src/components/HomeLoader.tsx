@@ -43,14 +43,13 @@ function HomeLoader() {
 
                     const { data } = response.data as ResponseBody;
 
-                    if (data.body.isCustomer) {
-                        router.push('/register');
-                        setUserData({ nationalCode: code, step: 1, processId: data.processId });
-                    }
-
-                    if (data.body.isDeposit) {
-                        setUserData({ nationalCode: code, step: 7, processId: data.processId });
-                    }
+                    router.push('/register');
+                    setUserData({
+                        nationalCode: code,
+                        step: 1,
+                        processId: data.processId,
+                        isCustomer: true,
+                    });
 
                     requestCache.set(code, true);
                 } catch (err) {
