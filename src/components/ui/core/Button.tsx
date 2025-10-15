@@ -140,7 +140,24 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         const classNames = cn(getButtonClasses(resolvedVariant, size), className);
 
         if (as === 'link') {
-            return <Link href={href || '#'}>{children}</Link>;
+            const anchorProps = props as React.AnchorHTMLAttributes<HTMLAnchorElement>;
+            const { target, rel, download, role, onClick, ...rest } = anchorProps;
+            const ariaLabel = anchorProps['aria-label'];
+            return (
+                <Link
+                    href={href || '#'}
+                    target={target}
+                    rel={rel}
+                    download={download}
+                    role={role}
+                    onClick={onClick}
+                    aria-label={ariaLabel}
+                    className={classNames}
+                    {...(rest as unknown as Record<string, unknown>)}
+                >
+                    {children}
+                </Link>
+            );
         }
         return (
             <button type={type} className={classNames} ref={ref} {...props}>
@@ -161,10 +178,8 @@ interface LinkButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> 
 function LinkButton({ href, className, children, ...props }: LinkButtonProps) {
     const classNames = cn(getButtonClasses('default', 'default'), className);
     return (
-        <Link href={href}>
-            <a className={classNames} {...props}>
-                {children}
-            </a>
+        <Link href={href} className={classNames} {...props}>
+            {children}
         </Link>
     );
 }

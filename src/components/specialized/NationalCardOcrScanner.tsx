@@ -8,7 +8,6 @@ import { OcrFields, ocrRecognizeFile, parseNationalCardFields } from '@/lib/ocr'
 import { setCookie } from '@/lib/utils';
 import { ArrowPathIcon, CameraIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -23,10 +22,6 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
-    // Lightweight React 19-style `useEvent` polyfill — returns a stable
-    // callback identity that always calls the latest handler. This mirrors
-    // the behaviour of the new `useEvent` hook and avoids stale closures
-    // for event handlers passed to DOM props.
     function useEvent<T extends (...args: unknown[]) => unknown>(handler: T) {
         const ref = useRef<T | null>(handler);
         useEffect(() => {
@@ -136,21 +131,21 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
             }
         } catch {}
     }, [selectedDeviceId]);
-    const pathname = usePathname();
-    useEffect(() => {
-        return () => {
-            try {
-                if (streamRef.current) {
-                    streamRef.current.getTracks().forEach((t) => t.stop());
-                    streamRef.current = null;
-                }
-            } catch {}
-        };
-    }, []);
+    // const pathname = usePathname();
+    // useEffect(() => {
+    //     return () => {
+    //         try {
+    //             if (streamRef.current) {
+    //                 streamRef.current.getTracks().forEach((t) => t.stop());
+    //                 streamRef.current = null;
+    //             }
+    //         } catch {}
+    //     };
+    // }, []);
 
-    useEffect(() => {
-        setShowPermissionModal(true);
-    }, [pathname]);
+    // useEffect(() => {
+    //     setShowPermissionModal(true);
+    // }, [pathname]);
 
     const openDeviceById = useCallback(
         async (deviceId: string, remember = false) => {

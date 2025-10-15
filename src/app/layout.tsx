@@ -83,7 +83,7 @@ export default function RootLayout({
                             <Suspense fallback={<div>Loading...</div>}>
                                 <AuthInitializer requireAuth={false}>
                                     <ThemeToggle />
-                                    {process.env.NODE_ENV === 'development' ? (
+                                    {process.env.NODE_ENV != 'development' ? (
                                         <ServiceWorkerUnregistrar />
                                     ) : (
                                         <ServiceWorkerRegistrar />

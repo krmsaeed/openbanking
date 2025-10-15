@@ -85,13 +85,7 @@ export default function NationalCardScanner() {
         },
     });
 
-    const handleConfirm = (file: File, isValid: boolean) => {
-        if (!isValid) {
-            toast.error('لطفا تصویر کارت ملی معتبر بارگذاری کنید');
-            setOcrValid(false);
-            return;
-        }
-
+    const handleConfirm = (file: File) => {
         setCapturedFile(file);
         setOcrValid(true);
         toast.success('تصویر کارت ملی با موفقیت دریافت شد');

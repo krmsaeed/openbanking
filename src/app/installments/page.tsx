@@ -1,33 +1,32 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
 import {
-    CalendarDaysIcon,
-    BanknotesIcon,
-    CheckCircleIcon,
-    ExclamationTriangleIcon,
-    ClockIcon,
-    ArrowLeftIcon,
-    CreditCardIcon,
-    DocumentTextIcon,
-} from '@heroicons/react/24/outline';
-import {
+    Box,
     Button,
     Card,
     CardContent,
     CardHeader,
     CardTitle,
-    Box,
-    Typography,
     List,
     ListItem,
     Table,
-    TableHeader,
     TableBody,
-    TableRow,
     TableCell,
+    TableHeader,
+    TableRow,
+    Typography,
 } from '@/components/ui';
+import {
+    ArrowLeftIcon,
+    BanknotesIcon,
+    CalendarDaysIcon,
+    CheckCircleIcon,
+    ClockIcon,
+    CreditCardIcon,
+    DocumentTextIcon,
+    ExclamationTriangleIcon,
+} from '@heroicons/react/24/outline';
+import { useState } from 'react';
 
 export default function InstallmentsPage() {
     const [selectedInstallment, setSelectedInstallment] = useState<number | null>(null);
@@ -190,19 +189,17 @@ export default function InstallmentsPage() {
             <Box className="mx-auto max-w-6xl px-4">
                 <Box className="mb-8 flex items-center justify-between">
                     <Box>
-                        <Typography variant="h1" className="mb-2 text-3xl font-bold text-gray-900">
+                        <Typography variant="h3" className="mb-2 font-bold text-gray-900">
                             لیست اقساط تسهیلات
                         </Typography>
                         <Typography variant="body1" color="secondary">
                             قرارداد {contractInfo.contractNumber} - {contractInfo.customerName}
                         </Typography>
                     </Box>
-                    <Link href="/">
-                        <Button variant="outline">
-                            <ArrowLeftIcon className="ml-2 h-4 w-4" />
-                            بازگشت
-                        </Button>
-                    </Link>
+                    <Button as="link" href="/" variant="primary">
+                        <ArrowLeftIcon className="ml-2 h-4 w-4" />
+                        بازگشت
+                    </Button>
                 </Box>
 
                 <Box className="mb-8 grid gap-6 md:grid-cols-4">
@@ -211,7 +208,7 @@ export default function InstallmentsPage() {
                             <CardTitle className="text-sm text-gray-600">مبلغ کل تسهیلات</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-2xl font-bold text-blue-600">
+                            <p className="text-primary-600 text-2xl font-bold">
                                 {contractInfo.facilityAmount} ریال
                             </p>
                         </CardContent>
@@ -246,30 +243,30 @@ export default function InstallmentsPage() {
                             <CardTitle className="text-sm text-gray-600">اقساط معوق</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-2xl font-bold text-red-600">{overdueCount} قسط</p>
+                            <p className="text-error-600 text-2xl font-bold">{overdueCount} قسط</p>
                         </CardContent>
                     </Card>
                 </Box>
 
                 {overdueCount > 0 && (
-                    <Card className="mb-6 border-red-200 bg-red-50">
-                        <CardContent className="pt-6">
-                            <Box className="flex items-center space-x-3 space-x-reverse">
+                    <Card className="bg-error-100 mb-6 border-red-200">
+                        <Box className="flex items-center justify-between space-x-3 space-x-reverse">
+                            <Box className="flex items-center gap-3">
                                 <ExclamationTriangleIcon className="h-6 w-6 flex-shrink-0 text-red-600" />
                                 <Box>
-                                    <Typography variant="h6" className="font-bold text-red-800">
+                                    <Typography variant="h6" className="font-bold text-gray-700">
                                         توجه: اقساط معوق
                                     </Typography>
-                                    <Typography variant="body2" className="mt-1 text-red-700">
+                                    <Typography variant="body2" className="mt-1 text-gray-700">
                                         شما {overdueCount} قسط معوق دارید. مجموع جریمه تأخیر:{' '}
-                                        {totalPenalty.toLocaleString('fa-IR')} ریال
+                                        {totalPenalty.toLocaleString()}
                                     </Typography>
                                 </Box>
-                                <Button size="sm" className="bg-red-600 hover:bg-red-700">
-                                    پرداخت فوری
-                                </Button>
                             </Box>
-                        </CardContent>
+                            <Button size="sm" className="bg-error text-dark-700">
+                                پرداخت فوری
+                            </Button>
+                        </Box>
                     </Card>
                 )}
 
@@ -284,28 +281,52 @@ export default function InstallmentsPage() {
                         <Table variant="hover" size="md" responsive>
                             <TableHeader>
                                 <TableRow>
-                                    <TableCell as="th" variant="header" weight="medium">
-                                        قسط
+                                    <TableCell
+                                        as="th"
+                                        variant="header"
+                                        className="text-md text-center font-bold text-gray-800"
+                                    >
+                                        ردیف
                                     </TableCell>
-                                    <TableCell as="th" variant="header" weight="medium">
+                                    <TableCell
+                                        as="th"
+                                        variant="header"
+                                        className="text-md text-center font-bold text-gray-800"
+                                    >
                                         تاریخ سررسید
                                     </TableCell>
-                                    <TableCell as="th" variant="header" weight="medium">
+                                    <TableCell
+                                        as="th"
+                                        variant="header"
+                                        className="text-md text-center font-bold text-gray-800"
+                                    >
                                         مبلغ قسط
                                     </TableCell>
-                                    <TableCell as="th" variant="header" weight="medium">
+                                    <TableCell
+                                        as="th"
+                                        variant="header"
+                                        className="text-md text-center font-bold text-gray-800"
+                                    >
                                         جریمه
                                     </TableCell>
-                                    <TableCell as="th" variant="header" weight="medium">
+                                    <TableCell
+                                        as="th"
+                                        variant="header"
+                                        className="text-md text-center font-bold text-gray-800"
+                                    >
                                         تاریخ پرداخت
                                     </TableCell>
-                                    <TableCell as="th" variant="header" weight="medium">
+                                    <TableCell
+                                        as="th"
+                                        variant="header"
+                                        className="text-md text-center font-bold text-gray-800"
+                                    >
                                         وضعیت
                                     </TableCell>
                                     <TableCell
                                         as="th"
                                         variant="header"
-                                        weight="medium"
+                                        className="text-md text-center font-bold text-gray-800"
                                         align="center"
                                     >
                                         عملیات
@@ -324,12 +345,26 @@ export default function InstallmentsPage() {
                                         interactive
                                         onClick={() => setSelectedInstallment(installment.id)}
                                     >
-                                        <TableCell weight="medium">قسط {installment.id}</TableCell>
-                                        <TableCell>{installment.dueDate}</TableCell>
-                                        <TableCell variant="numeric" weight="bold">
-                                            {installment.amount} ریال
+                                        <TableCell weight="medium" className="text-center">
+                                            {' '}
+                                            {installment.id}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-center">
+                                            {installment.dueDate}
+                                        </TableCell>
+                                        <TableCell className="flex gap-1 text-center">
+                                            <Typography variant="body2" color="text" weight="bold">
+                                                {installment.amount}
+                                            </Typography>
+                                            <Typography
+                                                variant="body2"
+                                                color="text"
+                                                className="text-xs"
+                                            >
+                                                ریال
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell className="text-center">
                                             {installment.penalty !== '0' ? (
                                                 <Typography
                                                     variant="body2"
@@ -344,29 +379,31 @@ export default function InstallmentsPage() {
                                                 </Typography>
                                             )}
                                         </TableCell>
-                                        <TableCell>{installment.payDate || '-'}</TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-center">
+                                            {installment.payDate || '-'}
+                                        </TableCell>
+                                        <TableCell className="text-center">
                                             <Box className="flex items-center space-x-2 space-x-reverse">
                                                 {getStatusIcon(installment.status)}
                                                 <Typography
                                                     variant="caption"
                                                     weight="medium"
-                                                    className={`rounded-full px-2 py-1 ${getStatusColor(installment.status)}`}
+                                                    className={`rounded-full px-2 py-1 text-gray-700 ${getStatusColor(installment.status)}`}
                                                 >
                                                     {getStatusText(installment.status)}
                                                 </Typography>
                                             </Box>
                                         </TableCell>
-                                        <TableCell variant="action">
+                                        <TableCell variant="action" className="text-center">
                                             {(installment.status === 'current' ||
                                                 installment.status === 'overdue') && (
-                                                <Button size="sm" variant="outline">
+                                                <Button size="sm" variant="secondary">
                                                     <CreditCardIcon className="ml-1 h-4 w-4" />
                                                     پرداخت
                                                 </Button>
                                             )}
                                             {installment.status === 'paid' && (
-                                                <Button size="sm" variant="ghost">
+                                                <Button size="sm" variant="success">
                                                     <DocumentTextIcon className="ml-1 h-4 w-4" />
                                                     رسید
                                                 </Button>
