@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
-import { Box, Typography } from '../ui/core';
+import { useEffect, useRef, useState } from 'react';
 import { Input } from '../ui';
+import { Box, Typography } from '../ui/core';
 
 const convertToPersianDigits = (str: string): string => {
     const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
@@ -471,7 +471,7 @@ export default function PersianCalendar({
                                         variant="body1"
                                         className="font-semibold text-gray-800"
                                     >
-                                        {convertToPersianDigits(currentYear.toString())}
+                                        {currentYear.toString()}
                                     </Typography>
                                 </button>
 
@@ -479,7 +479,7 @@ export default function PersianCalendar({
                                     <div className="absolute top-16 right-0 z-50 mt-2 flex w-full justify-center">
                                         <div
                                             ref={monthOverlayRef}
-                                            className="rounded-lg border border-gray-200 bg-white p-3 shadow-lg"
+                                            className="rounded-lg border border-gray-200 bg-gray-100 p-3 shadow-lg"
                                             style={{ width: 360, maxWidth: '90%' }}
                                         >
                                             <div className="grid grid-cols-3 gap-2">
@@ -491,7 +491,7 @@ export default function PersianCalendar({
                                                             setCurrentMonth(idx + 1);
                                                             setShowMonthOverlay(false);
                                                         }}
-                                                        className={`rounded px-2 py-1 ${currentMonth === idx + 1 ? 'bg-secondary text-white' : 'hover:bg-gray-100'}`}
+                                                        className={`rounded bg-white px-2 py-1 ${currentMonth === idx + 1 ? 'bg-secondary text-white' : 'hover:bg-gray-100'}`}
                                                     >
                                                         {m}
                                                     </button>
@@ -505,12 +505,11 @@ export default function PersianCalendar({
                                     <div className="absolute top-16 right-0 z-50 mt-2 flex w-full justify-center">
                                         <div
                                             ref={yearOverlayRef}
-                                            className="rounded-lg border border-gray-200 bg-white shadow-lg"
-                                            style={{ width: 240, maxWidth: '90%' }}
+                                            className="w-full scroll-m-0 rounded-lg border border-gray-200 bg-gray-100 shadow-lg"
                                         >
                                             <div
                                                 ref={yearListRef}
-                                                className="grid h-56 grid-cols-3 gap-4 overflow-auto pr-2"
+                                                className="grid h-56 grid-cols-2 gap-2 overflow-auto px-2 pr-2 sm:grid-cols-3 md:grid-cols-4"
                                             >
                                                 {Array.from({
                                                     length: MAX_YEAR - MIN_YEAR + 1,
@@ -527,7 +526,7 @@ export default function PersianCalendar({
                                                                 setCurrentYear(y);
                                                                 setShowYearOverlay(false);
                                                             }}
-                                                            className={`w-full rounded px-3 py-1 text-right ${isHighlighted ? 'bg-secondary text-white' : 'hover:bg-gray-50'}`}
+                                                            className={`w-full rounded bg-white px-3 py-1 text-center ${isHighlighted ? 'bg-secondary text-white' : 'hover:bg-gray-50'}`}
                                                         >
                                                             {convertToPersianDigits(y.toString())}
                                                         </button>
@@ -553,7 +552,7 @@ export default function PersianCalendar({
                         {PERSIAN_DAYS.map((day, index) => (
                             <Box
                                 key={index}
-                                className="flex h-8 w-8 items-center justify-center text-xs font-medium text-gray-500"
+                                className="text-gray flex h-8 w-8 items-center justify-center text-xs font-bold"
                             >
                                 {day}
                             </Box>

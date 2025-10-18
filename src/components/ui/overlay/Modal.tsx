@@ -1,95 +1,198 @@
 'use client';
 
-import { Box } from '@/components/ui';
+import { Box, Button, Typography } from '@/components/ui';
+import { useModalAccessibility } from '@/hooks/useModalAccessibility';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { ReactNode, useEffect } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { clsx } from 'clsx';
+import { ReactNode, forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
-interface ModalProps {
+const modalVariants = cva(
+    'relative w-full transform overflow-hidden rounded-xl border bg-white/95 shadow-2xl backdrop-blur-md transition-all duration-300 dark:bg-gray-900/95',
+    {
+        variants: {
+            size: {
+                sm: 'max-w-sm',
+                md: 'max-w-md',
+                lg: 'max-w-2xl',
+                xl: 'max-w-4xl',
+                '2xl': 'max-w-6xl',
+                '3xl': 'max-w-7xl',
+                full: 'max-w-full mx-4',
+            },
+            variant: {
+                default: 'border-gray-200/20 dark:border-gray-700/50',
+                destructive: 'border-red-200/20 dark:border-red-700/50',
+                success: 'border-green-200/20 dark:border-green-700/50',
+                warning: 'border-yellow-200/20 dark:border-yellow-700/50',
+            },
+        },
+        defaultVariants: {
+            size: 'md',
+            variant: 'default',
+        },
+    }
+);
+
+interface ModalProps extends VariantProps<typeof modalVariants> {
     isOpen: boolean;
     onClose: () => void;
     title?: string;
+    description?: string;
     children: ReactNode;
-    size?: 'sm' | 'md' | 'lg' | 'xl';
     showCloseButton?: boolean;
+    closeOnBackdropClick?: boolean;
+    closeOnEscape?: boolean;
+    autoFocus?: boolean;
+    className?: string;
+    footer?: ReactNode;
+    portalTarget?: HTMLElement | null;
 }
 
-export default function Modal({
-    isOpen,
-    onClose,
-    title,
-    children,
-    size = 'md',
-    showCloseButton = true,
-}: ModalProps) {
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
-        }
+export interface ModalRef {
+    focus: () => void;
+}
 
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen]);
+const Modal = forwardRef<ModalRef, ModalProps>(
+    (
+        {
+            isOpen,
+            onClose,
+            title,
+            description,
+            children,
+            size = 'md',
+            variant = 'default',
+            showCloseButton = true,
+            closeOnBackdropClick = true,
+            closeOnEscape = true,
+            autoFocus = true,
+            className,
+            footer,
+            portalTarget,
+        },
+        ref
+    ) => {
+        const modalRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                onClose();
-            }
-        };
+        const { modalRef: accessibilityRef, modalProps } = useModalAccessibility({
+            isOpen,
+            onClose: closeOnEscape ? onClose : () => {},
+            autoFocus,
+        });
 
-        if (isOpen) {
-            document.addEventListener('keydown', handleEscape);
-        }
+        useImperativeHandle(ref, () => ({
+            focus: () => {
+                if (modalRef.current) {
+                    modalRef.current.focus();
+                }
+            },
+        }));
 
-        return () => {
-            document.removeEventListener('keydown', handleEscape);
-        };
-    }, [isOpen, onClose]);
+        const handleBackdropClick = useCallback(
+            (e: React.MouseEvent) => {
+                if (e.target === e.currentTarget && closeOnBackdropClick) {
+                    onClose();
+                }
+            },
+            [closeOnBackdropClick, onClose]
+        );
 
-    if (!isOpen) return null;
+        if (!isOpen) return null;
 
-    const sizeClasses = {
-        sm: 'max-w-md',
-        md: 'max-w-lg',
-        lg: 'max-w-2xl',
-        xl: 'max-w-4xl',
-    };
-
-    return (
-        <Box className="fixed inset-0 z-50 overflow-y-auto">
-            <Box
-                className="fixed inset-0 bg-black/30 backdrop-blur-sm transition-all duration-300"
-                onClick={onClose}
-            />
-
-            <Box className="flex min-h-full items-center justify-center p-4">
+        const modalContent = (
+            <Box className="fixed inset-0 z-50 overflow-y-auto">
+                {/* Backdrop */}
                 <Box
-                    className={`relative w-full ${sizeClasses[size]} transform overflow-hidden rounded-lg border border-gray-200/20 bg-white/95 shadow-xl backdrop-blur-md transition-all duration-300 dark:border-gray-50/20 dark:bg-gray-50/95`}
-                >
-                    {(title || showCloseButton) && (
-                        <Box className="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700">
-                            {title && (
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                    {title}
-                                </h3>
-                            )}
-                            {showCloseButton && (
-                                <button
-                                    onClick={onClose}
-                                    className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                                >
-                                    <XMarkIcon className="h-5 w-5" />
-                                </button>
-                            )}
-                        </Box>
-                    )}
+                    className="animate-in fade-in-0 fixed inset-0 bg-black/40 backdrop-blur-sm duration-300"
+                    onClick={handleBackdropClick}
+                    aria-hidden="true"
+                />
 
-                    <Box className="p-4">{children}</Box>
+                {/* Modal Container */}
+                <Box className="flex min-h-full items-center justify-center p-4">
+                    <Box
+                        ref={(node) => {
+                            modalRef.current = node;
+                            if (accessibilityRef.current !== node) {
+                                accessibilityRef.current = node;
+                            }
+                        }}
+                        className={clsx(
+                            modalVariants({ size, variant }),
+                            'animate-in fade-in-0 zoom-in-95 duration-300',
+                            className
+                        )}
+                        {...modalProps}
+                        aria-labelledby={title ? 'modal-title' : undefined}
+                        aria-describedby={description ? 'modal-description' : undefined}
+                    >
+                        {/* Header */}
+                        {(title || showCloseButton) && (
+                            <Box className="flex items-start justify-between border-b border-gray-200/50 p-6 dark:border-gray-700/50">
+                                <Box className="flex-1">
+                                    {title && (
+                                        <Typography
+                                            id="modal-title"
+                                            variant="h3"
+                                            weight="semibold"
+                                            className="text-lg"
+                                        >
+                                            {title}
+                                        </Typography>
+                                    )}
+                                    {description && (
+                                        <Typography
+                                            id="modal-description"
+                                            variant="body2"
+                                            color="secondary"
+                                            className="mt-1"
+                                        >
+                                            {description}
+                                        </Typography>
+                                    )}
+                                </Box>
+                                {showCloseButton && (
+                                    <Button
+                                        onClick={onClose}
+                                        variant="ghost"
+                                        size="sm"
+                                        className="ml-4 h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        aria-label="بستن"
+                                    >
+                                        <XMarkIcon className="h-4 w-4" />
+                                    </Button>
+                                )}
+                            </Box>
+                        )}
+
+                        {/* Content */}
+                        <Box className="flex-1 overflow-y-auto p-6">{children}</Box>
+
+                        {/* Footer */}
+                        {footer && (
+                            <Box className="flex items-center justify-end gap-3 border-t border-gray-200/50 p-6 dark:border-gray-700/50">
+                                {footer}
+                            </Box>
+                        )}
+                    </Box>
                 </Box>
             </Box>
-        </Box>
-    );
-}
+        );
+
+        // Use portal to render modal at the specified target or document body
+        const targetElement =
+            portalTarget || (typeof document !== 'undefined' ? document.body : null);
+        if (targetElement) {
+            return createPortal(modalContent, targetElement);
+        }
+
+        // Fallback for SSR
+        return modalContent;
+    }
+);
+
+Modal.displayName = 'Modal';
+
+export default Modal;

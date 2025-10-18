@@ -353,3 +353,19 @@
     background: blue !important;
     color: yellow !important;
 }
+
+.bg-surface {
+    background-color: var(--color-surface) !important;
+}
+
+.text-text {
+    color: var(--color-text) !important;
+}
+
+.border-border {
+    border-color: var(--color-border) !important;
+}
+
+.shadow-card {
+    box-shadow: var(--card-shadow) !important;
+}

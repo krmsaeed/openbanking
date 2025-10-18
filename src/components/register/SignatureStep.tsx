@@ -51,7 +51,7 @@ export function SignatureStep() {
                 />
             </Box>
 
-            <Box className="flex items-center justify-between rounded-lg bg-gray-200 px-3 py-2">
+            <Box className="flex items-center justify-between rounded-lg bg-gray-100 px-3 py-2">
                 <Typography variant="caption" className="font-bold text-gray-800">
                     امضای خود را در کادر بالا بکشید
                 </Typography>

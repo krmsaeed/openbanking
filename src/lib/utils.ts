@@ -86,3 +86,32 @@ export function removeCookie(name: string): void {
     if (typeof window === 'undefined') return;
     document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
 }
+
+export function formatNumberWithCommas(num: number | string): string {
+    const number = typeof num === 'string' ? parseFloat(num) : num;
+    if (isNaN(number)) return num.toString();
+    return number.toLocaleString('en-US');
+}
+
+export function cleanNationalId(input: string): string {
+    const normalized = convertPersianToEnglish(input || '');
+    return normalized.replace(/\D/g, '').trim();
+}
+
+export function isValidNationalId(code: string): boolean {
+    if (!code) return false;
+    const v = cleanNationalId(code);
+    if (v.length !== 10) return false;
+
+    if (/^(\d)\1{9}$/.test(v)) return false;
+
+    const digits = v.split('').map((d) => parseInt(d, 10));
+    const check = digits[9];
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+        sum += digits[i] * (10 - i);
+    }
+    const remainder = sum % 11;
+    if (remainder < 2) return check === remainder;
+    return check === 11 - remainder;
+}

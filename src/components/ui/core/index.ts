@@ -1,6 +1,5 @@
-export { Button } from './Button';
-export { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from './Card';
 export { Box } from './Box';
+export { Button } from './Button';
+export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './Card';
+export { Table, TableBody, TableCell, TableFooter, TableHeader, TableRow } from './Table';
 export { default as Typography } from './Typography';
-export { List, ListItem } from './List';
-export { Table, TableHeader, TableBody, TableRow, TableCell, TableFooter } from './Table';

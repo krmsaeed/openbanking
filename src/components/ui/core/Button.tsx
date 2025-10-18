@@ -1,105 +1,88 @@
-'use client';
 import { cn } from '@/lib/utils';
+import { cva, type VariantProps } from 'class-variance-authority';
 import Link from 'next/link';
 import { ButtonHTMLAttributes, forwardRef } from 'react';
 
-type ButtonVariant =
-    | 'default'
-    | 'destructive'
-    | 'outline'
-    | 'secondary'
-    | 'ghost'
-    | 'link'
-    | 'success'
-    | 'primary';
-type ButtonSize = 'default' | 'sm' | 'lg' | 'icon';
+const buttonVariants = cva(
+    'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+    {
+        variants: {
+            variant: {
+                default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+                destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+                outline:
+                    'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+                secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+                ghost: 'hover:bg-accent hover:text-accent-foreground',
+                link: 'text-primary underline-offset-4 hover:underline',
+                success:
+                    'bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800',
+                primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
+                warning:
+                    'bg-yellow-600 text-white hover:bg-yellow-700 dark:bg-yellow-700 dark:hover:bg-yellow-800',
+                info: 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800',
+            },
+            size: {
+                xs: 'h-7 rounded-sm px-2 text-xs',
+                sm: 'h-9 rounded-md px-3 text-sm',
+                default: 'h-10 px-4 py-2',
+                md: 'h-11 rounded-md px-6 text-base',
+                lg: 'h-12 rounded-lg px-8 text-lg',
+                xl: 'h-14 rounded-xl px-10 text-xl',
+                icon: 'h-10 w-10',
+            },
+            rounded: {
+                none: 'rounded-none',
+                sm: 'rounded-sm',
+                md: 'rounded-md',
+                lg: 'rounded-lg',
+                xl: 'rounded-xl',
+                full: 'rounded-full',
+            },
+            animated: {
+                true: 'transform transition-all duration-200 ease-in-out hover:scale-105 active:scale-95',
+                false: '',
+            },
+        },
+        defaultVariants: {
+            variant: 'default',
+            size: 'default',
+            rounded: 'md',
+            animated: true,
+        },
+    }
+);
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps
+    extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'color'>,
+        VariantProps<typeof buttonVariants> {
     as?: 'button' | 'link';
     href?: string;
-    download?: boolean;
-    variant?: ButtonVariant;
-    size?: ButtonSize;
+    download?: string | boolean;
     loading?: boolean;
+    fullWidth?: boolean;
+    leftIcon?: React.ReactNode;
+    rightIcon?: React.ReactNode;
     children?: React.ReactNode;
 }
 
-const getButtonClasses = (variant: ButtonVariant, size: ButtonSize) => {
-    const baseClasses = `cursor-pointer hover:scale-105 disabled:transform disabled:transition-none disabled:cursor-not-allowed disabled:opacity-50 transform transition-all
-     duration-100 ease-in-out shadow-md inline-flex
-      items-center justify-center whitespace-nowrap
-       rounded-xl text-sm font-medium focus-visible:outline-none
-        focus-visible:ring-2 focus-visible:ring-primary 
-        focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95`;
-
-    const variantClasses = {
-        default: 'bg-gray-500 text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700',
-        destructive: 'bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800',
-        primary:
-            'bg-primary text-white hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700',
-        outline:
-            'border border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white',
-        secondary:
-            'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600',
-        ghost: 'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:text-white',
-        link: 'text-primary underline-offset-4 hover:underline dark:text-primary-400',
-        success:
-            'bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800',
-    };
-
-    const sizeClasses = {
-        default: 'h-10 px-4 py-2',
-        xs: 'h-8 rounded-sm px-2',
-        sm: 'h-9 rounded-lg px-3',
-        md: 'h-10 rounded-md px-4',
-        lg: 'h-12 rounded-xl px-8',
-        xl: 'h-14 rounded-2xl px-10',
-        icon: 'h-10 w-10',
-    };
-
-    return `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]}`;
-};
-
-const actionLabels = [
-    'ادامه',
-    'تایید',
-    'ثبت',
-    'ارسال',
-    'صدور',
-    'تأیید',
-    'تایید و ارسال',
-    'تأیید و ادامه',
-];
-
-const isActionLabel = (children: unknown) => {
-    if (!children) return false;
-    if (typeof children === 'string') {
-        return actionLabels.includes(children.trim());
-    }
-    try {
-        if (Array.isArray(children)) {
-            const first = children[0];
-            if (typeof first === 'string') {
-                return actionLabels.includes(first.trim());
-            }
-            if (typeof first === 'object' && first !== null && 'props' in first) {
-                const text = (first as { props?: { children?: unknown } }).props?.children;
-                if (typeof text === 'string') return actionLabels.includes(text.trim());
-            }
-        } else if (typeof children === 'object' && children !== null && 'props' in children) {
-            const text = (children as { props?: { children?: unknown } }).props?.children;
-            if (typeof text === 'string') return actionLabels.includes(text.trim());
-        }
-    } catch {}
-    return false;
-};
+interface LinkButtonProps
+    extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'color'>,
+        VariantProps<typeof buttonVariants> {
+    href: string;
+    loading?: boolean;
+    fullWidth?: boolean;
+    leftIcon?: React.ReactNode;
+    rightIcon?: React.ReactNode;
+    children?: React.ReactNode;
+}
 
 const Spinner = ({ className }: { className?: string }) => (
     <svg
-        className={`animate-spin ${className || ''}`}
+        className={cn('animate-spin', className)}
         xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
+        width="16"
+        height="16"
         viewBox="0 0 24 24"
         fill="none"
         aria-hidden="true"
@@ -122,66 +105,119 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             as = 'button',
             className,
             variant,
-            size = 'default',
+            size,
+            rounded,
+            animated,
             children,
-            type,
+            type = 'button',
             href,
             loading,
+            fullWidth,
+            leftIcon,
+            rightIcon,
+            disabled,
             ...props
         },
         ref
     ) => {
-        let resolvedVariant: ButtonVariant = (variant as ButtonVariant) || 'default';
-        if (!variant) {
-            if (type === 'submit') resolvedVariant = 'primary';
-            else if (isActionLabel(children)) resolvedVariant = 'primary';
-        }
+        const resolvedVariant = variant || 'default';
+        const isDisabled = disabled || loading;
 
-        const classNames = cn(getButtonClasses(resolvedVariant, size), className);
+        const buttonClasses = buttonVariants({
+            variant: resolvedVariant,
+            size,
+            rounded,
+            animated,
+            className,
+        });
 
-        if (as === 'link') {
-            const anchorProps = props as React.AnchorHTMLAttributes<HTMLAnchorElement>;
-            const { target, rel, download, role, onClick, ...rest } = anchorProps;
-            const ariaLabel = anchorProps['aria-label'];
+        const finalClasses = cn(buttonClasses, {
+            'w-full': fullWidth,
+            'cursor-not-allowed opacity-50': isDisabled,
+        });
+
+        const content = (
+            <>
+                {loading && <Spinner className="mr-2" />}
+                {!loading && leftIcon && <span className="mr-2">{leftIcon}</span>}
+                {children}
+                {!loading && rightIcon && <span className="ml-2">{rightIcon}</span>}
+            </>
+        );
+
+        if (as === 'link' && href) {
             return (
                 <Link
-                    href={href || '#'}
-                    target={target}
-                    rel={rel}
-                    download={download}
-                    role={role}
-                    onClick={onClick}
-                    aria-label={ariaLabel}
-                    className={classNames}
-                    {...(rest as unknown as Record<string, unknown>)}
+                    href={href}
+                    className={finalClasses}
+                    aria-disabled={isDisabled}
+                    {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
                 >
-                    {children}
+                    {content}
                 </Link>
             );
         }
+
         return (
-            <button type={type} className={classNames} ref={ref} {...props}>
-                {loading && <Spinner className="mr-2" />}
-                {children}
+            <button
+                type={type}
+                className={finalClasses}
+                ref={ref}
+                disabled={isDisabled}
+                aria-busy={loading}
+                {...props}
+            >
+                {content}
             </button>
         );
     }
 );
 Button.displayName = 'Button';
 
-interface LinkButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
-    href: string;
-    className?: string;
-    children?: React.ReactNode;
-}
+function LinkButton({
+    href,
+    className,
+    variant,
+    size,
+    rounded,
+    animated,
+    children,
+    loading,
+    fullWidth,
+    leftIcon,
+    rightIcon,
+    ...props
+}: LinkButtonProps) {
+    const isDisabled = loading;
 
-function LinkButton({ href, className, children, ...props }: LinkButtonProps) {
-    const classNames = cn(getButtonClasses('default', 'default'), className);
-    return (
-        <Link href={href} className={classNames} {...props}>
+    const buttonClasses = buttonVariants({
+        variant: variant || 'default',
+        size,
+        rounded,
+        animated,
+        className,
+    });
+
+    const finalClasses = cn(buttonClasses, {
+        'w-full': fullWidth,
+        'cursor-not-allowed opacity-50': isDisabled,
+    });
+
+    const content = (
+        <>
+            {loading && <Spinner className="mr-2" />}
+            {!loading && leftIcon && <span className="mr-2">{leftIcon}</span>}
             {children}
+            {!loading && rightIcon && <span className="ml-2">{rightIcon}</span>}
+        </>
+    );
+
+    return (
+        <Link href={href} className={finalClasses} aria-disabled={isDisabled} {...props}>
+            {content}
         </Link>
     );
 }
 
 export { Button, LinkButton };
+export type { ButtonProps, LinkButtonProps };

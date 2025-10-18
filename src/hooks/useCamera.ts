@@ -6,14 +6,21 @@ interface UseCameraOptions {
     audio?: MediaTrackConstraints | boolean;
 }
 
+interface UseCameraOptions {
+    video?: MediaTrackConstraints | boolean;
+    audio?: MediaTrackConstraints | boolean;
+}
+
 interface UseCameraResult {
     stream: MediaStream | null;
     videoRef: React.RefObject<HTMLVideoElement | null>;
+    canvasRef: React.RefObject<HTMLCanvasElement | null>;
     isActive: boolean;
     isLoading: boolean;
     error: string | null;
     startCamera: () => Promise<void>;
     stopCamera: () => void;
+    takePhoto: (onPhotoTaken?: (file: File) => void) => void;
 }
 
 export function useCamera(options: UseCameraOptions = {}): UseCameraResult {
@@ -25,6 +32,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraResult {
     const [error, setError] = useState<string | null>(null);
 
     const videoRef = useRef<HTMLVideoElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const streamRef = useRef<MediaStream | null>(null);
 
     const startCamera = useCallback(async () => {
@@ -92,6 +100,34 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraResult {
         setIsActive(false);
     }, []);
 
+    const takePhoto = useCallback((onPhotoTaken?: (file: File) => void) => {
+        if (videoRef.current && canvasRef.current) {
+            const canvas = canvasRef.current;
+            const video = videoRef.current;
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob(
+                    (blob) => {
+                        if (blob) {
+                            const file = new File([blob], `photo_${Date.now()}.jpg`, {
+                                type: 'image/jpeg',
+                            });
+                            onPhotoTaken?.(file);
+                        }
+                    },
+                    'image/jpeg',
+                    0.8
+                );
+            }
+        }
+    }, []);
+
     useEffect(() => {
         return () => {
             stopCamera();
@@ -101,10 +137,12 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraResult {
     return {
         stream,
         videoRef,
+        canvasRef,
         isActive,
         isLoading,
         error,
         startCamera,
         stopCamera,
+        takePhoto,
     };
 }

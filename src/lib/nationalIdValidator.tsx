@@ -3,30 +3,9 @@
 import { useEffect } from 'react';
 
 import { Box } from '@/components/ui';
-import { convertPersianToEnglish } from '@/lib/utils';
+import { cleanNationalId, isValidNationalId } from '@/lib/utils';
 
-export function cleanNationalId(input: string): string {
-    const normalized = convertPersianToEnglish(input || '');
-    return normalized.replace(/\D/g, '').trim();
-}
-
-export function isValidNationalId(code: string): boolean {
-    if (!code) return false;
-    const v = cleanNationalId(code);
-    if (v.length !== 10) return false;
-
-    if (/^(\d)\1{9}$/.test(v)) return false;
-
-    const digits = v.split('').map((d) => parseInt(d, 10));
-    const check = digits[9];
-    let sum = 0;
-    for (let i = 0; i < 9; i++) {
-        sum += digits[i] * (10 - i);
-    }
-    const remainder = sum % 11;
-    if (remainder < 2) return check === remainder;
-    return check === 11 - remainder;
-}
+export { cleanNationalId, isValidNationalId } from '@/lib/utils';
 
 export function NationalIdValidation({
     value,

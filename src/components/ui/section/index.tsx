@@ -1,48 +1,30 @@
 import { cn } from '@/lib/utils';
-import { ComponentProps } from 'react';
+import { ComponentProps, memo } from 'react';
+
+type SectionVariant = 'primary' | 'secondary' | 'single';
 
 interface SectionProps extends ComponentProps<'section'> {
-    className?: string;
-    variant?: 'primary' | 'secondary' | 'single' | undefined;
+    variant?: SectionVariant;
 }
 
-const Section = ({ children, className, variant }: SectionProps) => {
-    if (variant === 'primary') {
-        return (
-            <section
-                className={cn(
-                    'dark:bg-gray-dark container mx-1 my-32 flex flex-col gap-10 overflow-hidden rounded-[30px] bg-gray-50 p-4 !py-28 lg:rounded-[50px] lg:p-9',
-                    className
-                )}
-            >
-                {children}
-            </section>
-        );
-    }
-    if (variant === 'single') {
-        return (
-            <section
-                className={cn(
-                    'dark:bg-gray-dark relative container mx-1 mt-32 flex w-[95%] flex-col gap-10 rounded-[30px] bg-gray-50 p-4 md:mt-40 md:w-full md:p-8 lg:rounded-[50px] lg:p-9',
-                    className
-                )}
-            >
-                {children}
-            </section>
-        );
-    }
-    if (variant === 'secondary') {
-        return (
-            <section
-                className={cn(
-                    'border-gray-light relative container mx-1 my-32 flex flex-col gap-10 rounded-[30px] border p-4 !py-32 md:p-8 lg:rounded-[50px] lg:p-9 dark:border-gray-900',
-                    className
-                )}
-            >
-                {children}
-            </section>
-        );
-    } else
-        return <section className={cn('container flex flex-col', className)}>{children}</section>;
+const variantStyles: Record<SectionVariant, string> = {
+    primary:
+        'dark:bg-gray-dark container mx-1 my-32 flex flex-col gap-10 overflow-hidden rounded-[30px] bg-gray-50 p-4 !py-28 lg:rounded-[50px] lg:p-9',
+    secondary:
+        'border-gray-light relative container mx-1 my-32 flex flex-col gap-10 rounded-[30px] border p-4 !py-32 md:p-8 lg:rounded-[50px] lg:p-9 dark:border-gray-900',
+    single: 'dark:bg-gray-dark relative container mx-1 mt-32 flex w-[95%] flex-col gap-10 rounded-[30px] bg-gray-50 p-4 md:mt-40 md:w-full md:p-8 lg:rounded-[50px] lg:p-9',
 };
+
+const Section = memo<SectionProps>(({ children, className, variant, ...props }) => {
+    const baseStyles = variant ? variantStyles[variant] : 'container flex flex-col';
+
+    return (
+        <section className={cn(baseStyles, className)} {...props}>
+            {children}
+        </section>
+    );
+});
+
+Section.displayName = 'Section';
+
 export default Section;

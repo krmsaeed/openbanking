@@ -53,13 +53,13 @@ export function VideoRecorderView({
                             </video>
                         </Box>
 
-                        <Box className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl bg-gray-200 p-4">
-                            <ul className="space-y-1 text-sm">
+                        <Box className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl bg-gray-100 p-4">
+                            <ul className="md:text-md space-y-1 text-xs">
                                 <li className="text-error font-bold">
                                     فیلم ضبط شده خود را بررسی کنید
                                 </li>
-                                <li> اگر فیلم مناسب است، روی «تایید» کلیک کنید</li>
-                                <li> برای رکورد جدید، روی «ضبط مجدد» کلیک کنید</li>
+                                <li> اگر فیلم مناسب است «مرحله بعد» را کنید</li>
+                                <li> برای رکورد جدید «ضبط مجدد» را کنید</li>
                             </ul>
                             <Button
                                 variant="secondary"
@@ -98,15 +98,15 @@ export function VideoRecorderView({
                             </Box>
 
                             {!isRecording && (
-                                <Box className="mb-4 rounded-lg bg-gray-100">
+                                <Box className="mb-4 rounded-lg">
                                     <Box className="space-y-2 text-right">
                                         <Typography
                                             variant="h4"
-                                            className="border-primary-100 mt-2 flex min-h-10 flex-col items-center justify-center rounded-lg border bg-gray-200 text-center text-base leading-relaxed"
+                                            className="border-primary-100 mt-2 flex min-h-10 flex-col items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
                                         >
                                             {randomText ?? ''}
                                         </Typography>
-                                        <Box className="mt-2 flex flex-col items-center justify-between rounded-lg bg-gray-200 p-2">
+                                        <Box className="mt-2 flex flex-col items-center justify-between rounded-lg bg-gray-100 p-2">
                                             <ul className="p-2 text-center text-sm leading-relaxed text-gray-800">
                                                 <li className="text-primary-800 font-bold">
                                                     متن نمایش داده‌شده را واضح بخوانید
@@ -129,7 +129,7 @@ export function VideoRecorderView({
                             {isRecording && (
                                 <Typography
                                     variant="h4"
-                                    className="border-primary-100 mt-2 mb-2 flex min-h-10 items-center justify-center rounded-lg border bg-gray-50 text-center text-base leading-relaxed"
+                                    className="border-primary-100 mt-2 mb-2 flex min-h-10 items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
                                 >
                                     {randomText ?? ''}
                                 </Typography>

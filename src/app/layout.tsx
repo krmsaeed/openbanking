@@ -1,7 +1,6 @@
 import AuthInitializer from '@/components/AuthInitializer';
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
-import ThemeToggle from '@/components/ThemeToggle';
 import { ToastProvider } from '@/components/ui/feedback/Toast';
 import { UserProvider } from '@/contexts/UserContext';
 import ThemeProvider from '@/lib/ThemeProvider';
@@ -82,8 +81,7 @@ export default function RootLayout({
                         <ToastProvider>
                             <Suspense fallback={<div>Loading...</div>}>
                                 <AuthInitializer requireAuth={false}>
-                                    <ThemeToggle />
-                                    {process.env.NODE_ENV != 'development' ? (
+                                    {process.env.NODE_ENV === 'development' ? (
                                         <ServiceWorkerUnregistrar />
                                     ) : (
                                         <ServiceWorkerRegistrar />

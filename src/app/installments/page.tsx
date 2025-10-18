@@ -16,6 +16,7 @@ import {
     TableRow,
     Typography,
 } from '@/components/ui';
+import { formatNumberWithCommas } from '@/lib/utils';
 import {
     ArrowLeftIcon,
     BanknotesIcon,
@@ -43,96 +44,96 @@ export default function InstallmentsPage() {
     const installments = [
         {
             id: 1,
-            dueDate: '۱۴۰۴/۰۷/۰۵',
-            amount: '4,583,333',
+            dueDate: '1404/07/05',
+            amount: '4583333',
             status: 'paid',
-            payDate: '۱۴۰۴/۰۷/۰۳',
+            payDate: '1404/07/03',
             penalty: '0',
         },
         {
             id: 2,
-            dueDate: '۱۴۰۴/۰۸/۰۵',
-            amount: '4,583,333',
+            dueDate: '1404/08/05',
+            amount: '4583333',
             status: 'paid',
-            payDate: '۱۴۰۴/۰۸/۰۴',
+            payDate: '1404/08/04',
             penalty: '0',
         },
         {
             id: 3,
-            dueDate: '۱۴۰۴/۰۹/۰۵',
-            amount: '4,583,333',
+            dueDate: '1404/09/05',
+            amount: '4583333',
             status: 'paid',
-            payDate: '۱۴۰۴/۰۹/۰۶',
-            penalty: '25,000',
+            payDate: '1404/09/06',
+            penalty: '25000',
         },
         {
             id: 4,
-            dueDate: '۱۴۰۴/۱۰/۰۵',
-            amount: '4,583,333',
+            dueDate: '1404/10/05',
+            amount: '4583333',
             status: 'paid',
-            payDate: '۱۴۰۴/۱۰/۰۲',
+            payDate: '1404/10/02',
             penalty: '0',
         },
         {
             id: 5,
-            dueDate: '۱۴۰۴/۱۱/۰۵',
-            amount: '4,583,333',
+            dueDate: '1404/11/05',
+            amount: '4583333',
             status: 'paid',
-            payDate: '۱۴۰۴/۱۱/۰۵',
+            payDate: '1404/11/05',
             penalty: '0',
         },
         {
             id: 6,
-            dueDate: '۱۴۰۴/۱۲/۰۵',
-            amount: '4,583,333',
+            dueDate: '1404/12/05',
+            amount: '4583333',
             status: 'overdue',
             payDate: null,
-            penalty: '137,500',
+            penalty: '137500',
         },
         {
             id: 7,
-            dueDate: '۱۴۰۵/۰۱/۰۵',
-            amount: '4,583,333',
+            dueDate: '۱۴05/۰۱/05',
+            amount: '4583333',
             status: 'current',
             payDate: null,
             penalty: '0',
         },
         {
             id: 8,
-            dueDate: '۱۴۰۵/۰۲/۰۵',
-            amount: '4,583,333',
+            dueDate: '1405/02/05',
+            amount: '4583333',
             status: 'upcoming',
             payDate: null,
             penalty: '0',
         },
         {
             id: 9,
-            dueDate: '۱۴۰۵/۰۳/۰۵',
-            amount: '4,583,333',
+            dueDate: '۱۴05/03/05',
+            amount: '4583333',
             status: 'upcoming',
             payDate: null,
             penalty: '0',
         },
         {
             id: 10,
-            dueDate: '۱۴۰۵/۰۴/۰۵',
-            amount: '4,583,333',
+            dueDate: '۱۴05/۰۴/05',
+            amount: '4583333',
             status: 'upcoming',
             payDate: null,
             penalty: '0',
         },
         {
             id: 11,
-            dueDate: '۱۴۰۵/۰۵/۰۵',
-            amount: '4,583,333',
+            dueDate: '۱۴05/05/05',
+            amount: '4583333',
             status: 'upcoming',
             payDate: null,
             penalty: '0',
         },
         {
             id: 12,
-            dueDate: '۱۴۰۵/۰۶/۰۵',
-            amount: '4,583,333',
+            dueDate: '۱۴05/۰۶/05',
+            amount: '4583333',
             status: 'upcoming',
             payDate: null,
             penalty: '0',
@@ -209,7 +210,7 @@ export default function InstallmentsPage() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-primary-600 text-2xl font-bold">
-                                {contractInfo.facilityAmount} ریال
+                                {contractInfo.facilityAmount?.toLocaleString()} ریال
                             </p>
                         </CardContent>
                     </Card>
@@ -233,7 +234,7 @@ export default function InstallmentsPage() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-2xl font-bold text-orange-600">
-                                {contractInfo.remainingAmount} ریال
+                                {`${contractInfo.remainingAmount?.toLocaleString()}`} ریال
                             </p>
                         </CardContent>
                     </Card>
@@ -259,7 +260,7 @@ export default function InstallmentsPage() {
                                     </Typography>
                                     <Typography variant="body2" className="mt-1 text-gray-700">
                                         شما {overdueCount} قسط معوق دارید. مجموع جریمه تأخیر:{' '}
-                                        {totalPenalty.toLocaleString()}
+                                        {formatNumberWithCommas(totalPenalty)}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -354,7 +355,7 @@ export default function InstallmentsPage() {
                                         </TableCell>
                                         <TableCell className="flex gap-1 text-center">
                                             <Typography variant="body2" color="text" weight="bold">
-                                                {installment.amount}
+                                                {formatNumberWithCommas(installment.amount)}
                                             </Typography>
                                             <Typography
                                                 variant="body2"
@@ -371,7 +372,8 @@ export default function InstallmentsPage() {
                                                     color="error"
                                                     weight="medium"
                                                 >
-                                                    {installment.penalty} ریال
+                                                    {formatNumberWithCommas(installment.penalty)}{' '}
+                                                    ریال
                                                 </Typography>
                                             ) : (
                                                 <Typography variant="body2" color="secondary">

@@ -25,7 +25,7 @@ export default function Sidebar() {
     const { userData, setUserData } = useUser();
     return (
         <nav
-            className="mx-auto w-[95%] rounded-lg bg-gray-100 px-4 py-6 shadow-lg md:w-[18rem] dark:bg-gray-800"
+            className="mx-auto w-[98%] rounded-lg bg-gray-100 px-1 shadow-lg md:w-[18rem] md:px-4 dark:bg-gray-800"
             aria-label="مراحل ثبت‌نام"
         >
             <h3 className="mb-2 hidden text-center text-lg font-semibold text-gray-800 md:block dark:text-white">

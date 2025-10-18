@@ -23,7 +23,7 @@ export function useSignatureStep() {
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
             ctx.strokeStyle = '#1f2937';
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 2;
         }
     }, []);
 
