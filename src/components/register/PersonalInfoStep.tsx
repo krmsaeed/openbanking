@@ -37,14 +37,10 @@ export default function PersonalInfo() {
     const onSubmit = async (data: PersonalInfoStepForm) => {
         const body: ApiBody = {
             code: userData.nationalCode ?? '',
+            mobile: data.phoneNumber,
+            birthDate: data.birthDate,
+            postalCode: data.postalCode,
         };
-
-        // Include optional fields only when user is not a customer
-        if (!userData.isCustomer) {
-            body.mobile = data.phoneNumber;
-            body.birthDate = data.birthDate;
-            body.postalCode = data.postalCode;
-        }
 
         const response = await axios.post('/api/bpms/send-message', {
             serviceName: 'virtual-open-deposit',
@@ -86,7 +82,7 @@ export default function PersonalInfo() {
                     value={userData.nationalCode}
                     className="text-center"
                 />
-                {!userData.isCustomer && (
+                {userData.isCustomer && (
                     <>
                         {' '}
                         <Controller

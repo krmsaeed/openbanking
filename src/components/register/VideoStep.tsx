@@ -4,6 +4,7 @@ import { useUser } from '@/contexts/UserContext';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
 import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import { VideoRecorderView } from '../specialized/VideoRecorderView';
 
 export const VideoRecorderStep: React.FC = () => {
@@ -36,7 +37,13 @@ export const VideoRecorderStep: React.FC = () => {
         );
         await axios
             .post('/api/bpms/deposit-files', formData)
-            .then(() => setUserData({ step: 4 }))
+            .then((res) => {
+                if (res.data.body.verified) {
+                    setUserData({ ...userData, step: 4 });
+                } else {
+                    toast.error('عملیات با خطا مواجه شد. مجددا تلاش کنید');
+                }
+            })
             .finally(() => setIsUploading(false));
     };
 

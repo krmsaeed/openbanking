@@ -105,9 +105,10 @@ function CameraView({
 interface InstructionsProps {
     capturedPhoto: string | null;
     onRetake: () => void;
+    isUploading: boolean;
 }
 
-function Instructions({ capturedPhoto, onRetake }: InstructionsProps) {
+function Instructions({ capturedPhoto, onRetake, isUploading }: InstructionsProps) {
     return (
         <Box className="rounded-xl bg-gray-100 p-4">
             {!capturedPhoto ? (
@@ -128,6 +129,7 @@ function Instructions({ capturedPhoto, onRetake }: InstructionsProps) {
                     <Box className="mt-3 flex justify-center gap-4">
                         <Button
                             onClick={onRetake}
+                            disabled={isUploading}
                             className="bg-error-400 flex w-full items-center justify-center px-5 py-3"
                         >
                             <ArrowPathIcon className="h-6 w-6 text-white" />
@@ -323,20 +325,21 @@ export default function SelfieStep() {
 
     const handleConfirm = useCallback(async () => {
         setIsUploading(true);
-        try {
-            const file = await convertToFile(capturedPhoto, 'selfie', 'image/jpeg', 0.8);
-            const formData = createBPMSFormData(
-                file!,
-                'virtual-open-deposit',
-                userData.processId,
-                'GovahInquiry'
-            );
-            const response = await axios.post('/api/bpms/deposit-files', formData);
-            const { data } = response.data;
-            setUserData({ ...userData, step: 3, randomText: data.body.randomText });
-        } finally {
-            setIsUploading(false);
-        }
+        const file = await convertToFile(capturedPhoto, 'selfie', 'image/jpeg', 0.8);
+        const formData = createBPMSFormData(
+            file!,
+            'virtual-open-deposit',
+            userData.processId,
+            'GovahInquiry'
+        );
+        await axios
+            .post('/api/bpms/deposit-files', formData)
+            .then((res) => {
+                const { data } = res.data;
+                console.log('🚀 ~ SelfieStep.tsx:337 ~ SelfieStep ~ data:', res.data);
+                setUserData({ ...userData, step: 3, randomText: res.data?.body?.randomText });
+            })
+            .finally(() => setIsUploading(false));
     }, [capturedPhoto, userData, setUserData, setIsUploading]);
 
     const handleCapture = useCallback(() => {
@@ -389,7 +392,11 @@ export default function SelfieStep() {
                 <CaptureButton onCapture={handleCapture} disabled={!canCapture} />
             )}
 
-            <Instructions capturedPhoto={capturedPhoto} onRetake={retakePhoto} />
+            <Instructions
+                capturedPhoto={capturedPhoto}
+                onRetake={retakePhoto}
+                isUploading={isUploading}
+            />
 
             <Controls
                 capturedPhoto={capturedPhoto}

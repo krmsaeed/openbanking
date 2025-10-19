@@ -1,5 +1,4 @@
 'use client';
-
 import {
     Box,
     Button,
@@ -143,7 +142,9 @@ function useContractStep() {
             element.click();
             document.body.removeChild(element);
         } catch (err) {
-            setError('خطا در دانلود فایل قرارداد');
+            setError(
+                'خطا در دانلود فایل قرارداد: ' + (err instanceof Error ? err.message : String(err))
+            );
         }
     };
 

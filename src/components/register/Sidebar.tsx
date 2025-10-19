@@ -28,9 +28,12 @@ export default function Sidebar() {
             className="mx-auto w-[98%] rounded-lg bg-gray-100 px-1 shadow-lg md:w-[18rem] md:px-4 dark:bg-gray-800"
             aria-label="مراحل ثبت‌نام"
         >
-            <h3 className="mb-2 hidden text-center text-lg font-semibold text-gray-800 md:block dark:text-white">
+            <Typography
+                variant="h3"
+                className="mb-2 hidden text-center text-lg font-semibold text-gray-800 md:block"
+            >
                 مراحل ثبت‌ نام
-            </h3>
+            </Typography>
             <ul className="flex flex-row items-center justify-start gap-2 overflow-auto px-1 py-2 md:flex-col md:justify-start md:gap-3 md:py-0 md:pl-0">
                 {STEP_META.map((item, index) => {
                     const Icon = item.icon;

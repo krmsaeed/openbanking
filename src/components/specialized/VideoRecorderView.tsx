@@ -64,6 +64,7 @@ export function VideoRecorderView({
                             <Button
                                 variant="secondary"
                                 onClick={onRetake}
+                                disabled={isUploading}
                                 className="bg-error-400 flex max-w-32 items-center gap-2 text-white"
                             >
                                 <VideoCameraIcon className="h-4 w-4" />
