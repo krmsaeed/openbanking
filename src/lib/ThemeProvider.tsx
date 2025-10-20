@@ -3,7 +3,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { getCookie } from './utils';
 
-type Theme = 'light' | 'dark' | 'system';
+type Theme = 'light' | 'dark';
 
 interface ThemeContextType {
     theme: Theme;
@@ -30,20 +30,13 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({
     children,
-    defaultTheme = 'system',
+    defaultTheme = 'light',
     storageKey = 'theme',
     attribute = 'data-theme',
 }: ThemeProviderProps) {
     const [theme, setTheme] = useState<Theme>(defaultTheme);
     const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
 
-    // Get system theme preference
-    const getSystemTheme = useCallback((): 'light' | 'dark' => {
-        if (typeof window === 'undefined') return 'light';
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }, []);
-
-    // Apply theme to DOM
     const applyTheme = useCallback(
         (newTheme: 'light' | 'dark') => {
             try {
@@ -80,9 +73,9 @@ export function ThemeProvider({
 
     // Update theme based on current theme value
     const updateTheme = useCallback(() => {
-        const resolved = theme === 'system' ? getSystemTheme() : theme;
+        const resolved = theme;
         applyTheme(resolved);
-    }, [theme, getSystemTheme, applyTheme]);
+    }, [theme, applyTheme]);
 
     // Handle theme change
     const handleSetTheme = useCallback(
@@ -103,7 +96,7 @@ export function ThemeProvider({
     useEffect(() => {
         try {
             const stored = localStorage.getItem(storageKey) || getCookie(storageKey);
-            if (stored && ['light', 'dark', 'system'].includes(stored)) {
+            if (stored && ['light', 'dark'].includes(stored)) {
                 setTheme(stored as Theme);
             }
         } catch (error) {
@@ -115,17 +108,6 @@ export function ThemeProvider({
     useEffect(() => {
         updateTheme();
     }, [updateTheme]);
-
-    // Listen for system theme changes
-    useEffect(() => {
-        if (theme !== 'system') return;
-
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        const handleChange = () => updateTheme();
-
-        mediaQuery.addEventListener('change', handleChange);
-        return () => mediaQuery.removeEventListener('change', handleChange);
-    }, [theme, updateTheme]);
 
     const value = {
         theme,

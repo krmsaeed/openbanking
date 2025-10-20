@@ -60,7 +60,7 @@ export default function RootLayout({
                                 };
                                 const stored = getCookie('theme');
                                 const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                                const theme = stored || (prefersDark ? 'dark' : 'light');
+                                const theme = stored || 'light';
                                 if (theme === 'dark') {
                                 document.documentElement.classList.add('dark');
                                 document.body.classList.add('dark');

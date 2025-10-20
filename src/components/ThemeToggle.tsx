@@ -11,8 +11,7 @@ const ThemeToggle: React.FC<{ className?: string }> = ({ className }) => {
     useEffect(() => {
         setMounted(true);
         const stored = getCookie('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const initialTheme = stored || (prefersDark ? 'dark' : 'light');
+        const initialTheme = stored || 'light';
         setTheme(initialTheme as 'light' | 'dark');
 
         applyTheme(initialTheme as 'light' | 'dark');
