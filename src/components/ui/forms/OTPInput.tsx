@@ -1,7 +1,7 @@
 'use client';
 
-import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { cn, convertPersianToEnglish } from '@/lib/utils';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
 
 interface OTPInputProps {
     value: string;
@@ -64,7 +64,7 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
                 autoComplete={autoComplete ?? 'one-time-code'}
                 onKeyDown={onKeyDown}
                 className={cn(
-                    'focus:ring-primary focus:border-primary h-12 w-12 rounded-xl border border-gray-300 text-center text-lg font-bold transition-colors focus:ring-2',
+                    'h-12 w-12 rounded-xl border border-gray-100 text-center text-lg font-bold transition-colors focus:ring-2',
                     className
                 )}
                 maxLength={maxLength}

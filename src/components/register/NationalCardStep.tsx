@@ -1,10 +1,10 @@
 'use client';
 
 import { Box } from '@/components/ui';
-import { CheckIcon } from '@heroicons/react/24/outline';
-import LoadingButton from '../ui/core/LoadingButton';
-import NationalCardOcrScanner from '../specialized/NationalCardOcrScanner';
 import { useNationalCardForm } from '@/hooks/useNationalCardForm';
+import { CheckIcon } from '@heroicons/react/24/outline';
+import NationalCardOcrScanner from '../specialized/NationalCardOcrScanner';
+import LoadingButton from '../ui/core/LoadingButton';
 import { PersonalInfoForm } from './PersonalInfoForm';
 import { WelcomeModal } from './WelcomeModal';
 
@@ -47,7 +47,6 @@ export default function NationalCardStep() {
                 <LoadingButton
                     isLoading={isLoading}
                     onClick={handleSubmit}
-                    disabled={isSubmitDisabled}
                     className="bg-primary-600 hover:bg-primary-700 flex min-w-[200px] items-center justify-center gap-3 px-6 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {!isLoading && <CheckIcon className="h-5 w-5" />}

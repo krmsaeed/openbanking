@@ -42,20 +42,26 @@ export default function PersonalInfo() {
             postalCode: data.postalCode,
         };
 
-        const response = await axios.post('/api/bpms/send-message', {
-            serviceName: 'virtual-open-deposit',
-            processId: userData.processId,
-            formName: 'CustomerInquiry',
-            body,
-        });
+        await axios
+            .post('/api/bpms/send-message', {
+                serviceName: 'virtual-open-deposit',
+                processId: userData.processId,
+                formName: 'CustomerInquiry',
+                body,
+            })
+            .then((response) => {
+                const { data: respData } = response.data;
 
-        const { data: respData } = response.data;
-        if (respData?.body.hasActiveCertificate) {
-            setUserData({ step: 6 });
-        } else {
-            if (respData.body.needKYC) setUserData({ step: 2 });
-            else setUserData({ step: 5 });
-        }
+                if (respData?.body.needKYC && !respData?.body.hasActiveCertificate) {
+                    setUserData({ ...userData, step: 2 });
+                }
+                if (!respData?.body.needKYC && !respData?.body.hasActiveCertificate) {
+                    setUserData({ ...userData, step: 5 });
+                }
+                if (!respData?.body.needKYC && respData?.body.hasActiveCertificate) {
+                    setUserData({ ...userData, step: 6 });
+                }
+            });
     };
 
     // Wrapper to bypass validation when user is a customer

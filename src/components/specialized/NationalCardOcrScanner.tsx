@@ -1,11 +1,9 @@
 'use client';
 
-import { Box } from '@/components/ui';
+import { Box, Typography } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
 import { Modal } from '@/components/ui/overlay';
-import { useUser } from '@/contexts/UserContext';
 import { OcrFields, ocrRecognizeFile, parseNationalCardFields } from '@/lib/ocr';
-import { setCookie } from '@/lib/utils';
 import { ArrowPathIcon, CameraIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -17,88 +15,25 @@ type Props = {
     autoOpen?: boolean;
     showConfirmButton?: boolean;
 };
-export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen = true }: Props) {
-    const { userData } = useUser();
+
+export default function NationalCardOcrScanner({
+    onCapture,
+    onConfirm,
+    autoOpen = true,
+    showConfirmButton = false,
+}: Props) {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
-    function useEvent<T extends (...args: unknown[]) => unknown>(handler: T) {
-        const ref = useRef<T | null>(handler);
-        useEffect(() => {
-            ref.current = handler;
-        }, [handler]);
-        return useCallback((...args: Parameters<T>): ReturnType<T> => {
-            const fn = ref.current as T;
-            return fn(...(args as Parameters<T>)) as ReturnType<T>;
-        }, []);
-    }
-    const stripAudioTracks = (ms: MediaStream | null) => {
-        if (!ms) return ms;
-        try {
-            const audioTracks = ms.getAudioTracks() || [];
-            audioTracks.forEach((t) => {
-                try {
-                    t.stop();
-                    try {
-                        ms.removeTrack(t);
-                    } catch {}
-                } catch {}
-            });
-        } catch {}
-        return ms;
-    };
-
-    const logAction = async (action: string, payload: Record<string, unknown> = {}) => {
-        try {
-            const logData = {
-                level: 'debug',
-                message: `NationalCardOcrScanner - ${action}`,
-                data: {
-                    ...payload,
-                    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
-                    ts: new Date().toISOString(),
-                },
-            };
-            console.debug('📱', logData);
-            try {
-                await fetch('/api/logs', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(logData),
-                });
-            } catch (e) {
-                console.warn('logAction POST failed', e);
-            }
-        } catch (e) {
-            console.warn('logAction failed', e);
-        }
-    };
-    const stopOtherVideoStreams = () => {
-        try {
-            const videos = Array.from(document.querySelectorAll('video')) as HTMLVideoElement[];
-            videos.forEach((v) => {
-                try {
-                    if (v === videoRef.current) return;
-                    const s = v.srcObject as MediaStream | null;
-                    if (s) {
-                        try {
-                            s.getTracks().forEach((t) => t.stop());
-                        } catch {}
-                        try {
-                            v.srcObject = null;
-                        } catch {}
-                    }
-                } catch {}
-            });
-        } catch {}
-    };
     const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
     const [capturedUrl, setCapturedUrl] = useState<string | null>(null);
+    const [capturedFile, setCapturedFile] = useState<File | null>(null);
     const [ocrValid, setOcrValid] = useState<boolean>(false);
     const [ocrLoading, setOcrLoading] = useState<boolean>(false);
     const [showPermissionModal, setShowPermissionModal] = useState<boolean>(false);
+
     const refreshDevices = useCallback(async () => {
         try {
             if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
@@ -112,297 +47,26 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
             } else {
                 vids = allVids;
             }
-            if (!selectedDeviceId && vids.length > 0) {
-                try {
-                    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || '');
-                    const exactLabel = /^\s*camera\s*0\s*,\s*facing\s*back\s*$/i;
-                    const backCandidate =
-                        vids.find((v) => exactLabel.test(v.label)) ||
-                        vids.find((v) => /camera\s*0/i.test(v.label)) ||
-                        vids.find((v) => /back|rear|environment/i.test(v.label));
-                    if (isMobile && backCandidate) {
-                        setSelectedDeviceId(backCandidate.deviceId);
-                    } else {
-                        setSelectedDeviceId(vids[0].deviceId);
-                    }
-                } catch {
-                    setSelectedDeviceId(vids[0].deviceId);
-                }
-            }
-        } catch {}
+            if (!selectedDeviceId && vids.length > 0) setSelectedDeviceId(vids[0].deviceId);
+        } catch (e) {
+            console.warn('refreshDevices failed', e);
+        }
     }, [selectedDeviceId]);
-    // const pathname = usePathname();
-    // useEffect(() => {
-    //     return () => {
-    //         try {
-    //             if (streamRef.current) {
-    //                 streamRef.current.getTracks().forEach((t) => t.stop());
-    //                 streamRef.current = null;
-    //             }
-    //         } catch {}
-    //     };
-    // }, []);
-
-    // useEffect(() => {
-    //     setShowPermissionModal(true);
-    // }, [pathname]);
 
     const openDeviceById = useCallback(
         async (deviceId: string, remember = false) => {
-            try {
-                if (navigator.permissions && typeof navigator.permissions.query === 'function') {
-                    try {
-                        const p = await navigator.permissions.query({
-                            name: 'camera',
-                        } as PermissionDescriptor);
-                        console.log(
-                            '🚀 ~ NationalCardOcrScanner.tsx:81 ~ NationalCardOcrScanner ~ p:',
-                            p
-                        );
-                        if (p && p.state === 'denied') {
-                            toast.error('دسترسی دوربین داده نشد');
-                            return;
-                        }
-                    } catch {}
-                } else {
-                    try {
-                        const test = await navigator.mediaDevices.getUserMedia({
-                            video: true,
-                            audio: false,
-                        });
-                        test.getTracks().forEach((t) => t.stop());
-                    } catch {
-                        toast.error('دسترسی دوربین داده نشد');
-                        return;
-                    }
-                }
-            } catch {}
             setIsCameraOpen(true);
             try {
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
                 try {
                     streamRef.current?.getTracks().forEach((t) => t.stop());
                 } catch {}
-                try {
-                    stopOtherVideoStreams();
-                } catch {}
-
-                let s: MediaStream | null = null;
-                const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || '');
-                if (isMobile) {
-                    if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
-                        try {
-                            await logAction('before-enumerate');
-                            const devs = await navigator.mediaDevices.enumerateDevices();
-                            await logAction('after-enumerate', { devicesCount: devs.length });
-                            const exactLabel = /^\s*camera\s*0\s*,\s*facing\s*back\s*$/i;
-                            const isAndroid = /Android/i.test(navigator.userAgent || '');
-                            let candidate: MediaDeviceInfo | undefined;
-                            candidate = devs.find(
-                                (d) => d.kind === 'videoinput' && exactLabel.test(d.label)
-                            );
-                            if (!candidate && isAndroid) {
-                                candidate = devs.find(
-                                    (d) => d.kind === 'videoinput' && /camera\s*0/i.test(d.label)
-                                );
-                            }
-                            if (!candidate) {
-                                candidate = devs.find(
-                                    (d) =>
-                                        d.kind === 'videoinput' &&
-                                        /camera\s*0/i.test(d.label) &&
-                                        /facing\s*back/i.test(d.label)
-                                );
-                            }
-                            if (!candidate) {
-                                const backMatcher = /back|rear|environment|main|wide-angle|wide/i;
-                                candidate = devs.find(
-                                    (d) => d.kind === 'videoinput' && backMatcher.test(d.label)
-                                );
-                            }
-                            if (candidate && candidate.deviceId) {
-                                try {
-                                    await logAction('before-getUserMedia-deviceId', {
-                                        deviceId: candidate.deviceId,
-                                    });
-                                    s = await navigator.mediaDevices.getUserMedia({
-                                        video: { deviceId: { exact: candidate.deviceId } },
-                                        audio: false,
-                                    });
-                                    await logAction('after-getUserMedia-deviceId', {
-                                        success: !!s,
-                                    });
-                                } catch (e) {
-                                    await logAction('getUserMedia-deviceId-failed', {
-                                        deviceId: candidate.deviceId,
-                                        error: String(e),
-                                    });
-                                }
-                            }
-                        } catch {}
-                    }
-
-                    if (!s) {
-                        try {
-                            await logAction('before-getUserMedia-facingMode-exact');
-                            s = await navigator.mediaDevices.getUserMedia({
-                                video: { facingMode: { exact: 'environment' } },
-                                audio: false,
-                            } as MediaStreamConstraints);
-                            await logAction('after-getUserMedia-facingMode-exact', {
-                                success: !!s,
-                            });
-                        } catch (e) {
-                            await logAction('getUserMedia-facingMode-exact-failed', {
-                                error: String(e),
-                            });
-                        }
-                        if (!s) {
-                            try {
-                                await logAction('before-getUserMedia-facingMode-ideal');
-                                s = await navigator.mediaDevices.getUserMedia({
-                                    video: { facingMode: { ideal: 'environment' } },
-                                    audio: false,
-                                } as MediaStreamConstraints);
-                                await logAction('after-getUserMedia-facingMode-ideal', {
-                                    success: !!s,
-                                });
-                            } catch (e) {
-                                await logAction('getUserMedia-facingMode-ideal-failed', {
-                                    error: String(e),
-                                });
-                            }
-                        }
-                    }
-                }
-
-                if (!s) {
-                    s = await navigator.mediaDevices.getUserMedia({
-                        video: { deviceId: { exact: deviceId } },
-                        audio: false,
-                    });
-                }
-                streamRef.current = stripAudioTracks(s);
-                if (videoRef.current) videoRef.current.srcObject = streamRef.current;
-                try {
-                    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || '');
-
-                    const currentFacing = String(
-                        s.getVideoTracks()?.[0]?.getSettings?.()?.facingMode || ''
-                    );
-                    if (isMobile && !/environment|back|rear/i.test(currentFacing)) {
-                        let replacement: MediaStream | null = null;
-                        try {
-                            await logAction('before-getUserMedia-replacement-facing-exact');
-                            replacement = await navigator.mediaDevices.getUserMedia({
-                                video: { facingMode: { exact: 'environment' } },
-                                audio: false,
-                            } as MediaStreamConstraints);
-                            await logAction('after-getUserMedia-replacement-facing-exact', {
-                                success: !!replacement,
-                            });
-                        } catch (e) {
-                            await logAction('getUserMedia-replacement-facing-exact-failed', {
-                                error: String(e),
-                            });
-                        }
-                        if (!replacement) {
-                            try {
-                                await logAction('before-getUserMedia-replacement-facing-ideal');
-                                replacement = await navigator.mediaDevices.getUserMedia({
-                                    video: { facingMode: { ideal: 'environment' } },
-                                    audio: false,
-                                } as MediaStreamConstraints);
-                                await logAction('after-getUserMedia-replacement-facing-ideal', {
-                                    success: !!replacement,
-                                });
-                            } catch (e) {
-                                await logAction('getUserMedia-replacement-facing-ideal-failed', {
-                                    error: String(e),
-                                });
-                            }
-                        }
-
-                        if (
-                            !replacement &&
-                            navigator.mediaDevices &&
-                            navigator.mediaDevices.enumerateDevices
-                        ) {
-                            try {
-                                const devs = await navigator.mediaDevices.enumerateDevices();
-                                const exactLabel = /^\s*camera\s*0\s*,\s*facing\s*back\s*$/i;
-                                const isAndroid = /Android/i.test(navigator.userAgent || '');
-                                let candidate: MediaDeviceInfo | undefined;
-                                candidate = devs.find(
-                                    (d) => d.kind === 'videoinput' && exactLabel.test(d.label)
-                                );
-                                if (!candidate && isAndroid) {
-                                    candidate = devs.find(
-                                        (d) =>
-                                            d.kind === 'videoinput' && /camera\s*0/i.test(d.label)
-                                    );
-                                }
-                                if (!candidate) {
-                                    candidate = devs.find(
-                                        (d) =>
-                                            d.kind === 'videoinput' &&
-                                            /camera\s*0/i.test(d.label) &&
-                                            /facing\s*back/i.test(d.label)
-                                    );
-                                }
-                                if (!candidate) {
-                                    const backMatcher =
-                                        /back|rear|environment|main|wide-angle|wide/i;
-                                    candidate = devs.find(
-                                        (d) => d.kind === 'videoinput' && backMatcher.test(d.label)
-                                    );
-                                }
-                                if (candidate && candidate.deviceId) {
-                                    try {
-                                        await logAction(
-                                            'before-getUserMedia-replacement-deviceId',
-                                            { deviceId: candidate.deviceId }
-                                        );
-                                        replacement = await navigator.mediaDevices.getUserMedia({
-                                            video: { deviceId: { exact: candidate.deviceId } },
-                                            audio: false,
-                                        });
-                                        await logAction('after-getUserMedia-replacement-deviceId', {
-                                            success: !!replacement,
-                                        });
-                                    } catch (e) {
-                                        await logAction(
-                                            'getUserMedia-replacement-deviceId-failed',
-                                            { deviceId: candidate.deviceId, error: String(e) }
-                                        );
-                                    }
-                                }
-                            } catch {}
-                        }
-
-                        if (replacement) {
-                            try {
-                                s.getTracks().forEach((t) => t.stop());
-                            } catch {}
-                            streamRef.current = stripAudioTracks(replacement);
-                            if (videoRef.current) videoRef.current.srcObject = streamRef.current;
-                            await logAction('replacement-attached', {
-                                deviceId:
-                                    streamRef.current?.getVideoTracks()?.[0]?.getSettings?.()
-                                        ?.deviceId || null,
-                            });
-                            try {
-                                const id2 = replacement.getVideoTracks()?.[0]?.getSettings?.()
-                                    ?.deviceId as string | undefined;
-                                if (id2) setSelectedDeviceId(id2);
-                            } catch {}
-                            // ensure playback and refresh devices
-                            videoRef.current?.play?.().catch(() => {});
-                            refreshDevices().catch(() => {});
-                            s = replacement;
-                        }
-                    }
-                } catch {}
+                const s = await navigator.mediaDevices.getUserMedia({
+                    video: { deviceId: { exact: deviceId } },
+                    audio: false,
+                });
+                streamRef.current = s;
+                if (videoRef.current) videoRef.current.srcObject = s;
                 try {
                     const id = s.getVideoTracks()?.[0]?.getSettings?.()?.deviceId as
                         | string
@@ -414,12 +78,13 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                 }
 
                 if (remember && process.env.NODE_ENV === 'development') {
-                    setCookie('preferredUsbCameraId', deviceId);
+                    localStorage.setItem('preferredUsbCameraId', deviceId);
                 }
                 try {
                     await refreshDevices();
                 } catch {}
-            } catch {
+            } catch (e) {
+                console.warn('openDeviceById failed', e);
                 toast.error('باز کردن وبکم با خطا مواجه شد');
             }
         },
@@ -452,9 +117,9 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
         }
     }, [refreshDevices]);
 
-    const handleRequestPermission = useEvent(() => {
+    const handleRequestPermission = useCallback(() => {
         setShowPermissionModal(true);
-    });
+    }, []);
 
     useEffect(() => {
         let mounted = true;
@@ -510,22 +175,6 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
     }, [refreshDevices, requestCameraPermission]);
 
     useEffect(() => {
-        const localVideo = videoRef.current;
-        return () => {
-            try {
-                if (streamRef.current) {
-                    streamRef.current.getTracks().forEach((t) => t.stop());
-                    streamRef.current = null;
-                    setIsCameraOpen(false);
-                }
-                if (localVideo) {
-                    localVideo.srcObject = null;
-                }
-            } catch {}
-        };
-    }, [userData.step]);
-
-    useEffect(() => {
         if (!permissionGranted || !selectedDeviceId) return;
 
         if (process.env.NODE_ENV === 'development') {
@@ -541,6 +190,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
 
     const processOcr = async (file: File) => {
         setOcrLoading(true);
+        setCapturedFile(file);
         try {
             const text = await ocrRecognizeFile(file);
             const fields = parseNationalCardFields(text);
@@ -555,7 +205,6 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
             return { text, fields, valid: ok };
         } catch (e) {
             console.warn('ocr failed', e);
-
             setOcrValid(false);
             if (onCapture) {
                 onCapture(file, false);
@@ -565,15 +214,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
             setOcrLoading(false);
         }
     };
-
-    const blobToFile = (blob: Blob, fileName: string) => {
-        try {
-            return new File([blob], fileName, { type: blob.type });
-        } catch {
-            return new Blob([blob], { type: blob.type }) as unknown as File;
-        }
-    };
-    const handleCapture = useEvent(() => {
+    const handleCapture = () => {
         if (ocrLoading) return;
         if (!videoRef.current) return;
         const video = videoRef.current;
@@ -588,54 +229,45 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
         canvas.toBlob(
             (blob) => {
                 if (!blob) return;
-                type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
-                const maybe = globalThis as unknown as MaybeCrypto;
-                const uuid =
-                    maybe?.crypto && typeof maybe.crypto.randomUUID === 'function'
-                        ? maybe.crypto.randomUUID()
-                        : Date.now().toString(36);
-                const fileName = `selfie_${uuid}.jpg`;
-                const file = blobToFile(blob, fileName);
+                const file = new File([blob], `national-card-${Date.now()}.jpg`, {
+                    type: blob.type,
+                });
                 const url = URL.createObjectURL(file);
                 if (capturedUrl) URL.revokeObjectURL(capturedUrl);
                 setCapturedUrl(url);
-                processOcr(file).then((res) => {
-                    try {
-                        if (onConfirm) onConfirm(file, !!res.valid);
 
-                        if (res.valid) {
-                            try {
-                                if (streamRef.current) {
-                                    streamRef.current.getTracks().forEach((t) => t.stop());
-                                    streamRef.current = null;
-                                    setIsCameraOpen(false);
-                                }
-                                if (videoRef.current) videoRef.current.srcObject = null;
-                            } catch {}
-                        }
-                    } catch (e) {
-                        console.warn('onConfirm handler failed', e);
+                processOcr(file);
+
+                try {
+                    if (streamRef.current) {
+                        streamRef.current.getTracks().forEach((t) => t.stop());
+                        streamRef.current = null;
+                        setIsCameraOpen(false);
                     }
-                });
+                    if (videoRef.current) videoRef.current.srcObject = null;
+                } catch {}
             },
             'image/jpeg',
             0.9
         );
-    });
-    const handleReset = useEvent(async () => {
+    };
+
+    const handleReset = async () => {
         if (capturedUrl) {
             URL.revokeObjectURL(capturedUrl);
             setCapturedUrl(null);
+            setCapturedFile(null);
             setOcrValid(false);
         }
+
         try {
             if (selectedDeviceId) {
                 const s = await navigator.mediaDevices.getUserMedia({
                     video: { deviceId: { exact: selectedDeviceId } },
                     audio: false,
                 });
-                streamRef.current = stripAudioTracks(s);
-                if (videoRef.current) videoRef.current.srcObject = streamRef.current;
+                streamRef.current = s;
+                if (videoRef.current) videoRef.current.srcObject = s;
                 setIsCameraOpen(true);
             } else {
                 toast.error('وبکم انتخاب نشده');
@@ -644,10 +276,11 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
             console.warn('failed to restart camera', err);
             toast.error('دوربین بازنشانی نشد');
         }
-    });
+    };
+
     return (
         <Box className="space-y-3">
-            <Box className="relative overflow-hidden rounded-md">
+            <Box className="relative overflow-hidden rounded bg-black">
                 {!capturedUrl ? (
                     isCameraOpen ? (
                         <video
@@ -655,7 +288,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                             autoPlay
                             playsInline
                             muted
-                            className="border-primary h-64 w-full rounded-md border-2 border-dashed object-cover p-1"
+                            className="h-64 w-full border-2 border-dashed bg-gray-200 object-cover p-1"
                         />
                     ) : (
                         <Box
@@ -664,31 +297,31 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                         >
                             <Box className="space-y-2 text-center">
                                 <CameraIcon className="mx-auto h-12 w-12" />
-                                <p className="text-sm">برای فعال‌سازی دوربین کلیک کنید</p>
+                                <Typography variant="p" className="text-sm">
+                                    برای فعال‌سازی دوربین کلیک کنید
+                                </Typography>
                             </Box>
                         </Box>
                     )
                 ) : (
-                    <Box className="border-primary relative h-full w-full rounded-md border-2 border-dashed p-1 md:h-64">
+                    <Box className="relative h-64 w-full">
                         <Image
                             src={capturedUrl}
                             alt="preview"
-                            className="max-h-60 rounded-lg object-cover"
-                            width={500}
-                            height={200}
+                            fill
+                            style={{ objectFit: 'contain' }}
+                            unoptimized
                         />
+                        {/* آیکون وضعیت OCR - طراحی جدید */}
                         {!ocrLoading && (
-                            <Box className="absolute bottom-4 left-1/2 -translate-x-1/2 transform">
+                            <Box className="absolute top-2 left-2">
                                 {ocrValid ? (
-                                    <Box className="flex items-center gap-2 rounded-full border-2 border-white bg-gradient-to-r from-green-500 to-emerald-500 p-2 text-white shadow-xl backdrop-blur-sm">
-                                        <CheckIcon className="h-5 w-5" />
+                                    <Box className="bg-success flex items-center rounded-full border-2 border-white bg-gradient-to-r p-1 text-white shadow-xl backdrop-blur-sm">
+                                        <CheckIcon className="h-6 w-6 font-bold" />
                                     </Box>
                                 ) : (
-                                    <Box
-                                        onClick={handleReset}
-                                        className="flex items-center gap-2 rounded-full border-2 border-white bg-gradient-to-r from-red-500 to-rose-500 p-2 text-white shadow-xl backdrop-blur-sm"
-                                    >
-                                        <XMarkIcon className="h-5 w-5" />
+                                    <Box className="flex items-center rounded-full border-2 border-white bg-rose-500 p-1 text-white backdrop-blur-lg">
+                                        <XMarkIcon className="h-6 w-6 font-bold" />
                                     </Box>
                                 )}
                             </Box>
@@ -721,7 +354,9 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                 )}
             </Box>
 
-            <Box className="mt-2"></Box>
+            <Box className="mt-2">
+                {/* پیام وضعیت حذف شد - حالا آیکون روی عکس نمایش داده می‌شود */}
+            </Box>
 
             <Box className="flex items-center justify-center gap-2">
                 {!capturedUrl && (
@@ -742,10 +377,10 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                 {capturedUrl && (
                     <Button
                         size="sm"
+                        variant="success"
                         onClick={handleReset}
                         disabled={ocrLoading}
                         loading={ocrLoading}
-                        className="bg-error"
                     >
                         <ArrowPathIcon className="ml-2 h-5 w-5" />
                         <span>بازنشانی</span>
@@ -753,6 +388,7 @@ export default function NationalCardOcrScanner({ onCapture, onConfirm, autoOpen 
                 )}
             </Box>
 
+            {/* Modal for Camera Permission */}
             <Modal
                 isOpen={showPermissionModal}
                 onClose={() => setShowPermissionModal(false)}

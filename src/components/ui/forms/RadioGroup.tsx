@@ -54,11 +54,11 @@ function RadioGroupInner<T>(
                             key={idx}
                             className={cn(
                                 'relative flex cursor-pointer items-center justify-between',
-                                'rounded-xl border-2 px-4 py-3 transition-all duration-200',
+                                'rounded-xl px-4 py-3 transition-all duration-200',
                                 'hover:shadow-sm',
                                 isSelected
-                                    ? 'border-primary-500 bg-secondary shadow-sm dark:bg-gray-100'
-                                    : 'border-gray-300 bg-gray-100 hover:border-gray-300',
+                                    ? 'bg-secondary shadow-sm dark:bg-gray-50'
+                                    : 'bg-gray-100 outline-gray-300',
                                 error && !isSelected && 'border-red-300',
                                 direction === 'horizontal' ? 'min-w-[120px] flex-1' : 'w-full'
                             )}
@@ -66,7 +66,7 @@ function RadioGroupInner<T>(
                             <span
                                 className={cn(
                                     'text-sm font-medium transition-colors',
-                                    isSelected ? 'text-gray-50' : 'text-primary-700'
+                                    isSelected ? 'text-white' : 'text-primary-700'
                                 )}
                             >
                                 {option.label}
@@ -85,7 +85,7 @@ function RadioGroupInner<T>(
                                 />
                                 <Box
                                     className={cn(
-                                        'h-[1.01rem] w-[1.01rem] rounded-full border-1 transition-all duration-200',
+                                        'h-4 w-4 rounded-full border-1 transition-all duration-200',
                                         'flex items-center justify-center',
                                         isSelected
                                             ? 'border-primary-500 bg-white'

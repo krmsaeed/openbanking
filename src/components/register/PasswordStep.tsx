@@ -100,16 +100,6 @@ export default function PasswordStep() {
                         <Box
                             className={`relative ${isLoading ? 'pointer-events-none opacity-60' : ''}`}
                         >
-                            {isLoading && (
-                                <Box className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/80 backdrop-blur-sm">
-                                    <Box className="bg-primary flex items-center space-x-2 rounded-lg px-4 py-2 text-white">
-                                        <Box className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></Box>
-                                        <Typography variant="body2" className="text-white">
-                                            در حال ارسال اطلاعات...
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                            )}
                             <Controller
                                 name="ENFirstName"
                                 control={control}
@@ -257,7 +247,7 @@ export default function PasswordStep() {
                                 disabled={isLoading}
                                 className="w-full text-gray-100"
                             >
-                                {!isLoading && <CheckIcon className="h-5 w-5" />}
+                                {!isLoading && <CheckIcon className="h-5 w-5 text-white" />}
                                 <Typography
                                     variant="body1"
                                     className="text-xs font-medium text-white"
