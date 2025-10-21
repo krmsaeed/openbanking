@@ -47,6 +47,7 @@ export function useNationalCardForm() {
     const [provinces, setProvinces] = useState<Province[]>([]);
     const [cities, setCities] = useState<City[]>([]);
     const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+    const [fileError, setFileError] = useState<string | null>(null);
 
     const form = useForm<NationalCardInfoForm>({
         resolver: zodResolver(nationalCardInfoSchema),
@@ -83,18 +84,45 @@ export function useNationalCardForm() {
         [provinces, form]
     );
 
-    const handleConfirm = useCallback((file: File) => {
-        setCapturedFile(file);
-        setOcrValid(true);
-        toast.success('تصویر کارت ملی با موفقیت دریافت شد');
-    }, []);
+    const handleCapture = useCallback(
+        (file: File, isValid: boolean = true) => {
+            setCapturedFile(file);
+            setOcrValid(isValid);
+            // Only clear file error and mark scanned when OCR is valid.
+            // Do NOT set an inline file error here — show errors on submit instead.
+            if (isValid) {
+                setFileError(null);
+                // mark in userData that a successful scan happened so other steps
+                // (like PersonalInfo) can decide whether to bypass validation
+                setUserData({ ...userData, hasScannedNationalCard: true });
+            }
+        },
+        [setUserData, userData]
+    );
+
+    const handleConfirm = useCallback(
+        (file: File, isValid: boolean = true) => {
+            // delegate to handleCapture so both onCapture and onConfirm
+            // share the same behavior
+            handleCapture(file, isValid);
+            if (isValid) toast.success('تصویر کارت ملی با موفقیت دریافت شد');
+        },
+        [handleCapture]
+    );
 
     const handleSubmit = useCallback(async () => {
+        console.debug('handleSubmit called', {
+            capturedFile,
+            ocrValid,
+            userData,
+            fileError,
+        });
+
+        setFileError(null);
+
         if (!capturedFile) {
-            toast.error('لطفا ابتدا کارت ملی خود را اسکن کنید');
             return;
         }
-
         setIsLoading(true);
 
         try {
@@ -106,9 +134,10 @@ export function useNationalCardForm() {
                 body: {
                     isMarried: form.getValues('isMarried'),
                     grade: form.getValues('grade'),
-                    provinceId: form.getValues('provinceId') || 0,
-                    cityId: form.getValues('cityId') || 0,
+                    provinceId: form.getValues('provinceId') || 1,
+                    cityId: form.getValues('cityId') || 1,
                     branchId: form.getValues('branch') || 0,
+                    address: form.getValues('address') || '',
                 },
             };
 
@@ -131,7 +160,7 @@ export function useNationalCardForm() {
         } finally {
             setIsLoading(false);
         }
-    }, [capturedFile, userData, setUserData, form]);
+    }, [capturedFile, userData, setUserData, form, fileError, ocrValid]);
 
     const handleWelcomeModalClose = useCallback(() => {
         setShowWelcomeModal(false);
@@ -153,8 +182,23 @@ export function useNationalCardForm() {
         handleProvinceChange,
         handleConfirm,
         handleSubmit,
+        submit: useCallback(async () => {
+            setFileError(null);
+
+            if (!capturedFile) {
+                setFileError('عکس کارت ملی الزامی است');
+            }
+
+            const valid = await form.trigger();
+            if (!valid) return;
+
+            if (!capturedFile) return;
+
+            await handleSubmit();
+        }, [capturedFile, form, handleSubmit, setFileError]),
         handleWelcomeModalClose,
         isFormValid: form.formState.isValid,
         errors: form.formState.errors,
+        fileError,
     };
 }

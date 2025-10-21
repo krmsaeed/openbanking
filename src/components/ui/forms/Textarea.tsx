@@ -63,7 +63,7 @@ const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
                 value={value}
             />
             {error && (
-                <Typography variant="span" className="text-secondary block text-sm">
+                <Typography variant="span" className="text-error-600 block text-sm">
                     {error}
                 </Typography>
             )}

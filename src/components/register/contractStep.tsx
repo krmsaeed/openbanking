@@ -209,12 +209,10 @@ export default function ContractStep() {
 
     const renderContractDetail = (label: string, value: string, highlight = false) => (
         <Box className="space-y-1">
-            <Label className="text-muted-foreground dark:text-muted-foreground text-sm font-medium">
-                {label}
-            </Label>
+            <Label className="text-muted-foreground text-sm font-medium">{label}</Label>
             <Typography
                 variant="p"
-                className={`text-sm ${highlight ? 'text-primary dark:text-primary font-bold' : 'text-foreground dark:text-foreground'}`}
+                className={`text-sm ${highlight ? 'text-primary-700 font-bold' : 'text-foreground'}`}
             >
                 {value}
             </Typography>
@@ -226,14 +224,11 @@ export default function ContractStep() {
             {/* Contract Header */}
             <Box className="space-y-6 bg-gray-100 py-3 text-center">
                 <Box>
-                    <DocumentTextIcon className="text-primary dark:text-primary mx-auto mb-4 h-16 w-16" />
+                    <DocumentTextIcon className="text-primary-700 mx-auto mb-4 h-16 w-16" />
                     <Typography variant="h4" className="mb-2">
                         قرارداد فی‌مابین مشتری و بانک اقتصاد نوین
                     </Typography>
-                    <Typography
-                        variant="body2"
-                        className="text-muted-foreground dark:text-muted-foreground"
-                    >
+                    <Typography variant="body2" className="text-muted-foreground">
                         لطفا شرایط قرارداد را به دقت مطالعه فرمایید
                     </Typography>
                 </Box>

@@ -106,11 +106,6 @@ export function PersonalInfoForm({
                                     </option>
                                 ))}
                             </Select>
-                            {errors.branch?.message && (
-                                <Typography variant="p" className="mt-2 text-sm text-red-600">
-                                    {String(errors.branch.message)}
-                                </Typography>
-                            )}
                         </>
                     )}
                 />

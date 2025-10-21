@@ -65,7 +65,7 @@ export function VideoRecorderView({
                                 variant="secondary"
                                 onClick={onRetake}
                                 disabled={isUploading}
-                                className="bg-error-400 flex max-w-32 items-center gap-2 text-white"
+                                className="bg-warning-600 flex max-w-32 cursor-pointer items-center gap-2 text-white"
                             >
                                 <VideoCameraIcon className="h-4 w-4" />
                                 ضبط مجدد
@@ -117,7 +117,7 @@ export function VideoRecorderView({
                                             </ul>
                                             <Button
                                                 onClick={onStartRecording}
-                                                className="bg-success-600 flex items-center gap-2 px-6 py-3"
+                                                className="bg-success-600 flex items-center gap-2 px-6 py-3 text-white"
                                                 disabled={!cameraActive}
                                             >
                                                 <VideoCameraIcon className="h-5 w-5" />
@@ -169,7 +169,7 @@ export function VideoRecorderView({
                     onClick={onConfirm}
                     loading={isUploading}
                     disabled={!hasPreview || isUploading}
-                    className="bg-primary flex w-full items-center justify-center gap-3 px-5 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="bg-primary flex w-full items-center justify-center gap-2 px-5 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {!isUploading && <CheckIcon className="h-5 w-5" />}
                     <Typography variant="body1" className="text-xs font-medium text-white">

@@ -44,7 +44,7 @@ export function ThemeProvider({
                 const body = document.body;
 
                 // Add transition class for smooth theme change
-                root.style.setProperty('--theme-transition-duration', '300ms');
+                root.style.setProperty('--theme-transition-duration', '200ms');
                 root.classList.add('theme-transition');
 
                 if (newTheme === 'dark') {

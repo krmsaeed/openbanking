@@ -14,13 +14,14 @@ type Props = {
     onConfirm?: (file: File, isValid: boolean) => void;
     autoOpen?: boolean;
     showConfirmButton?: boolean;
+    fileError?: string | null;
 };
 
 export default function NationalCardOcrScanner({
     onCapture,
     onConfirm,
     autoOpen = true,
-    showConfirmButton = false,
+    fileError = null,
 }: Props) {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -29,7 +30,6 @@ export default function NationalCardOcrScanner({
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
     const [capturedUrl, setCapturedUrl] = useState<string | null>(null);
-    const [capturedFile, setCapturedFile] = useState<File | null>(null);
     const [ocrValid, setOcrValid] = useState<boolean>(false);
     const [ocrLoading, setOcrLoading] = useState<boolean>(false);
     const [showPermissionModal, setShowPermissionModal] = useState<boolean>(false);
@@ -190,7 +190,6 @@ export default function NationalCardOcrScanner({
 
     const processOcr = async (file: File) => {
         setOcrLoading(true);
-        setCapturedFile(file);
         try {
             const text = await ocrRecognizeFile(file);
             const fields = parseNationalCardFields(text);
@@ -200,6 +199,16 @@ export default function NationalCardOcrScanner({
 
             if (onCapture) {
                 onCapture(file, ok, fields);
+            }
+
+            // If OCR looks valid, automatically confirm the capture for the parent
+            // (instead of requiring the user to press a confirm button)
+            if (ok && onConfirm) {
+                try {
+                    onConfirm(file, true);
+                } catch (e) {
+                    console.warn('onConfirm handler threw', e);
+                }
             }
 
             return { text, fields, valid: ok };
@@ -219,8 +228,8 @@ export default function NationalCardOcrScanner({
         if (!videoRef.current) return;
         const video = videoRef.current;
         const canvas = canvasRef.current || document.createElement('canvas');
-        const w = video.videoWidth || 1280;
-        const h = video.videoHeight || 720;
+        const w = video.videoWidth || 700;
+        const h = video.videoHeight || 300;
         canvas.width = w;
         canvas.height = h;
         const ctx = canvas.getContext('2d');
@@ -256,7 +265,6 @@ export default function NationalCardOcrScanner({
         if (capturedUrl) {
             URL.revokeObjectURL(capturedUrl);
             setCapturedUrl(null);
-            setCapturedFile(null);
             setOcrValid(false);
         }
 
@@ -288,7 +296,7 @@ export default function NationalCardOcrScanner({
                             autoPlay
                             playsInline
                             muted
-                            className="h-64 w-full border-2 border-dashed bg-gray-200 object-cover p-1"
+                            className="w-full border-2 border-dashed bg-gray-200 p-1 sm:object-cover md:h-64"
                         />
                     ) : (
                         <Box
@@ -312,11 +320,11 @@ export default function NationalCardOcrScanner({
                             style={{ objectFit: 'contain' }}
                             unoptimized
                         />
-                        {/* آیکون وضعیت OCR - طراحی جدید */}
+
                         {!ocrLoading && (
                             <Box className="absolute top-2 left-2">
                                 {ocrValid ? (
-                                    <Box className="bg-success flex items-center rounded-full border-2 border-white bg-gradient-to-r p-1 text-white shadow-xl backdrop-blur-sm">
+                                    <Box className="bg-success-500 flex items-center rounded-full border-2 border-white p-1 text-white shadow-xl backdrop-blur-sm">
                                         <CheckIcon className="h-6 w-6 font-bold" />
                                     </Box>
                                 ) : (
@@ -353,10 +361,7 @@ export default function NationalCardOcrScanner({
                     </Box>
                 )}
             </Box>
-
-            <Box className="mt-2">
-                {/* پیام وضعیت حذف شد - حالا آیکون روی عکس نمایش داده می‌شود */}
-            </Box>
+            {<Typography className="text-sm text-red-600">{fileError}</Typography>}
 
             <Box className="flex items-center justify-center gap-2">
                 {!capturedUrl && (
@@ -375,16 +380,18 @@ export default function NationalCardOcrScanner({
                 )}
 
                 {capturedUrl && (
-                    <Button
-                        size="sm"
-                        variant="success"
-                        onClick={handleReset}
-                        disabled={ocrLoading}
-                        loading={ocrLoading}
-                    >
-                        <ArrowPathIcon className="ml-2 h-5 w-5" />
-                        <span>بازنشانی</span>
-                    </Button>
+                    <Box className="flex flex-col items-center gap-2">
+                        <Button
+                            size="sm"
+                            onClick={handleReset}
+                            disabled={ocrLoading && !ocrValid}
+                            loading={ocrLoading}
+                            className="bg-warning-600 cursor-pointer text-white"
+                        >
+                            <ArrowPathIcon className="ml-2 h-5 w-5" />
+                            <span>بازنشانی</span>
+                        </Button>
+                    </Box>
                 )}
             </Box>
 

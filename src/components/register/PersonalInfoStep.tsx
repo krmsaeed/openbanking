@@ -8,11 +8,10 @@ import { CheckIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
-import { Typography } from '../ui';
+import { Box, Typography } from '../ui';
 
 export default function PersonalInfo() {
     const { userData, setUserData } = useUser();
-
     const {
         handleSubmit,
         formState: { errors, isSubmitting },
@@ -64,21 +63,23 @@ export default function PersonalInfo() {
             });
     };
 
-    // Wrapper to bypass validation when user is a customer
     const onSubmitWrapper = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (userData.isCustomer) {
-            // Grab current values but do not run validation
+        // Bypass validation only for deposit customers who haven't scanned
+        // their national card. If they have scanned (hasScannedNationalCard === true)
+        // then run normal validation.
+        if (userData.isCustomer && userData.isDeposit && !userData.hasScannedNationalCard) {
+            // For deposit customers who haven't scanned their national card,
+            // bypass client-side validation but still submit the current form values.
             const values = getValues();
-            // Call onSubmit with values (optional fields will be ignored server-side)
             await onSubmit(values as PersonalInfoStepForm);
-        } else {
-            // Run normal validation and submission
-            await handleSubmit(onSubmit)();
+            return;
         }
+
+        await handleSubmit(onSubmit)();
     };
     return (
-        <div className="w-full">
+        <Box className="w-full">
             <form onSubmit={onSubmitWrapper} className="space-y-3">
                 <Input
                     label="کد ملی"
@@ -88,7 +89,7 @@ export default function PersonalInfo() {
                     value={userData.nationalCode}
                     className="text-center"
                 />
-                {userData.isCustomer && (
+                {!userData.isCustomer && (
                     <>
                         {' '}
                         <Controller
@@ -145,7 +146,7 @@ export default function PersonalInfo() {
                     type="submit"
                     loading={isSubmitting}
                     disabled={isSubmitting}
-                    className="bg-primary-400 mt-5 flex w-full items-center justify-center gap-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="bg-primary-400 mt-5 flex w-full items-center justify-center gap-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {!isSubmitting && <CheckIcon className="h-5 w-5" />}
                     <Typography variant="body1" className="text-xs font-medium text-white">
@@ -153,6 +154,6 @@ export default function PersonalInfo() {
                     </Typography>
                 </LoadingButton>
             </form>
-        </div>
+        </Box>
     );
 }

@@ -12,20 +12,16 @@ export default function NationalCardStep() {
     const {
         form,
         isLoading,
-        capturedFile,
-        ocrValid,
         provinces,
         cities,
         showWelcomeModal,
         handleProvinceChange,
         handleConfirm,
-        handleSubmit,
+        submit,
         handleWelcomeModalClose,
-        isFormValid,
         errors,
+        fileError,
     } = useNationalCardForm();
-
-    const isSubmitDisabled = !capturedFile || !ocrValid || !isFormValid || isLoading;
 
     return (
         <Box className="mx-auto max-w-2xl space-y-6">
@@ -33,6 +29,7 @@ export default function NationalCardStep() {
                 onConfirm={handleConfirm}
                 autoOpen={true}
                 showConfirmButton={true}
+                fileError={fileError}
             />
 
             <PersonalInfoForm
@@ -46,12 +43,13 @@ export default function NationalCardStep() {
             <Box className="flex w-full justify-center">
                 <LoadingButton
                     isLoading={isLoading}
-                    onClick={handleSubmit}
-                    className="bg-primary-600 hover:bg-primary-700 flex min-w-[200px] items-center justify-center gap-3 px-6 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    onClick={submit}
+                    disabled={isLoading}
+                    className="bg-primary-600 hover:bg-primary-700 flex min-w-[200px] items-center justify-center gap-2 px-6 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {!isLoading && <CheckIcon className="h-5 w-5" />}
                     <span className="text-sm font-medium">
-                        {isLoading ? 'در حال ارسال...' : 'تایید'}
+                        {isLoading ? 'در حال ارسال...' : 'مرحله بعد'}
                     </span>
                 </LoadingButton>
             </Box>

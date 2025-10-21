@@ -1,15 +1,3 @@
-/**
- * Utility functions for file and blob handling
- */
-
-/**
- * Converts a data URL or blob to a File object
- * @param source - Data URL string, Blob/File, Canvas element, or null/undefined
- * @param filename - Name for the file (without extension)
- * @param mimeType - MIME type for the file (e.g., 'image/jpeg', 'image/png')
- * @param quality - Quality for image compression (0-1), only used for canvas conversion
- * @returns Promise<File | null>
- */
 export async function convertToFile(
     source: string | Blob | HTMLCanvasElement | null | undefined,
     filename: string,
@@ -55,10 +43,6 @@ export async function convertToFile(
     }
 }
 
-/**
- * Generates a UUID or fallback to timestamp-based ID
- * @returns string
- */
 export function generateUUID(): string {
     type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
     const maybe = globalThis as unknown as MaybeCrypto;
@@ -70,15 +54,6 @@ export function generateUUID(): string {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
 }
 
-/**
- * Creates FormData with message and file for BPMS upload
- * @param file - File object to upload
- * @param serviceName - BPMS service name
- * @param processId - Process ID
- * @param formName - Form name
- * @param additionalBody - Additional body parameters
- * @returns FormData
- */
 export function createBPMSFormData(
     file: File,
     serviceName: string,

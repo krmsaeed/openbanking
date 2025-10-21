@@ -29,7 +29,7 @@ const requestCache: Map<string, Promise<void> | true> = new Map();
 export const useHomeLoader = (): UseHomeLoaderReturn => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { setUserData } = useUser();
+    const { userData, setUserData } = useUser();
     const { nationalId, isAuthenticated } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -45,22 +45,26 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
 
             const requestPromise = (async () => {
                 try {
-                    const response = await axios.post('/api/bpms/send-message', {
-                        serviceName: 'virtual-open-deposit',
-                        body: { code },
-                    });
+                    await axios
+                        .post('/api/bpms/send-message', {
+                            serviceName: 'virtual-open-deposit',
+                            body: { code },
+                        })
+                        .then((response) => {
+                            const { data } = response.data as ApiResponse;
 
-                    const { data } = response.data as ApiResponse;
+                            setUserData({
+                                ...userData,
+                                nationalCode: code,
+                                step: 1,
+                                processId: data.processId,
+                                isCustomer: data.body.isCustomer,
+                                isDeposit: data.body.isDeposit,
+                            });
 
-                    router.push('/register');
-                    setUserData({
-                        nationalCode: code,
-                        step: 1,
-                        processId: data.processId,
-                        isCustomer: true,
-                    });
-
-                    requestCache.set(code, true);
+                            router.push('/register');
+                            requestCache.set(code, true);
+                        });
                 } catch (err) {
                     requestCache.delete(code);
                     throw err;
@@ -70,7 +74,7 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
             requestCache.set(code, requestPromise);
             return requestPromise;
         },
-        [router, setUserData]
+        [router, setUserData, userData]
     );
 
     const validateAndInitializeAuth = useCallback(async (): Promise<string | null> => {
@@ -79,22 +83,22 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                 const tokenFromUrl = searchParams.get('token');
                 const codeFromUrl = searchParams.get('code');
 
-                if (!tokenFromUrl || !codeFromUrl) {
-                    throw new Error('اطلاعات احراز هویت در URL یافت نشد');
-                }
-
                 const { isValidNationalId, cleanNationalId } = await import(
                     '@/lib/nationalIdValidator'
                 );
-                const cleanedCode = cleanNationalId(codeFromUrl);
 
-                if (!isValidNationalId(cleanedCode)) {
-                    throw new Error('کد ملی نامعتبر است');
+                let cleanedCode: string | null = null;
+
+                if (codeFromUrl && tokenFromUrl) {
+                    cleanedCode = cleanNationalId(codeFromUrl);
+
+                    if (!isValidNationalId(cleanedCode)) {
+                        throw new Error('کد ملی نامعتبر است');
+                    }
+
+                    initializeAuth({ token: tokenFromUrl, nationalId: cleanedCode });
                 }
 
-                initializeAuth({ token: tokenFromUrl, nationalId: cleanedCode });
-
-                // Clean up URL parameters
                 const url = new URL(window.location.href);
                 url.searchParams.delete('token');
                 window.history.replaceState({}, '', url.toString());
@@ -119,7 +123,7 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
             const codeToUse = await validateAndInitializeAuth();
 
             if (!codeToUse) {
-                throw new Error('کد ملی یافت نشد');
+                throw new Error('خطا در دریافت اطلاعات');
             }
 
             calledRef.current = true;

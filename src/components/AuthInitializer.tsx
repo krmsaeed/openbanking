@@ -16,7 +16,7 @@ const AuthInitializer = memo<AuthInitializerProps>(({ children, requireAuth = tr
         return (
             <Box className="flex min-h-screen items-center justify-center">
                 <Box className="flex flex-col items-center gap-4">
-                    <Box className="border-t-primary-600 dark:border-t-primary-400 h-8 w-8 animate-spin rounded-full border-2 border-gray-300 dark:border-gray-600"></Box>
+                    <Box className="border-t-primary-600 h-8 w-8 animate-spin rounded-full border-2 border-gray-300"></Box>
                     <Typography variant="body2" color="secondary">
                         در حال بارگذاری...
                     </Typography>

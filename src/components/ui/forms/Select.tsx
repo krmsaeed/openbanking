@@ -100,7 +100,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>((props, ref) => {
             </Box>
             {error && (
                 <Box
-                    className="text-error mt-1 flex w-full items-center pl-1 text-right text-sm"
+                    className="text-error-600 mt-1 flex w-full items-center pl-1 text-right text-sm"
                     dir="rtl"
                 >
                     {error}

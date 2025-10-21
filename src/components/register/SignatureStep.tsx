@@ -58,10 +58,10 @@ export function SignatureStep() {
                 <Button
                     onClick={clearSignature}
                     disabled={!hasSignature || isLoading}
-                    className="bg-error items-between hover:bg-error-700 flex cursor-pointer gap-x-2 gap-y-4 text-white"
+                    className="bg-warning-600 items-between flex cursor-pointer gap-x-2 gap-y-4 text-white"
                 >
                     <TrashIcon className="h-4 w-4" />
-                    پاک کردن
+                    <Typography className="hidden md:inline"> پاک کردن</Typography>
                 </Button>
             </Box>
 
@@ -72,11 +72,11 @@ export function SignatureStep() {
                         onClick={handleSubmit}
                         disabled={!hasSignature || isLoading}
                         loading={isLoading}
-                        className="bg-primary-600 hover:bg-primary-700 flex w-full items-center justify-center gap-3 px-5 py-3 text-white"
+                        className="bg-primary-600 hover:bg-primary-700 flex w-full items-center justify-center gap-2 px-5 py-3 text-white"
                     >
                         {!isLoading && <CheckIcon className="h-5 w-5" />}
                         <Typography variant="body1" className="text-xs font-medium text-white">
-                            {isLoading ? 'در حال ارسال...' : 'تایید'}
+                            {isLoading ? 'در حال ارسال...' : 'مرحله بعد'}
                         </Typography>
                     </LoadingButton>
                 </Box>

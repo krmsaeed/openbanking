@@ -25,6 +25,7 @@ interface UserData {
     accountNumber?: string;
     isCustomer?: boolean;
     isDeposit?: boolean;
+    hasScannedNationalCard?: boolean;
 }
 
 interface UserContextType {
@@ -68,6 +69,7 @@ const initialState: UserData = {
     processId: null,
     customerNumber: undefined,
     accountNumber: undefined,
+    hasScannedNationalCard: false,
 };
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const [userData, setUserDataState] = useState<UserData>(initialState);

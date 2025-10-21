@@ -123,14 +123,14 @@ function Instructions({ capturedPhoto, onRetake, isUploading }: InstructionsProp
                 <>
                     <ul className="space-y-1 text-center text-sm">
                         <li className="text-error-800 font-bold">عکس خود را بررسی کنید</li>
-                        <li>اگر عکس مناسب است، روی «تایید» کلیک کنید</li>
+                        <li>اگر عکس مناسب است، روی «مرحله بعد» کلیک کنید</li>
                         <li>برای گرفتن عکس جدید، روی «عکس جدید» کلیک کنید</li>
                     </ul>
                     <Box className="mt-3 flex justify-center gap-4">
                         <Button
                             onClick={onRetake}
                             disabled={isUploading}
-                            className="bg-error-400 flex w-full items-center justify-center px-5 py-3"
+                            className="bg-warning-600 flex items-center justify-center px-5 py-3"
                         >
                             <ArrowPathIcon className="h-6 w-6 text-white" />
                             <Typography variant="body1" className="text-xs font-medium text-white">
@@ -157,7 +157,7 @@ function Controls({ capturedPhoto, isUploading, onConfirm }: ControlsProps) {
                 onClick={onConfirm}
                 loading={isUploading}
                 disabled={!capturedPhoto || isUploading}
-                className="bg-primary-400 flex w-full items-center justify-center gap-3 px-5 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="bg-primary-400 flex w-full items-center justify-center gap-2 px-5 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
                 {!isUploading && <CheckIcon className="h-5 w-5" />}
                 <Typography variant="body1" className="text-xs font-medium text-white">
