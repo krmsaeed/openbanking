@@ -3,10 +3,11 @@
 import { Box, Typography } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
 import { Modal } from '@/components/ui/overlay';
+import { useCamera } from '@/hooks/useCamera';
 import { OcrFields, ocrRecognizeFile, parseNationalCardFields } from '@/lib/ocr';
 import { ArrowPathIcon, CameraIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 type Props = {
@@ -23,245 +24,98 @@ export default function NationalCardOcrScanner({
     autoOpen = true,
     fileError = null,
 }: Props) {
-    const videoRef = useRef<HTMLVideoElement | null>(null);
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const streamRef = useRef<MediaStream | null>(null);
-    const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
-    const [isCameraOpen, setIsCameraOpen] = useState(false);
-    const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
+    const {
+        videoRef,
+        canvasRef,
+        isActive: isCameraOpen,
+        isLoading: cameraLoading,
+        error: cameraError,
+        startCamera,
+        stopCamera,
+        takePhoto,
+    } = useCamera({ video: true, audio: false });
+
     const [capturedUrl, setCapturedUrl] = useState<string | null>(null);
     const [ocrValid, setOcrValid] = useState<boolean>(false);
     const [ocrLoading, setOcrLoading] = useState<boolean>(false);
     const [showPermissionModal, setShowPermissionModal] = useState<boolean>(false);
 
-    const refreshDevices = useCallback(async () => {
-        try {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const allVids = devices.filter((d) => d.kind === 'videoinput');
-            const preferUsb = process.env.NODE_ENV === 'development';
-            let vids: MediaDeviceInfo[] = [];
-            if (preferUsb) {
-                vids = allVids.filter((v) => /usb|external|webcam/i.test(v.label));
-                if (vids.length === 0) vids = allVids;
-            } else {
-                vids = allVids;
-            }
-            if (!selectedDeviceId && vids.length > 0) setSelectedDeviceId(vids[0].deviceId);
-        } catch (e) {
-            console.warn('refreshDevices failed', e);
-        }
-    }, [selectedDeviceId]);
-
-    const openDeviceById = useCallback(
-        async (deviceId: string, remember = false) => {
-            setIsCameraOpen(true);
-            try {
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-                try {
-                    streamRef.current?.getTracks().forEach((t) => t.stop());
-                } catch {}
-                const s = await navigator.mediaDevices.getUserMedia({
-                    video: { deviceId: { exact: deviceId } },
-                    audio: false,
-                });
-                streamRef.current = s;
-                if (videoRef.current) videoRef.current.srcObject = s;
-                try {
-                    const id = s.getVideoTracks()?.[0]?.getSettings?.()?.deviceId as
-                        | string
-                        | undefined;
-                    if (id) setSelectedDeviceId(id);
-                    else setSelectedDeviceId(deviceId);
-                } catch {
-                    setSelectedDeviceId(deviceId);
-                }
-
-                if (remember && process.env.NODE_ENV === 'development') {
-                    localStorage.setItem('preferredUsbCameraId', deviceId);
-                }
-                try {
-                    await refreshDevices();
-                } catch {}
-            } catch (e) {
-                console.warn('openDeviceById failed', e);
-                toast.error('باز کردن وبکم با خطا مواجه شد');
-            }
-        },
-        [refreshDevices]
-    );
-
-    const requestCameraPermission = useCallback(async () => {
-        try {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                toast.error('دوربین در این مرورگر پشتیبانی نمی‌شود');
-                return false;
-            }
-            const s = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-            try {
-                s.getTracks().forEach((t) => t.stop());
-            } catch {}
-            setPermissionGranted(true);
-            setShowPermissionModal(false);
-            try {
-                await refreshDevices();
-            } catch {}
-            return true;
-        } catch {
-            setPermissionGranted(false);
-            toast.error('دسترسی دوربین داده نشد');
-            try {
-                await refreshDevices();
-            } catch {}
-            return false;
-        }
-    }, [refreshDevices]);
-
-    const handleRequestPermission = useCallback(() => {
+    const handleRequestPermission = useCallback(async () => {
         setShowPermissionModal(true);
     }, []);
 
-    useEffect(() => {
-        let mounted = true;
-        const tryAutoOpen = async () => {
-            if (!autoOpen || !selectedDeviceId || isCameraOpen) return;
-            try {
-                type PermissionStatusLike = { state?: string };
-                type PermissionsLike = {
-                    query?: (desc: { name: string }) => Promise<PermissionStatusLike>;
-                };
-                const nav = navigator as unknown as { permissions?: PermissionsLike };
-                if (nav.permissions && typeof nav.permissions.query === 'function') {
-                    try {
-                        const res = await nav.permissions.query({ name: 'camera' });
-                        if (!mounted) return;
-                        if (res && res.state === 'granted') {
-                            await openDeviceById(selectedDeviceId);
-                        }
-                    } catch {}
-                } else {
-                    try {
-                        await openDeviceById(selectedDeviceId);
-                    } catch {}
-                }
-            } catch (err) {
-                console.warn('auto-open check failed', err);
-            }
-        };
-        tryAutoOpen();
-        return () => {
-            mounted = false;
-        };
-    }, [selectedDeviceId, isCameraOpen, openDeviceById, autoOpen]);
-
-    useEffect(() => {
-        const localVideo = videoRef.current;
-        refreshDevices();
-        (async () => {
-            try {
-                await requestCameraPermission();
-            } catch {}
-        })();
-        return () => {
-            try {
-                if (streamRef.current) {
-                    streamRef.current.getTracks().forEach((t) => t.stop());
-                    streamRef.current = null;
-                    setIsCameraOpen(false);
-                }
-                if (localVideo) localVideo.srcObject = null;
-            } catch {}
-        };
-    }, [refreshDevices, requestCameraPermission]);
-
-    useEffect(() => {
-        if (!permissionGranted || !selectedDeviceId) return;
-
-        if (process.env.NODE_ENV === 'development') {
-            (async () => {
-                try {
-                    await openDeviceById(selectedDeviceId);
-                } catch (e) {
-                    console.warn('auto-open after permission failed', e);
-                }
-            })();
-        }
-    }, [permissionGranted, selectedDeviceId, openDeviceById]);
-
-    const processOcr = async (file: File) => {
-        setOcrLoading(true);
+    const requestCameraPermission = useCallback(async () => {
         try {
-            const text = await ocrRecognizeFile(file);
-            const fields = parseNationalCardFields(text);
-            const ok = !!(fields.nationalId && /^\d{10}$/.test(fields.nationalId));
-            setOcrValid(!!ok);
-            if (!ok) toast.error('تصویر کارت ملی مطابق الگو تشخیص داده نشد');
-
-            if (onCapture) {
-                onCapture(file, ok, fields);
-            }
-
-            // If OCR looks valid, automatically confirm the capture for the parent
-            // (instead of requiring the user to press a confirm button)
-            if (ok && onConfirm) {
-                try {
-                    onConfirm(file, true);
-                } catch (e) {
-                    console.warn('onConfirm handler threw', e);
-                }
-            }
-
-            return { text, fields, valid: ok };
-        } catch (e) {
-            console.warn('ocr failed', e);
-            setOcrValid(false);
-            if (onCapture) {
-                onCapture(file, false);
-            }
-            return { text: '', fields: null, valid: false };
-        } finally {
-            setOcrLoading(false);
+            await startCamera();
+            setShowPermissionModal(false);
+            return true;
+        } catch {
+            toast.error('دسترسی دوربین داده نشد');
+            return false;
         }
-    };
-    const handleCapture = () => {
-        if (ocrLoading) return;
-        if (!videoRef.current) return;
-        const video = videoRef.current;
-        const canvas = canvasRef.current || document.createElement('canvas');
-        const w = video.videoWidth || 700;
-        const h = video.videoHeight || 300;
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        ctx.drawImage(video, 0, 0, w, h);
-        canvas.toBlob(
-            (blob) => {
-                if (!blob) return;
-                const file = new File([blob], `national-card-${Date.now()}.jpg`, {
-                    type: blob.type,
-                });
-                const url = URL.createObjectURL(file);
-                if (capturedUrl) URL.revokeObjectURL(capturedUrl);
-                setCapturedUrl(url);
+    }, [startCamera]);
 
-                processOcr(file);
+    // Auto-open camera on mount if autoOpen is true
+    useEffect(() => {
+        if (autoOpen && !isCameraOpen && !capturedUrl) {
+            startCamera().catch(() => {
+                // Permission may be denied, that's OK
+            });
+        }
+    }, [autoOpen, isCameraOpen, capturedUrl, startCamera]);
 
-                try {
-                    if (streamRef.current) {
-                        streamRef.current.getTracks().forEach((t) => t.stop());
-                        streamRef.current = null;
-                        setIsCameraOpen(false);
+    const processOcr = useCallback(
+        async (file: File) => {
+            setOcrLoading(true);
+            try {
+                const text = await ocrRecognizeFile(file);
+                const fields = parseNationalCardFields(text);
+                const ok = !!(fields.nationalId && /^\d{10}$/.test(fields.nationalId));
+                setOcrValid(!!ok);
+                if (!ok) toast.error('تصویر کارت ملی مطابق الگو تشخیص داده نشد');
+
+                if (onCapture) {
+                    onCapture(file, ok, fields);
+                }
+
+                // If OCR looks valid, automatically confirm the capture for the parent
+                // (instead of requiring the user to press a confirm button)
+                if (ok && onConfirm) {
+                    try {
+                        onConfirm(file, true);
+                    } catch (e) {
+                        console.warn('onConfirm handler threw', e);
                     }
-                    if (videoRef.current) videoRef.current.srcObject = null;
-                } catch {}
-            },
-            'image/jpeg',
-            0.9
-        );
-    };
+                }
 
-    const handleReset = async () => {
+                return { text, fields, valid: ok };
+            } catch (e) {
+                console.warn('ocr failed', e);
+                setOcrValid(false);
+                if (onCapture) {
+                    onCapture(file, false);
+                }
+                return { text: '', fields: null, valid: false };
+            } finally {
+                setOcrLoading(false);
+            }
+        },
+        [onCapture, onConfirm]
+    );
+    const handleCapture = useCallback(() => {
+        if (ocrLoading) return;
+
+        takePhoto((file) => {
+            const url = URL.createObjectURL(file);
+            if (capturedUrl) URL.revokeObjectURL(capturedUrl);
+            setCapturedUrl(url);
+
+            processOcr(file);
+            stopCamera();
+        });
+    }, [ocrLoading, takePhoto, capturedUrl, stopCamera, processOcr]);
+
+    const handleReset = useCallback(async () => {
         if (capturedUrl) {
             URL.revokeObjectURL(capturedUrl);
             setCapturedUrl(null);
@@ -269,22 +123,12 @@ export default function NationalCardOcrScanner({
         }
 
         try {
-            if (selectedDeviceId) {
-                const s = await navigator.mediaDevices.getUserMedia({
-                    video: { deviceId: { exact: selectedDeviceId } },
-                    audio: false,
-                });
-                streamRef.current = s;
-                if (videoRef.current) videoRef.current.srcObject = s;
-                setIsCameraOpen(true);
-            } else {
-                toast.error('وبکم انتخاب نشده');
-            }
+            await startCamera();
         } catch (err) {
             console.warn('failed to restart camera', err);
             toast.error('دوربین بازنشانی نشد');
         }
-    };
+    }, [capturedUrl, startCamera]);
 
     return (
         <Box className="space-y-3">

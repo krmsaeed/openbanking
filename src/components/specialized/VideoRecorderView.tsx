@@ -77,7 +77,7 @@ export function VideoRecorderView({
                 {!hasPreview && (
                     <Box className="space-y-4">
                         <Box className=" ">
-                            <Box className="border-primary relative mb-4 overflow-hidden rounded-lg border-2 border-dashed bg-gray-200 p-1">
+                            <Box className="relative mb-4 overflow-hidden rounded-lg border-2 border-dashed border-gray-900 bg-gray-200 p-1">
                                 <video
                                     ref={videoRef}
                                     autoPlay
