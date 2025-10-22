@@ -45,7 +45,7 @@ export default function NationalCardStep() {
                     isLoading={isLoading}
                     onClick={submit}
                     disabled={isLoading}
-                    className="bg-primary-600 hover:bg-primary-700 flex min-w-[200px] items-center justify-center gap-2 px-6 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex w-full items-center justify-center gap-2 text-white"
                 >
                     {!isLoading && <CheckIcon className="h-5 w-5" />}
                     <span className="text-sm font-medium">

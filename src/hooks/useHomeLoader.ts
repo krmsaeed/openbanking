@@ -6,7 +6,6 @@ import { initializeAuth } from '@/lib/auth';
 import axios from 'axios';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface ApiResponse {
     data: {
@@ -34,6 +33,7 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const calledRef = useRef(false);
+    const effectRan = useRef(false);
 
     const makeApiCall = useCallback(
         async (code: string): Promise<void> => {
@@ -44,31 +44,30 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
             }
 
             const requestPromise = (async () => {
-                try {
-                    await axios
-                        .post('/api/bpms/send-message', {
-                            serviceName: 'virtual-open-deposit',
-                            body: { code },
-                        })
-                        .then((response) => {
-                            const { data } = response.data as ApiResponse;
+                await axios
+                    .post('/api/bpms/send-message', {
+                        serviceName: 'virtual-open-deposit',
+                        body: { code },
+                    })
+                    .then((response) => {
+                        const { data } = response.data as ApiResponse;
 
-                            setUserData({
-                                ...userData,
-                                nationalCode: code,
-                                step: 1,
-                                processId: data.processId,
-                                isCustomer: data.body.isCustomer,
-                                isDeposit: data.body.isDeposit,
-                            });
-
-                            router.push('/register');
-                            requestCache.set(code, true);
+                        setUserData({
+                            ...userData,
+                            nationalCode: code,
+                            step: 1,
+                            processId: data.processId,
+                            isCustomer: data.body.isCustomer,
+                            isDeposit: data.body.isDeposit,
                         });
-                } catch (err) {
-                    requestCache.delete(code);
-                    throw err;
-                }
+
+                        router.push('/register');
+                        requestCache.set(code, true);
+                    })
+                    .catch((err) => {
+                        requestCache.delete(code);
+                        throw err;
+                    });
             })();
 
             requestCache.set(code, requestPromise);
@@ -119,19 +118,12 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
         try {
             setError(null);
             setIsLoading(true);
-
             const codeToUse = await validateAndInitializeAuth();
-
-            if (!codeToUse) {
-                throw new Error('خطا در دریافت اطلاعات');
-            }
-
             calledRef.current = true;
-            await makeApiCall(codeToUse);
+            await makeApiCall(codeToUse as string);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'خطای نامشخص رخ داده';
             setError(errorMessage);
-            toast.error(errorMessage);
             calledRef.current = false;
         } finally {
             setIsLoading(false);
@@ -144,6 +136,8 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
     }, [initializeLoader]);
 
     useEffect(() => {
+        if (effectRan.current) return;
+        effectRan.current = true;
         initializeLoader();
     }, [initializeLoader]);
 

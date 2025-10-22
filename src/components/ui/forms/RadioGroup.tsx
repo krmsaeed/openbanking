@@ -37,7 +37,6 @@ function RadioGroupInner<T>(
             onChange(optionValue);
         }
     };
-
     return (
         <Box className={cn('space-y-2', className)}>
             <Box

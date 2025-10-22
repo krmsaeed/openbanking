@@ -132,16 +132,18 @@ export default function NationalCardOcrScanner({
 
     return (
         <Box className="space-y-3">
-            <Box className="relative overflow-hidden rounded bg-black">
+            <Box className="relative overflow-hidden">
                 {!capturedUrl ? (
                     isCameraOpen ? (
-                        <video
-                            ref={videoRef}
-                            autoPlay
-                            playsInline
-                            muted
-                            className="w-full border-2 border-dashed bg-gray-200 p-1 sm:object-cover md:h-64"
-                        />
+                        <Box className="rounded-lg border-2 border-dashed bg-gray-200">
+                            <video
+                                ref={videoRef}
+                                autoPlay
+                                playsInline
+                                muted
+                                className="w-full rounded-lg p-1 sm:object-cover md:h-64"
+                            />
+                        </Box>
                     ) : (
                         <Box
                             className="flex h-64 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-500 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
@@ -156,17 +158,19 @@ export default function NationalCardOcrScanner({
                         </Box>
                     )
                 ) : (
-                    <Box className="relative h-64 w-full">
-                        <Image
-                            src={capturedUrl}
-                            alt="preview"
-                            fill
-                            style={{ objectFit: 'contain' }}
-                            unoptimized
-                        />
+                    <Box className="relative h-64 w-full rounded-lg border-2 border-dashed border-gray-900">
+                        <Box className="m-auto h-full w-full rounded-lg">
+                            <Image
+                                src={capturedUrl}
+                                alt="preview"
+                                fill
+                                className="rounded-lg object-cover p-1"
+                                unoptimized
+                            />
+                        </Box>
 
                         {!ocrLoading && (
-                            <Box className="absolute top-2 left-2">
+                            <Box className="absolute top-2 left-2 rounded-lg">
                                 {ocrValid ? (
                                     <Box className="bg-success-500 flex items-center rounded-full border-2 border-white p-1 text-white shadow-xl backdrop-blur-sm">
                                         <CheckIcon className="h-6 w-6 font-bold" />

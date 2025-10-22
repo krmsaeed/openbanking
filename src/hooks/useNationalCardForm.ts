@@ -4,7 +4,7 @@ import { useUser } from '@/contexts/UserContext';
 import { nationalCardInfoSchema, type NationalCardInfoForm } from '@/lib/schemas/identity';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
@@ -13,17 +13,14 @@ export interface Province {
     name: string;
     cities?: City[];
 }
-
 export interface City {
     id: number;
     name: string;
 }
-
 export interface Branch {
     value: number;
     label: string;
 }
-
 export const gradeOptions = [
     { value: 'diploma', label: 'دیپلم' },
     { value: 'associate', label: 'کاردانی' },
@@ -47,7 +44,9 @@ export function useNationalCardForm() {
     const [provinces, setProvinces] = useState<Province[]>([]);
     const [cities, setCities] = useState<City[]>([]);
     const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+    const [trigger] = useState(false);
     const [fileError, setFileError] = useState<string | null>(null);
+    const lastTrigger = useRef<boolean | null>(null);
 
     const form = useForm<NationalCardInfoForm>({
         resolver: zodResolver(nationalCardInfoSchema),
@@ -88,12 +87,8 @@ export function useNationalCardForm() {
         (file: File, isValid: boolean = true) => {
             setCapturedFile(file);
             setOcrValid(isValid);
-            // Only clear file error and mark scanned when OCR is valid.
-            // Do NOT set an inline file error here — show errors on submit instead.
             if (isValid) {
                 setFileError(null);
-                // mark in userData that a successful scan happened so other steps
-                // (like PersonalInfo) can decide whether to bypass validation
                 setUserData({ ...userData, hasScannedNationalCard: true });
             }
         },
@@ -102,8 +97,6 @@ export function useNationalCardForm() {
 
     const handleConfirm = useCallback(
         (file: File, isValid: boolean = true) => {
-            // delegate to handleCapture so both onCapture and onConfirm
-            // share the same behavior
             handleCapture(file, isValid);
             if (isValid) toast.success('تصویر کارت ملی با موفقیت دریافت شد');
         },
@@ -168,8 +161,10 @@ export function useNationalCardForm() {
     }, [userData, setUserData]);
 
     useEffect(() => {
+        if (lastTrigger.current === trigger) return;
+        lastTrigger.current = trigger;
         fetchProvinces();
-    }, [fetchProvinces]);
+    }, [trigger, fetchProvinces]);
 
     return {
         form,

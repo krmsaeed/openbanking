@@ -32,7 +32,7 @@ export function PersonalInfoForm({
     return (
         <Box className="space-y-4">
             <Box>
-                <label className="mb-2 block text-sm font-medium text-gray-700">وضعیت تاهل</label>
+                <label className="mb-2 block text-sm">وضعیت تاهل</label>
                 <Controller
                     name="isMarried"
                     control={control}
@@ -56,9 +56,7 @@ export function PersonalInfoForm({
                     rules={{ required: 'مدرک تحصیلی الزامی است' }}
                     render={({ field }) => (
                         <>
-                            <label className="mb-2 block text-sm font-medium text-gray-700">
-                                تحصیلات
-                            </label>
+                            <label className="mb-2 block text-sm">تحصیلات</label>
                             <Select
                                 placeholder="انتخاب کنید"
                                 value={field.value ?? ''}

@@ -49,9 +49,9 @@ const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
                 onChange={onChange}
                 placeholder={placeholder}
                 required={required}
-                rows={5}
+                rows={2}
                 className={mergeClasses(
-                    `focus:border-primary block w-full rounded-md border-b-2 border-gray-300 bg-white px-4 py-3 text-gray-900 focus:outline-none sm:text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white`,
+                    `focus:border-primary block w-full scroll-m-0 rounded-md bg-white px-4 py-3 text-gray-900 focus:outline-none sm:text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white`,
                     className && className
                 )}
                 style={{

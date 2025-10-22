@@ -7,14 +7,15 @@ import { passwordStepSchema, type PasswordStepForm } from '@/lib/schemas/persona
 import { CheckIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { Box, Typography } from '../ui';
 import { List, ListItem } from '../ui/list';
 import CertificateStep from './CertificateStep';
-
 export default function PasswordStep() {
+    const router = useRouter();
     const { userData, setUserData } = useUser();
     const [isLoading, setIsLoading] = useState(false);
     const [showOtp, setShowOtp] = useState(false);
@@ -278,8 +279,8 @@ export default function PasswordStep() {
                                 .then(() => {
                                     setUserData({ step: 6 });
                                 })
-                                .catch((error) => {
-                                    console.error('OTP verification failed', error);
+                                .catch(() => {
+                                    router.push('/login');
                                     toast.error('خطایی رخ داده است');
                                 })
                                 .finally(() => {
