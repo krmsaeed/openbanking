@@ -183,5 +183,4 @@ export const List = forwardRef<HTMLUListElement | HTMLOListElement | HTMLDListEl
 
 List.displayName = 'List';
 
-// Re-export ListItem from separate file
 export { ListItem } from '../listItem';

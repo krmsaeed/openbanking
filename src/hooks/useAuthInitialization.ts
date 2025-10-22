@@ -47,7 +47,6 @@ export const useAuthInitialization = ({
             setError(null);
             setupAxiosInterceptors();
 
-            // Check for existing authentication
             const existingToken = getAccessToken();
             const existingNationalId = getNationalId();
 
@@ -56,7 +55,6 @@ export const useAuthInitialization = ({
                 return;
             }
 
-            // Check for authentication parameters in URL
             const token = searchParams.get('token');
             const code = searchParams.get('code');
 
@@ -69,14 +67,11 @@ export const useAuthInitialization = ({
                 return;
             }
 
-            // Validate and clean national ID
             const cleanedNationalId = await validateAndCleanNationalId(code);
 
-            // Initialize authentication
             initializeAuth({ token, nationalId: cleanedNationalId });
             setIsInitialized(true);
 
-            // Clean up URL parameters
             const url = new URL(window.location.href);
             url.searchParams.delete('token');
             window.history.replaceState({}, '', url.toString());

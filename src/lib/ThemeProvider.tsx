@@ -43,7 +43,6 @@ export function ThemeProvider({
                 const root = document.documentElement;
                 const body = document.body;
 
-                // Add transition class for smooth theme change
                 root.style.setProperty('--theme-transition-duration', '200ms');
                 root.classList.add('theme-transition');
 
@@ -59,7 +58,6 @@ export function ThemeProvider({
 
                 setResolvedTheme(newTheme);
 
-                // Remove transition class after animation
                 setTimeout(() => {
                     root.classList.remove('theme-transition');
                     root.style.removeProperty('--theme-transition-duration');
@@ -71,19 +69,16 @@ export function ThemeProvider({
         [attribute]
     );
 
-    // Update theme based on current theme value
     const updateTheme = useCallback(() => {
         const resolved = theme;
         applyTheme(resolved);
     }, [theme, applyTheme]);
 
-    // Handle theme change
     const handleSetTheme = useCallback(
         (newTheme: Theme) => {
             try {
                 setTheme(newTheme);
                 localStorage.setItem(storageKey, newTheme);
-                // Also set cookie for server-side rendering
                 document.cookie = `${storageKey}=${newTheme}; path=/; max-age=31536000`;
             } catch (error) {
                 console.warn('Failed to save theme:', error);
@@ -92,7 +87,6 @@ export function ThemeProvider({
         [storageKey]
     );
 
-    // Initialize theme on mount
     useEffect(() => {
         try {
             const stored = localStorage.getItem(storageKey) || getCookie(storageKey);
@@ -104,7 +98,6 @@ export function ThemeProvider({
         }
     }, [storageKey]);
 
-    // Apply theme when theme changes
     useEffect(() => {
         updateTheme();
     }, [updateTheme]);

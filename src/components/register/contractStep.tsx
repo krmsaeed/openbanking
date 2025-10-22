@@ -77,7 +77,6 @@ const CONTRACT_CLAUSES: ContractClause[] = [
     },
 ];
 
-// Custom hook for contract logic
 function useContractStep() {
     const [agreed, setAgreed] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -106,10 +105,8 @@ function useContractStep() {
         setError(null);
 
         try {
-            // Simulate API call
             await new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    // Simulate random error for demo
                     if (Math.random() > 0.9) {
                         reject(new Error('خطا در اتصال به سرور'));
                     } else {

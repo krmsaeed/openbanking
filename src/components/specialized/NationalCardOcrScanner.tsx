@@ -55,12 +55,9 @@ export default function NationalCardOcrScanner({
         }
     }, [startCamera]);
 
-    // Auto-open camera on mount if autoOpen is true
     useEffect(() => {
         if (autoOpen && !isCameraOpen && !capturedUrl) {
-            startCamera().catch(() => {
-                // Permission may be denied, that's OK
-            });
+            startCamera().catch(() => {});
         }
     }, [autoOpen, isCameraOpen, capturedUrl, startCamera]);
 
@@ -78,8 +75,6 @@ export default function NationalCardOcrScanner({
                     onCapture(file, ok, fields);
                 }
 
-                // If OCR looks valid, automatically confirm the capture for the parent
-                // (instead of requiring the user to press a confirm button)
                 if (ok && onConfirm) {
                     try {
                         onConfirm(file, true);
@@ -243,7 +238,6 @@ export default function NationalCardOcrScanner({
                 )}
             </Box>
 
-            {/* Modal for Camera Permission */}
             <Modal
                 isOpen={showPermissionModal}
                 onClose={() => setShowPermissionModal(false)}

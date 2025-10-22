@@ -84,7 +84,7 @@ export default function Register() {
     const getStepDescription = () => STEP_DESCRIPTIONS[userData.step ?? 1] || '';
 
     const steps = [
-        null, // index 0
+        null,
         <PersonalInfo key={1} />,
         <SelfieStep key={2} />,
         <VideoRecorderStep key={3} />,

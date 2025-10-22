@@ -5,20 +5,6 @@ type CardVariant = 'default' | 'elevated' | 'outline' | 'filled' | 'ghost';
 type CardSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 type CardColor = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
 
-/**
- * Responsive padding utility for Card components
- *
- * Usage examples:
- * - Single value: padding="md" → "p-4"
- * - Responsive object: padding={{ base: "sm", md: "md", lg: "lg" }} → "p-3 md:p-4 lg:p-6"
- *
- * Breakpoints follow Tailwind CSS convention:
- * - base: default (no prefix)
- * - sm: @media (min-width: 640px)
- * - md: @media (min-width: 768px)
- * - lg: @media (min-width: 1024px)
- * - xl: @media (min-width: 1280px)
- */
 type CardPadding =
     | 'none'
     | 'xs'
@@ -59,7 +45,6 @@ const getPaddingClasses = (padding: CardPadding): string => {
         return paddingClasses[padding];
     }
 
-    // Handle responsive padding object
     const classes: string[] = [];
 
     if (padding.base) {

@@ -16,7 +16,6 @@ export const useModalAccessibility = ({
     const modalRef = useRef<HTMLDivElement>(null);
     const previousFocusRef = useRef<HTMLElement | null>(null);
 
-    // Focus trap implementation
     const handleKeyDown = useCallback(
         (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
@@ -48,7 +47,6 @@ export const useModalAccessibility = ({
         [onClose]
     );
 
-    // Body scroll lock
     useEffect(() => {
         if (isOpen) {
             previousFocusRef.current = document.activeElement as HTMLElement;
@@ -65,7 +63,6 @@ export const useModalAccessibility = ({
         };
     }, [isOpen]);
 
-    // Event listeners
     useEffect(() => {
         if (isOpen) {
             document.addEventListener('keydown', handleKeyDown);
@@ -73,7 +70,6 @@ export const useModalAccessibility = ({
         }
     }, [isOpen, handleKeyDown]);
 
-    // Auto focus
     useEffect(() => {
         if (isOpen && autoFocus && modalRef.current) {
             const focusableElement = modalRef.current.querySelector(

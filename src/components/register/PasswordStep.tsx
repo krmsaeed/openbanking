@@ -49,7 +49,6 @@ export default function PasswordStep() {
                 const { data } = response.data;
                 if (data.body.success) {
                     setTransitionLoading(true);
-                    // Add a small delay for better UX
                     setTimeout(() => {
                         setUserData({ password, ENFirstName, ENLastName });
                         setShowOtp(true);

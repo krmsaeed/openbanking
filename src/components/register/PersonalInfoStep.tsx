@@ -65,12 +65,7 @@ export default function PersonalInfo() {
 
     const onSubmitWrapper = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Bypass validation only for deposit customers who haven't scanned
-        // their national card. If they have scanned (hasScannedNationalCard === true)
-        // then run normal validation.
         if (userData.isCustomer && userData.isDeposit && !userData.hasScannedNationalCard) {
-            // For deposit customers who haven't scanned their national card,
-            // bypass client-side validation but still submit the current form values.
             const values = getValues();
             await onSubmit(values as PersonalInfoStepForm);
             return;

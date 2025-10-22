@@ -181,14 +181,12 @@ const Modal = forwardRef<ModalRef, ModalProps>(
             </Box>
         );
 
-        // Use portal to render modal at the specified target or document body
         const targetElement =
             portalTarget || (typeof document !== 'undefined' ? document.body : null);
         if (targetElement) {
             return createPortal(modalContent, targetElement);
         }
 
-        // Fallback for SSR
         return modalContent;
     }
 );
