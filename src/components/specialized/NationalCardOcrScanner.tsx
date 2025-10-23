@@ -237,7 +237,6 @@ export default function NationalCardOcrScanner({
                     </Box>
                 )}
             </Box>
-
             <Modal
                 isOpen={showPermissionModal}
                 onClose={() => setShowPermissionModal(false)}

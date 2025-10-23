@@ -56,8 +56,9 @@ export function PersonalInfoForm({
                     rules={{ required: 'مدرک تحصیلی الزامی است' }}
                     render={({ field }) => (
                         <>
-                            <label className="mb-2 block text-sm">تحصیلات</label>
                             <Select
+                                required
+                                label="مدرک تحصیلی"
                                 placeholder="انتخاب کنید"
                                 value={field.value ?? ''}
                                 onChange={(e) =>
@@ -88,6 +89,7 @@ export function PersonalInfoForm({
                     render={({ field }) => (
                         <>
                             <Select
+                                required
                                 label="شعبه"
                                 placeholder="انتخاب کنید"
                                 value={field.value ? field.value.toString() : ''}
@@ -114,9 +116,9 @@ export function PersonalInfoForm({
                     <Controller
                         name="provinceId"
                         control={control}
-                        rules={{ required: 'استان الزامی است' }}
                         render={({ field }) => (
                             <Select
+                                required
                                 label="استان"
                                 placeholder="انتخاب کنید"
                                 value={field.value ? field.value.toString() : ''}
@@ -126,7 +128,6 @@ export function PersonalInfoForm({
                                     field.onChange(numericValue);
                                     onProvinceChange(numericValue);
                                 }}
-                                error={errors.provinceId?.message}
                             >
                                 {provinces.map((province: Province) => (
                                     <option key={province.id} value={province.id.toString()}>
@@ -142,10 +143,11 @@ export function PersonalInfoForm({
                     <Controller
                         name="cityId"
                         control={control}
-                        rules={{ required: 'شهر الزامی است' }}
+                        rules={{ required: 'انتخاب شهر الزامی است' }}
                         render={({ field }) => (
                             <Select
                                 label="شهر"
+                                required
                                 placeholder={
                                     cities.length > 0 ? 'انتخاب کنید' : 'ابتدا استان را انتخاب کنید'
                                 }
@@ -155,7 +157,6 @@ export function PersonalInfoForm({
                                     const numericValue = selectedValue ? +selectedValue : null;
                                     field.onChange(numericValue);
                                 }}
-                                error={errors.cityId?.message}
                                 disabled={cities.length === 0}
                             >
                                 {cities.map((city: City) => (
@@ -167,6 +168,11 @@ export function PersonalInfoForm({
                         )}
                     />
                 </Box>
+                {errors.cityId && (
+                    <Typography variant="span" className="text-error-600 -mt-4 block text-sm">
+                        {errors.cityId.message}
+                    </Typography>
+                )}
             </Box>
 
             <Box>
@@ -177,6 +183,7 @@ export function PersonalInfoForm({
                     render={({ field }) => (
                         <Textarea
                             {...field}
+                            required
                             label="آدرس"
                             placeholder="آدرس کامل خود را وارد کنید"
                             rows={3}

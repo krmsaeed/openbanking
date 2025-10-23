@@ -41,7 +41,7 @@ const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
                 className="mb-1 block text-right text-[0.9rem] font-medium text-gray-700 dark:text-gray-300"
             >
                 {label}
-                {required && <span className="text-secondary mr-1">*</span>}
+                {required && <span className="text-error mr-1">*</span>}
             </Typography>
             <InputComponent
                 {...props}

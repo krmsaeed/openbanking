@@ -15,9 +15,9 @@ export const provinceIdSchema = z
     .refine((val) => val !== null, { message: 'استان الزامی است' });
 
 export const cityIdSchema = z
-    .number({ message: 'شهر الزامی است' })
+    .number({ message: 'انتخاب شهر الزامی است' })
     .nullable()
-    .refine((val) => val !== null, { message: 'شهر الزامی است' });
+    .refine((val) => val !== null, { message: 'انتخاب شهر الزامی است' });
 
 export const branchIdSchema = z
     .number({ message: 'انتخاب شعبه الزامی است' })
