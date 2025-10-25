@@ -1,5 +1,6 @@
 'use client';
 
+import { List, ListItem } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
 import { useSelfieStep } from '@/hooks/useSelfieStep';
 import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
@@ -281,17 +282,17 @@ function ErrorState({ error, onRetry, onCancel }: ErrorStateProps) {
                     <Typography variant="body1" className="text-error-600 text-xs">
                         لطفاً:
                     </Typography>
-                    <ul className="text-error-600 list-inside list-disc text-right text-xs">
-                        <li>دسترسی دوربین را در تنظیمات مرورگر فعال کنید</li>
-                        <li>از https استفاده کنید</li>
-                    </ul>
+                    <List className="text-error-600 list-inside list-disc text-right text-xs">
+                        <ListItem>دسترسی دوربین را در تنظیمات مرورگر فعال کنید</ListItem>
+                        <ListItem>از https استفاده کنید</ListItem>
+                    </List>
                 </Box>
                 <Box className="mt-4 flex space-x-3 space-x-reverse">
-                    <Button onClick={onRetry} size="sm" variant="outline">
-                        تلاش مجدد
-                    </Button>
                     <Button onClick={onCancel} size="sm" variant="destructive">
                         انصراف
+                    </Button>
+                    <Button onClick={onRetry} size="sm" variant="outline">
+                        تلاش مجدد
                     </Button>
                 </Box>
             </Box>

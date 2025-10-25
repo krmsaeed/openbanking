@@ -1,6 +1,6 @@
 'use client';
 import { MultiOTPInput } from '@/components/forms';
-import { Typography } from '@/components/ui';
+import { Box, Typography } from '@/components/ui';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { CheckIcon } from '@heroicons/react/24/outline';
 
@@ -14,12 +14,14 @@ interface Props {
 
 export default function CertificateStep({ otp, setOtp, onIssue, loading }: Props) {
     return (
-        <div className="space-y-6">
-            <div className="mb-6 rounded-xl border border-purple-200 bg-purple-50 p-4">
-                <p className="text-center text-sm text-purple-800">
-                    <span dir="ltr">. کد تایید جدید ارسال شد</span>
-                </p>
-            </div>
+        <Box className="space-y-6">
+            <Box className="mb-6 rounded-xl border border-purple-200 bg-purple-50 p-4">
+                <Typography variant="p" className="text-center text-sm text-purple-800">
+                    <Typography variant="span" dir="ltr">
+                        . کد تایید جدید ارسال شد
+                    </Typography>
+                </Typography>
+            </Box>
             <MultiOTPInput value={otp} onChange={setOtp} length={6} />
             <LoadingButton
                 onClick={onIssue}
@@ -32,6 +34,6 @@ export default function CertificateStep({ otp, setOtp, onIssue, loading }: Props
                     {loading ? 'در حال ارسال...' : 'مرحله بعد'}
                 </Typography>
             </LoadingButton>
-        </div>
+        </Box>
     );
 }
