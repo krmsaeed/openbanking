@@ -5,11 +5,11 @@ import { useModalAccessibility } from '@/hooks/useModalAccessibility';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { clsx } from 'clsx';
-import { ReactNode, forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { ReactNode, forwardRef, useImperativeHandle, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 const modalVariants = cva(
-    'relative w-full transform overflow-hidden rounded-xl border bg-white/95 shadow-2xl backdrop-blur-md transition-all duration-300 dark:bg-gray-900/95',
+    'relative w-full transform overflow-hidden rounded-xl border bg-gray-200 shadow-2xl backdrop-blur-md transition-all duration-300 ',
     {
         variants: {
             size: {
@@ -42,7 +42,7 @@ interface ModalProps extends VariantProps<typeof modalVariants> {
     description?: string;
     children: ReactNode;
     showCloseButton?: boolean;
-    closeOnBackdropClick?: boolean;
+
     closeOnEscape?: boolean;
     autoFocus?: boolean;
     className?: string;
@@ -65,7 +65,7 @@ const Modal = forwardRef<ModalRef, ModalProps>(
             size = 'md',
             variant = 'default',
             showCloseButton = true,
-            closeOnBackdropClick = true,
+
             closeOnEscape = true,
             autoFocus = true,
             className,
@@ -90,23 +90,15 @@ const Modal = forwardRef<ModalRef, ModalProps>(
             },
         }));
 
-        const handleBackdropClick = useCallback(
-            (e: React.MouseEvent) => {
-                if (e.target === e.currentTarget && closeOnBackdropClick) {
-                    onClose();
-                }
-            },
-            [closeOnBackdropClick, onClose]
-        );
-
         if (!isOpen) return null;
 
         const modalContent = (
-            <Box className="fixed inset-0 z-50 overflow-y-auto">
+            <Box className="fixed inset-0 z-70 overflow-y-auto">
                 {/* Backdrop */}
                 <Box
                     className="animate-in fade-in-0 fixed inset-0 bg-black/40 backdrop-blur-sm duration-300"
-                    onClick={handleBackdropClick}
+                    onClick={onClose}
+                    onTouchEnd={onClose}
                     aria-hidden="true"
                 />
 
@@ -130,7 +122,7 @@ const Modal = forwardRef<ModalRef, ModalProps>(
                     >
                         {/* Header */}
                         {(title || showCloseButton) && (
-                            <Box className="flex items-start justify-between border-b border-gray-200/50 p-6 dark:border-gray-700/50">
+                            <Box className="flex items-start justify-between border-b border-gray-900 p-6 dark:border-gray-700/50">
                                 <Box className="flex-1">
                                     {title && (
                                         <Typography
@@ -158,10 +150,10 @@ const Modal = forwardRef<ModalRef, ModalProps>(
                                         onClick={onClose}
                                         variant="ghost"
                                         size="sm"
-                                        className="ml-4 h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        className="ml-4 h-8 w-8 bg-gray-300 p-0"
                                         aria-label="بستن"
                                     >
-                                        <XMarkIcon className="h-4 w-4" />
+                                        <XMarkIcon className="text-error-700 h-4 w-4" />
                                     </Button>
                                 )}
                             </Box>
@@ -172,7 +164,7 @@ const Modal = forwardRef<ModalRef, ModalProps>(
 
                         {/* Footer */}
                         {footer && (
-                            <Box className="flex items-center justify-end gap-3 border-t border-gray-200/50 p-6 dark:border-gray-700/50">
+                            <Box className="flex items-center justify-end gap-3 border-t border-gray-200/50 p-6">
                                 {footer}
                             </Box>
                         )}

@@ -2,13 +2,7 @@
 
 import { Box, Typography } from '@/components/ui';
 import { RadioGroup } from '@/components/ui/forms';
-import {
-    gradeOptions,
-    maritalStatusOptions,
-    type Branch,
-    type City,
-    type Province,
-} from '@/hooks/useNationalCardForm';
+import { type Branch, type City, type Province } from '@/hooks/useNationalCardForm';
 import { type NationalCardInfoForm } from '@/lib/schemas/identity';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { Select } from '../ui/forms/Select';
@@ -21,6 +15,18 @@ interface PersonalInfoFormProps {
     cities: City[];
     onProvinceChange: (provinceId: number | null) => void;
 }
+export const gradeOptions = [
+    { value: 'diploma', label: 'دیپلم' },
+    { value: 'associate', label: 'کاردانی' },
+    { value: 'BA', label: 'کارشناسی' },
+    { value: 'MA', label: 'کارشناسی ارشد' },
+    { value: 'PHD', label: 'دکترا' },
+];
+
+export const maritalStatusOptions = [
+    { label: 'متاهل', value: true },
+    { label: 'مجرد', value: false },
+];
 
 export function PersonalInfoForm({
     control,

@@ -5,7 +5,7 @@ import { HTMLAttributes, forwardRef } from 'react';
 const baseCardVariants = cva('relative transition-all duration-200 ease-in-out', {
     variants: {
         variant: {
-            default: 'bg-card text-card-foreground bg-gray-200',
+            default: 'bg-card text-card-foreground bg-gray-100',
             elevated: 'bg-card text-card-foreground shadow-lg',
             outline: 'border border-border bg-transparent text-card-foreground',
             filled: 'bg-primary text-primary-foreground',

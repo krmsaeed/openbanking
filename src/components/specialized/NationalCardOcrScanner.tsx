@@ -28,8 +28,6 @@ export default function NationalCardOcrScanner({
         videoRef,
         canvasRef,
         isActive: isCameraOpen,
-        isLoading: cameraLoading,
-        error: cameraError,
         startCamera,
         stopCamera,
         takePhoto,

@@ -1,21 +1,11 @@
 'use client';
-import {
-    Box,
-    Button,
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-    Input,
-    Label,
-    Typography,
-} from '@/components/ui';
+import { Box, Button, Card, CardContent, Input, Typography } from '@/components/ui';
+import { PdfPreviewModal } from '@/components/ui/overlay/PdfPreviewModal';
 import {
     ArrowDownTrayIcon,
     CheckCircleIcon,
     DocumentTextIcon,
-    PrinterIcon,
+    EyeIcon,
 } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -81,6 +71,8 @@ function useContractStep() {
     const [agreed, setAgreed] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showPreview, setShowPreview] = useState(false);
+    const [pdfUrl, setPdfUrl] = useState<string>('');
     const router = useRouter();
 
     const contractDetails: ContractDetails = {
@@ -124,8 +116,18 @@ function useContractStep() {
         }
     };
 
-    const handlePrint = () => {
-        window.print();
+    const handlePreview = async () => {
+        try {
+            // اینجا باید از API سرور، آدرس PDF را دریافت کنید
+            // برای مثال:
+            const pdfUrl = '/test.pdf';
+            setPdfUrl(pdfUrl);
+            setShowPreview(true);
+        } catch (err) {
+            setError(
+                'خطا در نمایش پیش‌نمایش: ' + (err instanceof Error ? err.message : String(err))
+            );
+        }
     };
 
     const handleDownload = () => {
@@ -183,11 +185,12 @@ ${CONTRACT_CLAUSES.map(
         setAgreed,
         loading,
         error,
-        contractDetails,
+        showPreview,
+        setShowPreview,
+        pdfUrl,
         handleAccept,
-        handlePrint,
+        handlePreview,
         handleDownload,
-        contractClauses: CONTRACT_CLAUSES,
     };
 }
 
@@ -197,140 +200,52 @@ export default function ContractStep() {
         setAgreed,
         loading,
         error,
-        contractDetails,
+        showPreview,
+        setShowPreview,
+        pdfUrl,
         handleAccept,
-        handlePrint,
+        handlePreview,
         handleDownload,
-        contractClauses,
     } = useContractStep();
-
-    const renderContractDetail = (label: string, value: string, highlight = false) => (
-        <Box className="space-y-1">
-            <Label className="text-muted-foreground text-sm font-medium">{label}</Label>
-            <Typography
-                variant="p"
-                className={`text-sm ${highlight ? 'text-primary-700 font-bold' : 'text-foreground'}`}
-            >
-                {value}
-            </Typography>
-        </Box>
-    );
 
     return (
         <Box className="h-full space-y-6 py-4">
-            {/* Contract Header */}
-            <Box className="space-y-6 bg-gray-100 py-3 text-center">
+            <Box className="space-y-6 bg-gray-50 py-3 text-center">
                 <Box>
-                    <DocumentTextIcon className="text-primary-700 mx-auto mb-4 h-16 w-16" />
+                    <DocumentTextIcon className="text-primary-600 mx-auto mb-4 h-16 w-16" />
                     <Typography variant="h4" className="mb-2">
                         قرارداد فی‌مابین مشتری و بانک اقتصاد نوین
                     </Typography>
-                    <Typography variant="body2" className="text-muted-foreground">
-                        لطفا شرایط قرارداد را به دقت مطالعه فرمایید
+                    <Typography
+                        variant="h5"
+                        className="text-muted-foreground text-error-600 font-bold"
+                    >
+                        لطفا شرایط قرارداد را دانلود و سپس به دقت مطالعه فرمایید
                     </Typography>
                 </Box>
 
-                <Box className="flex flex-col items-center gap-4">
-                    <Box className="flex gap-3">
+                <Box className="flex w-full items-center gap-4">
+                    <Box className="flex w-full gap-3 px-5">
                         <Button
                             variant="outline"
-                            size="sm"
-                            onClick={handlePrint}
-                            leftIcon={<PrinterIcon className="h-4 w-4" />}
-                            className="transition-all duration-200 hover:scale-105"
+                            onClick={handlePreview}
+                            leftIcon={<EyeIcon className="ml-1 h-4 w-4" />}
+                            className="w-full text-gray-900 transition-all duration-200 hover:scale-105"
                         >
-                            چاپ
+                            پیش‌نمایش
                         </Button>
                         <Button
-                            variant="outline"
-                            size="sm"
+                            variant="primary"
                             onClick={handleDownload}
-                            leftIcon={<ArrowDownTrayIcon className="h-4 w-4" />}
-                            className="transition-all duration-200 hover:scale-105"
+                            leftIcon={<ArrowDownTrayIcon className="ml-1 h-4 w-4" />}
+                            className="w-full text-white transition-all duration-200 hover:scale-105"
                         >
                             دانلود
                         </Button>
                     </Box>
-                    <Typography variant="h5" className="text-center">
-                        مشخصات قرارداد
-                    </Typography>
                 </Box>
             </Box>
 
-            <Card className="bg-gray-100">
-                <CardHeader>
-                    <CardTitle>جزئیات قرارداد</CardTitle>
-                    <CardDescription>اطلاعات کامل قرارداد تسهیلاتی شما</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Box className="grid gap-6 md:grid-cols-2">
-                        <Box className="space-y-4">
-                            {renderContractDetail(
-                                'شماره قرارداد',
-                                contractDetails.contractNumber,
-                                true
-                            )}
-                            {renderContractDetail('تاریخ قرارداد', contractDetails.date)}
-                            {renderContractDetail('نام مشتری', contractDetails.customerName)}
-                            {renderContractDetail('کد ملی', contractDetails.nationalId)}
-                        </Box>
-                        <Box className="space-y-4">
-                            {renderContractDetail(
-                                'مبلغ تسهیلات',
-                                `${contractDetails.facilityAmount} ریال`,
-                                true
-                            )}
-                            {renderContractDetail(
-                                'نرخ سود',
-                                `${contractDetails.interestRate}% سالانه`
-                            )}
-                            {renderContractDetail(
-                                'مدت بازپرداخت',
-                                `${contractDetails.duration} ماه`
-                            )}
-                            {renderContractDetail(
-                                'قسط ماهانه',
-                                `${contractDetails.monthlyPayment} ریال`,
-                                true
-                            )}
-                        </Box>
-                    </Box>
-                </CardContent>
-            </Card>
-
-            {/* Contract Clauses */}
-            <Card className="bg-gray-100">
-                <CardHeader>
-                    <CardTitle>شرایط و ضوابط قرارداد</CardTitle>
-                    <CardDescription>مواد قرارداد که لازم است مطالعه فرمایید</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Box className="space-y-6">
-                        {contractClauses.map((clause) => (
-                            <Box key={clause.id} className="space-y-2">
-                                <Typography
-                                    variant="h6"
-                                    className="text-foreground dark:text-foreground font-bold"
-                                >
-                                    {clause.title}
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    className="text-muted-foreground dark:text-muted-foreground text-justify leading-relaxed"
-                                >
-                                    {clause.content
-                                        .replace('{facilityAmount}', contractDetails.facilityAmount)
-                                        .replace('{duration}', contractDetails.duration)
-                                        .replace('{monthlyPayment}', contractDetails.monthlyPayment)
-                                        .replace('{interestRate}', contractDetails.interestRate)}
-                                </Typography>
-                            </Box>
-                        ))}
-                    </Box>
-                </CardContent>
-            </Card>
-
-            {/* Agreement Section */}
             <Card className="bg-gray-100">
                 <CardContent>
                     <Box className="space-y-4">
@@ -380,6 +295,12 @@ export default function ContractStep() {
                     {loading ? 'در حال پردازش...' : 'ثبت نهایی و ادامه'}
                 </Button>
             </Box>
+            <PdfPreviewModal
+                isOpen={showPreview}
+                onClose={() => setShowPreview(false)}
+                pdfUrl={pdfUrl}
+                title="پیش‌نمایش قرارداد"
+            />
         </Box>
     );
 }

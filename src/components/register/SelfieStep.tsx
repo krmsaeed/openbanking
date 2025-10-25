@@ -337,8 +337,7 @@ export default function SelfieStep() {
             .post('/api/bpms/deposit-files', formData)
             .then((res) => {
                 const { data } = res.data;
-                console.log('🚀 ~ SelfieStep.tsx:337 ~ SelfieStep ~ data:', res.data);
-                setUserData({ ...userData, step: 3, randomText: res.data?.body?.randomText });
+                setUserData({ ...userData, step: 3, randomText: data?.body?.randomText });
             })
             .finally(() => setIsUploading(false));
     }, [capturedPhoto, userData, setUserData, setIsUploading]);

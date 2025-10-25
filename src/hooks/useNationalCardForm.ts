@@ -21,18 +21,6 @@ export interface Branch {
     value: number;
     label: string;
 }
-export const gradeOptions = [
-    { value: 'diploma', label: 'دیپلم' },
-    { value: 'associate', label: 'کاردانی' },
-    { value: 'BA', label: 'کارشناسی' },
-    { value: 'MA', label: 'کارشناسی ارشد' },
-    { value: 'PHD', label: 'دکترا' },
-];
-
-export const maritalStatusOptions = [
-    { label: 'متاهل', value: true },
-    { label: 'مجرد', value: false },
-];
 
 export const defaultBranches: Branch[] = [{ value: 102, label: 'تهران' }];
 
@@ -174,6 +162,7 @@ export function useNationalCardForm() {
         provinces,
         cities,
         showWelcomeModal,
+        setShowWelcomeModal,
         handleProvinceChange,
         handleConfirm,
         handleSubmit,

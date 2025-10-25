@@ -19,6 +19,7 @@ export default function NationalCardStep() {
         handleConfirm,
         submit,
         handleWelcomeModalClose,
+        setShowWelcomeModal,
         errors,
         fileError,
     } = useNationalCardForm();
@@ -39,7 +40,6 @@ export default function NationalCardStep() {
                 cities={cities}
                 onProvinceChange={handleProvinceChange}
             />
-
             <Box className="flex w-full justify-center">
                 <LoadingButton
                     isLoading={isLoading}
@@ -54,7 +54,7 @@ export default function NationalCardStep() {
                 </LoadingButton>
             </Box>
 
-            <WelcomeModal isOpen={showWelcomeModal} onClose={handleWelcomeModalClose} />
+            <WelcomeModal isOpen={showWelcomeModal} onClose={() => setShowWelcomeModal(false)} />
         </Box>
     );
 }

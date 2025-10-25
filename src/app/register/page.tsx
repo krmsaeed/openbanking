@@ -1,5 +1,5 @@
 'use client';
-import ContractStep from '@/components/register/contractStep';
+import ContractStep from '@/components/register/ContractStep';
 import NationalCardScanner from '@/components/register/NationalCardStep';
 import PasswordStep from '@/components/register/PasswordStep';
 import PersonalInfo from '@/components/register/PersonalInfoStep';
