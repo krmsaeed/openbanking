@@ -13,15 +13,15 @@ interface WelcomeModalProps {
     accountNumber?: string;
 }
 
-export function WelcomeModal({
-    isOpen,
-    onClose,
-    customerNumber,
-    accountNumber,
-}: WelcomeModalProps) {
+export function WelcomeModal({ isOpen, customerNumber, accountNumber }: WelcomeModalProps) {
     const { userData, setUserData } = useUser();
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="خوش آمدید!" size="lg">
+        <Modal
+            isOpen={isOpen}
+            onClose={() => setUserData({ ...userData, step: 7 })}
+            title="خوش آمدید!"
+            size="lg"
+        >
             <Box className="space-y-6 text-center">
                 <Box className="mx-auto flex h-24 w-24 items-center justify-center">
                     <Image

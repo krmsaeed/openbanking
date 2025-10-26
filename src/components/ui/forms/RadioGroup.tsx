@@ -52,7 +52,7 @@ function RadioGroupInner<T>(
                         <label
                             key={idx}
                             className={cn(
-                                'relative flex cursor-pointer items-center justify-between',
+                                'relative flex cursor-pointer items-center justify-between shadow-md',
                                 'rounded-xl px-4 py-3 transition-all duration-200',
                                 'hover:shadow-sm',
                                 isSelected
