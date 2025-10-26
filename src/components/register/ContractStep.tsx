@@ -1,5 +1,16 @@
 'use client';
-import { Box, Button, Card, CardContent, Input, Typography } from '@/components/ui';
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+    Input,
+    Label,
+    Typography,
+} from '@/components/ui';
 import { PdfPreviewModal } from '@/components/ui/overlay/PdfPreviewModal';
 import {
     ArrowDownTrayIcon,
@@ -10,6 +21,64 @@ import {
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 const PDF_URL = '/test.pdf';
+
+interface ContractDetails {
+    contractNumber: string;
+    date: string;
+    customerName: string;
+    nationalId: string;
+    phoneNumber: string;
+    facilityAmount: string;
+    interestRate: string;
+    duration: string;
+    monthlyPayment: string;
+}
+
+interface ContractClause {
+    id: string;
+    title: string;
+    content: string;
+}
+
+const CONTRACT_CLAUSES: ContractClause[] = [
+    {
+        id: 'subject',
+        title: 'ماده ۱ - موضوع قرارداد',
+        content:
+            'بانک اقتصاد نوین متعهد می‌شود مبلغ {facilityAmount} ریال را به عنوان تسهیلات بانکی در اختیار مشتری قرار دهد. این مبلغ باید طی مدت {duration} ماه به صورت اقساط ماهانه بازپرداخت شود.',
+    },
+    {
+        id: 'repayment',
+        title: 'ماده ۲ - نحوه بازپرداخت',
+        content:
+            'مشتری متعهد است مبلغ {monthlyPayment} ریال را در هر ماه تا تاریخ ۵ هر ماه به حساب بانک واریز نماید. در صورت تأخیر در پرداخت، جریمه تأخیر طبق نرخ‌های مصوب بانک مرکزی محاسبه خواهد شد.',
+    },
+    {
+        id: 'interest',
+        title: 'ماده ۳ - نرخ سود',
+        content:
+            'نرخ سود این تسهیلات {interestRate}% در سال بوده که طبق مقررات بانک مرکزی جمهوری اسلامی ایران تعیین شده است. این نرخ ممکن است طبق تصمیمات بانک مرکزی تغییر یابد.',
+    },
+    {
+        id: 'guarantees',
+        title: 'ماده ۴ - تضامین',
+        content:
+            'مشتری متعهد است تضامین لازم شامل اسناد و مدارک مورد نیاز بانک را ارائه داده و در طول مدت قرارداد حفظ نماید. در صورت کاهش ارزش تضامین، بانک حق درخواست تضامین اضافی را دارد.',
+    },
+    {
+        id: 'termination',
+        title: 'ماده ۵ - فسخ قرارداد',
+        content:
+            'در صورت عدم رعایت شرایط قرارداد از سوی مشتری، بانک حق فسخ قرارداد و مطالبه کل مبلغ باقیمانده را دارد. همچنین مشتری می‌تواند در هر زمان نسبت به تسویه زودهنگام اقدام نماید.',
+    },
+    {
+        id: 'dispute',
+        title: 'ماده ۶ - حل اختلاف',
+        content:
+            'کلیه اختلافات ناشی از این قرارداد در مراجع ذی‌صلاح قضایی تهران قابل رسیدگی است. قوانین جمهوری اسلامی ایران بر این قرارداد حاکم خواهد بود.',
+    },
+];
+
 function useContractStep() {
     const [agreed, setAgreed] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -17,6 +86,19 @@ function useContractStep() {
     const [showPreview, setShowPreview] = useState(false);
     const [pdfUrl, setPdfUrl] = useState<string>('');
     const router = useRouter();
+
+    const contractDetails: ContractDetails = {
+        contractNumber: 'TC-2025-001234',
+        date: '۱۴۰۴/۰۶/۰۹',
+        customerName: 'محمد احمدی',
+        nationalId: '1234567890',
+        phoneNumber: '09123456789',
+        facilityAmount: '50,000,000',
+        interestRate: '18',
+        duration: '12',
+        monthlyPayment: '4,583,333',
+    };
+
     const handleAccept = async () => {
         if (!agreed) {
             setError('لطفا ابتدا شرایط قرارداد را مطالعه و تأیید کنید.');
@@ -72,17 +154,52 @@ function useContractStep() {
         }
     };
 
+    const generateContractText = (details: ContractDetails): string => {
+        return `
+قرارداد تسهیلات بانکی
+بانک اقتصاد نوین
+
+شماره قرارداد: ${details.contractNumber}
+تاریخ: ${details.date}
+
+مشخصات مشتری:
+نام: ${details.customerName}
+کد ملی: ${details.nationalId}
+شماره تماس: ${details.phoneNumber}
+
+جزئیات تسهیلات:
+مبلغ تسهیلات: ${details.facilityAmount} ریال
+نرخ سود: ${details.interestRate}% سالانه
+مدت بازپرداخت: ${details.duration} ماه
+قسط ماهانه: ${details.monthlyPayment} ریال
+
+${CONTRACT_CLAUSES.map(
+    (clause) =>
+        `${clause.title}\n${clause.content
+            .replace('{facilityAmount}', details.facilityAmount)
+            .replace('{duration}', details.duration)
+            .replace('{monthlyPayment}', details.monthlyPayment)
+            .replace('{interestRate}', details.interestRate)}\n`
+).join('\n')}
+
+تأیید مشتری: ____________________
+تاریخ: ____________________
+        `.trim();
+    };
+
     return {
         agreed,
         setAgreed,
         loading,
         error,
+        contractDetails,
         showPreview,
         setShowPreview,
         pdfUrl,
         handleAccept,
         handlePreview,
         handleDownload,
+        contractClauses: CONTRACT_CLAUSES,
     };
 }
 
@@ -92,53 +209,143 @@ export default function ContractStep() {
         setAgreed,
         loading,
         error,
+        contractDetails,
         showPreview,
         setShowPreview,
         pdfUrl,
         handleAccept,
         handlePreview,
         handleDownload,
+        contractClauses,
     } = useContractStep();
+
+    const renderContractDetail = (label: string, value: string, highlight = false) => (
+        <Box className="space-y-1">
+            <Label className="text-muted-foreground text-sm font-medium">{label}</Label>
+            <Typography
+                variant="p"
+                className={`text-sm ${highlight ? 'text-primary-700 font-bold' : 'text-foreground'}`}
+            >
+                {value}
+            </Typography>
+        </Box>
+    );
 
     return (
         <Box className="h-full space-y-6 py-4">
-            <Box className="space-y-6 bg-gray-50 py-3 text-center">
+            {/* Contract Header */}
+            <Box className="space-y-6 bg-gray-100 py-3 text-center">
                 <Box>
-                    <DocumentTextIcon className="text-primary-600 mx-auto mb-4 h-16 w-16" />
-                    <Typography variant="h5" className="mb-2">
+                    <DocumentTextIcon className="text-primary-700 mx-auto mb-4 h-16 w-16" />
+                    <Typography variant="h4" className="mb-2">
                         قرارداد فی‌مابین مشتری و بانک اقتصاد نوین
                     </Typography>
-                    <Typography
-                        variant="h6"
-                        className="text-muted-foreground text-error-600 font-bold"
-                    >
-                        لطفا شرایط قرارداد را دانلود و سپس به دقت مطالعه فرمایید
+                    <Typography variant="body2" className="text-muted-foreground">
+                        لطفا شرایط قرارداد را به دقت مطالعه فرمایید
                     </Typography>
                 </Box>
 
-                <Box className="flex w-full items-center gap-4">
-                    <Box className="flex w-full gap-3 px-5">
+                <Box className="flex flex-col items-center gap-4">
+                    <Box className="flex gap-3">
                         <Button
                             variant="outline"
                             onClick={handlePreview}
                             leftIcon={<EyeIcon className="ml-1 h-4 w-4" />}
-                            className="w-full text-gray-900 transition-all duration-200 hover:scale-105"
+                            className="py-5 text-gray-900 transition-all duration-200 hover:scale-105"
                         >
                             پیش‌نمایش
                         </Button>
                         <Button
-                            variant="primary"
+                            variant="outline"
+                            size="sm"
                             onClick={handleDownload}
-                            leftIcon={<ArrowDownTrayIcon className="ml-1 h-4 w-4" />}
-                            className="w-full text-white transition-all duration-200 hover:scale-105"
+                            leftIcon={<ArrowDownTrayIcon className="h-4 w-4" />}
+                            className="min-w-32 py-5 transition-all duration-200 hover:scale-105"
                         >
                             دانلود
                         </Button>
                     </Box>
+                    <Typography variant="h5" className="text-center">
+                        مشخصات قرارداد
+                    </Typography>
                 </Box>
             </Box>
 
-            <Card className="bg-gray-100">
+            <Card className="bg-gray-200">
+                <CardHeader>
+                    <CardTitle>جزئیات قرارداد</CardTitle>
+                    <CardDescription>اطلاعات کامل قرارداد تسهیلاتی شما</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Box className="grid gap-6 md:grid-cols-2">
+                        <Box className="space-y-4">
+                            {renderContractDetail(
+                                'شماره قرارداد',
+                                contractDetails.contractNumber,
+                                true
+                            )}
+                            {renderContractDetail('تاریخ قرارداد', contractDetails.date)}
+                            {renderContractDetail('نام مشتری', contractDetails.customerName)}
+                            {renderContractDetail('کد ملی', contractDetails.nationalId)}
+                        </Box>
+                        <Box className="space-y-4">
+                            {renderContractDetail(
+                                'مبلغ تسهیلات',
+                                `${contractDetails.facilityAmount} ریال`,
+                                true
+                            )}
+                            {renderContractDetail(
+                                'نرخ سود',
+                                `${contractDetails.interestRate}% سالانه`
+                            )}
+                            {renderContractDetail(
+                                'مدت بازپرداخت',
+                                `${contractDetails.duration} ماه`
+                            )}
+                            {renderContractDetail(
+                                'قسط ماهانه',
+                                `${contractDetails.monthlyPayment} ریال`,
+                                true
+                            )}
+                        </Box>
+                    </Box>
+                </CardContent>
+            </Card>
+
+            {/* Contract Clauses */}
+            <Card className="bg-gray-200">
+                <CardHeader>
+                    <CardTitle>شرایط و ضوابط قرارداد</CardTitle>
+                    <CardDescription>مواد قرارداد که لازم است مطالعه فرمایید</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Box className="space-y-6">
+                        {contractClauses.map((clause) => (
+                            <Box key={clause.id} className="space-y-2">
+                                <Typography
+                                    variant="h6"
+                                    className="text-foreground dark:text-foreground font-bold"
+                                >
+                                    {clause.title}
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    className="text-muted-foreground dark:text-muted-foreground text-justify leading-relaxed"
+                                >
+                                    {clause.content
+                                        .replace('{facilityAmount}', contractDetails.facilityAmount)
+                                        .replace('{duration}', contractDetails.duration)
+                                        .replace('{monthlyPayment}', contractDetails.monthlyPayment)
+                                        .replace('{interestRate}', contractDetails.interestRate)}
+                                </Typography>
+                            </Box>
+                        ))}
+                    </Box>
+                </CardContent>
+            </Card>
+
+            {/* Agreement Section */}
+            <Card className="bg-gray-200">
                 <CardContent>
                     <Box className="space-y-4">
                         <Box className="flex gap-4">

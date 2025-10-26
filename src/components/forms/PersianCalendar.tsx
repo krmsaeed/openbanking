@@ -482,7 +482,7 @@ export default function PersianCalendar({
                                             className="rounded-lg border border-gray-200 bg-gray-100 p-3 shadow-lg"
                                             style={{ width: 360, maxWidth: '90%' }}
                                         >
-                                            <div className="grid grid-cols-3 gap-2">
+                                            <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
                                                 {PERSIAN_MONTHS.map((m, idx) => (
                                                     <button
                                                         type="button"

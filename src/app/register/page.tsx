@@ -97,7 +97,7 @@ export default function Register() {
     return (
         <Box className="container flex justify-center">
             <Box
-                className={`my-2 flex w-full flex-col items-start gap-4 md:my-8 md:max-w-[40rem] md:flex-row md:justify-center`}
+                className={`my-2 flex w-full flex-col items-start gap-4 md:my-8 ${userData.step === 7 ? 'md:max-w-[55rem]' : 'md:max-w-[40rem]'} md:flex-row md:justify-center`}
             >
                 <Sidebar />
 
