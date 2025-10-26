@@ -48,6 +48,27 @@ export function isTokenExpired(): boolean {
         return true;
     }
 }
+
+export function verifyToken(token: string): boolean {
+    try {
+        if (!token) return false;
+        return !isTokenExpired();
+    } catch (error) {
+        console.error('Failed to verify token:', error);
+        return false;
+    }
+}
+
+// Auth helper class
+export const auth = {
+    verifyToken,
+    getAccessToken,
+    isTokenExpired,
+    saveAuthTokens,
+    clearAuthTokens,
+    initializeAuth,
+    getServerAuthTokens,
+};
 export function saveNationalId(nationalId: string): void {
     try {
         setCookie(NATIONAL_ID_KEY, nationalId, 1);

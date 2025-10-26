@@ -1,64 +1,58 @@
-FROM node:22-alpine AS base
+FROM node:22-alpine AS deps
 
-FROM base AS deps
 WORKDIR /app
 
-COPY package.json  ./
-ARG NEXUS_USER_New
-ARG NEXUS_PASS_New
-USER root
+# Copy package files
+COPY package*.json ./
 
+# Install all dependencies including devDependencies
+RUN npm config set registry https://registry.npmjs.org/ && \
+    npm install
 
+FROM node:22-alpine AS builder
 
-RUN apk update
+WORKDIR /app
 
-RUN npm install --legacy-peer-deps --loglevel verbose
+# Install build dependencies
 RUN apk add --no-cache \
-    build-base \
     libc6-compat \
-    cairo-dev \
-    libjpeg-turbo-dev \
-    pango-dev \
-    giflib-dev \
-    libpng-dev
+    python3 \
+    make \
+    g++ \
+    gcc \
+    build-base
 
-
-FROM base AS builder
-
-WORKDIR /app
-
+# Copy dependencies and source code
 COPY --from=deps /app/node_modules ./node_modules
-
 COPY . .
 
+# Rebuild native modules
+RUN npm rebuild
+
+# Build the app
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-FROM base AS runner
+FROM node:22-alpine AS runner
 
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
+# Copy built application
 COPY --from=builder /app/public ./public
-
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-
 USER nextjs
 
-EXPOSE 80
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-ENV PORT 80
-
-# set hostname to localhost
-
-ENV HOSTNAME "0.0.0.0"
+EXPOSE 3000
 
 CMD ["node", "server.js"]
