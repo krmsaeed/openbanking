@@ -1,6 +1,5 @@
 'use client';
 
-import { getAccessToken } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -8,13 +7,7 @@ export default function Home() {
     const router = useRouter();
 
     useEffect(() => {
-        const hasToken = getAccessToken();
-
-        if (hasToken) {
-            router.replace('/register');
-        } else {
-            router.replace('/login');
-        }
+        router.replace('/register');
     }, [router]);
 
     return null;

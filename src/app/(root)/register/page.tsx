@@ -10,12 +10,18 @@ import { VideoRecorderStep } from '@/components/register/VideoStep';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Box, Card, Typography } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
+import { getNationalId } from '@/lib/auth';
 import { mediaStreamManager } from '@/lib/mediaStreamManager';
 import {
     extendedRegistrationSchema,
     type ExtendedRegistrationForm,
 } from '@/lib/schemas/registration';
-import { convertPersianToEnglish } from '@/lib/utils';
+import {
+    cleanNationalId,
+    convertPersianToEnglish,
+    getCookie,
+    isValidNationalId,
+} from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
@@ -38,17 +44,28 @@ export default function Register() {
 
     useEffect(() => {
         // بررسی وجود توکن در سمت کلاینت
-        const accessToken = document.cookie.includes('access_token=');
-        if (!accessToken) {
-            window.location.href = '/';
-        }
+        // const accessToken = document.cookie.includes('access_token=');
+        // if (!accessToken) {
+        //     window.location.href = '/';
+        // }
     }, []);
 
     const { setValue } = useForm<ExtendedRegistrationForm>({
         resolver: zodResolver(extendedRegistrationSchema),
         mode: 'onBlur',
     });
-
+    useEffect(() => {
+        try {
+            const nid = getNationalId();
+            if (!nid) return;
+            const cleaned = cleanNationalId(nid);
+            if (isValidNationalId(cleaned)) {
+                setValue('nationalCode', cleaned);
+            }
+        } catch {
+            // ignore client-side errors
+        }
+    }, [setValue]);
     useEffect(() => {
         const prevStep = prevStepRef.current;
         const currentStep = userData.step ?? 1;
@@ -66,7 +83,10 @@ export default function Register() {
         try {
             const params = new URLSearchParams(window.location.search);
             const nationalId =
-                params.get('nationalId') || params.get('nationalCode') || params.get('nid');
+                params.get('nationalId') ||
+                params.get('nationalCode') ||
+                params.get('nid') ||
+                getCookie('national_id');
             const mobile = params.get('mobile') || params.get('phone') || params.get('msisdn');
             if (!nationalId && !mobile) return;
             void (async () => {
@@ -89,6 +109,8 @@ export default function Register() {
         } catch {}
     }, [setValue]);
 
+    // Read national id from cookie (if present) and set into form
+
     const getStepDescription = () => STEP_DESCRIPTIONS[userData.step ?? 1] || '';
 
     const steps = [
@@ -103,19 +125,32 @@ export default function Register() {
     ];
 
     return (
-        <Box className="container flex justify-center">
+        <Box className="container flex min-h-screen justify-center px-4 py-4 md:px-6 md:py-8">
             <Box
-                className={`my-2 flex w-full flex-col items-start gap-4 md:my-8 ${userData.step === 7 ? 'md:max-w-[55rem]' : 'md:max-w-[40rem]'} md:flex-row md:justify-center`}
+                className={`flex w-full flex-col items-start gap-4 transition-all duration-300 ${
+                    userData.step === 7
+                        ? 'md:max-w-[55rem] lg:max-w-[65rem]'
+                        : 'md:max-w-[40rem] lg:max-w-[45rem]'
+                } md:flex-row md:justify-center`}
             >
-                <Sidebar />
+                {/* Sidebar - مخفی در موبایل برای مراحل خاص */}
+                <Box
+                    className={`w-full md:w-auto ${userData.step && [2, 3].includes(userData.step) ? 'hidden md:block' : ''}`}
+                >
+                    <Sidebar />
+                </Box>
 
-                <Box className="relative w-full">
-                    <ThemeToggle className="top-1 right-1" />
-                    <Card className="space-y-8">
-                        <Typography variant="h5" className="text-center text-gray-800">
+                {/* Main Content */}
+                <Box className="relative w-full flex-1">
+                    <ThemeToggle className="absolute top-2 right-2 z-10 md:top-4 md:right-4" />
+                    <Card className="space-y-6 md:space-y-8">
+                        <Typography
+                            variant="h5"
+                            className="text-center text-gray-800 dark:text-gray-200"
+                        >
                             {getStepDescription()}
                         </Typography>
-                        {steps[userData.step ?? 1]}
+                        <Box className="w-full">{steps[userData.step ?? 1]}</Box>
                     </Card>
                 </Box>
             </Box>
