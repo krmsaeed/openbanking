@@ -336,8 +336,9 @@ export default function SelfieStep() {
         await axios
             .post('/api/bpms/deposit-files', formData)
             .then((res) => {
-                const { data } = res.data;
-                setUserData({ ...userData, step: 3, randomText: data?.body?.randomText });
+                const { data } = res;
+                console.log('🚀 ~ SelfieStep.tsx:340 ~ SelfieStep ~ data:', data);
+                setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
             })
             .finally(() => setIsUploading(false));
     }, [capturedPhoto, userData, setUserData, setIsUploading]);

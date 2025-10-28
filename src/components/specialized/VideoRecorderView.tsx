@@ -105,7 +105,7 @@ export function VideoRecorderView({
                                             variant="h4"
                                             className="border-primary-100 mt-2 flex min-h-10 flex-col items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
                                         >
-                                            {randomText ?? ''}
+                                            {randomText}
                                         </Typography>
                                         <Box className="mt-2 flex flex-col items-center justify-between rounded-lg bg-gray-100 p-2">
                                             <ul className="p-2 text-center text-sm leading-relaxed text-gray-800">
@@ -132,7 +132,7 @@ export function VideoRecorderView({
                                     variant="h4"
                                     className="border-primary-100 mt-2 mb-2 flex min-h-10 items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
                                 >
-                                    {randomText ?? ''}
+                                    {randomText}
                                 </Typography>
                             )}
                             <Box className="flex justify-center gap-3">

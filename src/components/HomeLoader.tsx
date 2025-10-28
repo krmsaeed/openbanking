@@ -25,7 +25,7 @@ const HomeLoader = memo(() => {
             {!error && (
                 <>
                     <Box className="text-center">
-                        <Typography variant="h3" weight="semibold">
+                        <Typography variant="h5" weight="semibold">
                             در حال بررسی اطلاعات شما...
                         </Typography>
                         <Typography variant="body2" color="secondary" className="mt-1">
