@@ -42,24 +42,53 @@ export default function LoginPage() {
     const onSubmit = async () => {
         setIsLoading(true);
 
-        await axios
-            .post('/api/bpms/login')
-            .then((response) => {
-                const data = response.data;
-                if (!data?.access_token) {
-                    throw new Error('اطلاعات ورود نامعتبر است');
-                }
-                setCookie('access_token', data.access_token);
-                setCookie('national_id', getValues('code'));
-                setUserData({ nationalCode: getValues('code'), step: 1 });
-                toast.success('ورود موفقیت‌آمیز بود');
-                router.push('/register');
-            })
-            .catch((error) => {
-                const message = error?.response?.data?.error ?? error.message;
-                toast.error(message || 'خطا در ورود به سیستم');
-            })
-            .finally(() => setIsLoading(false));
+        try {
+            // درخواست اول: دریافت توکن
+            const loginResponse = await axios.post('/api/bpms/login');
+            const { access_token } = loginResponse.data;
+
+            if (!access_token) {
+                throw new Error('اطلاعات ورود نامعتبر است');
+            }
+
+            // ذخیره توکن و کد ملی در کوکی
+            setCookie('access_token', access_token);
+            setCookie('national_id', getValues('code'));
+
+            toast.success('ورود موفقیت‌آمیز بود');
+
+            // درخواست دوم: ارسال پیام برای بررسی اطلاعات
+            try {
+                const response = await axios.post('/api/bpms/send-message', {
+                    serviceName: 'virtual-open-deposit',
+                    body: { code: getValues('code') },
+                });
+
+                const { data } = response.data;
+
+                setUserData({
+                    nationalCode: getValues('code'),
+                    step: 1,
+                    processId: data?.processId,
+                    isCustomer: data?.body?.isCustomer,
+                    isDeposit: data?.body?.isDeposit,
+                });
+
+                // رفتن به صفحه home-loader
+                router.push('/');
+            } catch (secondRequestError) {
+                const message =
+                    secondRequestError instanceof Error
+                        ? secondRequestError.message
+                        : 'خطا در بررسی اطلاعات';
+                toast.error(message);
+            }
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'خطا در ورود به سیستم';
+            toast.error(message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (

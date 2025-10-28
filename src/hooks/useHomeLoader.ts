@@ -1,10 +1,9 @@
 'use client';
 
 import { useUser } from '@/contexts/UserContext';
-import { useAuth } from '@/hooks/useAuth';
-import { initializeAuth } from '@/lib/auth';
+import { getCookie } from '@/lib/utils';
 import axios from 'axios';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface ApiResponse {
@@ -27,9 +26,7 @@ const requestCache: Map<string, Promise<void> | true> = new Map();
 
 export const useHomeLoader = (): UseHomeLoaderReturn => {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const { userData, setUserData } = useUser();
-    const { nationalId, isAuthenticated } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const calledRef = useRef(false);
@@ -76,51 +73,23 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
         [router, setUserData, userData]
     );
 
-    const validateAndInitializeAuth = useCallback(async (): Promise<string | null> => {
-        try {
-            if (!isAuthenticated || !nationalId) {
-                const tokenFromUrl = searchParams.get('token');
-                const codeFromUrl = searchParams.get('code');
-
-                const { isValidNationalId, cleanNationalId } = await import(
-                    '@/lib/nationalIdValidator'
-                );
-
-                let cleanedCode: string | null = null;
-
-                if (codeFromUrl && tokenFromUrl) {
-                    cleanedCode = cleanNationalId(codeFromUrl);
-
-                    if (!isValidNationalId(cleanedCode)) {
-                        throw new Error('کد ملی نامعتبر است');
-                    }
-
-                    initializeAuth({ token: tokenFromUrl, nationalId: cleanedCode });
-                }
-
-                const url = new URL(window.location.href);
-                url.searchParams.delete('token');
-                window.history.replaceState({}, '', url.toString());
-
-                return cleanedCode;
-            }
-
-            return nationalId;
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'خطا در احراز هویت';
-            throw new Error(errorMessage);
-        }
-    }, [isAuthenticated, nationalId, searchParams]);
-
     const initializeLoader = useCallback(async () => {
         if (calledRef.current) return;
 
         try {
             setError(null);
             setIsLoading(true);
-            const codeToUse = await validateAndInitializeAuth();
+
+            // خواندن توکن و کد ملی از کوکی
+            const accessToken = getCookie('access_token');
+            const nationalId = getCookie('national_id');
+
+            if (!accessToken || !nationalId) {
+                throw new Error('اطلاعات احراز هویت یافت نشد');
+            }
+
             calledRef.current = true;
-            await makeApiCall(codeToUse as string);
+            await makeApiCall(nationalId);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'خطای نامشخص رخ داده';
             setError(errorMessage);
@@ -128,7 +97,7 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
         } finally {
             setIsLoading(false);
         }
-    }, [validateAndInitializeAuth, makeApiCall]);
+    }, [makeApiCall]);
 
     const retry = useCallback(() => {
         calledRef.current = false;
