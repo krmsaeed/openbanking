@@ -125,32 +125,19 @@ export default function Register() {
     ];
 
     return (
-        <Box className="container flex min-h-screen justify-center px-4 py-4 md:px-6 md:py-8">
+        <Box className="container flex justify-center">
             <Box
-                className={`flex w-full flex-col items-start gap-4 transition-all duration-300 ${
-                    userData.step === 7
-                        ? 'md:max-w-[55rem] lg:max-w-[65rem]'
-                        : 'md:max-w-[40rem] lg:max-w-[45rem]'
-                } md:flex-row md:justify-center`}
+                className={`my-2 flex w-full flex-col items-start gap-4 md:my-8 ${userData.step === 7 ? 'md:max-w-[55rem]' : 'md:max-w-[40rem]'} md:flex-row md:justify-center`}
             >
-                {/* Sidebar - مخفی در موبایل برای مراحل خاص */}
-                <Box
-                    className={`w-full md:w-auto ${userData.step && [2, 3].includes(userData.step) ? 'hidden md:block' : ''}`}
-                >
-                    <Sidebar />
-                </Box>
+                <Sidebar />
 
-                {/* Main Content */}
-                <Box className="relative w-full flex-1">
-                    <ThemeToggle className="absolute top-2 right-2 z-10 md:top-4 md:right-4" />
-                    <Card className="space-y-6 md:space-y-8">
-                        <Typography
-                            variant="h5"
-                            className="text-center text-gray-800 dark:text-gray-200"
-                        >
+                <Box className="relative w-full">
+                    <ThemeToggle className="top-1 right-1" />
+                    <Card className="space-y-8">
+                        <Typography variant="h5" className="text-center text-gray-800">
                             {getStepDescription()}
                         </Typography>
-                        <Box className="w-full">{steps[userData.step ?? 1]}</Box>
+                        {steps[userData.step ?? 1]}
                     </Card>
                 </Box>
             </Box>

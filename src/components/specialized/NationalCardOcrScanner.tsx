@@ -31,7 +31,12 @@ export default function NationalCardOcrScanner({
         startCamera,
         stopCamera,
         takePhoto,
-    } = useCamera({ video: true, audio: false });
+    } = useCamera({
+        video: {
+            facingMode: 'environment',
+        },
+        audio: false,
+    });
 
     const [capturedUrl, setCapturedUrl] = useState<string | null>(null);
     const [ocrValid, setOcrValid] = useState<boolean>(false);
@@ -134,12 +139,12 @@ export default function NationalCardOcrScanner({
                                 autoPlay
                                 playsInline
                                 muted
-                                className="w-full rounded-lg p-1 sm:object-cover md:h-64"
+                                className="max-h-[250px] w-full rounded-lg object-cover p-1 md:h-64"
                             />
                         </Box>
                     ) : (
                         <Box
-                            className="flex h-64 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-500 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                            className="flex h-64 max-h-[250px] w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-500 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
                             onClick={handleRequestPermission}
                         >
                             <Box className="space-y-2 text-center">
@@ -151,7 +156,7 @@ export default function NationalCardOcrScanner({
                         </Box>
                     )
                 ) : (
-                    <Box className="relative h-64 w-full rounded-lg border-2 border-dashed border-gray-900">
+                    <Box className="relative h-64 max-h-[250px] w-full rounded-lg border-2 border-dashed border-gray-900">
                         <Box className="m-auto h-full w-full rounded-lg">
                             <Image
                                 src={capturedUrl}
@@ -241,12 +246,12 @@ export default function NationalCardOcrScanner({
                 title="دسترسی به دوربین"
                 size="md"
             >
-                <Box className="space-y-6 p-2 text-center">
-                    <Box className="from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-700 mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br">
+                <Box className="space-y-2 p-2 text-center">
+                    <Box className="from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-700 mx-auto flex items-center justify-center rounded-full bg-gradient-to-br">
                         <CameraIcon className="text-primary-600 h-10 w-10 dark:text-blue-400" />
                     </Box>
 
-                    <Box className="space-y-3">
+                    <Box className="space-y-2">
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                             دسترسی به دوربین
                         </h3>

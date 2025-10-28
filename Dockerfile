@@ -1,20 +1,11 @@
-FROM node:22-alpine AS base
+FROM node:22-bullseye AS base
 
 FROM base AS deps
 WORKDIR /app
 
-COPY package.json ./.npmrc ./
+COPY package.json ./
 
-RUN apk add --no-cache \
-    build-base \
-    libc6-compat \
-    cairo-dev \
-    libjpeg-turbo-dev \
-    pango-dev \
-    giflib-dev \
-    libpng-dev
-
-RUN npm install --legacy-peer-deps --loglevel verbose
+RUN yarn install
 
 
 FROM base AS builder
@@ -25,7 +16,7 @@ COPY --from=deps /app/node_modules ./node_modules
 
 COPY . .
 
-RUN npm run build
+RUN yarn build
 
 FROM base AS runner
 
