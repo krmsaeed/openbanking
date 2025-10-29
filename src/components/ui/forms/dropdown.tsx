@@ -52,7 +52,7 @@ const defaultProps: Partial<DropdownProps> = {
     variant: 'outlined',
     fullWidth: true,
     noOptionsText: 'موردی یافت نشد',
-    loadingText: 'در حال بارگذاری...',
+    loadingText: 'در حال بارگذاری',
 };
 
 const DropdownCustom = ({

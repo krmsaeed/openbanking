@@ -249,7 +249,7 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
                     >
                         {loading && (
                             <li className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
-                                در حال جستجو...
+                                در حال جستجو
                             </li>
                         )}
                         {!loading && filtered.length === 0 && (

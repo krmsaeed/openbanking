@@ -20,7 +20,7 @@ const LoadingButton = forwardRef<HTMLButtonElement, LoadingButtonProps>(
             >
                 {!loading && <CheckIcon className="h-5 w-5 text-white" />}
                 <Typography variant="body1" className="text-xs font-medium text-white">
-                    {loading ? 'در حال ارسال...' : title}
+                    {loading ? 'در حال ارسال' : title}
                 </Typography>
             </BaseButton>
         );

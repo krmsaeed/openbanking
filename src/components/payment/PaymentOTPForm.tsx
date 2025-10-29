@@ -119,7 +119,7 @@ export function PaymentOTPForm({ cardNumber, onVerify, onResend, loading }: Paym
                             className="flex-1 bg-green-600 hover:bg-green-700"
                             disabled={!isValid || loading}
                         >
-                            {loading ? 'در حال پردازش...' : 'تأیید پرداخت'}
+                            {loading ? 'در حال پردازش' : 'تأیید پرداخت'}
                         </Button>
                     </Box>
                 </form>

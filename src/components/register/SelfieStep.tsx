@@ -248,7 +248,7 @@ function LoadingState() {
                             آماده عکس‌گیری
                         </Typography>
                         <Typography variant="body1" className="mb-4 text-sm text-gray-300">
-                            در حال بارگذاری...
+                            در حال بارگذاری
                         </Typography>
                     </Box>
                 </Box>
