@@ -7,7 +7,9 @@ import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
 import { ArrowPathIcon, CameraIcon, CheckIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
+import toast from 'react-hot-toast';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
 import LoadingButton from '../ui/core/LoadingButton';
@@ -302,6 +304,7 @@ function ErrorState({ error, onRetry, onCancel }: ErrorStateProps) {
 
 export default function SelfieStep() {
     const { userData, setUserData } = useUser();
+    const router = useRouter();
     const {
         videoRef,
         canvasRef,
@@ -337,11 +340,17 @@ export default function SelfieStep() {
             .post('/api/bpms/deposit-files', formData)
             .then((res) => {
                 const { data } = res;
-                console.log('🚀 ~ SelfieStep.tsx:340 ~ SelfieStep ~ data:', data);
+                if (!data.body.randomText) {
+                    router.push('/');
+                }
                 setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
             })
+            .catch(() => {
+                toast.error('عملیات با خطا مواجه شد.');
+                router.push('/');
+            })
             .finally(() => setIsUploading(false));
-    }, [capturedPhoto, userData, setUserData, setIsUploading]);
+    }, [capturedPhoto, userData, setUserData, setIsUploading, router]);
 
     const handleCapture = useCallback(() => {
         if (closenessPercent === 100 && obstructionRatio < 0.15) {

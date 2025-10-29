@@ -5,7 +5,9 @@ import { useSignatureStep } from '@/hooks/useSignatureStep';
 import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
 import { CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
 import LoadingButton from '../ui/core/LoadingButton';
@@ -15,7 +17,7 @@ export function SignatureStep() {
         useSignatureStep();
     const { userData, setUserData } = useUser();
     const [isLoading, setIsLoading] = useState(false);
-
+    const router = useRouter();
     const handleSubmit = async () => {
         setIsLoading(true);
         const canvas = canvasRef.current;
@@ -31,6 +33,10 @@ export function SignatureStep() {
             .post('/api/bpms/deposit-files', formData)
             .then(() => {
                 setUserData({ ...userData, step: 5 });
+            })
+            .catch(() => {
+                toast.error('عملیات با خطا مواجه شد.');
+                router.push('/');
             })
             .finally(() => setIsLoading(false));
     };

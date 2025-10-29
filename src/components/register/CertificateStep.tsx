@@ -26,10 +26,10 @@ export default function CertificateStep({ otp, setOtp, onIssue, loading }: Props
             <LoadingButton
                 onClick={onIssue}
                 loading={loading}
-                className="w-full"
+                className="flex w-full items-center justify-center gap-2 text-white"
                 disabled={otp.length < 6 || loading}
             >
-                {!loading && <CheckIcon className="h-5 w-5 text-white" />}
+                {!loading && <CheckIcon className="h-5 w-5" />}
                 <Typography variant="body1" className="text-xs font-medium text-white">
                     {loading ? 'در حال ارسال...' : 'مرحله بعد'}
                 </Typography>

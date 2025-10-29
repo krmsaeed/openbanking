@@ -65,7 +65,7 @@ export default function PersonalInfo() {
 
     const onSubmitWrapper = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (userData.isCustomer && userData.isDeposit && !userData.hasScannedNationalCard) {
+        if (userData.isCustomer) {
             const values = getValues();
             await onSubmit(values as PersonalInfoStepForm);
             return;
@@ -141,7 +141,7 @@ export default function PersonalInfo() {
                     type="submit"
                     loading={isSubmitting}
                     disabled={isSubmitting}
-                    className="bg-primary-400 mt-5 flex w-full items-center justify-center gap-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex w-full items-center justify-center gap-2 text-white"
                 >
                     {!isSubmitting && <CheckIcon className="h-5 w-5" />}
                     <Typography variant="body1" className="text-xs font-medium text-white">

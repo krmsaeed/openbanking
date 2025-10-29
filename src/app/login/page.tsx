@@ -33,7 +33,7 @@ export default function LoginPage() {
         resolver: zodResolver(loginSchema),
         mode: 'onBlur',
         defaultValues: {
-            code: '4199928340',
+            code: '',
             username: 'demo',
             password: 'demo',
         },
@@ -55,8 +55,6 @@ export default function LoginPage() {
             setCookie('access_token', access_token);
             setCookie('national_id', getValues('code'));
 
-            toast.success('ورود موفقیت‌آمیز بود');
-
             // درخواست دوم: ارسال پیام برای بررسی اطلاعات
             try {
                 const response = await axios.post('/api/bpms/send-message', {
@@ -74,8 +72,7 @@ export default function LoginPage() {
                     isDeposit: data?.body?.isDeposit,
                 });
 
-                // رفتن به صفحه home-loader
-                router.push('/');
+                router.push('/register');
             } catch (secondRequestError) {
                 const message =
                     secondRequestError instanceof Error
@@ -134,7 +131,6 @@ export default function LoginPage() {
                             />
                         </Box>
 
-                        {/* Password Input */}
                         <Box className="space-y-2">
                             <label
                                 htmlFor="password"
@@ -152,19 +148,6 @@ export default function LoginPage() {
                                 className="w-full"
                             />
                         </Box>
-
-                        {/* Forgot Password Link */}
-                        {/* <Box className="flex justify-end">
-                            <button
-                                type="button"
-                                onClick={() => router.push('/forgot-password')}
-                                className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 text-sm"
-                            >
-                                فراموشی رمز عبور؟
-                            </button>
-                        </Box> */}
-
-                        {/* Submit Button */}
                         <Button
                             variant="primary"
                             type="submit"
@@ -174,19 +157,6 @@ export default function LoginPage() {
                             {isLoading ? 'در حال ورود...' : 'ورود'}
                         </Button>
                     </form>
-
-                    {/* Register Link */}
-                    {/* <Box className="text-center">
-                        <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
-                            حساب کاربری ندارید؟{' '}
-                            <button
-                                onClick={() => router.push('/register')}
-                                className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
-                            >
-                                ثبت‌نام کنید
-                            </button>
-                        </Typography>
-                    </Box> */}
                 </Card>
             </Box>
         </Box>

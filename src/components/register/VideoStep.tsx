@@ -4,12 +4,15 @@ import { useUser } from '@/contexts/UserContext';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
 import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { VideoRecorderView } from '../specialized/VideoRecorderView';
 
 export const VideoRecorderStep: React.FC = () => {
     const { userData, setUserData } = useUser();
-
+    const [count, setCount] = useState(0);
+    const router = useRouter();
     const {
         videoRef,
         canvasRef,
@@ -38,11 +41,20 @@ export const VideoRecorderStep: React.FC = () => {
         await axios
             .post('/api/bpms/deposit-files', formData)
             .then((res) => {
+                setCount((prevCount) => prevCount + 1);
                 if (res.data.body.verified) {
                     setUserData({ ...userData, step: 4 });
                 } else {
-                    toast.error('عملیات با خطا مواجه شد. مجددا تلاش کنید');
+                    if (count >= 2) {
+                        router.push('/');
+                    }
+                    toast.error('.مجددا تلاش کنید');
+                    handleRetake();
                 }
+            })
+            .catch(() => {
+                toast.error('عملیات با خطا مواجه شد.');
+                router.push('/');
             })
             .finally(() => setIsUploading(false));
     };

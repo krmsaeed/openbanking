@@ -133,7 +133,7 @@ export default function Register() {
 
                 <Box className="relative w-full">
                     <ThemeToggle className="top-1 right-1" />
-                    <Card className="space-y-8">
+                    <Card className="space-y-5">
                         <Typography variant="h5" className="text-center text-gray-800">
                             {getStepDescription()}
                         </Typography>
