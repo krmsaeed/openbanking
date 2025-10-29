@@ -37,7 +37,7 @@ const FormField: React.FC<FormFieldProps> = ({
         <Box className="w-full">
             <Typography
                 variant="span"
-                className="mb-1 block text-right text-[0.9rem] font-medium text-gray-700 dark:text-gray-300"
+                className="mb-1 block text-right text-[0.9rem] font-medium text-gray-700"
             >
                 {label}
                 {required && <span className="text-secondary mr-1">*</span>}

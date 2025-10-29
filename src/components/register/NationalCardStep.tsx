@@ -2,7 +2,6 @@
 
 import { Box } from '@/components/ui';
 import { useNationalCardForm } from '@/hooks/useNationalCardForm';
-import { CheckIcon } from '@heroicons/react/24/outline';
 import NationalCardOcrScanner from '../specialized/NationalCardOcrScanner';
 import LoadingButton from '../ui/core/LoadingButton';
 import { PersonalInfoForm } from './PersonalInfoForm';
@@ -41,17 +40,7 @@ export default function NationalCardStep() {
                 onProvinceChange={handleProvinceChange}
             />
             <Box className="flex w-full justify-center">
-                <LoadingButton
-                    isLoading={isLoading}
-                    onClick={submit}
-                    disabled={isLoading}
-                    className="flex w-full items-center justify-center gap-2 text-white"
-                >
-                    {!isLoading && <CheckIcon className="h-5 w-5" />}
-                    <span className="text-sm font-medium">
-                        {isLoading ? 'در حال ارسال...' : 'مرحله بعد'}
-                    </span>
-                </LoadingButton>
+                <LoadingButton loading={isLoading} onClick={submit} disabled={isLoading} />
             </Box>
 
             <WelcomeModal isOpen={showWelcomeModal} onClose={() => setShowWelcomeModal(false)} />

@@ -38,7 +38,7 @@ const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
             {startDecorator && <Box className="absolute left-0">{startDecorator}</Box>}
             <Typography
                 variant="span"
-                className="mb-1 block text-right text-[0.9rem] font-medium text-gray-700 dark:text-gray-300"
+                className="mb-1 block text-right text-[0.9rem] font-medium text-gray-700"
             >
                 {label}
                 {required && <span className="text-error mr-1">*</span>}
@@ -51,7 +51,7 @@ const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
                 required={required}
                 rows={2}
                 className={mergeClasses(
-                    `focus:border-primary block w-full scroll-m-0 rounded-md bg-white px-4 py-3 text-gray-900 focus:outline-none sm:text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white`,
+                    `focus:border-primary block w-full scroll-m-0 rounded-md bg-white px-4 py-3 text-gray-900 focus:outline-none sm:text-sm`,
                     className && className
                 )}
                 style={{

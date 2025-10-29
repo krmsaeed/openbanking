@@ -3,7 +3,7 @@
 import { useUser } from '@/contexts/UserContext';
 import { useSignatureStep } from '@/hooks/useSignatureStep';
 import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
-import { CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { TrashIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -46,7 +46,7 @@ export function SignatureStep() {
             <Box className="dark:bg-primary h-[25rem] w-full rounded-lg border-2 border-dashed border-gray-300 bg-gray-100 p-1 md:h-96">
                 <canvas
                     ref={canvasRef}
-                    className="bg-dark-900 h-full w-full cursor-crosshair touch-none rounded"
+                    className="bg-dark-900 touch-no const [transitionLoading, setTransitionLoading] = useState(false);ne h-full w-full cursor-crosshair rounded"
                     onMouseDown={startDrawing}
                     onMouseMove={draw}
                     onMouseUp={stopDrawing}
@@ -78,13 +78,7 @@ export function SignatureStep() {
                         onClick={handleSubmit}
                         disabled={!hasSignature || isLoading}
                         loading={isLoading}
-                        className="bg-primary-600 hover:bg-primary-700 flex w-full items-center justify-center gap-2 px-5 py-3 text-white"
-                    >
-                        {!isLoading && <CheckIcon className="h-5 w-5" />}
-                        <Typography variant="body1" className="text-xs font-medium text-white">
-                            {isLoading ? 'در حال ارسال...' : 'مرحله بعد'}
-                        </Typography>
-                    </LoadingButton>
+                    />
                 </Box>
             </Box>
         </Box>

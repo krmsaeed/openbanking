@@ -4,7 +4,7 @@ import { List, ListItem } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
 import { useSelfieStep } from '@/hooks/useSelfieStep';
 import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
-import { ArrowPathIcon, CameraIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, CameraIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -160,13 +160,7 @@ function Controls({ capturedPhoto, isUploading, onConfirm }: ControlsProps) {
                 onClick={onConfirm}
                 loading={isUploading}
                 disabled={!capturedPhoto || isUploading}
-                className="bg-primary-400 flex w-full items-center justify-center gap-2 px-5 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
-            >
-                {!isUploading && <CheckIcon className="h-5 w-5" />}
-                <Typography variant="body1" className="text-xs font-medium text-white">
-                    {isUploading ? 'در حال ارسال...' : 'مرحله بعد'}
-                </Typography>
-            </LoadingButton>
+            />
         </Box>
     );
 }

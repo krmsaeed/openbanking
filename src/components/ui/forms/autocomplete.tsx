@@ -235,7 +235,7 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
                 />
 
                 {!isOpen && hasNodeLabel && (
-                    <div className="pointer-events-none absolute top-8 right-8 flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <div className="pointer-events-none absolute top-8 right-8 flex items-center text-sm text-gray-700">
                         {effectiveLabel}
                     </div>
                 )}
@@ -244,7 +244,7 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
                     <ul
                         id={listboxId}
                         role="listbox"
-                        className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+                        className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
                         tabIndex={-1}
                     >
                         {loading && (

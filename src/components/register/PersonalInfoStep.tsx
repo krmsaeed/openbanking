@@ -4,11 +4,10 @@ import LoadingButton from '@/components/ui/core/LoadingButton';
 import { Input } from '@/components/ui/forms';
 import { useUser } from '@/contexts/UserContext';
 import { personalInfoStepSchema, type PersonalInfoStepForm } from '@/lib/schemas/personal';
-import { CheckIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
-import { Box, Typography } from '../ui';
+import { Box } from '../ui';
 
 export default function PersonalInfo() {
     const { userData, setUserData } = useUser();
@@ -137,17 +136,7 @@ export default function PersonalInfo() {
                         />
                     </>
                 )}
-                <LoadingButton
-                    type="submit"
-                    loading={isSubmitting}
-                    disabled={isSubmitting}
-                    className="flex w-full items-center justify-center gap-2 text-white"
-                >
-                    {!isSubmitting && <CheckIcon className="h-5 w-5" />}
-                    <Typography variant="body1" className="text-xs font-medium text-white">
-                        {isSubmitting ? 'در حال ارسال...' : 'مرحله بعد'}
-                    </Typography>
-                </LoadingButton>
+                <LoadingButton type="submit" loading={isSubmitting} disabled={isSubmitting} />
             </form>
         </Box>
     );

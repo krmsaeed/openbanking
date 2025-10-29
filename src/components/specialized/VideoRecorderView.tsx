@@ -1,5 +1,5 @@
 'use client';
-import { CheckIcon, VideoCameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { VideoCameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { RefObject } from 'react';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
@@ -157,25 +157,11 @@ export function VideoRecorderView({
             </Box>
 
             <Box className="flex w-full items-center gap-2">
-                {/* <Button
-                    onClick={onBack}
-                    variant="destructive"
-                    className="flex w-full items-center justify-center gap-3 px-5 py-3 text-white"
-                >
-                    <XMarkIcon className="h-5 w-5 text-white" />
-                    بازگشت
-                </Button> */}
                 <LoadingButton
                     onClick={onConfirm}
                     loading={isUploading}
                     disabled={!hasPreview || isUploading}
-                    className="bg-primary flex w-full items-center justify-center gap-2 px-5 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                    {!isUploading && <CheckIcon className="h-5 w-5" />}
-                    <Typography variant="body1" className="text-xs font-medium text-white">
-                        {isUploading ? 'در حال ارسال...' : 'مرحله بعد'}
-                    </Typography>
-                </LoadingButton>
+                />
             </Box>
         </Box>
     );

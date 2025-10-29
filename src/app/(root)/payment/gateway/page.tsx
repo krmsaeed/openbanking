@@ -13,7 +13,7 @@ function PaymentGatewayContent() {
     const searchParams = useSearchParams();
     const amount = searchParams.get('amount') || '150,000';
 
-    const [step, setStep] = useState(2);
+    const [step, setStep] = useState(1);
     const [cardNumber, setCardNumber] = useState('');
     const [loading, setLoading] = useState(false);
 

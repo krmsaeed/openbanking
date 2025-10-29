@@ -255,7 +255,7 @@ export default function NationalCardOcrScanner({
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                             دسترسی به دوربین
                         </h3>
-                        <p className="leading-relaxed text-gray-600 dark:text-gray-300">
+                        <p className="leading-relaxed text-gray-600">
                             برای اسکن کارت ملی، نیاز به دسترسی دوربین دستگاه داریم. لطفاً در پنجره
                             بازشده دسترسی را تأیید کنید.
                         </p>

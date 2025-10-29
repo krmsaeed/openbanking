@@ -2,7 +2,6 @@
 import { MultiOTPInput } from '@/components/forms';
 import { Box, Typography } from '@/components/ui';
 import LoadingButton from '@/components/ui/core/LoadingButton';
-import { CheckIcon } from '@heroicons/react/24/outline';
 
 interface Props {
     otp: string;
@@ -26,14 +25,8 @@ export default function CertificateStep({ otp, setOtp, onIssue, loading }: Props
             <LoadingButton
                 onClick={onIssue}
                 loading={loading}
-                className="flex w-full items-center justify-center gap-2 text-white"
                 disabled={otp.length < 6 || loading}
-            >
-                {!loading && <CheckIcon className="h-5 w-5" />}
-                <Typography variant="body1" className="text-xs font-medium text-white">
-                    {loading ? 'در حال ارسال...' : 'مرحله بعد'}
-                </Typography>
-            </LoadingButton>
+            />
         </Box>
     );
 }

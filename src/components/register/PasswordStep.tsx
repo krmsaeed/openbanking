@@ -4,14 +4,14 @@ import LoadingButton from '@/components/ui/core/LoadingButton';
 import { Input } from '@/components/ui/forms';
 import { useUser } from '@/contexts/UserContext';
 import { passwordStepSchema, type PasswordStepForm } from '@/lib/schemas/personal';
-import { CheckIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
-import { Box, Typography } from '../ui';
+import { Box } from '../ui';
 import { List, ListItem } from '../ui/list';
 import CertificateStep from './CertificateStep';
 export default function PasswordStep() {
@@ -21,7 +21,7 @@ export default function PasswordStep() {
     const [showOtp, setShowOtp] = useState(false);
     const [otp, setOtp] = useState('');
     const [otpLoading, setOtpLoading] = useState(false);
-    const [transitionLoading, setTransitionLoading] = useState(false);
+
     const {
         control,
         formState: { errors },
@@ -212,24 +212,7 @@ export default function PasswordStep() {
                     />
                 </Box>
                 <Box className="mt-4 flex gap-2">
-                    {/* <Button
-                                onClick={() => reset({ password: '', confirmPassword: '' })}
-                                className="bg-error-200 w-full"
-                                disabled={isLoading}
-                            >
-                                بازنشانی
-                            </Button> */}
-                    <LoadingButton
-                        type="submit"
-                        loading={isLoading}
-                        disabled={isLoading}
-                        className="flex w-full items-center justify-center gap-2 text-white"
-                    >
-                        {!isLoading && <CheckIcon className="h-5 w-5 text-white" />}
-                        <Typography variant="body1" className="text-xs font-medium text-white">
-                            {isLoading ? 'در حال ارسال...' : 'مرحله بعد'}
-                        </Typography>
-                    </LoadingButton>
+                    <LoadingButton type="submit" loading={isLoading} disabled={isLoading} />
                 </Box>
             </form>
         </Box>

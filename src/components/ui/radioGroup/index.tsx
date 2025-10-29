@@ -171,7 +171,7 @@ export const RadioGroup = memo(
                 {label && (
                     <Typography
                         variant="body2"
-                        className="mb-2 block text-right text-sm font-medium text-gray-700 dark:text-gray-300"
+                        className="mb-2 block text-right text-sm font-medium text-gray-700"
                     >
                         {label}
                     </Typography>
@@ -194,10 +194,7 @@ export const RadioGroup = memo(
                 </Box>
 
                 {error && (
-                    <Typography
-                        variant="body2"
-                        className="mt-2 text-sm text-red-600 dark:text-red-400"
-                    >
+                    <Typography variant="body2" className="mt-2 text-sm text-red-600">
                         {error}
                     </Typography>
                 )}

@@ -1,7 +1,8 @@
 'use client';
 
 import ThemeToggle from '@/components/ThemeToggle';
-import { Box, Button, Card, Input, Typography } from '@/components/ui';
+import { Box, Card, Input, Typography } from '@/components/ui';
+import LoadingButton from '@/components/ui/core/LoadingButton';
 import { useUser } from '@/contexts/UserContext';
 import { setCookie } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -113,8 +114,9 @@ export default function LoginPage() {
                                 required
                                 placeholder="کد ملی را وارد کنید"
                                 disabled={isLoading}
-                                {...register('code')}
+                                {...register('code', { required: 'کد ملی الزامی است' })}
                                 className="w-full"
+                                error={errors.code?.message}
                             />
                         </Box>
                         <Box className="space-y-2">
@@ -134,7 +136,7 @@ export default function LoginPage() {
                         <Box className="space-y-2">
                             <label
                                 htmlFor="password"
-                                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                                className="block text-sm font-medium text-gray-700"
                             >
                                 رمز عبور
                             </label>
@@ -148,14 +150,12 @@ export default function LoginPage() {
                                 className="w-full"
                             />
                         </Box>
-                        <Button
-                            variant="primary"
+                        <LoadingButton
                             type="submit"
-                            className="w-full"
+                            title="ورود"
+                            loading={isLoading}
                             disabled={isLoading}
-                        >
-                            {isLoading ? 'در حال ورود...' : 'ورود'}
-                        </Button>
+                        />
                     </form>
                 </Card>
             </Box>

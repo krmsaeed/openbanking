@@ -1,5 +1,6 @@
 'use client';
 
+import ThemeToggle from '@/components/ThemeToggle';
 import {
     Box,
     Button,
@@ -12,6 +13,7 @@ import {
     Input,
     Typography,
 } from '@/components/ui';
+import LoadingButton from '@/components/ui/core/LoadingButton';
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
 import { cardFormSchema, type CardFormData } from '@/lib/schemas/payment';
 import { convertPersianToEnglish } from '@/lib/utils';
@@ -42,7 +44,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
         handleSubmit,
         setValue,
         watch,
-        formState: { errors },
+        formState: { errors, isValid },
     } = useForm<CardFormData>({
         resolver: zodResolver(cardFormSchema),
         mode: 'onChange',
@@ -139,7 +141,7 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
             const value = normalized.replace(/\D/g, '');
             setValue('cvv2', value, { shouldValidate: true, shouldDirty: true });
 
-            if (value.length === 3) {
+            if (value.length === 4) {
                 debouncedCvvFocus();
             } else if (value.length === 4) {
                 cancelCvvDebounce();
@@ -279,184 +281,186 @@ export function PaymentForm({ amount, onNext, loading }: PaymentFormProps) {
         [onNext, startTransition]
     );
     return (
-        <Card padding="lg">
-            <CardHeader>
-                <CardTitle className="text-center text-2xl font-bold text-gray-900">
-                    درگاه پرداخت امن
-                </CardTitle>
-                <CardDescription className="text-center text-gray-600">
-                    مبلغ قابل پرداخت: {amount} تومان
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <form
-                    onSubmit={handleSubmit(handleFormSubmit)}
-                    className="space-y-6"
-                    autoComplete="off"
-                >
-                    <input {...register('cardNumber')} type="hidden" />
-                    <input {...register('expiryMonth')} type="hidden" />
-                    <input {...register('expiryYear')} type="hidden" />
+        <Box className="relative">
+            <ThemeToggle className="top-1 right-1" />
+            <Card padding="lg">
+                <CardHeader>
+                    <CardTitle className="text-center text-2xl font-bold text-gray-900">
+                        درگاه پرداخت امن
+                    </CardTitle>
+                    <CardDescription className="text-center text-gray-600">
+                        مبلغ قابل پرداخت: {amount} تومان
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form
+                        onSubmit={handleSubmit(handleFormSubmit)}
+                        className="space-y-6"
+                        autoComplete="off"
+                    >
+                        <input {...register('cardNumber')} type="hidden" />
+                        <input {...register('expiryMonth')} type="hidden" />
+                        <input {...register('expiryYear')} type="hidden" />
 
-                    <input type="text" autoComplete="off" className="hidden" />
-                    <input type="password" autoComplete="new-password" className="hidden" />
+                        <input type="text" autoComplete="off" className="hidden" />
+                        <input type="password" autoComplete="new-password" className="hidden" />
 
-                    <FormField label="شماره کارت" required error={!!errors.cardNumber}>
-                        <Input
-                            ref={cardNumberRef}
-                            value={cardNumber || ''}
-                            onChange={handleCardNumberChange}
-                            placeholder="xxxx-xxxx-xxxx-xxxx"
-                            maxLength={19}
-                            className="text-center font-bold tracking-wider outline-none"
-                            variant={errors.cardNumber ? 'error' : 'default'}
-                            dir="ltr"
-                            autoComplete="off"
-                            autoCorrect="off"
-                            autoCapitalize="off"
-                            spellCheck={false}
-                            name={`card_${id}`}
-                        />
-                    </FormField>
-                    <FormField label="CVV2" required error={!!errors.cvv2}>
-                        <Box className="relative">
-                            <input
-                                type="password"
-                                autoComplete="current-password"
-                                className="pointer-events-none absolute -left-[9999px] h-px w-px opacity-0"
-                                tabIndex={-1}
-                            />
+                        <FormField label="شماره کارت" required error={!!errors.cardNumber}>
                             <Input
-                                {...register('cvv2', {
-                                    onChange: handleCvvChange,
-                                })}
-                                ref={cvvRef}
-                                type="text"
-                                inputMode="numeric"
-                                placeholder="***"
-                                maxLength={4}
-                                variant={errors.cvv2 ? 'error' : 'default'}
-                                className="cvv-input pr-12 text-left outline-none"
+                                ref={cardNumberRef}
+                                value={cardNumber || ''}
+                                onChange={handleCardNumberChange}
+                                placeholder="xxxx-xxxx-xxxx-xxxx"
+                                maxLength={19}
+                                className="text-center font-bold tracking-wider outline-none"
+                                variant={errors.cardNumber ? 'error' : 'default'}
+                                dir="ltr"
                                 autoComplete="off"
                                 autoCorrect="off"
                                 autoCapitalize="off"
                                 spellCheck={false}
-                                role="textbox"
-                                data-lpignore="true"
-                                data-form-type="other"
-                            />
-                        </Box>
-                    </FormField>
-                    <Box className="grid grid-cols-2 gap-4">
-                        <FormField label="ماه انقضا" required error={!!errors.expiryMonth}>
-                            <input
-                                type="text"
-                                autoComplete="username"
-                                className="pointer-events-none absolute -left-[9999px] h-px w-px opacity-0"
-                                tabIndex={-1}
-                            />
-                            <Input
-                                ref={monthRef}
-                                type="text"
-                                inputMode="numeric"
-                                placeholder="ماه"
-                                maxLength={2}
-                                value={expiryMonth || ''}
-                                onChange={handleMonthChange}
-                                onFocus={handleMonthFocus}
-                                onKeyDown={handleMonthKeyDown}
-                                variant={errors.expiryMonth ? 'error' : 'default'}
-                                className="outline-none"
-                                disabled={!isCvv2Valid}
-                                autoComplete="new-password"
-                                autoCorrect="off"
-                                autoCapitalize="off"
-                                spellCheck={false}
-                                data-lpignore="true"
-                                data-form-type="other"
-                                name={`month_${id}`}
-                                role="textbox"
+                                name={`card_${id}`}
                             />
                         </FormField>
-
-                        <FormField label="سال انقضا" required error={!!errors.expiryYear}>
-                            <input
-                                type="text"
-                                autoComplete="email"
-                                className="pointer-events-none absolute -left-[9999px] h-px w-px opacity-0"
-                                tabIndex={-1}
-                            />
-                            <Input
-                                ref={yearRef}
-                                type="text"
-                                inputMode="numeric"
-                                placeholder="سال"
-                                maxLength={2}
-                                value={expiryYear || ''}
-                                onChange={handleYearChange}
-                                variant={errors.expiryYear ? 'error' : 'default'}
-                                className="outline-none"
-                                disabled={!isMonthValid}
-                                autoComplete="one-time-code"
-                                autoCorrect="off"
-                                autoCapitalize="off"
-                                spellCheck={false}
-                                data-lpignore="true"
-                                data-form-type="other"
-                                name={`year_${id}`}
-                                role="textbox"
-                            />
-                        </FormField>
-                    </Box>
-
-                    <Box variant="secondary" className="rounded-lg p-2">
-                        <Box className="mb-2 flex items-center justify-between">
-                            <Typography variant="body2" weight="medium" color="secondary">
-                                کد امنیتی *
-                            </Typography>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={refreshCaptcha}
-                                className="text-blue-600 hover:text-blue-700"
-                            >
-                                <ArrowPathIcon className="ml-1 h-4 w-4" />
-                                تازه‌سازی
-                            </Button>
-                        </Box>
-                        <Box className="flex items-start gap-4">
-                            <Box className="rounded border-2 border-dashed border-gray-300 bg-white px-4 py-2 font-mono text-lg font-bold tracking-wider select-none">
-                                {captcha}
-                            </Box>
-                            <Box className="relative flex-1">
+                        <FormField label="CVV2" required error={!!errors.cvv2}>
+                            <Box className="relative w-full">
+                                <input
+                                    type="password"
+                                    autoComplete="current-password"
+                                    className="pointer-events-none absolute -left-[9999px] h-px w-px opacity-0"
+                                    tabIndex={-1}
+                                />
                                 <Input
-                                    {...register('captchaInput', {
-                                        onChange: handleCaptchaChange,
+                                    {...register('cvv2', {
+                                        onChange: handleCvvChange,
                                     })}
-                                    ref={captchaRef}
-                                    placeholder="کد امنیتی را وارد کنید"
-                                    className="pr-12 outline-none"
-                                    variant={errors.captchaInput ? 'error' : 'default'}
-                                    disabled={!isYearValid}
+                                    ref={cvvRef}
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="***"
+                                    maxLength={4}
+                                    variant={errors.cvv2 ? 'error' : 'default'}
+                                    className="cvv-input w-full text-left outline-none"
+                                    dir="ltr"
                                     autoComplete="off"
                                     autoCorrect="off"
                                     autoCapitalize="off"
                                     spellCheck={false}
+                                    role="textbox"
+                                    data-lpignore="true"
+                                    data-form-type="other"
                                 />
                             </Box>
-                        </Box>
-                    </Box>
+                        </FormField>
+                        <Box className="grid grid-cols-2 gap-4">
+                            <FormField label="ماه انقضا" required error={!!errors.expiryMonth}>
+                                <input
+                                    type="text"
+                                    autoComplete="username"
+                                    className="pointer-events-none absolute -left-[9999px] h-px w-px opacity-0"
+                                    tabIndex={-1}
+                                />
+                                <Input
+                                    ref={monthRef}
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="ماه"
+                                    maxLength={2}
+                                    value={expiryMonth || ''}
+                                    onChange={handleMonthChange}
+                                    onFocus={handleMonthFocus}
+                                    onKeyDown={handleMonthKeyDown}
+                                    variant={errors.expiryMonth ? 'error' : 'default'}
+                                    className="outline-none"
+                                    disabled={!isCvv2Valid}
+                                    autoComplete="new-password"
+                                    autoCorrect="off"
+                                    autoCapitalize="off"
+                                    spellCheck={false}
+                                    data-lpignore="true"
+                                    data-form-type="other"
+                                    name={`month_${id}`}
+                                    role="textbox"
+                                />
+                            </FormField>
 
-                    <Button
-                        type="submit"
-                        className="w-full bg-green-600 hover:bg-green-700"
-                        disabled={loading}
-                    >
-                        {loading ? 'در حال پردازش...' : 'درخواست رمز دوم'}
-                    </Button>
-                </form>
-            </CardContent>
-        </Card>
+                            <FormField label="سال انقضا" required error={!!errors.expiryYear}>
+                                <input
+                                    type="text"
+                                    autoComplete="email"
+                                    className="pointer-events-none absolute -left-[9999px] h-px w-px opacity-0"
+                                    tabIndex={-1}
+                                />
+                                <Input
+                                    ref={yearRef}
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="سال"
+                                    maxLength={2}
+                                    value={expiryYear || ''}
+                                    onChange={handleYearChange}
+                                    variant={errors.expiryYear ? 'error' : 'default'}
+                                    className="outline-none"
+                                    disabled={!isMonthValid}
+                                    autoComplete="one-time-code"
+                                    autoCorrect="off"
+                                    autoCapitalize="off"
+                                    spellCheck={false}
+                                    data-lpignore="true"
+                                    data-form-type="other"
+                                    name={`year_${id}`}
+                                    role="textbox"
+                                />
+                            </FormField>
+                        </Box>
+
+                        <Box variant="secondary" className="rounded-lg p-2">
+                            <Box className="mb-2 flex items-center justify-between">
+                                <Typography variant="body2" weight="medium" color="secondary">
+                                    کد امنیتی *
+                                </Typography>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={refreshCaptcha}
+                                    className="text-blue-600 hover:text-blue-700"
+                                >
+                                    <ArrowPathIcon className="ml-1 h-4 w-4" />
+                                    تازه‌سازی
+                                </Button>
+                            </Box>
+                            <Box className="flex items-start gap-4">
+                                <Box className="rounded border-2 border-dashed border-gray-300 bg-white px-4 py-2 font-mono text-lg font-bold tracking-wider select-none">
+                                    {captcha}
+                                </Box>
+                                <Box className="relative flex-1">
+                                    <Input
+                                        {...register('captchaInput', {
+                                            onChange: handleCaptchaChange,
+                                        })}
+                                        ref={captchaRef}
+                                        placeholder="کد امنیتی را وارد کنید"
+                                        className="pr-12 outline-none"
+                                        variant={errors.captchaInput ? 'error' : 'default'}
+                                        disabled={!isYearValid}
+                                        autoComplete="off"
+                                        autoCorrect="off"
+                                        autoCapitalize="off"
+                                        spellCheck={false}
+                                    />
+                                </Box>
+                            </Box>
+                        </Box>
+                        <LoadingButton
+                            type="submit"
+                            loading={isValid}
+                            title="تایید"
+                            disabled={loading}
+                        />
+                    </form>
+                </CardContent>
+            </Card>
+        </Box>
     );
 }

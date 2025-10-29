@@ -53,7 +53,7 @@ export default function Sidebar() {
                                                 ? 'bg-primary-600 border-2 border-gray-100 text-gray-100'
                                                 : current
                                                   ? 'bg-primary-400 text-white'
-                                                  : 'bg-gray-300 text-gray-700 dark:text-gray-300'
+                                                  : 'bg-gray-300 text-gray-700'
                                         }`}
                                     >
                                         {completed ? (

@@ -11,13 +11,9 @@ import {
     Label,
     Typography,
 } from '@/components/ui';
+import LoadingButton from '@/components/ui/core/LoadingButton';
 import { PdfPreviewModal } from '@/components/ui/overlay/PdfPreviewModal';
-import {
-    ArrowDownTrayIcon,
-    CheckCircleIcon,
-    DocumentTextIcon,
-    EyeIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowDownTrayIcon, DocumentTextIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 const PDF_URL = '/test.pdf';
@@ -382,17 +378,12 @@ export default function ContractStep() {
             </Card>
 
             <Box className="mx-auto flex w-full flex-col justify-center gap-4 sm:flex-row md:w-1/2">
-                <Button
-                    size="md"
+                <LoadingButton
+                    loading={loading}
                     onClick={handleAccept}
                     disabled={!agreed || loading}
-                    loading={loading}
-                    fullWidth
-                    leftIcon={!loading ? <CheckCircleIcon className="h-5 w-5" /> : undefined}
-                    className="bg-primary text-dark-800 transition-all duration-200 hover:scale-105"
-                >
-                    {loading ? 'در حال پردازش...' : 'ثبت نهایی و ادامه'}
-                </Button>
+                    title="ثبت نهایی و ادامه"
+                />
             </Box>
             <PdfPreviewModal
                 isOpen={showPreview}
