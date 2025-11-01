@@ -1,148 +1,118 @@
 .container {
-    .container {
-        width: 100%;
-        width: 100%;
+    width: 100%;
+    width: 100%;
 
-        margin-left: auto;
-        margin-left: auto;
+    margin-left: auto;
+    margin-left: auto;
 
-        margin-right: auto;
-        margin-right: auto;
+    margin-right: auto;
+    margin-right: auto;
 
-        padding-left: 1rem;
-        padding-left: 1rem;
+    padding-left: 1rem;
+    padding-left: 1rem;
 
-        padding-right: 1rem;
-        padding-right: 1rem;
+    padding-right: 1rem;
+    padding-right: 1rem;
 
-        max-width: 100%;
-        max-width: 100%;
-    }
+    max-width: 100%;
+    max-width: 100%;
 }
 
 @media (min-width: 640px) {
-    @media (min-width: 640px) {
-        .container {
-            .container {
-                max-width: 640px;
-                max-width: 640px;
-            }
-        }
+    .container {
+        max-width: 640px;
+        max-width: 640px;
     }
 }
 
 @media (min-width: 768px) {
-    @media (min-width: 768px) {
-        .container {
-            .container {
-                max-width: 768px;
-                max-width: 768px;
-            }
-        }
+    .container {
+        max-width: 768px;
+        max-width: 768px;
     }
 }
 
 @media (min-width: 1024px) {
-    @media (min-width: 1024px) {
-        .container {
-            .container {
-                max-width: 1024px;
-                max-width: 1024px;
+    .container {
+        max-width: 1024px;
+        max-width: 1024px;
 
-                padding-left: 2rem;
-                padding-left: 2rem;
+        padding-left: 2rem;
+        padding-left: 2rem;
 
-                padding-right: 2rem;
-                padding-right: 2rem;
-            }
-        }
+        padding-right: 2rem;
+        padding-right: 2rem;
     }
 }
 
 @media (min-width: 1280px) {
-    @media (min-width: 1280px) {
-        .container {
-            .container {
-                max-width: 1280px;
-                max-width: 1280px;
-            }
-        }
+    .container {
+        max-width: 1280px;
+        max-width: 1280px;
     }
 }
 
 @media (min-width: 1536px) {
-    @media (min-width: 1536px) {
-        .container {
-            .container {
-                max-width: 1536px;
-                max-width: 1536px;
+    .container {
+        max-width: 1536px;
+        max-width: 1536px;
 
-                padding-left: 4rem;
-                padding-left: 4rem;
+        padding-left: 4rem;
+        padding-left: 4rem;
 
-                padding-right: 4rem;
-                padding-right: 4rem;
-            }
-        }
+        padding-right: 4rem;
+        padding-right: 4rem;
     }
 }
 
 .pc-picker {
-    .pc-picker {
-        position: absolute;
-        position: absolute;
+    position: absolute;
+    position: absolute;
 
-        left: 1rem;
-        left: 1rem;
+    left: 1rem;
+    left: 1rem;
 
-        right: 1rem;
-        right: 1rem;
+    right: 1rem;
+    right: 1rem;
 
-        top: 4rem;
-        top: 4rem;
+    top: 4rem;
+    top: 4rem;
 
-        background: var(--color-surface);
-        background: var(--color-surface);
+    background: var(--color-surface);
+    background: var(--color-surface);
 
-        border: 1px solid var(--color-border);
-        border: 1px solid var(--color-border);
+    border: 1px solid var(--color-border);
+    border: 1px solid var(--color-border);
 
-        border-radius: 0.5rem;
-        border-radius: 0.5rem;
+    border-radius: 0.5rem;
+    border-radius: 0.5rem;
 
-        box-shadow: var(--card-shadow);
-        box-shadow: var(--card-shadow);
+    box-shadow: var(--card-shadow);
+    box-shadow: var(--card-shadow);
 
-        z-index: 50;
-        z-index: 50;
-    }
+    z-index: 50;
+    z-index: 50;
 }
 
 .pc-picker::-webkit-scrollbar {
-    .pc-picker::-webkit-scrollbar {
-        width: 8px;
-        width: 8px;
+    width: 8px;
+    width: 8px;
 
-        height: 8px;
-        height: 8px;
-    }
+    height: 8px;
+    height: 8px;
 }
 
 .pc-picker::-webkit-scrollbar-thumb {
-    .pc-picker::-webkit-scrollbar-thumb {
-        background: var(--scrollbar-thumb);
-        background: var(--scrollbar-thumb);
+    background: var(--scrollbar-thumb);
+    background: var(--scrollbar-thumb);
 
-        border-radius: 9999px;
-        border-radius: 9999px;
-    }
+    border-radius: 9999px;
+    border-radius: 9999px;
 }
 
-.border-1 {
-    .bg-primary {
-        border-width: 1px;
-        background-color: var(--color-primary-500) !important;
-    }
+.bg-primary {
+    border-width: 1px;
+    background-color: var(--color-primary-500) !important;
 }
 .bg-primary-50 {
     background-color: var(--color-primary-50) !important;

@@ -620,8 +620,8 @@ input[data-form-type='other']::-webkit-contacts-auto-fill-button {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
     max-width: 100%;
 }
 @media (min-width: 640px) {
