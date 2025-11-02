@@ -16,7 +16,7 @@ import { List, ListItem } from '../ui/list';
 import CertificateStep from './CertificateStep';
 export default function PasswordStep() {
     const router = useRouter();
-    const { userData, setUserData } = useUser();
+    const { userData, setUserData, clearUserData } = useUser();
     const [isLoading, setIsLoading] = useState(false);
     const [showOtp, setShowOtp] = useState(false);
     const [otp, setOtp] = useState('');
@@ -57,7 +57,8 @@ export default function PasswordStep() {
                 }
             })
             .catch(() => {
-                toast.error('خطایی رخ داده است. لطفا دوباره تلاش کنید.');
+                toast.error('عملیات با خطا مواجه شد');
+                clearUserData();
             })
             .finally(() => {
                 setIsLoading(false);

@@ -1,9 +1,9 @@
-import Tesseract from 'tesseract.js';
-
 export type OcrResult = { text: string };
 
 export async function ocrRecognizeFile(file: File | Blob): Promise<string> {
     try {
+        // Lazy load Tesseract فقط وقتی نیاز است
+        const Tesseract = (await import('tesseract.js')).default;
         const res = await Tesseract.recognize(file, 'fas');
         const dataText = (res as unknown as { data?: { text?: string } })?.data?.text;
         return typeof dataText === 'string' ? dataText : '';

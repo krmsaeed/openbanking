@@ -22,8 +22,18 @@ const iranYekan = localFont({
             style: 'normal',
         },
         {
-            path: '../assets/fonts/iranyekan/IRANYekanWebRegular.woff2',
+            path: '../assets/fonts/iranyekan/IRANYekanWebLight.woff2',
             weight: '300',
+            style: 'normal',
+        },
+        {
+            path: '../assets/fonts/iranyekan/IRANYekanWebRegular.woff2',
+            weight: '400',
+            style: 'normal',
+        },
+        {
+            path: '../assets/fonts/iranyekan/IRANYekanWebMedium.woff2',
+            weight: '500',
             style: 'normal',
         },
         {
@@ -31,14 +41,9 @@ const iranYekan = localFont({
             weight: '700',
             style: 'normal',
         },
-        {
-            path: '../assets/fonts/iranyekan/IRANYekanWebExtraBold.woff2',
-            weight: '900',
-            style: 'normal',
-        },
     ],
-    display: 'swap',
-    preload: false,
+    display: 'swap', // فونت fallback نشان داده شود قبل از بارگذاری
+    fallback: ['system-ui', '-apple-system', 'sans-serif'],
 });
 export default function RootLayout({
     children,

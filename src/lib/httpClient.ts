@@ -3,6 +3,13 @@ import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'ax
 
 const baseURL = process.env.BASE_URL;
 
+// Request deduplication cache
+const pendingRequests = new Map<string, Promise<unknown>>();
+
+const getCacheKey = (config: InternalAxiosRequestConfig): string => {
+    return `${config.method?.toUpperCase()}_${config.url}_${JSON.stringify(config.data || {})}`;
+};
+
 export const httpClient: AxiosInstance = axios.create({
     baseURL: `${baseURL}/bpms`,
     timeout: 30000,
@@ -54,6 +61,13 @@ httpClient.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`;
         }
         config.withCredentials = true;
+
+        // Request deduplication: اگر درخواست دقیق مثل این پنجره دارد، منتظر بمان
+        const cacheKey = getCacheKey(config);
+        if (pendingRequests.has(cacheKey)) {
+            return Promise.reject(new Error('Duplicate request deferred'));
+        }
+
         return config;
     },
     (error: AxiosError) => {
@@ -63,6 +77,8 @@ httpClient.interceptors.request.use(
 
 httpClient.interceptors.response.use(
     (response) => {
+        const cacheKey = getCacheKey(response.config as InternalAxiosRequestConfig);
+        pendingRequests.delete(cacheKey);
         return response;
     },
     (error: AxiosError) => {
@@ -72,6 +88,11 @@ httpClient.interceptors.response.use(
             if (typeof window !== 'undefined') {
                 window.location.href = '/';
             }
+        }
+
+        if (error.config) {
+            const cacheKey = getCacheKey(error.config as InternalAxiosRequestConfig);
+            pendingRequests.delete(cacheKey);
         }
 
         return Promise.reject(error);

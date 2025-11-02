@@ -6,7 +6,6 @@ import PersonalInfo from '@/components/register/PersonalInfoStep';
 import SelfieStep from '@/components/register/SelfieStep';
 import Sidebar from '@/components/register/Sidebar';
 import { SignatureStep } from '@/components/register/SignatureStep';
-import { VideoRecorderStep } from '@/components/register/VideoStep';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Box, Card, Typography } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
@@ -23,8 +22,21 @@ import {
     isValidNationalId,
 } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
+import dynamic from 'next/dynamic';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+
+// Dynamic import برای heavy camera components
+const VideoRecorderStep = dynamic(
+    () =>
+        import('@/components/register/VideoStep').then((mod) => ({
+            default: mod.VideoRecorderStep,
+        })),
+    {
+        loading: () => <div className="py-8 text-center">در حال بارگذاری دوربین...</div>,
+        ssr: false,
+    }
+);
 
 const CAMERA_STEPS = [2, 3, 6];
 
