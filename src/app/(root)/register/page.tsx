@@ -3,9 +3,7 @@ import ContractStep from '@/components/register/ContractStep';
 import NationalCardScanner from '@/components/register/NationalCardStep';
 import PasswordStep from '@/components/register/PasswordStep';
 import PersonalInfo from '@/components/register/PersonalInfoStep';
-import SelfieStep from '@/components/register/SelfieStep';
 import Sidebar from '@/components/register/Sidebar';
-import { SignatureStep } from '@/components/register/SignatureStep';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Box, Card, Typography } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
@@ -26,7 +24,12 @@ import dynamic from 'next/dynamic';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
-// Dynamic import برای heavy camera components
+// Dynamic import برای heavy components
+const SelfieStep = dynamic(() => import('@/components/register/SelfieStep'), {
+    loading: () => <div className="py-8 text-center">در حال بارگذاری...</div>,
+    ssr: false,
+});
+
 const VideoRecorderStep = dynamic(
     () =>
         import('@/components/register/VideoStep').then((mod) => ({
@@ -34,6 +37,17 @@ const VideoRecorderStep = dynamic(
         })),
     {
         loading: () => <div className="py-8 text-center">در حال بارگذاری دوربین...</div>,
+        ssr: false,
+    }
+);
+
+const SignatureStep = dynamic(
+    () =>
+        import('@/components/register/SignatureStep').then((mod) => ({
+            default: mod.SignatureStep,
+        })),
+    {
+        loading: () => <div className="py-8 text-center">در حال بارگذاری...</div>,
         ssr: false,
     }
 );

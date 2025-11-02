@@ -3,6 +3,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
     output: 'standalone',
+    compress: true, // Gzip compression
     images: {
         formats: ['image/webp', 'image/avif'],
         minimumCacheTTL: 60,
@@ -12,10 +13,18 @@ const nextConfig: NextConfig = {
     },
     compiler: {
         removeConsole: process.env.NODE_ENV === 'production',
+        reactRemoveProperties: true, // Remove React-only props
     },
     experimental: {
         optimizeCss: true,
-        optimizePackageImports: ['@heroicons/react', 'react-hot-toast'],
+        optimizePackageImports: [
+            '@heroicons/react',
+            'react-hot-toast',
+            'clsx',
+            'tailwind-merge',
+            'zod',
+            'react-hook-form',
+        ],
     },
     turbopack: {
         rules: {
@@ -25,53 +34,18 @@ const nextConfig: NextConfig = {
             },
         },
     },
-    compress: true,
     webpack: (config, { dev, isServer }) => {
         if (!dev && !isServer) {
-            config.optimization.splitChunks = {
-                chunks: 'all',
-                cacheGroups: {
-                    default: false,
-                    vendors: false,
-                    // Vendor chunk for React and related libraries
-                    vendor: {
-                        name: 'vendor',
-                        chunks: 'all',
-                        test: /node_modules\/(react|react-dom|next)/,
-                        priority: 20,
-                    },
-                    // UI components chunk
-                    ui: {
-                        name: 'ui',
-                        chunks: 'all',
-                        test: /[\\/]components[\\/]ui[\\/]/,
-                        priority: 10,
-                    },
-                    // Common chunk for shared utilities
-                    common: {
-                        name: 'common',
-                        chunks: 'all',
-                        minChunks: 2,
-                        priority: 5,
-                        reuseExistingChunk: true,
-                    },
-                },
-            };
+            // Use default splitChunks with aggressive tree shaking
+            config.optimization.usedExports = true;
+            config.optimization.sideEffects = true;
+            config.optimization.minimize = true;
         }
         return config;
     },
     env: {
         BASE_URL: 'http://192.168.91.112:9999',
     },
-
-    // async rewrites() {
-    //     return [
-    //         {
-    //             source: '/api/:path*',
-    //             destination: 'http://192.168.91.112:9999/bpms/:path*',
-    //         }
-    //     ]
-    // }
 };
 
 export default nextConfig;
