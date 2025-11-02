@@ -15,7 +15,7 @@ import LoadingButton from '../ui/core/LoadingButton';
 export function SignatureStep() {
     const { canvasRef, hasSignature, startDrawing, draw, stopDrawing, clearSignature } =
         useSignatureStep();
-    const { userData, setUserData } = useUser();
+    const { userData, setUserData, clearUserData } = useUser();
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const handleSubmit = async () => {
@@ -36,6 +36,7 @@ export function SignatureStep() {
             })
             .catch(() => {
                 toast.error('عملیات با خطا مواجه شد.');
+                clearUserData();
                 router.push('/');
             })
             .finally(() => setIsLoading(false));

@@ -7,6 +7,7 @@ import { personalInfoStepSchema, type PersonalInfoStepForm } from '@/lib/schemas
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
 import { Box } from '../ui';
 
 export default function PersonalInfo() {
@@ -59,6 +60,9 @@ export default function PersonalInfo() {
                 if (!respData?.body.needKYC && respData?.body.hasActiveCertificate) {
                     setUserData({ ...userData, step: 6 });
                 }
+            })
+            .catch(() => {
+                toast.error('خطایی رخ داده است. لطفا دوباره تلاش کنید.');
             });
     };
 

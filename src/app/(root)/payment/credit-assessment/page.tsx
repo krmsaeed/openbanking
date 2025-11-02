@@ -75,7 +75,7 @@ export default function CreditAssessmentPayment() {
 
                             <Button
                                 variant="ghost"
-                                onClick={() => router.push('/login')}
+                                onClick={() => router.push('/')}
                                 className="w-full"
                             >
                                 انصراف

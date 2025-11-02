@@ -150,39 +150,6 @@ function useContractStep() {
         }
     };
 
-    const generateContractText = (details: ContractDetails): string => {
-        return `
-قرارداد تسهیلات بانکی
-بانک اقتصاد نوین
-
-شماره قرارداد: ${details.contractNumber}
-تاریخ: ${details.date}
-
-مشخصات مشتری:
-نام: ${details.customerName}
-کد ملی: ${details.nationalId}
-شماره تماس: ${details.phoneNumber}
-
-جزئیات تسهیلات:
-مبلغ تسهیلات: ${details.facilityAmount} ریال
-نرخ سود: ${details.interestRate}% سالانه
-مدت بازپرداخت: ${details.duration} ماه
-قسط ماهانه: ${details.monthlyPayment} ریال
-
-${CONTRACT_CLAUSES.map(
-    (clause) =>
-        `${clause.title}\n${clause.content
-            .replace('{facilityAmount}', details.facilityAmount)
-            .replace('{duration}', details.duration)
-            .replace('{monthlyPayment}', details.monthlyPayment)
-            .replace('{interestRate}', details.interestRate)}\n`
-).join('\n')}
-
-تأیید مشتری: ____________________
-تاریخ: ____________________
-        `.trim();
-    };
-
     return {
         agreed,
         setAgreed,

@@ -297,7 +297,7 @@ function ErrorState({ error, onRetry, onCancel }: ErrorStateProps) {
 }
 
 export default function SelfieStep() {
-    const { userData, setUserData } = useUser();
+    const { userData, setUserData, clearUserData } = useUser();
     const router = useRouter();
     const {
         videoRef,
@@ -341,10 +341,11 @@ export default function SelfieStep() {
             })
             .catch(() => {
                 toast.error('عملیات با خطا مواجه شد.');
+                clearUserData();
                 router.push('/');
             })
             .finally(() => setIsUploading(false));
-    }, [capturedPhoto, userData, setUserData, setIsUploading, router]);
+    }, [capturedPhoto, userData, setUserData, clearUserData, setIsUploading, router]);
 
     const handleCapture = useCallback(() => {
         if (closenessPercent === 100 && obstructionRatio < 0.15) {

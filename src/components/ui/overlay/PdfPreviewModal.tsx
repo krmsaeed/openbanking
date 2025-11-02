@@ -29,7 +29,7 @@ export function PdfPreviewModal({
                 )}
                 <Box className="relative h-full w-full">
                     <iframe
-                        src={`${pdfUrl}#toolbar=0`}
+                        src={`${pdfUrl}`}
                         className="h-full w-full"
                         onLoad={() => setLoading(false)}
                     />

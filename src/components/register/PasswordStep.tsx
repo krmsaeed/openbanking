@@ -237,7 +237,8 @@ export default function PasswordStep() {
                             setUserData({ step: 6 });
                         })
                         .catch(() => {
-                            router.push('/login');
+                            router.push('/');
+                            setUserData({});
                             toast.error('خطایی رخ داده است');
                         })
                         .finally(() => {

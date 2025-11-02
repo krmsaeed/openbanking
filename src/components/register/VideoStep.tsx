@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import { VideoRecorderView } from '../specialized/VideoRecorderView';
 
 export const VideoRecorderStep: React.FC = () => {
-    const { userData, setUserData } = useUser();
+    const { userData, setUserData, clearUserData } = useUser();
     const [count, setCount] = useState(0);
     const router = useRouter();
     const {
@@ -47,6 +47,7 @@ export const VideoRecorderStep: React.FC = () => {
                 } else {
                     if (count >= 2) {
                         router.push('/');
+                        clearUserData();
                     }
                     toast.error('.مجددا تلاش کنید');
                     handleRetake();
@@ -54,6 +55,7 @@ export const VideoRecorderStep: React.FC = () => {
             })
             .catch(() => {
                 toast.error('عملیات با خطا مواجه شد.');
+                clearUserData();
                 router.push('/');
             })
             .finally(() => setIsUploading(false));

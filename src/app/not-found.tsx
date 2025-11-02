@@ -19,7 +19,7 @@ export default function NotFound() {
                     </Link>
 
                     <Link
-                        href={'/login'}
+                        href={'/'}
                         className="inline-block rounded-md border border-indigo-600 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
                     >
                         ورود به سیستم
