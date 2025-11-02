@@ -1,22 +1,12 @@
 FROM node:22-bullseye AS base
 
-FROM base AS deps
+FROM base AS builder
 WORKDIR /app
 
 COPY package.json ./
-
-RUN yarn install
-
-
-FROM base AS builder
-
-WORKDIR /app
-
-COPY --from=deps /app/node_modules ./node_modules
-
 COPY . .
 
-RUN yarn build
+RUN npm install --verbose && npm run build
 
 FROM base AS runner
 

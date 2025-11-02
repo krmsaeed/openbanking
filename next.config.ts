@@ -1,7 +1,6 @@
 /// <reference types="node" />
-import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {
+const nextConfig = {
     output: 'standalone',
     compress: true, // Gzip compression
     images: {
@@ -34,7 +33,8 @@ const nextConfig: NextConfig = {
             },
         },
     },
-    webpack: (config, { dev, isServer }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    webpack: (config: any, { dev, isServer }: { dev: boolean; isServer: boolean }) => {
         if (!dev && !isServer) {
             // Use default splitChunks with aggressive tree shaking
             config.optimization.usedExports = true;

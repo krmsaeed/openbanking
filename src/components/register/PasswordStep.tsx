@@ -59,6 +59,7 @@ export default function PasswordStep() {
             .catch(() => {
                 toast.error('عملیات با خطا مواجه شد');
                 clearUserData();
+                router.push('/');
             })
             .finally(() => {
                 setIsLoading(false);

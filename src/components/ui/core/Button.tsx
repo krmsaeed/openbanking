@@ -8,16 +8,16 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                default: 'bg-primary  hover:bg-primary/90',
+                default: 'text-white hover:opacity-90',
                 destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
                 outline:
                     'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-                secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+                secondary: 'text-white hover:opacity-80',
                 ghost: 'hover:bg-accent hover:text-accent-foreground',
                 link: 'text-primary underline-offset-4 hover:underline',
                 success:
                     'bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800',
-                primary: 'bg-primary text-white hover:bg-primary-600/90',
+                primary: 'text-white hover:opacity-90',
                 warning:
                     'bg-yellow-600 text-white hover:bg-yellow-700 dark:bg-yellow-700 dark:hover:bg-yellow-800',
                 info: 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800',
@@ -136,6 +136,16 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             'cursor-not-allowed opacity-50': isDisabled,
         });
 
+        const getBackgroundStyle = () => {
+            if (resolvedVariant === 'default' || resolvedVariant === 'primary') {
+                return { backgroundColor: 'var(--color-primary)' };
+            }
+            if (resolvedVariant === 'secondary') {
+                return { backgroundColor: 'var(--color-secondary)' };
+            }
+            return undefined;
+        };
+
         const content = (
             <>
                 {loading && <Spinner className="mr-2" />}
@@ -150,6 +160,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 <Link
                     href={href}
                     className={finalClasses}
+                    style={getBackgroundStyle()}
                     aria-disabled={isDisabled}
                     {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
                 >
@@ -162,6 +173,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             <button
                 type={type}
                 className={finalClasses}
+                style={getBackgroundStyle()}
                 ref={ref}
                 disabled={isDisabled}
                 aria-busy={loading}
@@ -203,6 +215,17 @@ function LinkButton({
         'cursor-not-allowed opacity-50': isDisabled,
     });
 
+    const getBackgroundStyle = () => {
+        const resolvedVariant = variant || 'default';
+        if (resolvedVariant === 'default' || resolvedVariant === 'primary') {
+            return { backgroundColor: 'var(--color-primary)' };
+        }
+        if (resolvedVariant === 'secondary') {
+            return { backgroundColor: 'var(--color-secondary)' };
+        }
+        return undefined;
+    };
+
     const content = (
         <>
             {loading && <Spinner className="mr-2" />}
@@ -213,7 +236,13 @@ function LinkButton({
     );
 
     return (
-        <Link href={href} className={finalClasses} aria-disabled={isDisabled} {...props}>
+        <Link
+            href={href}
+            className={finalClasses}
+            style={getBackgroundStyle()}
+            aria-disabled={isDisabled}
+            {...props}
+        >
             {content}
         </Link>
     );
