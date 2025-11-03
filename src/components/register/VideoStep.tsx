@@ -48,8 +48,8 @@ export const VideoRecorderStep: React.FC = () => {
                     if (count >= 2) {
                         router.push('/');
                         clearUserData();
+                        toast.error('احراز هویت با خطا مواجه شد.لطفاً دوباره تلاش کنید.');
                     }
-                    toast.error('.مجددا تلاش کنید');
                     handleRetake();
                 }
             })

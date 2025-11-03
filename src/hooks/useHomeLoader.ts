@@ -1,10 +1,11 @@
 'use client';
 
 import { useUser } from '@/contexts/UserContext';
-import { getCookie } from '@/lib/utils';
+import { getCookie, saveUserStateToCookie, setCookie } from '@/lib/utils';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface ApiResponse {
     data: {
@@ -49,13 +50,26 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                     .then((response) => {
                         const { data } = response.data as ApiResponse;
 
-                        setUserData({
-                            ...userData,
+                        const newState = {
                             nationalCode: code,
                             step: 1,
                             processId: data.processId,
                             isCustomer: data.body.isCustomer,
                             isDeposit: data.body.isDeposit,
+                        };
+
+                        // ذخیره در state
+                        setUserData({
+                            ...userData,
+                            ...newState,
+                        });
+
+                        // ذخیره در کوکی
+                        saveUserStateToCookie({
+                            step: newState.step,
+                            processId: newState.processId,
+                            isCustomer: newState.isCustomer,
+                            isDeposit: newState.isDeposit,
                         });
 
                         router.push('/register');
@@ -80,11 +94,37 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
             setError(null);
             setIsLoading(true);
 
+            const params = new URLSearchParams(window.location.search);
+
+            // خواندن از URL params
+            const tokenFromParams = params.get('token');
+            const codeFromParams = params.get('code');
+
             // خواندن توکن و کد ملی از کوکی
-            const accessToken = getCookie('access_token');
-            const nationalId = getCookie('national_id');
+            const cookieToken = getCookie('access_token');
+            const cookieNationalId = getCookie('national_id');
+
+            // اولویت با searchParams - اگر در URL هست استفاده کن و در کوکی ست کن
+            let accessToken: string | null = null;
+            let nationalId: string | null = null;
+
+            const normalized = codeFromParams;
+            if (tokenFromParams) {
+                setCookie('access_token', tokenFromParams);
+                accessToken = tokenFromParams;
+            } else {
+                accessToken = cookieToken;
+            }
+
+            if (codeFromParams) {
+                nationalId = normalized;
+                setCookie('national_id', nationalId!);
+            } else {
+                nationalId = cookieNationalId;
+            }
 
             if (!accessToken || !nationalId) {
+                toast.error('اطلاعات احراز هویت یافت نشد');
                 throw new Error('اطلاعات احراز هویت یافت نشد');
             }
 

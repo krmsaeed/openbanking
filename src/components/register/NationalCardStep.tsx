@@ -23,7 +23,6 @@ export default function NationalCardStep() {
         handleProvinceChange,
         handleConfirm,
         submit,
-        handleWelcomeModalClose,
         setShowWelcomeModal,
         errors,
         fileError,

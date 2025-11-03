@@ -35,7 +35,7 @@ export function SignatureStep() {
                 setUserData({ ...userData, step: 5 });
             })
             .catch(() => {
-                toast.error('عملیات با خطا مواجه شد.');
+                toast.error('احراز هویت با خطا مواجه شد.لطفاً دوباره تلاش کنید.');
                 clearUserData();
                 router.push('/');
             })

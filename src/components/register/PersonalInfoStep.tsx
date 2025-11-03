@@ -4,6 +4,7 @@ import LoadingButton from '@/components/ui/core/LoadingButton';
 import { Input } from '@/components/ui/forms';
 import { useUser } from '@/contexts/UserContext';
 import { personalInfoStepSchema, type PersonalInfoStepForm } from '@/lib/schemas/personal';
+import { clearUserStateCookies, getCookie } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
@@ -35,7 +36,7 @@ export default function PersonalInfo() {
 
     const onSubmit = async (data: PersonalInfoStepForm) => {
         const body: ApiBody = {
-            code: userData.nationalCode ?? '',
+            code: userData.nationalCode ?? `${getCookie('national_id')}`,
             mobile: data.phoneNumber,
             birthDate: data.birthDate,
             postalCode: data.postalCode,
@@ -63,6 +64,8 @@ export default function PersonalInfo() {
             })
             .catch(() => {
                 toast.error('خطایی رخ داده است. لطفا دوباره تلاش کنید.');
+
+                clearUserStateCookies();
             });
     };
 
@@ -140,7 +143,7 @@ export default function PersonalInfo() {
                         />
                     </>
                 )}
-                <LoadingButton type="submit" loading={isSubmitting} disabled={isSubmitting} />
+                <LoadingButton type="submit" loading={isSubmitting} />
             </form>
         </Box>
     );

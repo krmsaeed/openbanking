@@ -47,14 +47,14 @@ export function VideoRecorderView({
                             <video
                                 src={videoPreviewUrl ?? undefined}
                                 controls
-                                className="mx-auto w-full rounded-lg !bg-gray-50"
+                                className="mx-auto w-full rounded-lg bg-gray-50"
                             >
                                 مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
                             </video>
                         </Box>
 
                         <Box className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl bg-gray-100 p-4">
-                            <ul className="md:text-md space-y-1 text-xs">
+                            <ul className="md:text-md space-y-1">
                                 <li className="text-error font-bold">
                                     فیلم ضبط شده خود را بررسی کنید
                                 </li>

@@ -1,4 +1,11 @@
 'use client';
+import {
+    clearUserStateCookies,
+    getCookie,
+    getUserStateFromCookie,
+    removeCookie,
+    saveUserStateToCookie,
+} from '@/lib/utils';
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 
 interface UserData {
@@ -49,7 +56,7 @@ interface UserProviderProps {
 }
 const initialState: UserData = {
     step: 1,
-    nationalCode: '',
+    nationalCode: `${getCookie('national_id')}`,
     phoneNumber: '',
     birthDate: '',
     postalCode: '',
@@ -65,6 +72,8 @@ const initialState: UserData = {
     signature: undefined,
     nationalCard: undefined,
     branch: '',
+    isCustomer: getCookie('national_id') ? true : false,
+    isDeposit: getCookie('national_id') ? true : false,
     nationalFile: undefined,
     processId: null,
     customerNumber: undefined,
@@ -72,18 +81,53 @@ const initialState: UserData = {
     hasScannedNationalCard: false,
 };
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-    const [userData, setUserDataState] = useState<UserData>(initialState);
+    const [userData, setUserDataState] = useState<UserData>(() => {
+        // بازیابی state از کوکی در initial load
+        if (typeof window !== 'undefined') {
+            const cookieState = getUserStateFromCookie();
+            return {
+                ...initialState,
+                step: cookieState.step ?? initialState.step,
+                processId: cookieState.processId ?? initialState.processId,
+                isCustomer: cookieState.isCustomer ?? initialState.isCustomer,
+                isDeposit: cookieState.isDeposit ?? initialState.isDeposit,
+            };
+        }
+        return initialState;
+    });
 
     const setUserData = (data: Partial<UserData>) => {
-        setUserDataState((prev) => ({ ...prev, ...data }));
+        setUserDataState((prev) => {
+            const newData = { ...prev, ...data };
+            // ذخیره فیلدهای مهم در کوکی
+            saveUserStateToCookie({
+                step: newData.step,
+                processId: newData.processId,
+                isCustomer: newData.isCustomer,
+                isDeposit: newData.isDeposit,
+            });
+            return newData;
+        });
     };
 
     const updateUserData = (key: keyof UserData, value: UserData[keyof UserData]) => {
-        setUserDataState((prev) => ({ ...prev, [key]: value }));
+        setUserDataState((prev) => {
+            const newData = { ...prev, [key]: value };
+            // ذخیره فیلدهای مهم در کوکی
+            saveUserStateToCookie({
+                step: newData.step,
+                processId: newData.processId,
+                isCustomer: newData.isCustomer,
+                isDeposit: newData.isDeposit,
+            });
+            return newData;
+        });
     };
 
     const clearUserData = () => {
         setUserDataState(initialState);
+        removeCookie(['access_token']);
+        clearUserStateCookies();
     };
 
     return (

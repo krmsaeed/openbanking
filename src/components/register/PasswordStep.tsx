@@ -70,8 +70,8 @@ export default function PasswordStep() {
     return !showOtp ? (
         <Box className="space-y-3">
             <Box className="rounded-xl bg-gray-100 dark:bg-gray-800">
-                <List className="text-error-800 text-center text-sm">
-                    <ListItem className="text-bold text-error-500 text-md mb-0 pb-0">
+                <List className="text-error-800 rounded-lg bg-gray-200 p-2 text-center text-sm shadow-sm">
+                    <ListItem className="text-bold text-error-500 mb-0 pb-0 text-lg">
                         در نگهداری رمز عبور خود دقت کنید{' '}
                     </ListItem>
                     <ListItem className="text-md mb-0 pb-0">

@@ -13,8 +13,7 @@ import {
     extendedRegistrationSchema,
     type ExtendedRegistrationForm,
 } from '@/lib/schemas/registration';
-import {
-    cleanNationalId,
+import cleanNationalId, {
     convertPersianToEnglish,
     getCookie,
     isValidNationalId,

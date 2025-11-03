@@ -1,4 +1,4 @@
-import mergeClasses from '@/lib/utils';
+import mergeClasses, { convertPersianToEnglish } from '@/lib/utils';
 import React, { CSSProperties, forwardRef } from 'react';
 import { Box } from '../core';
 
@@ -65,6 +65,19 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>((props, ref) 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const target = e.currentTarget;
+
+        // تبدیل اعداد فارسی به انگلیسی
+        let convertedValue = convertPersianToEnglish(target.value);
+
+        // حذف فاصله برای فیلدهای password
+        if (type === 'password') {
+            convertedValue = convertedValue.replace(/\s/g, '');
+        }
+
+        if (convertedValue !== target.value) {
+            target.value = convertedValue;
+        }
+
         if (maxLength && target.value.length >= maxLength) {
             target.value = target.value.slice(0, maxLength);
         }
@@ -122,12 +135,12 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>((props, ref) 
                     {...inputProps}
                 />
                 {startAdornment && (
-                    <Box className="dark:text-secondary absolute right-[1rem] bottom-1/2 translate-y-1/2 transform">
+                    <Box className="dark:text-secondary absolute right-4 bottom-1/2 translate-y-1/2 transform">
                         {startAdornment}
                     </Box>
                 )}
                 {endAdornment && (
-                    <Box className="dark:text-secondary absolute bottom-1/2 left-[1rem] translate-y-1/2 transform">
+                    <Box className="dark:text-secondary absolute bottom-1/2 left-4 translate-y-1/2 transform">
                         {endAdornment}
                     </Box>
                 )}

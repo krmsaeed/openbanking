@@ -1,4 +1,4 @@
-import mergeClasses from '@/lib/utils';
+import mergeClasses, { convertPersianToEnglish } from '@/lib/utils';
 import React, { ComponentProps } from 'react';
 import { Box, Typography } from '../core';
 
@@ -33,6 +33,19 @@ const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
         sx,
         value,
     } = props;
+
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const target = e.currentTarget;
+
+        // تبدیل اعداد فارسی به انگلیسی
+        const convertedValue = convertPersianToEnglish(target.value);
+        if (convertedValue !== target.value) {
+            target.value = convertedValue;
+        }
+
+        onChange?.(e);
+    };
+
     return (
         <Box className={mergeClasses('relative w-full', className)} style={sx}>
             {startDecorator && <Box className="absolute left-0">{startDecorator}</Box>}
@@ -46,7 +59,7 @@ const CustomTextarea: React.FC<CustomTextareaProps> = (props) => {
             <InputComponent
                 {...props}
                 name={name}
-                onChange={onChange}
+                onChange={handleChange}
                 placeholder={placeholder}
                 required={required}
                 rows={2}

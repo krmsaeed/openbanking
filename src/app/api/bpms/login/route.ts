@@ -16,9 +16,8 @@ async function handler() {
             },
             { status: response.status || 400 }
         );
-    } catch (error) {
-        console.error('BPMS send message error:', error);
-        return NextResponse.json({ error }, { status: 500 });
+    } catch {
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
 

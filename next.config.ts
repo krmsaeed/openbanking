@@ -45,6 +45,7 @@ const nextConfig = {
     },
     env: {
         BASE_URL: 'http://192.168.91.112:9999',
+        IS_STAGE: 'true',
     },
 };
 

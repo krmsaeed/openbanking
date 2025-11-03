@@ -334,7 +334,9 @@ export default function SelfieStep() {
             .post('/api/bpms/deposit-files', formData)
             .then((res) => {
                 const { data } = res;
-                if (!data.body.randomText) {
+                if (data.body.randomText === null) {
+                    toast.error('احراز هویت با خطا مواجه شد.لطفاً دوباره تلاش کنید.');
+                    clearUserData();
                     router.push('/');
                 }
                 setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });

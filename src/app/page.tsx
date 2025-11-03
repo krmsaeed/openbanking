@@ -1,5 +1,6 @@
 'use client';
 
+import HomeLoader from '@/components/HomeLoader';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Box, Card, Input, Typography } from '@/components/ui';
 import LoadingButton from '@/components/ui/core/LoadingButton';
@@ -36,6 +37,8 @@ export default function LoginPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const { setUserData } = useUser();
+    const isStage = process.env.IS_STAGE;
+
     const {
         register,
         handleSubmit,
@@ -96,86 +99,98 @@ export default function LoginPage() {
                 toast.error(message);
             }
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'خطا در ورود به سیستم';
-            toast.error(message);
+            console.log('🚀 ~ page.tsx:102 ~ onSubmit ~ error:', error);
+            toast.error('عملیات ناموفق');
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <Box className="container flex min-h-screen items-center justify-center px-4 py-8">
-            <Box className="w-full max-w-md">
-                <Card className="space-y-6 p-6 md:p-8">
-                    <ThemeToggle className="absolute top-4 right-4 z-10" />
-                    {/* Header */}
-                    <Box className="space-y-2 text-center">
-                        <Typography variant="h4" className="text-gray-900 dark:text-gray-100">
-                            ورود به سیستم
-                        </Typography>
-                        <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
-                            لطفاً اطلاعات خود را وارد کنید
-                        </Typography>
+        <main className="flex min-h-screen w-full items-center justify-center">
+            {!isStage ? (
+                <HomeLoader />
+            ) : (
+                <Box className="container flex min-h-screen items-center justify-center">
+                    <Box className="w-full max-w-md">
+                        <Card className="space-y-6" padding="md">
+                            <ThemeToggle className="absolute top-2 right-2 z-10" />
+                            {/* Header */}
+                            <Box className="space-y-2 text-center">
+                                <Typography
+                                    variant="h4"
+                                    className="text-gray-900 dark:text-gray-100"
+                                >
+                                    ورود به سیستم
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    className="text-gray-600 dark:text-gray-400"
+                                >
+                                    لطفاً اطلاعات خود را وارد کنید
+                                </Typography>
+                            </Box>
+
+                            {/* Form */}
+                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                                <Box className="space-y-2">
+                                    <Input
+                                        id="code"
+                                        type="text"
+                                        label="کد ملی"
+                                        required
+                                        placeholder="کد ملی را وارد کنید"
+                                        disabled={isLoading}
+                                        {...register('code', {
+                                            required: 'کد ملی الزامی است',
+                                            onChange: handleNationalCodeChange,
+                                        })}
+                                        className="w-full"
+                                        error={errors.code?.message}
+                                    />
+                                </Box>
+                                <Box className="space-y-2">
+                                    <Input
+                                        id="username"
+                                        label="نام کاربری"
+                                        required
+                                        type="text"
+                                        placeholder="نام کاربری خود را وارد کنید"
+                                        {...register('username')}
+                                        error={errors.username?.message}
+                                        disabled={isLoading}
+                                        className="w-full"
+                                    />
+                                </Box>
+
+                                <Box className="space-y-2">
+                                    <label
+                                        htmlFor="password"
+                                        className="block text-sm font-medium text-gray-700"
+                                    >
+                                        رمز عبور
+                                    </label>
+                                    <Input
+                                        id="password"
+                                        type="password"
+                                        placeholder="رمز عبور خود را وارد کنید"
+                                        {...register('password')}
+                                        error={errors.password?.message}
+                                        disabled={isLoading}
+                                        className="w-full"
+                                    />
+                                </Box>
+                                <LoadingButton
+                                    type="submit"
+                                    title="ورود"
+                                    loading={isLoading}
+                                    disabled={isLoading}
+                                />
+                            </form>
+                        </Card>
                     </Box>
-
-                    {/* Form */}
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <Box className="space-y-2">
-                            <Input
-                                id="code"
-                                type="text"
-                                label="کد ملی"
-                                required
-                                placeholder="کد ملی را وارد کنید"
-                                disabled={isLoading}
-                                {...register('code', {
-                                    required: 'کد ملی الزامی است',
-                                    onChange: handleNationalCodeChange,
-                                })}
-                                className="w-full"
-                                error={errors.code?.message}
-                            />
-                        </Box>
-                        <Box className="space-y-2">
-                            <Input
-                                id="username"
-                                label="نام کاربری"
-                                required
-                                type="text"
-                                placeholder="نام کاربری خود را وارد کنید"
-                                {...register('username')}
-                                error={errors.username?.message}
-                                disabled={isLoading}
-                                className="w-full"
-                            />
-                        </Box>
-
-                        <Box className="space-y-2">
-                            <label
-                                htmlFor="password"
-                                className="block text-sm font-medium text-gray-700"
-                            >
-                                رمز عبور
-                            </label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="رمز عبور خود را وارد کنید"
-                                {...register('password')}
-                                error={errors.password?.message}
-                                disabled={isLoading}
-                                className="w-full"
-                            />
-                        </Box>
-                        <LoadingButton
-                            type="submit"
-                            title="ورود"
-                            loading={isLoading}
-                            disabled={isLoading}
-                        />
-                    </form>
-                </Card>
-            </Box>
-        </Box>
+                </Box>
+            )}
+        </main>
     );
 }

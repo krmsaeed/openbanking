@@ -88,9 +88,7 @@ export function getNationalId(): string | null {
 
 export function clearAuthTokens(): void {
     try {
-        removeCookie(ACCESS_TOKEN_KEY);
-        removeCookie(TOKEN_EXPIRY_KEY);
-        removeCookie(NATIONAL_ID_KEY);
+        removeCookie([ACCESS_TOKEN_KEY, TOKEN_EXPIRY_KEY, NATIONAL_ID_KEY]);
     } catch (error) {
         console.error('Failed to clear auth tokens:', error);
     }
