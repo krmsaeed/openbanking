@@ -4,7 +4,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import { Box, Card, Input, Typography } from '@/components/ui';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { useUser } from '@/contexts/UserContext';
-import { setCookie } from '@/lib/utils';
+import { convertPersianToEnglish, isValidNationalId, setCookie } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -14,7 +14,18 @@ import toast from 'react-hot-toast';
 import { z } from 'zod';
 
 const loginSchema = z.object({
-    code: z.string().min(1, ' کدملی الزامی است'),
+    code: z
+        .string()
+        .min(1, 'کد ملی الزامی است')
+        .transform((val) => convertPersianToEnglish(val))
+        .pipe(
+            z
+                .string()
+                .length(10, 'کد ملی باید 10 رقم باشد')
+                .refine((val) => isValidNationalId(val), {
+                    message: 'کد ملی وارد شده معتبر نیست',
+                })
+        ),
     username: z.string().min(1, 'نام کاربری الزامی است'),
     password: z.string().min(1, 'رمز عبور الزامی است'),
 });
@@ -29,6 +40,7 @@ export default function LoginPage() {
         register,
         handleSubmit,
         getValues,
+        setValue,
         formState: { errors },
     } = useForm<LoginForm>({
         resolver: zodResolver(loginSchema),
@@ -39,6 +51,11 @@ export default function LoginPage() {
             password: 'demo',
         },
     });
+
+    const handleNationalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const converted = convertPersianToEnglish(e.target.value);
+        setValue('code', converted, { shouldValidate: true });
+    };
 
     const onSubmit = async () => {
         setIsLoading(true);
@@ -114,7 +131,10 @@ export default function LoginPage() {
                                 required
                                 placeholder="کد ملی را وارد کنید"
                                 disabled={isLoading}
-                                {...register('code', { required: 'کد ملی الزامی است' })}
+                                {...register('code', {
+                                    required: 'کد ملی الزامی است',
+                                    onChange: handleNationalCodeChange,
+                                })}
                                 className="w-full"
                                 error={errors.code?.message}
                             />
