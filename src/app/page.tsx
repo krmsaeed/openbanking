@@ -61,7 +61,6 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            // درخواست اول: دریافت توکن
             const loginResponse = await axios.post('/api/bpms/login');
             const { access_token } = loginResponse.data;
 
@@ -69,11 +68,9 @@ export default function LoginPage() {
                 throw new Error('اطلاعات ورود نامعتبر است');
             }
 
-            // ذخیره توکن و کد ملی در کوکی
             setCookie('access_token', access_token);
             setCookie('national_id', getValues('code'));
 
-            // درخواست دوم: ارسال پیام برای بررسی اطلاعات
             try {
                 const response = await axios.post('/api/bpms/send-message', {
                     serviceName: 'virtual-open-deposit',
