@@ -58,8 +58,8 @@ export function VideoRecorderView({
                                 <li className="text-error font-bold">
                                     فیلم ضبط شده خود را بررسی کنید
                                 </li>
-                                <li> اگر فیلم مناسب است «مرحله بعد» را کنید</li>
-                                <li> برای رکورد جدید «ضبط مجدد» را کنید</li>
+                                <li> اگر فیلم مناسب است «مرحله بعد» را انتخاب کنید</li>
+                                <li> برای رکورد جدید «ضبط مجدد» را انتخاب کنید</li>
                             </ul>
                             <Button
                                 variant="secondary"

@@ -7,12 +7,16 @@ import { personalInfoStepSchema, type PersonalInfoStepForm } from '@/lib/schemas
 import { clearUserStateCookies, getCookie } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { Box } from '../ui';
 
 export default function PersonalInfo() {
     const { userData, setUserData } = useUser();
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
     const {
         handleSubmit,
         formState: { errors, isSubmitting },
@@ -35,42 +39,48 @@ export default function PersonalInfo() {
     };
 
     const onSubmit = async (data: PersonalInfoStepForm) => {
-        const body: ApiBody = {
-            code: userData.nationalCode ?? `${getCookie('national_id')}`,
-            mobile: data.phoneNumber,
-            birthDate: data.birthDate,
-            postalCode: data.postalCode,
-        };
+        setIsLoading(true);
+        try {
+            const body: ApiBody = {
+                code: userData.nationalCode ?? `${getCookie('national_id')}`,
+                mobile: data.phoneNumber,
+                birthDate: data.birthDate,
+                postalCode: data.postalCode,
+            };
 
-        await axios
-            .post('/api/bpms/send-message', {
-                serviceName: 'virtual-open-deposit',
-                processId: userData.processId,
-                formName: 'CustomerInquiry',
-                body,
-            })
-            .then((response) => {
-                const { data: respData } = response.data;
+            await axios
+                .post('/api/bpms/send-message', {
+                    serviceName: 'virtual-open-deposit',
+                    processId: userData.processId,
+                    formName: 'CustomerInquiry',
+                    body,
+                })
+                .then((response) => {
+                    const { data: respData } = response.data;
 
-                if (respData?.body.needKYC && !respData?.body.hasActiveCertificate) {
-                    setUserData({ ...userData, step: 2 });
-                }
-                if (!respData?.body.needKYC && !respData?.body.hasActiveCertificate) {
-                    setUserData({ ...userData, step: 5 });
-                }
-                if (!respData?.body.needKYC && respData?.body.hasActiveCertificate) {
-                    setUserData({ ...userData, step: 6 });
-                }
-            })
-            .catch(() => {
-                toast.error('خطایی رخ داده است. لطفا دوباره تلاش کنید.');
-
-                clearUserStateCookies();
-            });
+                    if (respData?.body.needKYC && !respData?.body.hasActiveCertificate) {
+                        setUserData({ ...userData, step: 2 });
+                    }
+                    if (!respData?.body.needKYC && !respData?.body.hasActiveCertificate) {
+                        setUserData({ ...userData, step: 5 });
+                    }
+                    if (!respData?.body.needKYC && respData?.body.hasActiveCertificate) {
+                        setUserData({ ...userData, step: 6 });
+                    }
+                })
+                .catch(() => {
+                    toast.error('خطایی رخ داده است. لطفا دوباره تلاش کنید.');
+                    clearUserStateCookies();
+                    router.push('/');
+                });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const onSubmitWrapper = async (e: React.FormEvent) => {
         e.preventDefault();
+
         if (userData.isCustomer) {
             const values = getValues();
             await onSubmit(values as PersonalInfoStepForm);
@@ -143,7 +153,7 @@ export default function PersonalInfo() {
                         />
                     </>
                 )}
-                <LoadingButton type="submit" loading={isSubmitting} />
+                <LoadingButton type="submit" loading={isSubmitting || isLoading} />
             </form>
         </Box>
     );
