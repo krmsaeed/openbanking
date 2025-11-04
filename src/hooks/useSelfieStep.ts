@@ -394,7 +394,7 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                         const percentRel = Math.round(Math.max(0, Math.min(1.5, rawRel)) * 100);
                         currentClosenessPercent = percentRel;
                         setClosenessPercent(percentRel);
-                        centerBoxClose = percentRel >= 80;
+                        centerBoxClose = percentRel >= 60; // کاهش از 80 به 60
                     } else {
                         const minSkin = 0.08;
                         const maxSkin = 0.35;
@@ -405,7 +405,7 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                         const percent = Math.round(raw * 100);
                         currentClosenessPercent = percent;
                         setClosenessPercent(percent);
-                        centerBoxClose = percent >= 80;
+                        centerBoxClose = percent >= 60; // کاهش از 80 به 60
                     }
                     setFaceTooFar(!centerBoxClose);
                 } catch {
@@ -429,15 +429,15 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
 
                 const MIN_DARK_HALF_RATIO = 0.005;
                 const detected =
-                    confidence > 0.45 &&
-                    obstructionRatio < 0.15 &&
+                    confidence > 0.4 && // کاهش از 0.45 به 0.4
+                    obstructionRatio < 0.2 && // افزایش از 0.15 به 0.2 - تساهل بیشتر
                     centerBoxClose &&
-                    skinRatio >= 0.15 &&
-                    symmetryRatio >= 0.4 &&
+                    skinRatio >= 0.12 && // کاهش از 0.15 به 0.12
+                    symmetryRatio >= 0.35 && // کاهش از 0.4 به 0.35
                     eyeRatio >= MIN_EYE_RATIO &&
                     darkUpperRatio >= MIN_DARK_HALF_RATIO &&
                     darkLowerRatio >= MIN_DARK_HALF_RATIO &&
-                    (currentClosenessPercent ?? 0) >= 75;
+                    (currentClosenessPercent ?? 0) >= 60; // کاهش از 75 به 60
 
                 setFaceDetected(detected);
                 setFaceTooFar(!centerBoxClose);
@@ -835,15 +835,47 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         const vw = video.videoWidth || Math.round(video.clientWidth) || 640;
         const vh = video.videoHeight || Math.round(video.clientHeight) || 480;
 
-        canvas.width = vw;
-        canvas.height = vh;
+        // محاسبه مرکز و شعاع دایره
+        const centerX = vw / 2;
+        const centerY = vh / 2;
+        const radius = Math.min(vw, vh) / 2;
+
+        // تنظیم اندازه canvas به اندازه دایره (مربع محیطی)
+        const circleSize = radius * 2;
+        canvas.width = circleSize;
+        canvas.height = circleSize;
+
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         context.save();
         try {
+            // ایجاد ماسک دایره
+            context.beginPath();
+            context.arc(radius, radius, radius, 0, Math.PI * 2);
+            context.closePath();
+            context.clip();
+
+            // رسم تصویر آینه‌ای (flip horizontal)
             context.translate(canvas.width, 0);
             context.scale(-1, 1);
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // رسم بخش مرکزی ویدئو که در دایره قرار دارد
+            const sourceX = centerX - radius;
+            const sourceY = centerY - radius;
+            const sourceWidth = circleSize;
+            const sourceHeight = circleSize;
+
+            context.drawImage(
+                video,
+                sourceX,
+                sourceY,
+                sourceWidth,
+                sourceHeight,
+                0,
+                0,
+                circleSize,
+                circleSize
+            );
         } catch (err) {
             console.warn('drawImage failed', err);
         } finally {
