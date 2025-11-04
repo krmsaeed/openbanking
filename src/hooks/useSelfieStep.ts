@@ -1,5 +1,45 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+/**
+ * تشخیص رنگ پوست برای طیف وسیعی از رنگ‌های پوست
+ * از فضای رنگی YCbCr و HSV برای تشخیص دقیق‌تر استفاده می‌کند
+ */
+function detectSkinTone(r: number, g: number, b: number): boolean {
+    // روش 1: استفاده از فضای رنگی YCbCr
+    // این روش برای همه رنگ‌های پوست از خیلی روشن تا خیلی تیره کار می‌کند
+    const y = 0.299 * r + 0.587 * g + 0.114 * b;
+    const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
+    const cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
+
+    // محدوده YCbCr برای پوست (برای همه رنگ‌های پوست)
+    const yCbCrSkin = y > 40 && cb >= 77 && cb <= 127 && cr >= 133 && cr <= 173;
+
+    // روش 2: قوانین RGB سنتی (بهبود یافته برای پوست‌های تیره)
+    const maxRGB = Math.max(r, g, b);
+    const minRGB = Math.min(r, g, b);
+    const diff = maxRGB - minRGB;
+
+    // برای پوست‌های روشن تا متوسط
+    const lightSkin = r > 95 && g > 40 && b > 20 && diff > 15 && r > g && r > b;
+
+    // برای پوست‌های تیره
+    const darkSkin = r > 40 && g > 30 && b > 15 && r >= g && r >= b && diff > 10 && diff < 80;
+
+    // روش 3: بررسی نسبت‌های رنگی
+    const sum = r + g + b;
+    if (sum === 0) return false;
+
+    const rRatio = r / sum;
+    const gRatio = g / sum;
+    const bRatio = b / sum;
+
+    // پوست معمولاً قرمز بیشتری نسبت به آبی دارد
+    const rgbRatioSkin = rRatio > 0.3 && gRatio > 0.25 && bRatio < 0.35 && rRatio > bRatio;
+
+    // حداقل یکی از روش‌ها باید تأیید کند
+    return yCbCrSkin || lightSkin || darkSkin || rgbRatioSkin;
+}
+
 interface UseSelfieStepReturn {
     videoRef: React.RefObject<HTMLVideoElement | null>;
     canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -297,9 +337,16 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                             const gray = (r + g + b) / 3;
                             circularPixelCount++;
                             avgBrightness += gray;
-                            if (r > g && r > b && r > 80 && g > 50 && g < 180 && b > 30 && b < 150)
-                                skinPixels++;
-                            if (gray < 60) {
+
+                            // تشخیص پوست برای طیف وسیع‌تری از رنگ‌های پوست
+                            // از فرمول YCbCr برای تشخیص بهتر پوست استفاده می‌کنیم
+                            const isSkin = detectSkinTone(r, g, b);
+                            if (isSkin) skinPixels++;
+
+                            // آستانه تاریکی تطبیقی بر اساس روشنایی کلی تصویر
+                            // برای صورت‌های تیره‌تر آستانه کمتری استفاده می‌شود
+                            const adaptiveDarkThreshold = gray < 40 ? 25 : gray < 80 ? 50 : 70;
+                            if (gray < adaptiveDarkThreshold) {
                                 const isUpperHalf = y < faceRadius;
                                 if (isUpperHalf) {
                                     darkFeatures++;
@@ -383,7 +430,8 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                             const r = readBuf[bi];
                             const g = readBuf[bi + 1];
                             const b = readBuf[bi + 2];
-                            if (r > g && r > b && r > 80 && g > 40 && b > 30) boxSkin++;
+                            // استفاده از تابع تشخیص پوست بهبود یافته
+                            if (detectSkinTone(r, g, b)) boxSkin++;
                             boxTotal++;
                         }
                     }
@@ -396,8 +444,9 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                         setClosenessPercent(percentRel);
                         centerBoxClose = percentRel >= 60; // کاهش از 80 به 60
                     } else {
-                        const minSkin = 0.08;
-                        const maxSkin = 0.35;
+                        // محدوده‌های تنظیم شده برای همه رنگ‌های پوست
+                        const minSkin = 0.05; // کاهش از 0.08 برای پوست‌های تیره
+                        const maxSkin = 0.45; // افزایش از 0.35 برای پوست‌های روشن
                         const raw = Math.max(
                             0,
                             Math.min(1, (boxSkinRatio - minSkin) / (maxSkin - minSkin))
@@ -519,20 +568,13 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                             circularPixelCount++;
                             avgBrightness += gray;
 
-                            if (
-                                r > g &&
-                                r > b &&
-                                r > 80 &&
-                                r < 220 &&
-                                g > 50 &&
-                                g < 180 &&
-                                b > 30 &&
-                                b < 150
-                            ) {
-                                skinPixels++;
-                            }
+                            // استفاده از تابع تشخیص پوست بهبود یافته
+                            const isSkin = detectSkinTone(r, g, b);
+                            if (isSkin) skinPixels++;
 
-                            if (gray < 60) {
+                            // آستانه تاریکی تطبیقی
+                            const adaptiveDarkThreshold = gray < 40 ? 25 : gray < 80 ? 50 : 70;
+                            if (gray < adaptiveDarkThreshold) {
                                 const isUpperHalf = y < faceRadius;
                                 if (isUpperHalf) {
                                     darkFeatures++;
@@ -623,7 +665,8 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                     const r = boxData[i];
                     const g = boxData[i + 1];
                     const b = boxData[i + 2];
-                    if (r > g && r > b && r > 80 && g > 40 && b > 30) boxSkin++;
+                    // استفاده از تابع تشخیص پوست بهبود یافته
+                    if (detectSkinTone(r, g, b)) boxSkin++;
                     boxTotal++;
                 }
                 const boxSkinRatio = boxTotal > 0 ? boxSkin / boxTotal : 0;
@@ -637,8 +680,9 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                     setClosenessPercent(percentRel);
                     centerBoxClose = percentRel >= 90;
                 } else {
-                    const minSkin = 0.08;
-                    const maxSkin = 0.35;
+                    // محدوده‌های تنظیم شده برای همه رنگ‌های پوست
+                    const minSkin = 0.05; // کاهش از 0.08 برای پوست‌های تیره
+                    const maxSkin = 0.45; // افزایش از 0.35 برای پوست‌های روشن
                     const raw = Math.max(
                         0,
                         Math.min(1, (boxSkinRatio - minSkin) / (maxSkin - minSkin))

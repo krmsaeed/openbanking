@@ -119,6 +119,9 @@ function Instructions({ capturedPhoto, onRetake, isUploading }: InstructionsProp
                     <li className="text-primary-800 font-bold">
                         صورت خود را کاملاً در قاب قرار دهید
                     </li>
+                    <li className="text-error font-bold">
+                        در مکانی مناسب و با روشنایی کافی قرار بگیرید
+                    </li>
                     <li>منتظر بمانید تا صورت شما تشخیص داده شود</li>
                     <li>زمانی که دکمه «گرفتن عکس» سبز شد، کلیک کنید</li>
                 </ul>
