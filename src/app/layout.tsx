@@ -10,8 +10,37 @@ import { Suspense } from 'react';
 import './styles/globals.css';
 
 export const metadata: Metadata = {
-    title: '...اقتصاد نوین | هوشمندانه پرداخت کنید',
-    description: 'بانک اقتصاد نوین',
+    title: 'اقتصاد نوین | هوشمندانه پرداخت کنید',
+    description: 'بانک اقتصاد نوین - پرداخت آسان و امن اقساط',
+    applicationName: 'بانک اقتصاد نوین',
+    manifest: '/manifest.json',
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: 'default',
+        title: 'اقتصاد نوین',
+    },
+    formatDetection: {
+        telephone: false,
+    },
+
+    viewport: {
+        width: 'device-width',
+        initialScale: 1,
+        maximumScale: 5,
+        userScalable: true,
+        viewportFit: 'cover',
+    },
+    icons: {
+        icon: [
+            { url: '/icons/favicon.ico' },
+            { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+            { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+        ],
+        apple: [
+            { url: '/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
+            { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+        ],
+    },
 };
 
 const iranYekan = localFont({
@@ -53,8 +82,24 @@ export default function RootLayout({
     return (
         <html lang="fa-IR" suppressHydrationWarning>
             <head>
-                <link rel="icon" href="/icons/favicon.ico"></link>
+                <link rel="icon" href="/icons/favicon.ico" />
+                <link rel="manifest" href="/manifest.json" />
+                <meta name="theme-color" content="#0066cc" />
                 <meta name="color-scheme" content="light dark" />
+
+                {/* iOS Safari PWA */}
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+                <meta name="apple-mobile-web-app-title" content="اقتصاد نوین" />
+                <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+
+                {/* Android Chrome PWA */}
+                <meta name="mobile-web-app-capable" content="yes" />
+
+                {/* Windows Tiles */}
+                <meta name="msapplication-TileColor" content="#0066cc" />
+                <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
+
                 <script
                     dangerouslySetInnerHTML={{
                         __html: `(() => {

@@ -6,12 +6,16 @@
         "dev": "next dev -p 3000",
         "build": "next build",
         "start": "next start -p 3001",
+        "build:prod": "npm run build && rm -rf .next/standalone/.next/static && cp -r .next/static .next/standalone/.next/static && rm -rf .next/standalone/public && cp -r public .next/standalone/public",
+        "start:standalone": "NODE_ENV=production node .next/standalone/server.js",
+        "prod": "npm run build:prod && npm run start:standalone",
         "analyze": "ANALYZE=true next build",
         "lint": "eslint",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "format:staged": "prettier --write --ignore-unknown",
-        "prepare": "husky"
+        "prepare": "husky",
+        "generate-icons": "node generate-icons.js"
     },
     "dependencies": {
         "@heroicons/react": "^2.2.0",
@@ -27,6 +31,7 @@
         "react-hook-form": "^7.62.0",
         "react-hot-toast": "^2.6.0",
         "react-signature-canvas": "^1.1.0-alpha.2",
+        "sharp": "^0.34.4",
         "tailwind-merge": "^3.3.1",
         "tesseract.js": "^6.0.1",
         "zod": "^4.1.3"

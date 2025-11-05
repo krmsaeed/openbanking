@@ -1,6 +1,7 @@
 'use client';
 
 import HomeLoader from '@/components/HomeLoader';
+import InstallPWA from '@/components/InstallPWA';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Box, Card, Input, Typography } from '@/components/ui';
 import LoadingButton from '@/components/ui/core/LoadingButton';
@@ -108,6 +109,9 @@ export default function LoginPage() {
 
     return (
         <main className="flex min-h-screen w-full items-center justify-center">
+            {/* دکمه نصب PWA */}
+            <InstallPWA />
+
             {!isStage ? (
                 <HomeLoader />
             ) : (
