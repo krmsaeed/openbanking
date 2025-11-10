@@ -1,4 +1,5 @@
 import AuthInitializer from '@/components/AuthInitializer';
+import InstallPWA from '@/components/InstallPWA';
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
 import { ToastProvider } from '@/components/ui/feedback/Toast';
@@ -130,6 +131,7 @@ export default function RootLayout({
                     <UserProvider>
                         <ToastProvider>
                             <Suspense fallback={<div>Loading...</div>}>
+                                {process.env.IS_STAGE == 'true' && <InstallPWA />}
                                 <AuthInitializer requireAuth={false}>
                                     {process.env.NODE_ENV === 'development' ? (
                                         <ServiceWorkerUnregistrar />

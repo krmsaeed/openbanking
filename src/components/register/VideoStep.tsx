@@ -45,10 +45,10 @@ export const VideoRecorderStep: React.FC = () => {
                 if (res.data.body.verified) {
                     setUserData({ ...userData, step: 4 });
                 } else {
+                    toast.error('ویدئو شما تایید نشد. لطفاً دوباره تلاش کنید.');
                     if (count >= 2) {
                         router.push('/');
                         clearUserData();
-                        toast.error('احراز هویت با خطا مواجه شد.لطفاً دوباره تلاش کنید.');
                     }
                     handleRetake();
                 }

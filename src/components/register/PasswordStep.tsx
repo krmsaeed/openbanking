@@ -51,9 +51,9 @@ export default function PasswordStep() {
                     setUserData({ password, ENFirstName, ENLastName });
                     setShowOtp(true);
                 } else {
-                    const errorMessage =
-                        data.body.errorMessage || 'خطایی رخ داده است. لطفا دوباره تلاش کنید.';
+                    const errorMessage = 'مجوز احراز هویت با خطا مواجه . لطفا دوباره تلاش کنید.';
                     toast.error(errorMessage);
+                    router.push('/');
                 }
             })
             .catch(() => {

@@ -338,7 +338,7 @@ export default function SelfieStep() {
             .then((res) => {
                 const { data } = res;
                 if (data.body.randomText === null) {
-                    toast.error('احراز هویت با خطا مواجه شد.لطفاً دوباره تلاش کنید.');
+                    toast.error('تصویر شما تایید نشد. لطفاً دوباره تلاش کنید.');
                     clearUserData();
                     router.push('/');
                 }

@@ -3,6 +3,7 @@ FROM node:22-bullseye AS base
 FROM base AS builder
 WORKDIR /app
 
+
 COPY package.json ./
 COPY . .
 
