@@ -20,7 +20,13 @@ export function PdfPreviewModal({
     const [loading, setLoading] = useState(true);
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={title} size="xl">
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={title}
+            size="xl"
+            closeOnClickOutside={false}
+        >
             <Box className="relative h-[75vh] w-full">
                 {loading && (
                     <Box className="absolute inset-0 flex items-center justify-center bg-gray-100">

@@ -344,13 +344,15 @@ export default function ContractStep() {
                 </CardContent>
             </Card>
 
-            <Box className="mx-auto flex w-full flex-col justify-center gap-4 sm:flex-row md:w-1/2">
-                <LoadingButton
-                    loading={loading}
-                    onClick={handleAccept}
-                    disabled={!agreed || loading}
-                    title="ثبت نهایی و ادامه"
-                />
+            <Box>
+                <Box className="mx-auto flex w-full flex-col justify-center gap-4 sm:flex-row md:w-1/2">
+                    <LoadingButton
+                        loading={loading}
+                        onClick={handleAccept}
+                        disabled={!agreed || loading}
+                        title="ثبت نهایی و ادامه"
+                    />
+                </Box>
             </Box>
             <PdfPreviewModal
                 isOpen={showPreview}

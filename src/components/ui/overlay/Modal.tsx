@@ -5,7 +5,7 @@ import { useModalAccessibility } from '@/hooks/useModalAccessibility';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { clsx } from 'clsx';
-import { ReactNode, forwardRef, useImperativeHandle, useRef } from 'react';
+import { ReactNode, forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 const modalVariants = cva(
@@ -42,7 +42,7 @@ interface ModalProps extends VariantProps<typeof modalVariants> {
     description?: string;
     children: ReactNode;
     showCloseButton?: boolean;
-
+    closeOnClickOutside?: boolean;
     closeOnEscape?: boolean;
     autoFocus?: boolean;
     className?: string;
@@ -65,7 +65,7 @@ const Modal = forwardRef<ModalRef, ModalProps>(
             size = 'md',
             variant = 'default',
             showCloseButton = true,
-
+            closeOnClickOutside = true,
             closeOnEscape = true,
             autoFocus = true,
             className,
@@ -75,6 +75,7 @@ const Modal = forwardRef<ModalRef, ModalProps>(
         ref
     ) => {
         const modalRef = useRef<HTMLDivElement>(null);
+        const [isShaking, setIsShaking] = useState(false);
 
         const { modalRef: accessibilityRef, modalProps } = useModalAccessibility({
             isOpen,
@@ -92,13 +93,22 @@ const Modal = forwardRef<ModalRef, ModalProps>(
 
         if (!isOpen) return null;
 
+        const handleBackdropClick = () => {
+            if (closeOnClickOutside) {
+                onClose();
+            } else {
+                setIsShaking(true);
+                setTimeout(() => setIsShaking(false), 300);
+            }
+        };
+
         const modalContent = (
             <Box className="fixed inset-0 z-70 overflow-y-auto">
                 {/* Backdrop */}
                 <Box
                     className="animate-in fade-in-0 fixed inset-0 bg-black/40 backdrop-blur-sm duration-300"
-                    onClick={onClose}
-                    onTouchEnd={onClose}
+                    onClick={handleBackdropClick}
+                    onTouchEnd={handleBackdropClick}
                     aria-hidden="true"
                 />
 
@@ -113,23 +123,27 @@ const Modal = forwardRef<ModalRef, ModalProps>(
                         }}
                         className={clsx(
                             modalVariants({ size, variant }),
-                            'animate-in fade-in-0 zoom-in-95 duration-300',
+                            'animate-in fade-in-0 zoom-in-95 duration-200',
+                            isShaking && 'animate-shake',
                             className
                         )}
+                        style={isShaking ? { transform: 'scale(1.05)' } : undefined}
                         {...modalProps}
                         aria-labelledby={title ? 'modal-title' : undefined}
                         aria-describedby={description ? 'modal-description' : undefined}
                     >
                         {/* Header */}
                         {(title || showCloseButton) && (
-                            <Box className="flex items-start justify-between border-b border-gray-900 p-6 dark:border-gray-700/50">
+                            <Box
+                                className={`flex w-full items-start ${showCloseButton ? 'justify-between' : 'justify-center'} border-b border-gray-900 p-6 dark:border-gray-700/50`}
+                            >
                                 <Box className="flex-1">
                                     {title && (
                                         <Typography
                                             id="modal-title"
-                                            variant="h3"
                                             weight="semibold"
-                                            className="text-lg"
+                                            variant="h4"
+                                            className={`${!showCloseButton && 'text-center'}`}
                                         >
                                             {title}
                                         </Typography>

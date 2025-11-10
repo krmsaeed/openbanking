@@ -17,10 +17,12 @@ export function WelcomeModal({ isOpen, customerNumber, accountNumber }: WelcomeM
     const { userData, setUserData } = useUser();
     return (
         <Modal
-            isOpen={isOpen}
+            isOpen={!isOpen}
             onClose={() => setUserData({ ...userData, step: 7 })}
             title="خوش آمدید!"
+            closeOnClickOutside={false}
             size="lg"
+            showCloseButton={false}
         >
             <Box className="space-y-6 text-center">
                 <Box className="mx-auto flex h-24 w-24 items-center justify-center">
@@ -38,7 +40,7 @@ export function WelcomeModal({ isOpen, customerNumber, accountNumber }: WelcomeM
                         به خانواده بزرگ بانک اقتصاد نوین خوش آمدید
                     </Typography>
 
-                    <Typography variant="p" className="text-md text-gray-600">
+                    <Typography variant="p" className="text-md text-gray-800">
                         مشتری گرامی، با افتخار حضور ارزشمند شما را در بانک اقتصاد نوین خوشامد
                         می‌گوییم. از این پس، شما عضوی از خانواده‌ای هستید که هدف اصلی آن، ارائه
                         خدمات نوین، امن و شایسته به شماست.
