@@ -344,8 +344,11 @@ export default function SelfieStep() {
                 }
                 setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
             })
-            .catch(() => {
-                toast.error('عملیات با خطا مواجه شد.');
+            .catch((error) => {
+                const message = error.response?.data?.data?.digitalMessageException?.message;
+                toast.error(message || 'عدم برقراری ارتباط با سرور', {
+                    duration: 5000,
+                });
                 clearUserData();
                 router.push('/');
             })

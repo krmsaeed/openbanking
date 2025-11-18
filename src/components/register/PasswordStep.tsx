@@ -56,8 +56,11 @@ export default function PasswordStep() {
                     router.push('/');
                 }
             })
-            .catch(() => {
-                toast.error('عملیات با خطا مواجه شد');
+            .catch((error) => {
+                const message = error.response?.data?.data?.digitalMessageException?.message;
+                toast.error(message || 'عدم برقراری ارتباط با سرور', {
+                    duration: 5000,
+                });
                 clearUserData();
                 router.push('/');
             })
@@ -238,10 +241,14 @@ export default function PasswordStep() {
                         .then(() => {
                             setUserData({ step: 6 });
                         })
-                        .catch(() => {
+                        .catch((error) => {
+                            const message =
+                                error.response?.data?.data?.digitalMessageException?.message;
+                            toast.error(message || 'عدم برقراری ارتباط با سرور', {
+                                duration: 5000,
+                            });
                             router.push('/');
                             setUserData({});
-                            toast.error('خطایی رخ داده است');
                         })
                         .finally(() => {
                             setOtpLoading(false);

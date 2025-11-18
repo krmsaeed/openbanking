@@ -34,8 +34,12 @@ export function SignatureStep() {
             .then(() => {
                 setUserData({ ...userData, step: 5 });
             })
-            .catch(() => {
-                toast.error('امضای شما تایید نشد. لطفاً دوباره تلاش کنید.');
+            .catch((error) => {
+                console.log('🚀 ~ SignatureStep.tsx:38 ~ handleSubmit ~ error:', error);
+                const message = error.response?.data?.data?.digitalMessageException?.message;
+                toast.error(message || 'عدم برقراری ارتباط با سرور', {
+                    duration: 5000,
+                });
                 clearUserData();
                 router.push('/');
             })

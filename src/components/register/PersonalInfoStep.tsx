@@ -1,5 +1,4 @@
 'use client';
-import { PersianCalendar } from '@/components/forms';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { Input } from '@/components/ui/forms';
 import { useUser } from '@/contexts/UserContext';
@@ -27,7 +26,6 @@ export default function PersonalInfo() {
         mode: 'all',
         defaultValues: {
             phoneNumber: '',
-            birthDate: '',
             postalCode: '',
         },
     });
@@ -44,7 +42,6 @@ export default function PersonalInfo() {
             const body: ApiBody = {
                 code: userData.nationalCode ?? `${getCookie('national_id')}`,
                 mobile: data.phoneNumber,
-                birthDate: data.birthDate,
                 postalCode: data.postalCode,
             };
 
@@ -58,18 +55,22 @@ export default function PersonalInfo() {
                 .then((response) => {
                     const { data: respData } = response.data;
 
-                    if (respData?.body.needKYC && !respData?.body.hasActiveCertificate) {
+                    if (respData?.body?.needKYC && !respData?.body?.hasActiveCertificate) {
                         setUserData({ ...userData, step: 2 });
                     }
-                    if (!respData?.body.needKYC && !respData?.body.hasActiveCertificate) {
+                    if (!respData?.body?.needKYC && !respData?.body?.hasActiveCertificate) {
                         setUserData({ ...userData, step: 5 });
                     }
-                    if (!respData?.body.needKYC && respData?.body.hasActiveCertificate) {
+                    if (!respData?.body?.needKYC && respData?.body?.hasActiveCertificate) {
                         setUserData({ ...userData, step: 6 });
                     }
                 })
-                .catch(() => {
-                    toast.error('خطایی رخ داده است. لطفا دوباره تلاش کنید.');
+                .catch((error) => {
+                    console.log('🚀 ~ SignatureStep.tsx:38 ~ handleSubmit ~ error:', error);
+                    const message = error.response?.data?.data?.digitalMessageException?.message;
+                    toast.error(message || 'عدم برقراری ارتباط با سرور', {
+                        duration: 5000,
+                    });
                     clearUserStateCookies();
                     router.push('/');
                 });
@@ -115,23 +116,6 @@ export default function PersonalInfo() {
                                     required
                                     className="text-center"
                                     error={errors.phoneNumber?.message}
-                                />
-                            )}
-                        />
-                        <Controller
-                            name="birthDate"
-                            control={control}
-                            render={({ field }) => (
-                                <PersianCalendar
-                                    {...field}
-                                    label="تاریخ تولد"
-                                    value={field.value}
-                                    placeholder="تاریخ تولد را انتخاب کنید"
-                                    className="w-full"
-                                    required
-                                    maxDate={new Date()}
-                                    outputFormat="iso"
-                                    error={errors?.birthDate?.message}
                                 />
                             )}
                         />
