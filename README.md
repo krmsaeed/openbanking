@@ -1,0 +1,57 @@
+# Docker Build & Run
+
+This project uses Docker and Docker Compose for development and production builds.
+
+## Environment Variables
+
+Copy `env.example` to `.env` and set the values. Key variables:
+
+- `IMAGE_NAME`: Docker image name (default: `opencbanking`)
+- `IMAGE_TAG`: Docker image tag (default: `latest`)
+- `BASE_URL`: API base URL (runtime only, not embedded in build)
+
+## Build & Run with Custom Tags
+
+### One-off Tag Override (No File Changes)
+
+You can override the image tag inline without editing any files:
+
+```bash
+# Build with custom tag
+IMAGE_TAG=1.2.3 docker compose build --no-cache web
+
+# Run with custom tag
+IMAGE_TAG=1.2.3 docker compose up -d web
+
+# Build and run together
+IMAGE_TAG=1.2.3 docker compose up -d --build web
+
+# Override both name and tag
+IMAGE_NAME=myregistry/opencbanking IMAGE_TAG=v1.2.3 docker compose up -d --build web
+```
+
+### Build & Push to Registry
+
+After building with a custom tag, push to a registry:
+
+```bash
+# Build with tag
+IMAGE_TAG=1.2.3 docker compose build --no-cache web
+
+# Tag for registry (replace 'myuser' with your registry username)
+docker tag opencbanking:1.2.3 myuser/opencbanking:1.2.3
+
+# Push to registry
+docker push myuser/opencbanking:1.2.3
+```
+
+## Notes
+
+- `BASE_URL` is only used at runtime (not embedded in client bundle since you use nginx proxy)
+- The container uses npm for builds (switched from yarn due to network issues in Docker)
+- Use `docker exec -it opencbanking-pwa printenv` to validate environment variables
+- The `.env` file is gitignored; never commit secrets
+
+```
+
+```
