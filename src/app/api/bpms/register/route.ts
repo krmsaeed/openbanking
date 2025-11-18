@@ -1,4 +1,5 @@
 import { getServerAuthTokens } from '@/lib/auth';
+import { getMessageByCode } from '@/services/errorCatalog';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
@@ -43,6 +44,30 @@ export async function GET(request: NextRequest) {
             return createResponseWithClearedCookies(data, response.status);
         }
 
+        // Check for digitalMessageException in successful responses
+        const hasException = data && typeof data === 'object' && 'digitalMessageException' in data;
+
+        if (hasException) {
+            const exception = data.digitalMessageException as { code: number; message: string };
+            const mappedMessage =
+                typeof exception.code === 'number' && exception.code < 0
+                    ? getMessageByCode(exception.code) || exception.message
+                    : exception.message;
+
+            // Ensure message is a string
+            const finalMessage =
+                typeof mappedMessage === 'string' ? mappedMessage : JSON.stringify(mappedMessage);
+
+            const errorData = {
+                ...data,
+                digitalMessageException: {
+                    ...exception,
+                    message: finalMessage,
+                },
+            };
+            return createResponseWithClearedCookies(errorData, 400);
+        }
+
         return NextResponse.json(data);
     } catch (error) {
         console.error('Register API error:', error);
@@ -79,6 +104,30 @@ export async function POST(request: NextRequest) {
 
         if (!isSuccessResponse(response.status)) {
             return createResponseWithClearedCookies(data, response.status);
+        }
+
+        // Check for digitalMessageException in successful responses
+        const hasException = data && typeof data === 'object' && 'digitalMessageException' in data;
+
+        if (hasException) {
+            const exception = data.digitalMessageException as { code: number; message: string };
+            const mappedMessage =
+                typeof exception.code === 'number' && exception.code < 0
+                    ? getMessageByCode(exception.code) || exception.message
+                    : exception.message;
+
+            // Ensure message is a string
+            const finalMessage =
+                typeof mappedMessage === 'string' ? mappedMessage : JSON.stringify(mappedMessage);
+
+            const errorData = {
+                ...data,
+                digitalMessageException: {
+                    ...exception,
+                    message: finalMessage,
+                },
+            };
+            return createResponseWithClearedCookies(errorData, 400);
         }
 
         return NextResponse.json(data);
