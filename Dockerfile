@@ -1,5 +1,10 @@
 FROM node:22-bullseye AS base
 
+ARG IS_STAGE="true"
+
+ENV IS_STAGE=${IS_STAGE} 
+	
+
 FROM base AS builder
 WORKDIR /app
 
@@ -7,7 +12,7 @@ WORKDIR /app
 COPY package.json ./
 COPY . .
 
-RUN npm install --verbose && npm run build
+RUN npm install --verbose  && npm run build
 
 FROM base AS runner
 

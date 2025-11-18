@@ -1,8 +1,12 @@
 /// <reference types="node" />
 
+const BASE_URL = process.env.BASE_URL ?? 'http://192.168.91.112:9999';
+const IS_STAGE = process.env.IS_STAGE ?? 'true';
+
 const nextConfig = {
     output: 'standalone',
     compress: true, // Gzip compression
+    productionBrowserSourceMaps: false, // Disable source maps in production
     images: {
         formats: ['image/webp', 'image/avif'],
         minimumCacheTTL: 60,
@@ -40,12 +44,13 @@ const nextConfig = {
             config.optimization.usedExports = true;
             config.optimization.sideEffects = true;
             config.optimization.minimize = true;
+            config.devtool = false;
         }
         return config;
     },
     env: {
-        BASE_URL: 'http://192.168.91.112:9999',
-        IS_STAGE: true,
+        BASE_URL,
+        IS_STAGE,
     },
 };
 
