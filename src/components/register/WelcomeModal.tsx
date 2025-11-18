@@ -17,7 +17,7 @@ export function WelcomeModal({ isOpen, customerNumber, accountNumber }: WelcomeM
     const { userData, setUserData } = useUser();
     return (
         <Modal
-            isOpen={!isOpen}
+            isOpen={isOpen}
             onClose={() => setUserData({ ...userData, step: 7 })}
             title="خوش آمدید!"
             closeOnClickOutside={false}
@@ -55,7 +55,7 @@ export function WelcomeModal({ isOpen, customerNumber, accountNumber }: WelcomeM
                                 variant="h5"
                                 className="border-primary-200 mt-2 rounded-lg border-2 border-dashed bg-gray-50 p-3 text-lg font-bold"
                             >
-                                {customerNumber ?? '66458289'}
+                                {customerNumber && customerNumber}
                             </Typography>
                         </Box>
 
@@ -68,7 +68,7 @@ export function WelcomeModal({ isOpen, customerNumber, accountNumber }: WelcomeM
                                 className="border-primary-300 mt-2 rounded-lg border-2 border-dashed bg-gray-50 p-3 font-bold"
                                 dir="ltr"
                             >
-                                {accountNumber ?? '102-7524510-752-01'}
+                                {accountNumber && accountNumber}
                             </Typography>
                         </Box>
                     </Box>

@@ -1,6 +1,7 @@
 'use client';
 
 import { Box } from '@/components/ui';
+import { useUser } from '@/contexts/UserContext';
 import { useNationalCardForm } from '@/hooks/useNationalCardForm';
 import dynamic from 'next/dynamic';
 import LoadingButton from '../ui/core/LoadingButton';
@@ -14,13 +15,11 @@ const NationalCardOcrScanner = dynamic(() => import('../specialized/NationalCard
 });
 
 export default function NationalCardStep() {
+    const { userData } = useUser();
     const {
         form,
         isLoading,
-        provinces,
-        cities,
         showWelcomeModal,
-        handleProvinceChange,
         handleConfirm,
         submit,
         setShowWelcomeModal,
@@ -37,18 +36,17 @@ export default function NationalCardStep() {
                 fileError={fileError}
             />
 
-            <PersonalInfoForm
-                control={form.control}
-                errors={errors}
-                provinces={provinces}
-                cities={cities}
-                onProvinceChange={handleProvinceChange}
-            />
+            <PersonalInfoForm control={form.control} errors={errors} />
             <Box className="flex w-full justify-center">
                 <LoadingButton loading={isLoading} onClick={submit} disabled={isLoading} />
             </Box>
 
-            <WelcomeModal isOpen={showWelcomeModal} onClose={() => setShowWelcomeModal(false)} />
+            <WelcomeModal
+                isOpen={showWelcomeModal}
+                onClose={() => setShowWelcomeModal(false)}
+                customerNumber={userData.customerNumber}
+                accountNumber={userData.accountNumber}
+            />
         </Box>
     );
 }
