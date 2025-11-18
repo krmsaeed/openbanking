@@ -5,7 +5,7 @@ import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
 import { ToastProvider } from '@/components/ui/feedback/Toast';
 import { UserProvider } from '@/contexts/UserContext';
 import ThemeProvider from '@/lib/ThemeProvider';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import { Suspense } from 'react';
 import './styles/globals.css';
@@ -23,14 +23,6 @@ export const metadata: Metadata = {
     formatDetection: {
         telephone: false,
     },
-
-    viewport: {
-        width: 'device-width',
-        initialScale: 1,
-        maximumScale: 5,
-        userScalable: true,
-        viewportFit: 'cover',
-    },
     icons: {
         icon: [
             { url: '/icons/favicon.ico' },
@@ -42,6 +34,14 @@ export const metadata: Metadata = {
             { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
         ],
     },
+};
+
+export const viewport: Viewport = {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+    viewportFit: 'cover',
 };
 
 const iranYekan = localFont({
