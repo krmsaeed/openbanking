@@ -89,7 +89,6 @@ export const otpFormSchema = z.object({
 
 export const personalInfoStepSchema = z.object({
     phoneNumber: phoneNumberSchema,
-    birthDate: z.string().min(1, 'تاریخ تولد اجباری است'),
     postalCode: postalCodeSchema,
 });
 

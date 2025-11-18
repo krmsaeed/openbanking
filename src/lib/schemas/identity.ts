@@ -31,11 +31,7 @@ export const maritalStatusSchema = z
     });
 
 export const nationalCardInfoSchema = z.object({
-    isMarried: maritalStatusSchema,
     grade: gradeSchema,
-    provinceId: provinceIdSchema,
-    cityId: cityIdSchema,
-    address: addressSchema,
     branch: branchIdSchema,
 });
 
