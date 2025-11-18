@@ -1,5 +1,4 @@
 import httpClient from '@/lib/httpClient';
-import { handleResponse } from '../setResponse';
 
 export interface ApiResponse<T = unknown> {
     status: number;
@@ -9,21 +8,21 @@ export interface ApiResponse<T = unknown> {
 
 export async function virtualOpenDepositSendMessage<T>(payload: T, authToken?: string) {
     const config = authToken ? { headers: { Authorization: `Bearer ${authToken}` } } : undefined;
-
-    const apiResponse = await httpClient.post('/sendMessage', payload, config);
-    return handleResponse(apiResponse);
+    const response = await httpClient.post('/sendMessage', payload, config);
+    return { status: response.status, data: response.data };
 }
 
 export async function virtualOpenDepositKeKycUserFiles<T>(payload: T, authToken?: string) {
-    const headers: Record<string, string> = {
-        'Content-Type': 'multipart/form-data',
-    };
-    if (authToken) headers.Authorization = `Bearer ${authToken}`;
-
-    const response = await httpClient.post('/sendMultiPartMessage', payload, {
-        headers,
-    });
-    return handleResponse(response);
+    const config = authToken
+        ? {
+              headers: {
+                  'Content-Type': 'multipart/form-data',
+                  Authorization: `Bearer ${authToken}`,
+              },
+          }
+        : undefined;
+    const response = await httpClient.post('/sendMultiPartMessage', payload, config);
+    return { status: response.status, data: response.data };
 }
 
 const bpms = {
