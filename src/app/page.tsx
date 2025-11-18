@@ -6,7 +6,12 @@ import ThemeToggle from '@/components/ThemeToggle';
 import { Box, Card, Input, Typography } from '@/components/ui';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { useUser } from '@/contexts/UserContext';
-import { convertPersianToEnglish, isValidNationalId, setCookie } from '@/lib/utils';
+import {
+    clearUserStateCookies,
+    convertPersianToEnglish,
+    isValidNationalId,
+    setCookie,
+} from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -64,23 +69,22 @@ export default function LoginPage() {
     const onSubmit = async () => {
         setIsLoading(true);
 
-        try {
-            const loginResponse = await axios.post('/api/bpms/login');
-            const { access_token } = loginResponse.data;
+        const loginResponse = await axios.post('/api/bpms/login');
+        const { access_token } = loginResponse.data;
 
-            if (!access_token) {
-                throw new Error('اطلاعات ورود نامعتبر است');
-            }
+        if (!access_token) {
+            throw new Error('اطلاعات ورود نامعتبر است');
+        }
 
-            setCookie('access_token', access_token);
-            setCookie('national_id', getValues('code'));
+        setCookie('access_token', access_token);
+        setCookie('national_id', getValues('code'));
 
-            try {
-                const response = await axios.post('/api/bpms/send-message', {
-                    serviceName: 'virtual-open-deposit',
-                    body: { code: getValues('code') },
-                });
-
+        await axios
+            .post('/api/bpms/send-message', {
+                serviceName: 'virtual-open-deposit',
+                body: { code: getValues('code') },
+            })
+            .then((response) => {
                 const { data } = response.data;
 
                 setUserData({
@@ -90,21 +94,20 @@ export default function LoginPage() {
                     isCustomer: data?.body?.isCustomer,
                     isDeposit: data?.body?.isDeposit,
                 });
-
                 router.push('/register');
-            } catch (secondRequestError) {
-                const message =
-                    secondRequestError instanceof Error
-                        ? secondRequestError.message
-                        : 'خطا در بررسی اطلاعات';
-                toast.error(message);
-            }
-        } catch (error) {
-            console.log('🚀 ~ page.tsx:102 ~ onSubmit ~ error:', error);
-            toast.error('عملیات ناموفق');
-        } finally {
-            setIsLoading(false);
-        }
+            })
+            .catch((error) => {
+                const message = error.response?.data?.data?.digitalMessageException?.message;
+                toast.error(message || 'عدم برقراری ارتباط با سرور', {
+                    duration: 5000,
+                });
+
+                clearUserStateCookies();
+                router.push('/');
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
     };
 
     return (

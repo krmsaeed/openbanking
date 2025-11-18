@@ -67,14 +67,6 @@ export default function Register() {
     const { userData } = useUser();
     const prevStepRef = useRef<number | undefined>(userData.step);
 
-    useEffect(() => {
-        // بررسی وجود توکن در سمت کلاینت
-        // const accessToken = document.cookie.includes('access_token=');
-        // if (!accessToken) {
-        //     window.location.href = '/';
-        // }
-    }, []);
-
     const { setValue } = useForm<ExtendedRegistrationForm>({
         resolver: zodResolver(extendedRegistrationSchema),
         mode: 'onBlur',
