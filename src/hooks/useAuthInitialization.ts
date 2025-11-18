@@ -1,7 +1,7 @@
 'use client';
 
 import { getAccessToken, getNationalId, initializeAuth } from '@/lib/auth';
-import { setupAxiosInterceptors } from '@/lib/httpClient';
+import { initErrorCatalog, isErrorCatalogInitialized } from '@/services/errorCatalog';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -45,7 +45,12 @@ export const useAuthInitialization = ({
     const initializeAuthentication = useCallback(async () => {
         try {
             setError(null);
-            setupAxiosInterceptors();
+
+            if (!isErrorCatalogInitialized()) {
+                try {
+                    await initErrorCatalog();
+                } catch {}
+            }
 
             const existingToken = getAccessToken();
             const existingNationalId = getNationalId();

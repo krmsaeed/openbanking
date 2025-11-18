@@ -58,13 +58,11 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                             isDeposit: data.body.isDeposit,
                         };
 
-                        // ذخیره در state
                         setUserData({
                             ...userData,
                             ...newState,
                         });
 
-                        // ذخیره در کوکی
                         saveUserStateToCookie({
                             step: newState.step,
                             processId: newState.processId,
@@ -77,7 +75,10 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                     })
                     .catch((err) => {
                         requestCache.delete(code);
-                        throw err;
+                        const message = err.response?.data?.data?.digitalMessageException?.message;
+                        toast.error(message || 'عدم برقراری ارتباط با سرور', {
+                            duration: 5000,
+                        });
                     });
             })();
 
@@ -96,15 +97,12 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
 
             const params = new URLSearchParams(window.location.search);
 
-            // خواندن از URL params
             const tokenFromParams = params.get('token');
             const codeFromParams = params.get('code');
 
-            // خواندن توکن و کد ملی از کوکی
             const cookieToken = getCookie('access_token');
             const cookieNationalId = getCookie('national_id');
 
-            // اولویت با searchParams - اگر در URL هست استفاده کن و در کوکی ست کن
             let accessToken: string | null = null;
             let nationalId: string | null = null;
 

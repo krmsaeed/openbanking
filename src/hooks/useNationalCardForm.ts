@@ -4,22 +4,42 @@ import { useUser } from '@/contexts/UserContext';
 import { nationalCardInfoSchema, type NationalCardInfoForm } from '@/lib/schemas/identity';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-export interface Province {
-    id: number;
-    name: string;
-    cities?: City[];
-}
-export interface City {
-    id: number;
-    name: string;
-}
 export interface Branch {
     value: number;
     label: string;
+}
+export interface DigitalMessageException {
+    code: number;
+    message: string;
+    errorCode?: number;
+}
+
+interface ApiResponseData {
+    body?: {
+        CustomerNumber?: string;
+        depositNum?: string;
+    };
+    data?: {
+        body?: {
+            CustomerNumber?: string;
+            depositNum?: string;
+        };
+    };
+    response?: {
+        body?: {
+            CustomerNumber?: string;
+            depositNum?: string;
+        };
+        CustomerNumber?: string;
+        depositNum?: string;
+    };
+    digitalMessageException?: DigitalMessageException;
+    CustomerNumber?: string;
+    depositNum?: string;
 }
 
 export const defaultBranches: Branch[] = [{ value: 102, label: 'تهران' }];
@@ -29,47 +49,16 @@ export function useNationalCardForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [capturedFile, setCapturedFile] = useState<File | null>(null);
     const [ocrValid, setOcrValid] = useState<boolean>(false);
-    const [provinces, setProvinces] = useState<Province[]>([]);
-    const [cities, setCities] = useState<City[]>([]);
     const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-    const [trigger] = useState(false);
     const [fileError, setFileError] = useState<string | null>(null);
-    const lastTrigger = useRef<boolean | null>(null);
 
     const form = useForm<NationalCardInfoForm>({
         resolver: zodResolver(nationalCardInfoSchema),
         defaultValues: {
-            isMarried: false,
             grade: '',
-            provinceId: null,
-            cityId: null,
-            address: '',
             branch: null,
         },
     });
-
-    const fetchProvinces = useCallback(async () => {
-        try {
-            const response = await axios.post('/api/bpms/send-message', {
-                serviceName: 'province-cities',
-            });
-            const provincesData =
-                response?.data?.body?.provinces || response?.data?.data?.body?.provinces;
-            setProvinces(provincesData || []);
-        } catch (error) {
-            console.warn('Failed to fetch provinces', error);
-            toast.error('خطا در دریافت لیست استان‌ها');
-        }
-    }, []);
-
-    const handleProvinceChange = useCallback(
-        (provinceId: number | null) => {
-            const selectedProvince = provinces.find((p) => p.id === provinceId);
-            setCities(selectedProvince?.cities || []);
-            form.setValue('cityId', null);
-        },
-        [provinces, form]
-    );
 
     const handleCapture = useCallback(
         (file: File, isValid: boolean = true) => {
@@ -106,41 +95,55 @@ export function useNationalCardForm() {
         }
         setIsLoading(true);
 
-        try {
-            const formData = new FormData();
-            const body = {
-                serviceName: 'virtual-open-deposit',
-                processId: userData.processId,
-                formName: 'GovahResult',
-                body: {
-                    isMarried: form.getValues('isMarried'),
-                    grade: form.getValues('grade'),
-                    provinceId: form.getValues('provinceId') || 1,
-                    cityId: form.getValues('cityId') || 1,
-                    branchId: form.getValues('branch') || 0,
-                    address: form.getValues('address') || '',
-                },
-            };
+        const formData = new FormData();
+        const body = {
+            serviceName: 'virtual-open-deposit',
+            processId: userData.processId,
+            formName: 'GovahResult',
+            body: {
+                grade: form.getValues('grade'),
+                branchId: form.getValues('branch') || 0,
+            },
+        };
 
-            formData.append('messageDTO', JSON.stringify(body));
-            formData.append('files', capturedFile);
+        formData.append('messageDTO', JSON.stringify(body));
+        formData.append('files', capturedFile);
 
-            const response = await axios.post('/api/bpms/deposit-files', formData);
-            const { data } = response;
+        await axios
+            .post('/api/bpms/deposit-files', formData)
+            .then((response) => {
+                const data = response.data as ApiResponseData;
 
-            setUserData({
-                ...userData,
-                customerNumber: data.body.CustomerNumber,
-                accountNumber: data.body.depositNum,
+                const customerNumber =
+                    data?.body?.CustomerNumber ||
+                    data?.CustomerNumber ||
+                    data?.data?.body?.CustomerNumber ||
+                    data?.response?.body?.CustomerNumber ||
+                    data?.response?.CustomerNumber;
+
+                const accountNumber =
+                    data?.body?.depositNum ||
+                    data?.depositNum ||
+                    data?.data?.body?.depositNum ||
+                    data?.response?.body?.depositNum ||
+                    data?.response?.depositNum;
+
+                setUserData({
+                    ...userData,
+                    customerNumber: customerNumber || '',
+                    accountNumber: accountNumber || '',
+                });
+                setShowWelcomeModal(true);
+            })
+            .catch((error) => {
+                const message = error.response?.data?.data?.digitalMessageException?.message;
+                toast.error(message || 'عدم برقراری ارتباط با سرور', {
+                    duration: 5000,
+                });
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
-
-            setShowWelcomeModal(true);
-        } catch (error) {
-            console.error('Error submitting form:', error);
-            toast.error('خطا در ارسال اطلاعات');
-        } finally {
-            setIsLoading(false);
-        }
     }, [capturedFile, userData, setUserData, form, fileError, ocrValid]);
 
     const handleWelcomeModalClose = useCallback(() => {
@@ -148,22 +151,13 @@ export function useNationalCardForm() {
         setUserData({ ...userData, step: 7 });
     }, [userData, setUserData]);
 
-    useEffect(() => {
-        if (lastTrigger.current === trigger) return;
-        lastTrigger.current = trigger;
-        fetchProvinces();
-    }, [trigger, fetchProvinces]);
-
     return {
         form,
         isLoading,
         capturedFile,
         ocrValid,
-        provinces,
-        cities,
         showWelcomeModal,
         setShowWelcomeModal,
-        handleProvinceChange,
         handleConfirm,
         handleSubmit,
         submit: useCallback(async () => {
