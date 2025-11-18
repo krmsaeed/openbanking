@@ -3,9 +3,9 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev -p 3000",
+        "dev": "next dev",
         "build": "next build",
-        "start": "next start -p 3001",
+        "start": "next start -p 80",
         "build:prod": "npm run build && rm -rf .next/standalone/.next/static && cp -r .next/static .next/standalone/.next/static && rm -rf .next/standalone/public && cp -r public .next/standalone/public",
         "start:standalone": "NODE_ENV=production node .next/standalone/server.js",
         "prod": "npm run build:prod && npm run start:standalone",
