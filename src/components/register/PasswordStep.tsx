@@ -43,12 +43,20 @@ export default function PasswordStep() {
                 serviceName: 'virtual-open-deposit',
                 processId: userData.processId,
                 formName: 'CertificateRequest',
-                body: { ENFirstName, ENLastName, password },
+                body: {
+                    ENFirstName: ENFirstName.trim(),
+                    ENLastName: ENLastName.trim(),
+                    password: password.trim(),
+                },
             })
             .then((response) => {
                 const { data } = response.data;
                 if (data.body.success) {
-                    setUserData({ password, ENFirstName, ENLastName });
+                    setUserData({
+                        password: password.trim(),
+                        ENFirstName: ENFirstName.trim(),
+                        ENLastName: ENLastName.trim(),
+                    });
                     setShowOtp(true);
                 } else {
                     const errorMessage = 'مجوز احراز هویت با خطا مواجه . لطفا دوباره تلاش کنید.';
@@ -63,6 +71,36 @@ export default function PasswordStep() {
                 });
                 clearUserData();
                 router.push('/');
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
+
+    const handleResendOTP = () => {
+        setIsLoading(true);
+        axios
+            .post('/api/bpms/send-message', {
+                serviceName: 'virtual-open-deposit',
+                processId: userData.processId,
+                formName: 'CertificateRequest',
+                body: {
+                    ENFirstName: userData.ENFirstName,
+                    ENLastName: userData.ENLastName,
+                    password: userData.password,
+                },
+            })
+            .then((response) => {
+                const { data } = response.data;
+                if (data.body.success) {
+                    toast.success('کد تایید مجدد ارسال شد');
+                } else {
+                    toast.error('خطا در ارسال مجدد کد');
+                }
+            })
+            .catch((error) => {
+                const message = error.response?.data?.data?.digitalMessageException?.message;
+                toast.error(message || 'عدم برقراری ارتباط با سرور');
             })
             .finally(() => {
                 setIsLoading(false);
@@ -225,6 +263,7 @@ export default function PasswordStep() {
         <CertificateStep
             otp={otp}
             setOtp={setOtp}
+            onResend={handleResendOTP}
             onIssue={() => {
                 if (otp.length === 6) {
                     setOtpLoading(true);
@@ -234,7 +273,7 @@ export default function PasswordStep() {
                             formName: 'CertificateOtpVerify',
                             processId: userData.processId,
                             body: {
-                                otpCode: otp,
+                                otpCode: otp.trim(),
                                 password: userData.password,
                             },
                         })

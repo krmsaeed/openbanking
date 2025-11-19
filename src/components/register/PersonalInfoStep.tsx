@@ -40,9 +40,9 @@ export default function PersonalInfo() {
         setIsLoading(true);
         try {
             const body: ApiBody = {
-                code: userData.nationalCode ?? `${getCookie('national_id')}`,
-                mobile: data.phoneNumber,
-                postalCode: data.postalCode,
+                code: userData.nationalCode?.trim() ?? `${getCookie('national_id')}`.trim(),
+                mobile: data.phoneNumber?.trim(),
+                postalCode: data.postalCode?.trim(),
             };
 
             await axios

@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { OTPInput } from '../ui/forms/OTPInput';
+import { useEffect, useRef, useState } from 'react';
 import { Box } from '../ui/core';
+import { OTPInput } from '../ui/forms/OTPInput';
 
 interface MultiOTPInputProps {
     length: number;
     value: string;
     onChange: (value: string) => void;
+    onSubmit?: () => void;
     disabled?: boolean;
     className?: string;
 }
@@ -16,6 +17,7 @@ export function MultiOTPInput({
     length,
     value,
     onChange,
+    onSubmit,
     disabled,
     className,
 }: MultiOTPInputProps) {
@@ -44,7 +46,13 @@ export function MultiOTPInput({
     };
 
     const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Backspace' && !digits[index] && index > 0) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const currentValue = digits.join('');
+            if (currentValue.length === length && onSubmit) {
+                onSubmit();
+            }
+        } else if (e.key === 'Backspace' && !digits[index] && index > 0) {
             inputRefs.current[index - 1]?.focus();
         } else if (e.key === 'ArrowLeft' && index > 0) {
             inputRefs.current[index - 1]?.focus();
@@ -87,6 +95,7 @@ export function MultiOTPInput({
                     onPaste={(e) => handlePaste(index, e)}
                     disabled={disabled}
                     autoFocus={index === 0}
+                    autoComplete={index === 0 ? 'one-time-code' : 'off'}
                     ref={(el: HTMLInputElement | null) => {
                         inputRefs.current[index] = el;
                     }}
