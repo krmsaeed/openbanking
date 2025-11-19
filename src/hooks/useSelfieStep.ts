@@ -829,7 +829,7 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
     }, [stream]);
 
     const compressImage = useCallback(
-        (canvas: HTMLCanvasElement, maxWidth = 800, maxHeight = 600, quality = 0.7): string => {
+        (canvas: HTMLCanvasElement, minSize = 300, maxSize = 800, quality = 0.85): string => {
             const compressCanvas = document.createElement('canvas');
             const compressContext = compressCanvas.getContext('2d');
 
@@ -837,19 +837,27 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
 
             let { width, height } = canvas;
 
-            if (width > height) {
-                if (width > maxWidth) {
-                    height = (height * maxWidth) / width;
-                    width = maxWidth;
-                }
-            } else {
-                if (height > maxHeight) {
-                    width = (width * maxHeight) / height;
-                    height = maxHeight;
-                }
+            // اطمینان از حداقل ابعاد 300×300
+            if (width < minSize || height < minSize) {
+                const scale = minSize / Math.min(width, height);
+                width = Math.round(width * scale);
+                height = Math.round(height * scale);
             }
+
+            // محدود کردن به حداکثر ابعاد
+            if (width > maxSize || height > maxSize) {
+                const scale = maxSize / Math.max(width, height);
+                width = Math.round(width * scale);
+                height = Math.round(height * scale);
+            }
+
             compressCanvas.width = width;
             compressCanvas.height = height;
+
+            // استفاده از imageSmoothingEnabled برای کیفیت بهتر
+            compressContext.imageSmoothingEnabled = true;
+            compressContext.imageSmoothingQuality = 'high';
+
             compressContext.drawImage(canvas, 0, 0, width, height);
             return compressCanvas.toDataURL('image/jpeg', quality);
         },
@@ -879,46 +887,51 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         const vw = video.videoWidth || Math.round(video.clientWidth) || 640;
         const vh = video.videoHeight || Math.round(video.clientHeight) || 480;
 
-        // محاسبه مرکز و شعاع دایره
+        // محاسبه مرکز
         const centerX = vw / 2;
         const centerY = vh / 2;
-        const radius = Math.min(vw, vh) / 2;
 
-        // تنظیم اندازه canvas به اندازه دایره (مربع محیطی)
-        const circleSize = radius * 2;
-        canvas.width = circleSize;
-        canvas.height = circleSize;
+        // محاسبه اندازه مربع - حداقل 300×300
+        let squareSize = Math.min(vw, vh);
+        const minSize = 300;
+
+        if (squareSize < minSize) {
+            squareSize = minSize;
+        }
+
+        // اطمینان از اینکه چهره حداقل 100×100 است
+        // با فرض اینکه چهره 60-70% مربع را پر می‌کند
+        const estimatedFaceSize = squareSize * 0.7;
+        if (estimatedFaceSize < 100) {
+            squareSize = Math.ceil(100 / 0.7);
+        }
+
+        // تنظیم اندازه canvas به اندازه مربع
+        canvas.width = squareSize;
+        canvas.height = squareSize;
 
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         context.save();
         try {
-            // ایجاد ماسک دایره
-            context.beginPath();
-            context.arc(radius, radius, radius, 0, Math.PI * 2);
-            context.closePath();
-            context.clip();
-
             // رسم تصویر آینه‌ای (flip horizontal)
             context.translate(canvas.width, 0);
             context.scale(-1, 1);
 
-            // رسم بخش مرکزی ویدئو که در دایره قرار دارد
-            const sourceX = centerX - radius;
-            const sourceY = centerY - radius;
-            const sourceWidth = circleSize;
-            const sourceHeight = circleSize;
+            // رسم بخش مرکزی ویدئو در مربع
+            const sourceX = centerX - squareSize / 2;
+            const sourceY = centerY - squareSize / 2;
 
             context.drawImage(
                 video,
                 sourceX,
                 sourceY,
-                sourceWidth,
-                sourceHeight,
+                squareSize,
+                squareSize,
                 0,
                 0,
-                circleSize,
-                circleSize
+                squareSize,
+                squareSize
             );
         } catch (err) {
             console.warn('drawImage failed', err);
@@ -926,13 +939,13 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
             context.restore();
         }
 
-        const compressedDataUrl = compressImage(canvas, 600, 600, 0.8);
+        // کمپرس با کیفیت 85% و اطمینان از ابعاد حداقل 300×300
+        const compressedDataUrl = compressImage(canvas, 300, 800, 0.85);
         setCapturedPhoto(compressedDataUrl);
         setTimeout(() => {
             stopCamera();
         }, 200);
     }, [stream, stopCamera, compressImage]);
-
     const retakePhoto = useCallback(() => {
         setCapturedPhoto(null);
         setCameraLoading(true);

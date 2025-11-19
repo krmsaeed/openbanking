@@ -111,26 +111,167 @@ interface InstructionsProps {
     isUploading: boolean;
 }
 
+/* function ImagePreview({ capturedPhoto }: { capturedPhoto: string | null }) {
+    const [imageInfo, setImageInfo] = useState<{
+        width: number;
+        height: number;
+        size: string;
+    } | null>(null);
+
+    useEffect(() => {
+        if (!capturedPhoto) {
+            setImageInfo(null);
+            return;
+        }
+
+        const img = new window.Image();
+        img.onload = () => {
+            const sizeInBytes = Math.round((capturedPhoto.length * 3) / 4);
+            const sizeInKB = (sizeInBytes / 1024).toFixed(2);
+            setImageInfo({
+                width: img.naturalWidth,
+                height: img.naturalHeight,
+                size: sizeInKB,
+            });
+        };
+        img.src = capturedPhoto;
+    }, [capturedPhoto]);
+
+    if (!capturedPhoto || !imageInfo) return null;
+
+    return (
+        <Box className="space-y-4">
+            <Box className="rounded-xl bg-gray-100 p-4">
+                <Typography
+                    variant="h3"
+                    className="mb-3 text-center text-sm font-bold text-gray-800"
+                >
+                    پیش‌نمایش عکس سلفی
+                </Typography>
+                <Box className="mx-auto max-w-xs overflow-hidden rounded-lg border-2 border-gray-300 shadow-md">
+                    <Image
+                        src={capturedPhoto}
+                        alt="Selfie Preview"
+                        width={imageInfo.width}
+                        height={imageInfo.height}
+                        className="h-auto w-full"
+                        style={{ objectFit: 'contain' }}
+                    />
+                </Box>
+
+                <Box className="mt-3 text-center">
+                    <a
+                        href={capturedPhoto}
+                        download="selfie-raw.jpg"
+                        className="inline-block rounded-lg bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-700"
+                    >
+                        دانلود عکس خام (ارسالی به بک‌اند)
+                    </a>
+                </Box>
+            </Box>
+
+            <Box className="rounded-xl bg-green-50 p-4">
+                <Typography
+                    variant="h3"
+                    className="mb-3 text-center text-sm font-bold text-green-800"
+                >
+                    مشخصات تصویر گرفته شده
+                </Typography>
+                <ul className="space-y-1.5 text-right text-xs leading-relaxed text-green-700">
+                    <li className="flex items-start justify-between">
+                        <span className="font-semibold">ابعاد تصویر:</span>
+                        <span>
+                            {imageInfo.width}×{imageInfo.height} پیکسل
+                        </span>
+                    </li>
+                    <li className="flex items-start justify-between">
+                        <span className="font-semibold">حجم تصویر:</span>
+                        <span>{imageInfo.size} KB</span>
+                    </li>
+                    <li className="flex items-start justify-between">
+                        <span className="font-semibold">فرمت:</span>
+                        <span>JPEG</span>
+                    </li>
+                    <li className="flex items-start justify-between">
+                        <span className="font-semibold">کیفیت:</span>
+                        <span>85%</span>
+                    </li>
+                    <li className="flex items-start justify-between">
+                        <span className="font-semibold">وضعیت:</span>
+                        <span className="text-green-600">✓ مطابق با الزامات</span>
+                    </li>
+                </ul>
+            </Box>
+        </Box>
+    );
+} */
+
 function Instructions({ capturedPhoto, onRetake, isUploading }: InstructionsProps) {
     return (
         <Box className="rounded-xl bg-gray-100 p-4">
             {!capturedPhoto ? (
-                <ul className="space-y-1 text-center text-sm">
-                    <li className="text-primary-800 font-bold">
-                        صورت خود را کاملاً در قاب قرار دهید
-                    </li>
-                    <li className="text-error font-bold">
-                        در مکانی مناسب و با روشنایی کافی قرار بگیرید
-                    </li>
-                    <li>منتظر بمانید تا صورت شما تشخیص داده شود</li>
-                    <li>زمانی که دکمه «گرفتن عکس» سبز شد، کلیک کنید</li>
-                </ul>
+                <>
+                    <Typography
+                        variant="h3"
+                        className="mb-3 text-center text-sm font-bold text-gray-800"
+                    >
+                        راهنمای عکس‌برداری
+                    </Typography>
+                    <ul className="leading-rela41.21xed text-bold space-y-1.5 rounded-lg bg-gray-200 p-2 text-right text-xs text-gray-900">
+                        <li className="flex items-start">
+                            <span className="text-primary-600 ml-2">•</span>
+                            <span>
+                                صورت خود را کاملاً در قاب قرار دهید و مستقیماً به دوربین نگاه کنید
+                            </span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-primary-600 ml-2">•</span>
+                            <span>در هر تصویر تنها چهره یک فرد باید وجود داشته باشد</span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-error-600 ml-2">•</span>
+                            <span>
+                                در مکانی با روشنایی کافی قرار بگیرید (نه خیلی تاریک و نه خیلی روشن)
+                            </span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-primary-600 ml-2">•</span>
+                            <span>چهره نباید از فاصله بسیار دور یا بسیار نزدیک گرفته شود</span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-primary-600 ml-2">•</span>
+                            <span>چهره نباید تار یا محو باشد</span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-warning-600 ml-2">•</span>
+                            <span>
+                                در پس‌زمینه نباید تصویر چهره دیگر، قاب عکس یا مجسمه وجود داشته باشد
+                            </span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-warning-600 ml-2">•</span>
+                            <span>تصویر نباید دارای فیلتر، افکت یا ویرایش باشد</span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-success-600 ml-2">•</span>
+                            <span>منتظر بمانید تا صورت شما تشخیص داده شود</span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-success-600 ml-2">•</span>
+                            <span>زمانی که دکمه «گرفتن عکس» سبز شد، کلیک کنید</span>
+                        </li>
+                    </ul>
+                </>
             ) : (
                 <>
-                    <ul className="space-y-1 text-center text-sm">
+                    <ul className="space-y-1 rounded-lg bg-gray-200 p-2 text-center text-sm">
                         <li className="text-error-800 font-bold">عکس خود را بررسی کنید</li>
-                        <li>اگر عکس مناسب است، روی «مرحله بعد» کلیک کنید</li>
-                        <li>برای گرفتن عکس جدید، روی «عکس جدید» کلیک کنید</li>
+                        <li className="text-gray-900">
+                            اگر عکس مناسب است، روی «مرحله بعد» کلیک کنید
+                        </li>
+                        <li className="text-gray-900">
+                            برای گرفتن عکس جدید، روی «عکس جدید» کلیک کنید
+                        </li>
                     </ul>
                     <Box className="mt-3 flex justify-center gap-4">
                         <Button
@@ -410,6 +551,8 @@ export default function SelfieStep() {
                 onRetake={retakePhoto}
                 isUploading={isUploading}
             />
+
+            {/* <ImagePreview capturedPhoto={capturedPhoto} /> */}
 
             <Controls
                 capturedPhoto={capturedPhoto}

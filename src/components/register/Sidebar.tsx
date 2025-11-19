@@ -22,7 +22,7 @@ const STEP_META = [
 ];
 
 export default function Sidebar() {
-    const { userData } = useUser();
+    const { userData, setUserData } = useUser();
     return (
         <nav
             className="mx-auto w-[98%] rounded-lg bg-gray-100 px-1 pt-2 shadow-lg md:w-[18rem] md:px-4"
@@ -80,7 +80,7 @@ export default function Sidebar() {
                                               ? 'text-secondary-600 dark:text-secondary-400'
                                               : 'text-gray-600 dark:text-gray-400'
                                     }`}
-                                    // onClick={() => setUserData({ step: index + 1 })}
+                                    onClick={() => setUserData({ step: index + 1 })}
                                     tabIndex={0}
                                     aria-current={current ? 'step' : undefined}
                                     variant="body2"
