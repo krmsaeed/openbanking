@@ -277,7 +277,7 @@ function Instructions({ capturedPhoto, onRetake, isUploading }: InstructionsProp
                         <Button
                             onClick={onRetake}
                             disabled={isUploading}
-                            className="bg-warning-600 flex items-center justify-center px-5 py-3"
+                            className="bg-warning-700 flex items-center justify-center px-5 py-3"
                         >
                             <ArrowPathIcon className="h-6 w-6 text-white" />
                             <Typography variant="body1" className="text-xs font-medium text-white">

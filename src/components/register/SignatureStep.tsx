@@ -69,7 +69,7 @@ export function SignatureStep() {
                 <Button
                     onClick={clearSignature}
                     disabled={!hasSignature || isLoading}
-                    className="bg-warning-600 items-between flex cursor-pointer gap-x-2 gap-y-4 text-white"
+                    className="bg-warning-700 items-between flex cursor-pointer gap-x-2 gap-y-4 text-white"
                 >
                     <TrashIcon className="h-4 w-4" />
                     <Typography className="hidden md:inline"> پاک کردن</Typography>

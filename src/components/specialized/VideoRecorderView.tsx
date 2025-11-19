@@ -13,6 +13,7 @@ interface VideoRecorderViewProps {
     videoFile: File | null;
     videoPreviewUrl: string | null;
     isUploading: boolean;
+    isCompressing: boolean;
     cameraActive: boolean;
     onStartRecording: () => void;
     onStopRecording: () => void;
@@ -30,6 +31,7 @@ export function VideoRecorderView({
     videoFile,
     videoPreviewUrl,
     isUploading,
+    isCompressing,
     cameraActive,
     onStartRecording,
     onStopRecording,
@@ -54,7 +56,7 @@ export function VideoRecorderView({
                         </Box>
 
                         <Box className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl bg-gray-100 p-4">
-                            <ul className="md:text-md space-y-1">
+                            <ul className="md:text-md space-y-1 rounded-lg bg-gray-200 p-3">
                                 <li className="text-error font-bold">
                                     فیلم ضبط شده خود را بررسی کنید
                                 </li>
@@ -64,8 +66,8 @@ export function VideoRecorderView({
                             <Button
                                 variant="secondary"
                                 onClick={onRetake}
-                                disabled={isUploading}
-                                className="bg-warning-600 flex max-w-32 cursor-pointer items-center gap-2 text-white"
+                                disabled={isUploading || isCompressing}
+                                className="bg-warning-700 flex max-w-32 cursor-pointer items-center gap-2 text-white"
                             >
                                 <VideoCameraIcon className="h-4 w-4" />
                                 ضبط مجدد
@@ -160,7 +162,7 @@ export function VideoRecorderView({
                 <LoadingButton
                     onClick={onConfirm}
                     loading={isUploading}
-                    disabled={!hasPreview || isUploading}
+                    disabled={!hasPreview || isUploading || isCompressing}
                 />
             </Box>
         </Box>

@@ -91,6 +91,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 processId: cookieState.processId ?? initialState.processId,
                 isCustomer: cookieState.isCustomer ?? initialState.isCustomer,
                 isDeposit: cookieState.isDeposit ?? initialState.isDeposit,
+                randomText: cookieState.randomText ?? initialState.randomText,
             };
         }
         return initialState;
@@ -105,6 +106,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 processId: newData.processId,
                 isCustomer: newData.isCustomer,
                 isDeposit: newData.isDeposit,
+                randomText: newData.randomText,
             });
             return newData;
         });
@@ -119,6 +121,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 processId: newData.processId,
                 isCustomer: newData.isCustomer,
                 isDeposit: newData.isDeposit,
+                randomText: newData.randomText,
             });
             return newData;
         });

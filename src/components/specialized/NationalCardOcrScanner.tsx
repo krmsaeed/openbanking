@@ -232,7 +232,7 @@ export default function NationalCardOcrScanner({
                             onClick={handleReset}
                             disabled={ocrLoading && !ocrValid}
                             loading={ocrLoading}
-                            className="bg-warning-600 cursor-pointer text-white"
+                            className="bg-warning-700 cursor-pointer text-white"
                         >
                             <ArrowPathIcon className="ml-2 h-5 w-5" />
                             <span>بازنشانی</span>
