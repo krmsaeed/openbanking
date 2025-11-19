@@ -32,8 +32,12 @@ export function parseNationalCardFields(text: string): OcrFields {
     const ascii = toAsciiDigits(t);
     const fields: OcrFields = {};
 
-    const nidMatch = ascii.match(/\b(\d{10})\b/);
-    if (nidMatch) fields.nationalId = nidMatch[1];
+    // کم‌حساس‌تر: کد ملی 6 تا 12 رقم (با فاصله یا بدون فاصله)
+    const nidMatch = ascii.match(/\b(\d[\d\s]{5,11}\d)\b/);
+    if (nidMatch) {
+        // حذف فاصله‌ها
+        fields.nationalId = nidMatch[1].replace(/\s+/g, '');
+    }
 
     const dateMatch = ascii.match(/(\d{2,4}[\/\-]\d{1,2}[\/\-]\d{1,4})/);
     if (dateMatch) fields.dob = dateMatch[1];

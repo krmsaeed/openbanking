@@ -70,9 +70,11 @@ export default function NationalCardOcrScanner({
             try {
                 const text = await ocrRecognizeFile(file);
                 const fields = parseNationalCardFields(text);
-                const ok = !!(fields.nationalId && /^\d{10}$/.test(fields.nationalId));
+                // کم‌حساس‌تر: کد ملی 6 تا 12 رقم (با فاصله هم قبول میکنه)
+                const nationalIdClean = fields.nationalId?.replace(/\s+/g, '') || '';
+                const ok = !!(nationalIdClean && /^\d{6,12}$/.test(nationalIdClean));
                 setOcrValid(!!ok);
-                if (!ok) toast.error('تصویر کارت ملی مطابق الگو تشخیص داده نشد');
+                if (!ok) toast.error('تصویر کارت ملی نامعتبر است');
 
                 if (onCapture) {
                     onCapture(file, ok, fields);

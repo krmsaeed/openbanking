@@ -17,7 +17,7 @@ const STEP_META = [
     { title: 'فیلم احراز هویت', icon: VideoCameraIcon },
     { title: 'ثبت امضا', icon: PencilIcon },
     { title: 'تعیین رمز', icon: EnvelopeIcon },
-    { title: 'اسکن کارت ملی', icon: DocumentMagnifyingGlassIcon },
+    { title: 'مدارک تکمیلی', icon: DocumentMagnifyingGlassIcon },
     { title: 'تأیید نهایی', icon: CheckCircleIcon },
 ];
 
@@ -80,7 +80,7 @@ export default function Sidebar() {
                                               ? 'text-secondary-600 dark:text-secondary-400'
                                               : 'text-gray-600 dark:text-gray-400'
                                     }`}
-                                    onClick={() => setUserData({ step: index + 1 })}
+                                    // onClick={() => setUserData({ step: index + 1 })}
                                     tabIndex={0}
                                     aria-current={current ? 'step' : undefined}
                                     variant="body2"
