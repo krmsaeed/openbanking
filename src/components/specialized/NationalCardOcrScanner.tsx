@@ -141,12 +141,12 @@ export default function NationalCardOcrScanner({
                                 autoPlay
                                 playsInline
                                 muted
-                                className="max-h-[250px] w-full rounded-lg object-cover p-1 md:h-64"
+                                className="max-h-[350px] w-full rounded-lg object-cover p-1 md:h-64"
                             />
                         </Box>
                     ) : (
                         <Box
-                            className="flex h-64 max-h-[250px] w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-500 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                            className="flex h-64 max-h-[350px] w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-500 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
                             onClick={handleRequestPermission}
                         >
                             <Box className="space-y-2 text-center">
@@ -158,7 +158,7 @@ export default function NationalCardOcrScanner({
                         </Box>
                     )
                 ) : (
-                    <Box className="relative h-64 max-h-[250px] w-full rounded-lg border-2 border-dashed border-gray-900">
+                    <Box className="relative h-72 max-h-[350px] w-full rounded-lg border-2 border-dashed border-gray-900">
                         <Box className="m-auto h-full w-full rounded-lg">
                             <Image
                                 src={capturedUrl}

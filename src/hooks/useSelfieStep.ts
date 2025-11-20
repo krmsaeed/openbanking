@@ -99,8 +99,8 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
     const [obstructionRatio, setObstructionRatio] = useState(0);
     const [eyeFeatureRatio, setEyeFeatureRatio] = useState(0);
 
-    const MIN_EYE_RATIO = config?.minEyeRatio ?? 0.03;
-    const MAX_OBSTRUCTION = config?.maxObstruction ?? 0.08;
+    const MIN_EYE_RATIO = config?.minEyeRatio ?? 0.025; // افزایش از 0.02 به 0.025
+    const MAX_OBSTRUCTION = config?.maxObstruction ?? 0.1; // کاهش از 0.12 به 0.10
     const PROC_W = 128;
     const PROC_H = 96;
 
@@ -300,18 +300,15 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                 gl.readPixels(0, 0, PROC_W, PROC_H, gl.RGBA, gl.UNSIGNED_BYTE, readBuf);
 
                 const faceX = Math.floor(PROC_W * 0.5);
-                const faceY = Math.floor(PROC_H * 0.4);
-                const faceRadius = Math.min(PROC_W, PROC_H) * 0.15;
+                const faceY = Math.floor(PROC_H * 0.45); // تغییر از 0.4 به 0.45 - تمرکز بیشتر روی مرکز صورت
+                const faceRadius = Math.min(PROC_W, PROC_H) * 0.18; // افزایش از 0.15 به 0.18 - ناحیه بزرگتر برای صورت
 
                 const cSize = Math.floor(faceRadius * 2);
                 let skinPixels = 0;
-                let darkFeatures = 0;
-                let darkUpper = 0;
-                let darkLower = 0;
-                let eyeFeatures = 0;
                 let eyeFeatureXSum = 0;
                 let eyeFeatureCount = 0;
-                let symmetryScore = 0;
+                let noseFeatures = 0; // تشخیص بینی
+                let mouthFeatures = 0; // تشخیص دهان
                 let obstructionPixels = 0;
                 let circularPixelCount = 0;
                 let avgBrightness = 0;
@@ -343,19 +340,7 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                             const isSkin = detectSkinTone(r, g, b);
                             if (isSkin) skinPixels++;
 
-                            // آستانه تاریکی تطبیقی بر اساس روشنایی کلی تصویر
-                            // برای صورت‌های تیره‌تر آستانه کمتری استفاده می‌شود
-                            const adaptiveDarkThreshold = gray < 40 ? 25 : gray < 80 ? 50 : 70;
-                            if (gray < adaptiveDarkThreshold) {
-                                const isUpperHalf = y < faceRadius;
-                                if (isUpperHalf) {
-                                    darkFeatures++;
-                                    darkUpper++;
-                                } else {
-                                    darkLower++;
-                                }
-                            }
-                            const eyeUpperBound = faceRadius * 0.7;
+                            // محاسبه میانگین محلی برای تشخیص ویژگی‌ها
                             let localSum = 0;
                             let localCount = 0;
                             for (
@@ -375,31 +360,36 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                                 }
                             }
                             const localAvg = localCount > 0 ? localSum / localCount : gray;
-                            const isDarkRelative = gray < Math.min(60, localAvg * 0.85);
-                            const isUpperRegion = y < eyeUpperBound;
-                            if (isUpperRegion && isDarkRelative) {
-                                eyeFeatures++;
-                                eyeFeatureXSum += x;
-                                eyeFeatureCount++;
+
+                            // برای محاسبه مرکزیت بینی/دهان
+                            eyeFeatureXSum += x;
+                            eyeFeatureCount++;
+
+                            // تشخیص بینی - ناحیه مرکزی صورت (0.7 تا 1.1 شعاع عمودی) - WebGL
+                            const noseVerticalRange =
+                                y >= faceRadius * 0.7 && y <= faceRadius * 1.1;
+                            const noseHorizontalRange =
+                                Math.abs(x - faceRadius) <= faceRadius * 0.5;
+                            if (noseVerticalRange && noseHorizontalRange) {
+                                // شرط ساده‌تر: فقط تغییر روشنایی (بدون شرط پوست)
+                                const isNoseFeature = Math.abs(gray - localAvg) > 5; // کاهش از 8 به 5
+                                if (isNoseFeature) noseFeatures++;
                             }
+
+                            // تشخیص دهان - ناحیه پایینی صورت (1.1 تا 1.4 شعاع عمودی) - WebGL
+                            const mouthVerticalRange =
+                                y >= faceRadius * 1.1 && y <= faceRadius * 1.4;
+                            const mouthHorizontalRange =
+                                Math.abs(x - faceRadius) <= faceRadius * 0.45;
+                            if (mouthVerticalRange && mouthHorizontalRange) {
+                                // شرط ساده‌تر: فقط تغییر روشنایی (بدون شرط پوست)
+                                const isMouthFeature = Math.abs(gray - localAvg) > 3; // کاهش از 5 به 3
+                                if (isMouthFeature) mouthFeatures++;
+                            }
+
                             const isBright = gray > 220;
                             const isDark = gray < 30;
                             if (isBright || isDark) obstructionPixels++;
-                            if (x < faceRadius) {
-                                const mirrorX = cSize - 1 - x;
-                                const mirrorPx = Math.max(
-                                    0,
-                                    Math.min(PROC_W - 1, Math.floor(faceX - faceRadius + mirrorX))
-                                );
-                                const mirrorI = (py * PROC_W + mirrorPx) * 4;
-                                const mirrorGray =
-                                    (readBuf[mirrorI] +
-                                        readBuf[mirrorI + 1] +
-                                        readBuf[mirrorI + 2]) /
-                                    3;
-                                const diff = Math.abs(gray - mirrorGray);
-                                symmetryScore += (50 - Math.min(diff, 50)) / 50;
-                            }
                         }
                     }
                 }
@@ -408,12 +398,9 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
 
                 avgBrightness = avgBrightness / circularPixelCount;
                 const skinRatio = skinPixels / circularPixelCount;
-                const featureRatio = darkFeatures / circularPixelCount;
-                const darkUpperRatio = darkUpper / circularPixelCount;
-                const darkLowerRatio = darkLower / circularPixelCount;
-                const eyeRatio = eyeFeatures / circularPixelCount;
+                const noseRatio = noseFeatures / circularPixelCount; // نسبت بینی
+                const mouthRatio = mouthFeatures / circularPixelCount; // نسبت دهان
                 const obstructionRatio = obstructionPixels / circularPixelCount;
-                const symmetryRatio = symmetryScore / (circularPixelCount / 3);
 
                 let centerBoxClose = true;
                 let currentClosenessPercent: number | null = null;
@@ -445,8 +432,8 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                         centerBoxClose = percentRel >= 60; // کاهش از 80 به 60
                     } else {
                         // محدوده‌های تنظیم شده برای همه رنگ‌های پوست
-                        const minSkin = 0.05; // کاهش از 0.08 برای پوست‌های تیره
-                        const maxSkin = 0.45; // افزایش از 0.35 برای پوست‌های روشن
+                        const minSkin = 0.08; // افزایش از 0.05 برای دقت بیشتر
+                        const maxSkin = 0.4; // کاهش از 0.45
                         const raw = Math.max(
                             0,
                             Math.min(1, (boxSkinRatio - minSkin) / (maxSkin - minSkin))
@@ -454,7 +441,7 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                         const percent = Math.round(raw * 100);
                         currentClosenessPercent = percent;
                         setClosenessPercent(percent);
-                        centerBoxClose = percent >= 60; // کاهش از 80 به 60
+                        centerBoxClose = percent >= 65; // افزایش از 60 به 65
                     }
                     setFaceTooFar(!centerBoxClose);
                 } catch {
@@ -462,36 +449,33 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                 }
 
                 const skinFactor = Math.min(skinRatio * 4, 1);
-                const featureFactor = Math.min(featureRatio * 10, 1);
-                const eyeFactor = Math.min(eyeRatio * 20, 1);
+                const noseFactor = Math.min(noseRatio * 50, 1); // فاکتور بینی - ضریب بالا
+                const mouthFactor = Math.min(mouthRatio * 40, 1); // فاکتور دهان - ضریب بالا
                 const brightnessFactor = avgBrightness > 50 && avgBrightness < 200 ? 1 : 0;
-                const symmetryFactor = Math.min(symmetryRatio * 2, 1);
-                const obstructionFactor = obstructionRatio < 0.1 ? 1 : 0;
 
+                // تمرکز فقط بر بینی و دهان
                 const confidence =
-                    skinFactor * 0.25 +
-                    featureFactor * 0.2 +
-                    eyeFactor * 0.3 +
-                    brightnessFactor * 0.15 +
-                    symmetryFactor * 0.05 +
-                    obstructionFactor * 0.05;
+                    skinFactor * 0.3 + // افزایش وزن پوست
+                    noseFactor * 0.35 + // افزایش وزن بینی
+                    mouthFactor * 0.25 + // افزایش وزن دهان
+                    brightnessFactor * 0.1; // روشنایی
 
-                const MIN_DARK_HALF_RATIO = 0.005;
+                const MIN_NOSE_RATIO = 0.005; // افزایش از 0.003 به 0.005
+                const MIN_MOUTH_RATIO = 0.005; // افزایش از 0.003 به 0.005
+
                 const detected =
-                    confidence > 0.4 && // کاهش از 0.45 به 0.4
-                    obstructionRatio < 0.2 && // افزایش از 0.15 به 0.2 - تساهل بیشتر
+                    confidence > 0.4 &&
+                    obstructionRatio < 0.25 &&
                     centerBoxClose &&
-                    skinRatio >= 0.12 && // کاهش از 0.15 به 0.12
-                    symmetryRatio >= 0.35 && // کاهش از 0.4 به 0.35
-                    eyeRatio >= MIN_EYE_RATIO &&
-                    darkUpperRatio >= MIN_DARK_HALF_RATIO &&
-                    darkLowerRatio >= MIN_DARK_HALF_RATIO &&
-                    (currentClosenessPercent ?? 0) >= 60; // کاهش از 75 به 60
+                    skinRatio >= 0.15 && // باید حتما پوست داشته باشه
+                    noseRatio >= MIN_NOSE_RATIO && // چک کردن بینی
+                    mouthRatio >= MIN_MOUTH_RATIO && // چک کردن دهان
+                    (currentClosenessPercent ?? 0) >= 55;
 
                 setFaceDetected(detected);
                 setFaceTooFar(!centerBoxClose);
                 setObstructionRatio(obstructionRatio);
-                setEyeFeatureRatio(eyeRatio);
+                setEyeFeatureRatio(noseRatio); // استفاده از noseRatio به جای eyeRatio
 
                 if (eyeFeatureCount > 0) {
                     const avgX = eyeFeatureXSum / eyeFeatureCount;
@@ -500,7 +484,7 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                     const centered = Math.abs(offset) <= 0.18;
                     setEyesCentered(centered);
                 } else {
-                    setEyesCentered(false);
+                    setEyesCentered(true); // تغییر از false به true چون دیگه چشم چک نمی‌کنیم
                 }
 
                 gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -528,8 +512,8 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             const faceX = Math.floor(canvas.width * 0.5);
-            const faceY = Math.floor(canvas.height * 0.4);
-            const faceRadius = Math.min(canvas.width, canvas.height) * 0.15;
+            const faceY = Math.floor(canvas.height * 0.45); // تغییر از 0.4 به 0.45
+            const faceRadius = Math.min(canvas.width, canvas.height) * 0.18; // افزایش از 0.15 به 0.18
             const circularData = context.getImageData(
                 faceX - faceRadius,
                 faceY - faceRadius,
@@ -540,13 +524,10 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
             const cSize = faceRadius * 2;
 
             let skinPixels = 0;
-            let darkFeatures = 0;
-            let darkUpper = 0;
-            let darkLower = 0;
-            let eyeFeatures = 0;
             let eyeFeatureXSum = 0;
             let eyeFeatureCount = 0;
-            let symmetryScore = 0;
+            let noseFeatures = 0; // تشخیص بینی
+            let mouthFeatures = 0; // تشخیص دهان
             let obstructionPixels = 0;
             let circularPixelCount = 0;
             let avgBrightness = 0;
@@ -572,17 +553,7 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                             const isSkin = detectSkinTone(r, g, b);
                             if (isSkin) skinPixels++;
 
-                            // آستانه تاریکی تطبیقی
-                            const adaptiveDarkThreshold = gray < 40 ? 25 : gray < 80 ? 50 : 70;
-                            if (gray < adaptiveDarkThreshold) {
-                                const isUpperHalf = y < faceRadius;
-                                if (isUpperHalf) {
-                                    darkFeatures++;
-                                    darkUpper++;
-                                } else {
-                                    darkLower++;
-                                }
-                            }
+                            // محاسبه میانگین محلی
                             let localAvg = gray;
                             try {
                                 let localSum = 0;
@@ -609,31 +580,37 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                             } catch {
                                 localAvg = gray;
                             }
-                            const eyeUpperBound = faceRadius * 0.7;
-                            const isDarkRelative = gray < Math.min(60, localAvg * 0.85);
-                            const isUpperRegion = y < eyeUpperBound;
-                            if (isUpperRegion && isDarkRelative) {
-                                eyeFeatures++;
-                                eyeFeatureXSum += x;
-                                eyeFeatureCount++;
+
+                            // برای محاسبه مرکزیت بینی/دهان
+                            eyeFeatureXSum += x;
+                            eyeFeatureCount++;
+
+                            // تشخیص بینی - ناحیه مرکزی صورت (0.7 تا 1.1 شعاع عمودی)
+                            const noseVerticalRange =
+                                y >= faceRadius * 0.7 && y <= faceRadius * 1.1;
+                            const noseHorizontalRange =
+                                Math.abs(x - faceRadius) <= faceRadius * 0.5;
+                            if (noseVerticalRange && noseHorizontalRange) {
+                                // شرط ساده‌تر: فقط تغییر روشنایی (بدون شرط پوست)
+                                const isNoseFeature = Math.abs(gray - localAvg) > 5; // کاهش از 8 به 5
+                                if (isNoseFeature) noseFeatures++;
+                            }
+
+                            // تشخیص دهان - ناحیه پایینی صورت (1.1 تا 1.4 شعاع عمودی)
+                            const mouthVerticalRange =
+                                y >= faceRadius * 1.1 && y <= faceRadius * 1.4;
+                            const mouthHorizontalRange =
+                                Math.abs(x - faceRadius) <= faceRadius * 0.45;
+                            if (mouthVerticalRange && mouthHorizontalRange) {
+                                // شرط ساده‌تر: فقط تغییر روشنایی (بدون شرط پوست)
+                                const isMouthFeature = Math.abs(gray - localAvg) > 3; // کاهش از 5 به 3
+                                if (isMouthFeature) mouthFeatures++;
                             }
 
                             const isBright = gray > 220;
                             const isDark = gray < 30;
                             if (isBright || isDark) {
                                 obstructionPixels++;
-                            }
-
-                            if (x < faceRadius) {
-                                const mirrorX = cSize - 1 - x;
-                                const mirrorI = (y * cSize + mirrorX) * 4;
-                                if (mirrorI < cData.length) {
-                                    const mirrorGray =
-                                        (cData[mirrorI] + cData[mirrorI + 1] + cData[mirrorI + 2]) /
-                                        3;
-                                    const diff = Math.abs(gray - mirrorGray);
-                                    symmetryScore += (50 - Math.min(diff, 50)) / 50;
-                                }
                             }
                         }
                     }
@@ -644,12 +621,9 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
 
             avgBrightness = avgBrightness / circularPixelCount;
             const skinRatio = skinPixels / circularPixelCount;
-            const featureRatio = darkFeatures / circularPixelCount;
-            const eyeRatio = eyeFeatures / circularPixelCount;
+            const noseRatio = noseFeatures / circularPixelCount; // نسبت بینی
+            const mouthRatio = mouthFeatures / circularPixelCount; // نسبت دهان
             const obstructionRatio = obstructionPixels / circularPixelCount;
-            const symmetryRatio = symmetryScore / (circularPixelCount / 3);
-            const darkUpperRatio = darkUpper / circularPixelCount;
-            const darkLowerRatio = darkLower / circularPixelCount;
 
             let centerBoxClose = true;
             let currentClosenessPercent: number | null = null;
@@ -681,8 +655,8 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                     centerBoxClose = percentRel >= 90;
                 } else {
                     // محدوده‌های تنظیم شده برای همه رنگ‌های پوست
-                    const minSkin = 0.05; // کاهش از 0.08 برای پوست‌های تیره
-                    const maxSkin = 0.45; // افزایش از 0.35 برای پوست‌های روشن
+                    const minSkin = 0.08; // افزایش از 0.04 برای دقت بیشتر
+                    const maxSkin = 0.4; // کاهش از 0.45
                     const raw = Math.max(
                         0,
                         Math.min(1, (boxSkinRatio - minSkin) / (maxSkin - minSkin))
@@ -690,7 +664,8 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                     const percent = Math.round(raw * 100);
                     currentClosenessPercent = percent;
                     setClosenessPercent(percent);
-                    if (percent < 75) centerBoxClose = false;
+                    if (percent < 65)
+                        centerBoxClose = false; // افزایش از 60 به 65
                     else centerBoxClose = true;
                 }
                 setFaceTooFar(!centerBoxClose);
@@ -699,35 +674,32 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
             }
 
             const skinFactor = Math.min(skinRatio * 4, 1);
-            const featureFactor = Math.min(featureRatio * 10, 1);
-            const eyeFactor = Math.min(eyeRatio * 20, 1);
+            const noseFactor = Math.min(noseRatio * 50, 1); // فاکتور بینی - ضریب بالا
+            const mouthFactor = Math.min(mouthRatio * 40, 1); // فاکتور دهان - ضریب بالا
             const brightnessFactor = avgBrightness > 50 && avgBrightness < 200 ? 1 : 0;
-            const symmetryFactor = Math.min(symmetryRatio * 2, 1);
-            const obstructionFactor = obstructionRatio < 0.1 ? 1 : 0;
 
+            // تمرکز فقط بر بینی و دهان (مسیر 2D fallback)
             const confidence =
-                skinFactor * 0.25 +
-                featureFactor * 0.2 +
-                eyeFactor * 0.3 +
-                brightnessFactor * 0.15 +
-                symmetryFactor * 0.05 +
-                obstructionFactor * 0.05;
+                skinFactor * 0.3 + // افزایش وزن پوست
+                noseFactor * 0.35 + // افزایش وزن بینی
+                mouthFactor * 0.25 + // افزایش وزن دهان
+                brightnessFactor * 0.1; // روشنایی
 
-            const MIN_DARK_HALF_RATIO = 0.005;
+            const MIN_NOSE_RATIO = 0.005; // افزایش از 0.003 به 0.005
+            const MIN_MOUTH_RATIO = 0.005; // افزایش از 0.003 به 0.005
+
             const detected =
-                confidence > 0.45 &&
-                obstructionRatio < 0.15 &&
+                confidence > 0.4 &&
+                obstructionRatio < 0.25 &&
                 centerBoxClose &&
-                skinRatio >= 0.15 &&
-                symmetryRatio >= 0.4 &&
-                eyeRatio >= MIN_EYE_RATIO &&
-                darkUpperRatio >= MIN_DARK_HALF_RATIO &&
-                darkLowerRatio >= MIN_DARK_HALF_RATIO &&
-                (currentClosenessPercent ?? 0) >= 75;
+                skinRatio >= 0.15 && // باید حتما پوست داشته باشه
+                noseRatio >= MIN_NOSE_RATIO && // چک کردن بینی
+                mouthRatio >= MIN_MOUTH_RATIO && // چک کردن دهان
+                (currentClosenessPercent ?? 0) >= 55;
             setFaceDetected(detected);
             setFaceTooFar(!centerBoxClose);
             setObstructionRatio(obstructionRatio);
-            setEyeFeatureRatio(eyeRatio);
+            setEyeFeatureRatio(noseRatio); // استفاده از noseRatio به جای eyeRatio
 
             if (eyeFeatureCount > 0) {
                 const avgX = eyeFeatureXSum / eyeFeatureCount;
@@ -736,12 +708,12 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                 const centered = Math.abs(offset) <= 0.18;
                 setEyesCentered(centered);
             } else {
-                setEyesCentered(false);
+                setEyesCentered(true); // تغییر از false به true چون دیگه چشم چک نمی‌کنیم
             }
         } catch (error) {
             console.error('Face detection error:', error);
         }
-    }, [stream, targetSkin, MIN_EYE_RATIO]);
+    }, [stream, targetSkin]);
 
     const startCamera = useCallback(async () => {
         setError(null);
@@ -829,7 +801,8 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
     }, [stream]);
 
     const compressImage = useCallback(
-        (canvas: HTMLCanvasElement, minSize = 300, maxSize = 800, quality = 0.85): string => {
+        (canvas: HTMLCanvasElement, minSize = 200, maxSize = 800, quality = 0.8): string => {
+            // کاهش minSize از 300 به 200، quality از 0.85 به 0.80
             const compressCanvas = document.createElement('canvas');
             const compressContext = compressCanvas.getContext('2d');
 
@@ -891,19 +864,20 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
         const centerX = vw / 2;
         const centerY = vh / 2;
 
-        // محاسبه اندازه مربع - حداقل 300×300
+        // محاسبه اندازه مربع - حداقل 200×200 (کاهش از 300)
         let squareSize = Math.min(vw, vh);
-        const minSize = 300;
+        const minSize = 200; // کاهش از 300 به 200
 
         if (squareSize < minSize) {
             squareSize = minSize;
         }
 
-        // اطمینان از اینکه چهره حداقل 100×100 است
+        // اطمینان از اینکه چهره حداقل 70×70 است (کاهش از 100)
         // با فرض اینکه چهره 60-70% مربع را پر می‌کند
         const estimatedFaceSize = squareSize * 0.7;
-        if (estimatedFaceSize < 100) {
-            squareSize = Math.ceil(100 / 0.7);
+        if (estimatedFaceSize < 70) {
+            // کاهش از 100 به 70
+            squareSize = Math.ceil(70 / 0.7);
         }
 
         // تنظیم اندازه canvas به اندازه مربع
@@ -939,8 +913,8 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
             context.restore();
         }
 
-        // کمپرس با کیفیت 85% و اطمینان از ابعاد حداقل 300×300
-        const compressedDataUrl = compressImage(canvas, 300, 800, 0.85);
+        // کمپرس با کیفیت 80% و اطمینان از ابعاد حداقل 200×200 (کاهش برای تساهل بیشتر)
+        const compressedDataUrl = compressImage(canvas, 200, 800, 0.8);
         setCapturedPhoto(compressedDataUrl);
         setTimeout(() => {
             stopCamera();

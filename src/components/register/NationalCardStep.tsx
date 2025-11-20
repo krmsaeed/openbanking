@@ -1,6 +1,6 @@
 'use client';
 
-import { Box } from '@/components/ui';
+import { Box, Label } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
 import { useNationalCardForm } from '@/hooks/useNationalCardForm';
 import dynamic from 'next/dynamic';
@@ -29,6 +29,9 @@ export default function NationalCardStep() {
 
     return (
         <Box className="mx-auto max-w-2xl space-y-6">
+            <Label required className="mr-1 mb-2">
+                اسکن کارت ملی
+            </Label>
             <NationalCardOcrScanner
                 onConfirm={handleConfirm}
                 autoOpen={true}
