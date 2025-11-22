@@ -166,6 +166,7 @@ export default function LoginPage() {
                                         className="w-full"
                                     />
                                 </Box>
+                                <Typography>version 1.0.0</Typography>
 
                                 <Box className="space-y-2">
                                     <label
@@ -191,6 +192,9 @@ export default function LoginPage() {
                                     disabled={isLoading}
                                 />
                             </form>
+                            <Typography className="text-center font-bold text-gray-800">
+                                ورژن 1.0.0
+                            </Typography>
                         </Card>
                     </Box>
                 </Box>
