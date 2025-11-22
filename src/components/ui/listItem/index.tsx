@@ -96,7 +96,7 @@ export const ListItem = forwardRef<HTMLLIElement | HTMLDivElement, ListItemProps
                     className={cn(classes, className)}
                     {...(props as HTMLAttributes<HTMLDivElement>)}
                 >
-                    {icon && <span className="mr-2 flex-shrink-0">{icon}</span>}
+                    {icon && <span className="mr-2">{icon}</span>}
                     {marker && <span className="mr-2 font-medium">{marker}</span>}
                     <span className="flex-1">{children}</span>
                 </div>
@@ -110,7 +110,7 @@ export const ListItem = forwardRef<HTMLLIElement | HTMLDivElement, ListItemProps
                     className={cn(classes, 'font-semibold', className)}
                     {...props}
                 >
-                    {icon && <span className="mr-2 flex-shrink-0">{icon}</span>}
+                    {icon && <span className="mr-2">{icon}</span>}
                     {marker && <span className="mr-2 font-medium">{marker}</span>}
                     <span className="flex-1">{children}</span>
                 </dt>
@@ -124,7 +124,7 @@ export const ListItem = forwardRef<HTMLLIElement | HTMLDivElement, ListItemProps
                     className={cn(classes, 'ml-4', className)}
                     {...props}
                 >
-                    {icon && <span className="mr-2 flex-shrink-0">{icon}</span>}
+                    {icon && <span className="mr-2">{icon}</span>}
                     <span className="flex-1">{children}</span>
                 </dd>
             );
@@ -136,7 +136,7 @@ export const ListItem = forwardRef<HTMLLIElement | HTMLDivElement, ListItemProps
                 className={cn(classes, className)}
                 {...(props as HTMLAttributes<HTMLLIElement>)}
             >
-                {icon && <span className="mr-2 flex-shrink-0">{icon}</span>}
+                {icon && <span className="mr-2">{icon}</span>}
                 {marker && <span className="mr-2 font-medium">{marker}</span>}
                 <span className="flex-1">{children}</span>
             </li>

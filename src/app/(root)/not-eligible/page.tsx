@@ -1,4 +1,5 @@
 'use client';
+import ThemeToggle from '@/components/ThemeToggle';
 import {
     Box,
     Button,
@@ -11,7 +12,6 @@ import {
     Typography,
 } from '@/components/ui';
 import {
-    ArrowLeftIcon,
     EnvelopeIcon,
     ExclamationTriangleIcon,
     PhoneIcon,
@@ -92,13 +92,14 @@ export default function NotEligiblePage() {
     ];
 
     return (
-        <Box className="my-10 flex items-center justify-center rounded-lg border border-gray-100 bg-white from-red-50 p-4 shadow-md">
-            <Box className="w-full max-w-2xl">
+        <Box className="relative my-10 flex items-center justify-center rounded-lg bg-white from-red-50 p-4 shadow-md">
+            <ThemeToggle className="absolute top-2 right-1" />
+            <Box className="w-full max-w-5xl">
                 <Box className="mb-5 text-center">
                     <Box
-                        className={`mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full ${content.iconBg}`}
+                        className={`mx-auto mb-6 flex h-10 w-10 items-center justify-center rounded-full ${content.iconBg}`}
                     >
-                        <IconComponent className={`h-10 w-10 ${content.iconColor}`} />
+                        <IconComponent className={`${content.iconColor} m-0.5`} />
                     </Box>
                     <Typography
                         variant="h4"
@@ -114,27 +115,28 @@ export default function NotEligiblePage() {
                 <Box className="mb-8 grid gap-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle
-                                className={`text-xl ${error && error !== 'service_error' ? 'text-yellow-600' : 'text-red-600'}`}
+                            <Typography
+                                className={`mx-auto text-center text-xl font-bold ${error && error !== 'service_error' ? 'text-yellow-600' : 'text-red-600'}`}
                             >
+                                {' '}
                                 {error && error !== 'service_error'
                                     ? 'علت خطا'
                                     : 'دلایل عدم واجد شرایط بودن'}
-                            </CardTitle>
+                            </Typography>
                         </CardHeader>
                         <CardContent>
-                            <List variant="unordered" spacing="md" marker={false}>
+                            <List marker={false} className="w-full">
                                 {reasons.map((reason, index) => (
-                                    <ListItem
-                                        key={index}
-                                        className="flex items-center gap-2 space-x-2 space-x-reverse"
-                                    >
-                                        <Box className="rounded-full bg-red-500 p-2">
-                                            <XMarkIcon className="w-3.5` h-3.5` font-bold text-white" />
+                                    <ListItem key={index}>
+                                        <Box className="flex items-center">
+                                            <XMarkIcon className="m-1 h-5 w-5 rounded-full bg-red-500 font-bold text-white" />
+                                            <Typography
+                                                variant="p"
+                                                className="text-error-800 w-full"
+                                            >
+                                                {reason}
+                                            </Typography>
                                         </Box>
-                                        <Typography variant="p" className="text-secondary">
-                                            {reason}
-                                        </Typography>
                                     </ListItem>
                                 ))}
                             </List>
@@ -155,13 +157,13 @@ export default function NotEligiblePage() {
                                         className="border-primary-500 rounded-none border-r-3 pr-4"
                                     >
                                         <Typography
-                                            variant="h6"
-                                            className="mb-1 text-right font-semibold text-gray-900"
+                                            variant="p"
+                                            className="mb-1 text-right text-lg font-semibold"
                                         >
                                             {step.title}
                                         </Typography>
                                         <Typography
-                                            variant="body2"
+                                            variant="p"
                                             color="secondary"
                                             className="text-right"
                                         >
@@ -203,25 +205,24 @@ export default function NotEligiblePage() {
                         </CardContent>
                     </Card>
                 </Box>
-
+                <Box className="my-8 text-center">
+                    <Typography variant="body2" className="text-center text-gray-800">
+                        می‌توانید پس از بهبود شرایط، مجدداً درخواست دهید
+                    </Typography>
+                </Box>
                 <Box className="flex flex-col justify-center gap-4 sm:flex-row">
-                    <Link href="/credit-assessment">
-                        <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                    {/* <Link href="/">
+                        <Button variant="outline" size="md" className="w-full sm:w-auto">
                             <ArrowLeftIcon className="ml-2 h-4 w-4" />
                             درخواست مجدد
                         </Button>
-                    </Link>
+                    </Link> */}
 
                     <Link href="/">
                         <Button size="lg" className="w-full sm:w-auto">
-                            بازگشت به داشبورد
+                            درخواست مجدد
                         </Button>
                     </Link>
-                </Box>
-                <Box className="mt-8 text-center">
-                    <Typography variant="body2" color="secondary" className="text-center">
-                        می‌توانید پس از بهبود شرایط، مجدداً درخواست دهید
-                    </Typography>
                 </Box>
             </Box>
         </Box>
