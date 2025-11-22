@@ -59,7 +59,7 @@ export default function PasswordStep() {
                     });
                     setShowOtp(true);
                 } else {
-                    const errorMessage = 'مجوز احراز هویت با خطا مواجه . لطفا دوباره تلاش کنید.';
+                    const errorMessage = 'مجوز احراز هویت با خطا مواجه شد';
                     toast.error(errorMessage);
                     router.push('/');
                 }

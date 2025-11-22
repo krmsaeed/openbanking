@@ -8,27 +8,29 @@ export interface ApiResponse<T = unknown> {
 }
 
 export async function virtualOpenDepositLogin() {
-    const formData = new URLSearchParams();
-    formData.append('client_id', 'tasklist');
-    formData.append('grant_type', 'password');
-    formData.append('username', 'demo');
-    formData.append('password', 'demo');
-    formData.append('client_secret', 'XALaRPl5qwTEItdwCMiPS62nVpKs7dL7');
+    const formData = {
+        client_id: 'tasklist',
+        grant_type: 'password',
+        username: 'demo',
+        password: 'demo',
+        client_secret: 'XALaRPl5qwTEItdwCMiPS62nVpKs7dL7',
+    };
+
+    const baseUrl =
+        typeof window !== 'undefined' ? '' : `http://localhost:${process.env.PORT || 3000}`;
+
+    const apiUrl = `${baseUrl}/api/auth/login`;
 
     try {
-        const apiResponse = await axios.post(
-            'http://192.168.91.112:18080/auth/realms/camunda-platform/protocol/openid-connect/token',
-            formData,
-            {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-            }
-        );
+        const apiResponse = await axios.post(apiUrl, formData, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            timeout: 10000,
+        });
 
         return handleResponse(apiResponse);
     } catch (error) {
-        // Convert axios error to response format for handleResponse
         const axiosError = error as { response?: { status?: number; data?: unknown } };
         const errorResponse = {
             status: axiosError.response?.status || 500,
