@@ -74,9 +74,8 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                         requestCache.set(code, true);
                     })
                     .catch((err) => {
-                        requestCache.delete(code);
-                        const message = err.response?.data?.data?.digitalMessageException?.message;
-                        toast.error(message || 'عدم برقراری ارتباط با سرور', {
+                        const { data } = err.response
+                        toast.error(data?.digitalMessageException?.message || 'عدم برقراری ارتباط با سرور', {
                             duration: 5000,
                         });
                     });

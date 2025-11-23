@@ -97,8 +97,8 @@ export default function LoginPage() {
                 router.push('/register');
             })
             .catch((error) => {
-                const message = error.response?.data?.data?.digitalMessageException?.message;
-                toast.error(message || 'عدم برقراری ارتباط با سرور', {
+                const { data } = error.response
+                toast.error(data?.digitalMessageException?.message || 'عدم برقراری ارتباط با سرور', {
                     duration: 5000,
                 });
 
