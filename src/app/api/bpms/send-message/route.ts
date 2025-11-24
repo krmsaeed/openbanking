@@ -8,9 +8,7 @@ async function mapExceptionMessage(exception: Record<string, unknown>): Promise<
     const originalMessage = exception.message as string;
 
     if (typeof errorCode === 'number' && errorCode < 0) {
-        // Initialize error catalog if needed
         await initErrorCatalog();
-        // Try to get mapped message from error catalog
         const mappedMessage = getMessageByCode(errorCode);
         return mappedMessage || originalMessage;
     }
@@ -48,7 +46,6 @@ async function handler(request: AuthenticatedRequest) {
                         },
                     },
                 };
-                console.log('hiiiiiiiiiiiiiiiii', errorResponse);
                 return NextResponse.json(errorResponse, { status: 400 });
             }
             return NextResponse.json({ ...response }, { status: 200 });
@@ -64,7 +61,6 @@ async function handler(request: AuthenticatedRequest) {
         if (axiosError.code === 'ECONNREFUSED') {
             errorMessage = 'سرور در دسترس نیست';
         } else if (axiosError.message && typeof axiosError.message === 'string') {
-            // Check if this is an axios error with a message
             if (axiosError.message.includes('ECONNREFUSED')) {
                 errorMessage = 'سرور در دسترس نیست';
             } else if (axiosError.message.includes('timeout')) {
