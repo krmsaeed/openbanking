@@ -3,11 +3,6 @@ import { virtualOpenDepositSendMessage } from '@/services/bpms';
 import { getMessageByCode, initErrorCatalog } from '@/services/errorCatalog';
 import { NextResponse } from 'next/server';
 
-/**
- * Maps error message from exception using error catalog
- * If errorCode is negative, attempts to fetch mapped message from error catalog
- * Falls back to original message if mapping fails
- */
 async function mapExceptionMessage(exception: Record<string, unknown>): Promise<string> {
     const errorCode = (exception.code as number) || (exception.errorCode as number);
     const originalMessage = exception.message as string;
@@ -53,6 +48,7 @@ async function handler(request: AuthenticatedRequest) {
                         },
                     },
                 };
+                console.log("hiiiiiiiiiiiiiiiii", errorResponse)
                 return NextResponse.json(errorResponse, { status: 400 });
             }
             return NextResponse.json({ ...response }, { status: 200 });
