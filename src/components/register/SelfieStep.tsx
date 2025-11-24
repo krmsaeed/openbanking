@@ -55,8 +55,8 @@ function CameraView({
                 playsInline
                 muted
                 className={`absolute top-0 left-0 z-10 h-full w-full -scale-x-100 transform bg-black object-cover ${stream && !capturedPhoto && !cameraLoading
-                        ? 'visible opacity-100'
-                        : 'invisible opacity-0'
+                    ? 'visible opacity-100'
+                    : 'invisible opacity-0'
                     }`}
                 controls={false}
                 disablePictureInPicture
@@ -366,8 +366,8 @@ function CaptureButton({ onCapture, disabled }: CaptureButtonProps) {
                 onClick={onCapture}
                 disabled={disabled}
                 className={`flex items-center gap-2 rounded-lg px-6 py-3 font-medium transition-all duration-300 ${!disabled
-                        ? 'bg-success-500 hover:bg-success-600 cursor-pointer text-white shadow-lg hover:shadow-xl active:scale-95'
-                        : 'cursor-not-allowed bg-gray-400 text-gray-600 opacity-60'
+                    ? 'bg-success-500 hover:bg-success-600 cursor-pointer text-white shadow-lg hover:shadow-xl active:scale-95'
+                    : 'cursor-not-allowed bg-gray-400 text-gray-600 opacity-60'
                     }`}
             >
                 <CameraIcon className="h-5 w-5" />
@@ -484,8 +484,8 @@ export default function SelfieStep() {
                 setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
             })
             .catch((error) => {
-                const message = error.response?.data?.data?.digitalMessageException?.message;
-                toast.error(message, {
+                const { data } = error.response.data
+                toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });
                 clearUserData();

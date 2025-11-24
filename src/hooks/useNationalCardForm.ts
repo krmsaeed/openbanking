@@ -136,8 +136,8 @@ export function useNationalCardForm() {
                 setShowWelcomeModal(true);
             })
             .catch((error) => {
-                const message = error.response?.data?.data?.digitalMessageException?.message;
-                toast.error(message, {
+                const { data } = error.response.data
+                toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });
             })

@@ -14,7 +14,7 @@ type RemoteError = {
 
 const DB_NAME = 'openbank-errors';
 const STORE_NAME = 'errors';
-const DEFAULT_ERROR_MESSAGE = 'خطا در دریافت اطلاعات';
+const DEFAULT_ERROR_MESSAGE = 'خطا در پردازش اطلاعات';
 let inMemoryByCode: Record<number, string> = {};
 let inMemoryByName: Record<string, string> = {};
 
@@ -46,8 +46,8 @@ async function saveToIndexedDB(items: RemoteError[]) {
                 typeof it.code === 'number'
                     ? `code:${it.code}`
                     : it.errorKey
-                      ? `errorKey:${it.errorKey}`
-                      : undefined;
+                        ? `errorKey:${it.errorKey}`
+                        : undefined;
             if (!key) continue;
             await new Promise((res, rej) => {
                 const r = store.put({ key, payload: it });
@@ -56,7 +56,7 @@ async function saveToIndexedDB(items: RemoteError[]) {
             });
         }
         tx.commit?.();
-    } catch {}
+    } catch { }
 }
 
 async function loadFromIndexedDB(): Promise<void> {
@@ -74,16 +74,13 @@ async function loadFromIndexedDB(): Promise<void> {
         );
 
         for (const r of results) {
-            if (r.key.startsWith('code:')) {
-                const code = parseInt(r.key.slice(5), 10);
+            if (r.payload.code) {
+                const code = r.payload.code;
                 if (!isNaN(code) && r.payload.message)
                     inMemoryByCode[code] = String(r.payload.message);
-            } else if (r.key.startsWith('errorKey:')) {
-                const errorKey = r.key.slice(9);
-                if (r.payload.message) inMemoryByName[errorKey] = String(r.payload.message);
             }
         }
-    } catch {}
+    } catch { }
 }
 
 let isInitialized = false;
@@ -112,8 +109,8 @@ export async function initErrorCatalog(): Promise<void> {
             const items: RemoteError[] = Array.isArray(data)
                 ? data
                 : Array.isArray(data.items)
-                  ? data.items
-                  : [];
+                    ? data.items
+                    : [];
 
             for (const it of items) {
                 if (typeof it.code === 'number' && it.message)
@@ -138,8 +135,6 @@ export function getMessageByCode(code: number | undefined, fallback?: string): s
     if (typeof code !== 'number') {
         return fallback || DEFAULT_ERROR_MESSAGE;
     }
-
-    // Return cached message, fallback, or default error message
     return inMemoryByCode[code] ?? fallback ?? DEFAULT_ERROR_MESSAGE;
 }
 export function getMessageByName(name: string | undefined, fallback?: string): string | undefined {

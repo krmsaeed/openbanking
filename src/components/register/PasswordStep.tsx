@@ -49,24 +49,13 @@ export default function PasswordStep() {
                     password: password.trim(),
                 },
             })
-            .then((response) => {
-                const { data } = response.data;
-                if (data.body.success) {
-                    setUserData({
-                        password: password.trim(),
-                        ENFirstName: ENFirstName.trim(),
-                        ENLastName: ENLastName.trim(),
-                    });
-                    setShowOtp(true);
-                } else {
-                    const errorMessage = 'مجوز احراز هویت با خطا مواجه شد';
-                    toast.error(errorMessage);
-                    router.push('/');
-                }
+            .then(() => {
+                setShowOtp(true);
+
             })
             .catch((error) => {
-                const message = error.response?.data?.data?.digitalMessageException?.message;
-                toast.error(message, {
+                const { data } = error.response.data
+                toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });
                 clearUserData();
@@ -99,8 +88,10 @@ export default function PasswordStep() {
                 }
             })
             .catch((error) => {
-                const message = error.response?.data?.data?.digitalMessageException?.message;
-                toast.error(message);
+                const { data } = error.response.data
+                toast.error(data?.digitalMessageException?.message, {
+                    duration: 5000,
+                });
             })
             .finally(() => {
                 setIsLoading(false);
@@ -281,7 +272,7 @@ export default function PasswordStep() {
                             setUserData({ step: 6 });
                         })
                         .catch((error) => {
-                            const { data } = error.response
+                            const { data } = error.response.data
                             toast.error(data?.digitalMessageException?.message, {
                                 duration: 5000,
                             });
