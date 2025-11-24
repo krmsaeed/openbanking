@@ -130,17 +130,15 @@ export default function RootLayout({
                 <ThemeProvider>
                     <UserProvider>
                         <ToastProvider>
-                            <Suspense fallback={<div>Loading...</div>}>
-                                {process.env.IS_STAGE == 'true' && <InstallPWA />}
-                                <AuthInitializer requireAuth={false}>
-                                    {process.env.NODE_ENV === 'development' ? (
-                                        <ServiceWorkerUnregistrar />
-                                    ) : (
-                                        <ServiceWorkerRegistrar />
-                                    )}
-                                    {children}
-                                </AuthInitializer>
-                            </Suspense>
+                            {process.env.IS_STAGE == 'true' && <InstallPWA />}
+                            <AuthInitializer requireAuth={false}>
+                                {process.env.NODE_ENV === 'development' ? (
+                                    <ServiceWorkerUnregistrar />
+                                ) : (
+                                    <ServiceWorkerRegistrar />
+                                )}
+                                {children}
+                            </AuthInitializer>
                         </ToastProvider>
                     </UserProvider>
                 </ThemeProvider>

@@ -166,7 +166,6 @@ export default function LoginPage() {
                                         className="w-full"
                                     />
                                 </Box>
-                                <Typography>version 1.0.0</Typography>
 
                                 <Box className="space-y-2">
                                     <label
