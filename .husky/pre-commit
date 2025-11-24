@@ -1,11 +1,12 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-echo "🔍 Running format check..."
-yarn format:check || exit 1
+echo "🔍 Running format check on staged files (fast)..."
+# Format staged files only — faster and safe for pre-commit
+yarn format:staged || {
+	echo "Formatting failed. Run 'yarn format' to fix issues.";
+	exit 1;
+}
 
-echo "📦 Building project..."
-yarn build || exit 1
-
-echo "✅ All checks passed!"
+echo "✅ Pre-commit checks passed (build skipped)."
  
