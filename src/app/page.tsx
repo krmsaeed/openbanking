@@ -98,7 +98,7 @@ export default function LoginPage() {
             })
             .catch((error) => {
                 const { data } = error.response
-                toast.error(data?.digitalMessageException?.message || 'عدم برقراری ارتباط با سرور', {
+                toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });
 

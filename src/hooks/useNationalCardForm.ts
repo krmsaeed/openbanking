@@ -137,7 +137,7 @@ export function useNationalCardForm() {
             })
             .catch((error) => {
                 const message = error.response?.data?.data?.digitalMessageException?.message;
-                toast.error(message || 'عدم برقراری ارتباط با سرور', {
+                toast.error(message, {
                     duration: 5000,
                 });
             })

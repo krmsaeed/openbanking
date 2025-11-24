@@ -37,7 +37,7 @@ export function SignatureStep() {
             .catch((error) => {
                 console.log('🚀 ~ SignatureStep.tsx:38 ~ handleSubmit ~ error:', error);
                 const message = error.response?.data?.data?.digitalMessageException?.message;
-                toast.error(message || 'عدم برقراری ارتباط با سرور', {
+                toast.error(message, {
                     duration: 5000,
                 });
                 clearUserData();
