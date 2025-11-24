@@ -8,9 +8,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import toast from 'react-hot-toast';
 
+export const dynamic = 'force-dynamic';
+
 function PaymentGatewayContent() {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = useSearchParams() ?? new URLSearchParams();
     const amount = searchParams.get('amount') || '150,000';
 
     const [step, setStep] = useState(1);

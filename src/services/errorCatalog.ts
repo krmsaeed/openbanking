@@ -46,8 +46,8 @@ async function saveToIndexedDB(items: RemoteError[]) {
                 typeof it.code === 'number'
                     ? `code:${it.code}`
                     : it.errorKey
-                        ? `errorKey:${it.errorKey}`
-                        : undefined;
+                      ? `errorKey:${it.errorKey}`
+                      : undefined;
             if (!key) continue;
             await new Promise((res, rej) => {
                 const r = store.put({ key, payload: it });
@@ -56,7 +56,7 @@ async function saveToIndexedDB(items: RemoteError[]) {
             });
         }
         tx.commit?.();
-    } catch { }
+    } catch {}
 }
 
 async function loadFromIndexedDB(): Promise<void> {
@@ -80,7 +80,7 @@ async function loadFromIndexedDB(): Promise<void> {
                     inMemoryByCode[code] = String(r.payload.message);
             }
         }
-    } catch { }
+    } catch {}
 }
 
 let isInitialized = false;
@@ -109,8 +109,8 @@ export async function initErrorCatalog(): Promise<void> {
             const items: RemoteError[] = Array.isArray(data)
                 ? data
                 : Array.isArray(data.items)
-                    ? data.items
-                    : [];
+                  ? data.items
+                  : [];
 
             for (const it of items) {
                 if (typeof it.code === 'number' && it.message)

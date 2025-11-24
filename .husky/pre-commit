@@ -1,8 +1,11 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-yarn format
+echo "🔍 Running format check..."
+yarn format:check || exit 1
 
-git add -A
+echo "📦 Building project..."
+yarn build || exit 1
 
-yarn build
+echo "✅ All checks passed!"
+ 

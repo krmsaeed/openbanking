@@ -10,6 +10,8 @@ import localFont from 'next/font/local';
 import { Suspense } from 'react';
 import './styles/globals.css';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: 'اقتصاد نوین | هوشمندانه پرداخت کنید',
     description: 'بانک اقتصاد نوین - پرداخت آسان و امن اقساط',
@@ -131,14 +133,16 @@ export default function RootLayout({
                     <UserProvider>
                         <ToastProvider>
                             {process.env.IS_STAGE == 'true' && <InstallPWA />}
-                            <AuthInitializer requireAuth={false}>
-                                {process.env.NODE_ENV === 'development' ? (
-                                    <ServiceWorkerUnregistrar />
-                                ) : (
-                                    <ServiceWorkerRegistrar />
-                                )}
-                                {children}
-                            </AuthInitializer>
+                            <Suspense fallback={<div>Loading...</div>}>
+                                <AuthInitializer requireAuth={false}>
+                                    {process.env.NODE_ENV === 'development' ? (
+                                        <ServiceWorkerUnregistrar />
+                                    ) : (
+                                        <ServiceWorkerRegistrar />
+                                    )}
+                                    {children}
+                                </AuthInitializer>
+                            </Suspense>
                         </ToastProvider>
                     </UserProvider>
                 </ThemeProvider>

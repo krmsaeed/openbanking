@@ -48,7 +48,7 @@ async function handler(request: AuthenticatedRequest) {
                         },
                     },
                 };
-                console.log("hiiiiiiiiiiiiiiiii", errorResponse)
+                console.log('hiiiiiiiiiiiiiiiii', errorResponse);
                 return NextResponse.json(errorResponse, { status: 400 });
             }
             return NextResponse.json({ ...response }, { status: 200 });

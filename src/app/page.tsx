@@ -20,6 +20,8 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 const loginSchema = z.object({
     code: z
         .string()
@@ -97,7 +99,7 @@ export default function LoginPage() {
                 router.push('/register');
             })
             .catch((error) => {
-                const { data } = error.response.data
+                const { data } = error.response.data;
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });
@@ -192,7 +194,7 @@ export default function LoginPage() {
                                 />
                             </form>
                             <Typography className="text-center font-bold text-gray-800">
-                                ورژن 1.0.0
+                                ورژن 1.0.1
                             </Typography>
                         </Card>
                     </Box>
