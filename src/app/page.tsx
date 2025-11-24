@@ -194,7 +194,7 @@ export default function LoginPage() {
                                 />
                             </form>
                             <Typography className="text-center font-bold text-gray-800">
-                                ورژن 1.0.1
+                                ورژن 1.0.0
                             </Typography>
                         </Card>
                     </Box>
