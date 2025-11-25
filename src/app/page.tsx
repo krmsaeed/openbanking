@@ -45,7 +45,7 @@ export default function LoginPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const { setUserData } = useUser();
-    const isStage = process.env.IS_STAGE;
+    const isStage = process.env.NEXT_PUBLIC_IS_STAGE;
 
     const {
         register,
@@ -114,7 +114,7 @@ export default function LoginPage() {
 
     return (
         <main className="flex min-h-screen w-full items-center justify-center">
-            {!isStage ? (
+            {isStage === "false" ? (
                 <HomeLoader />
             ) : (
                 <Box className="container flex min-h-screen items-center justify-center">
@@ -193,7 +193,7 @@ export default function LoginPage() {
                                     disabled={isLoading}
                                 />
                             </form>
-                            {process.env.IS_STAGE == "true" && <Typography className="text-center font-bold text-gray-800">
+                            {process.env.NEXT_PUBLIC_IS_STAGE === "true" && <Typography className="text-center font-bold text-gray-800">
                                 {process.env.PUBLIC_VERSION || '1.0.0'} ورژن
                             </Typography>}
                         </Card>
