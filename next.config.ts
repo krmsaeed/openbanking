@@ -1,7 +1,8 @@
 /// <reference types="node" />
 
-const BASE_URL = process.env.BASE_URL ?? 'http://10.224.2.3:9999';
+const BASE_URL = process.env.BASE_URL ?? 'http://192.168.91.112:9999';
 const IS_STAGE = process.env.IS_STAGE ?? 'true';
+const PUBLIC_VERSION = process.env.PUBLIC_VERSION ?? '1.0.0';
 
 const nextConfig = {
     output: 'standalone', // Enable standalone output
@@ -50,6 +51,7 @@ const nextConfig = {
     env: {
         BASE_URL,
         IS_STAGE,
+        PUBLIC_VERSION
     },
 };
 

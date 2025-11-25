@@ -50,3 +50,11 @@ next-env.d.ts
 .qodo
 .vscode/
 .vscode/launch.json
+
+# archive files
+*.gz
+*.gzip
+*.zip
+*.tar
+*.tar.gz
+*.tgz

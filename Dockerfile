@@ -4,18 +4,22 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-# Copy package files
+ARG IS_STAGE="true"
+ARG PUBLIC_VERSION="1.0.4"
+
+ENV IS_STAGE=${IS_STAGE} 
+ENV PUBLIC_VERSION=${PUBLIC_VERSION} 
+
 COPY package.json yarn.lock .yarnrc.yml ./
 
-# Install dependencies using Yarn 4
+RUN corepack enable
+RUN corepack prepare yarn@stable --activate
+
 RUN yarn install
 
-
-# Copy source code
 COPY . .
 
-# Build Next.js (with standalone output)
-RUN yarn build:
+RUN yarn build
 
 # ==============================
 # Runner stage
@@ -25,20 +29,15 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Create non-root user
 RUN addgroup --system --gid 1001 nodejs \
     && adduser --system --uid 1001 nextjs
 
-# Copy standalone build
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone .
 
-# Copy public files
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
-# Copy static files
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Switch to non-root user
 USER nextjs
 
 # Expose port

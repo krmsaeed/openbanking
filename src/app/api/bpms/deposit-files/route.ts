@@ -28,7 +28,7 @@ async function handler(request: AuthenticatedRequest) {
         const data = await request.formData();
         const authToken = request.auth?.token;
         const response = await virtualOpenDepositKeKycUserFiles(data, authToken);
-
+        console.log('BPMS File Upload Response:', response);
         if (response.status === 200) {
             const hasException =
                 response.data &&
@@ -55,7 +55,8 @@ async function handler(request: AuthenticatedRequest) {
             return NextResponse.json({ ...(response.data || {}) }, { status: 200 });
         }
         return NextResponse.json({ data: response.data });
-    } catch {
+    } catch (error) {
+        console.error('Error in BPMS File Upload Handler:', error);
         return NextResponse.json(
             {
                 digitalMessageException: {

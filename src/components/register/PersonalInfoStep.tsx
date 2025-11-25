@@ -53,7 +53,7 @@ export default function PersonalInfo() {
                     body,
                 })
                 .then((response) => {
-                    const { data: respData } = response.data;
+                    const { data: respData } = response;
 
                     if (respData?.body?.needKYC && !respData?.body?.hasActiveCertificate) {
                         setUserData({ ...userData, step: 2 });
@@ -66,7 +66,7 @@ export default function PersonalInfo() {
                     }
                 })
                 .catch((error) => {
-                    const { data } = error.response;
+                    const { data } = error.response.data;
                     toast.error(data?.digitalMessageException?.message, {
                         duration: 5000,
                     });

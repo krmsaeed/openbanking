@@ -123,7 +123,7 @@ export default function Register() {
                     }
                 }
             })();
-        } catch {}
+        } catch { }
     }, [setValue]);
 
     // Read national id from cookie (if present) and set into form
@@ -150,7 +150,7 @@ export default function Register() {
 
                 <Box className="relative w-full">
                     <ThemeToggle className="top-1 right-1" />
-                    <Card className="space-y-5 px-1 sm:px-4">
+                    <Card className="space-y-2 px-1 sm:px-4">
                         <Typography variant="h5" className="text-center text-gray-800">
                             {getStepDescription()}
                         </Typography>

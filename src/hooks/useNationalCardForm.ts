@@ -120,14 +120,12 @@ export function useNationalCardForm() {
                     data?.data?.body?.CustomerNumber ||
                     data?.response?.body?.CustomerNumber ||
                     data?.response?.CustomerNumber;
-
                 const accountNumber =
                     data?.body?.depositNum ||
                     data?.depositNum ||
                     data?.data?.body?.depositNum ||
                     data?.response?.body?.depositNum ||
                     data?.response?.depositNum;
-
                 setUserData({
                     ...userData,
                     customerNumber: customerNumber || '',
@@ -136,7 +134,7 @@ export function useNationalCardForm() {
                 setShowWelcomeModal(true);
             })
             .catch((error) => {
-                const { data } = error.response;
+                const { data } = error.response.data;
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });

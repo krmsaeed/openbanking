@@ -22,7 +22,7 @@ const STEP_META = [
 ];
 
 export default function Sidebar() {
-    const { userData, setUserData } = useUser();
+    const { userData } = useUser();
     return (
         <nav
             className="mx-auto w-[98%] rounded-lg bg-gray-100 px-1 pt-2 shadow-lg md:w-[18rem] md:px-4"

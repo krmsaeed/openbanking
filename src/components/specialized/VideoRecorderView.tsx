@@ -44,7 +44,7 @@ export function VideoRecorderView({
         <Box className="space-y-6">
             <Box className="text-center">
                 {hasPreview && (
-                    <Box className="w-full space-y-4">
+                    <Box className="w-full space-y-2">
                         <Box className="w-full rounded-lg bg-gray-50 p-2">
                             <video
                                 src={videoPreviewUrl ?? undefined}
@@ -55,14 +55,7 @@ export function VideoRecorderView({
                             </video>
                         </Box>
 
-                        <Box className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl bg-gray-100 p-4">
-                            <ul className="md:text-md space-y-1 rounded-lg bg-gray-200 p-3">
-                                <li className="text-error font-bold">
-                                    فیلم ضبط شده خود را بررسی کنید
-                                </li>
-                                <li> اگر فیلم مناسب است «مرحله بعد» را انتخاب کنید</li>
-                                <li> برای رکورد جدید «ضبط مجدد» را انتخاب کنید</li>
-                            </ul>
+                        <Box className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl bg-gray-100 p-2">
                             <Button
                                 variant="secondary"
                                 onClick={onRetake}
@@ -72,6 +65,14 @@ export function VideoRecorderView({
                                 <VideoCameraIcon className="h-4 w-4" />
                                 ضبط مجدد
                             </Button>
+                            <ul className="md:text-md space-y-1 rounded-lg bg-gray-200 p-3">
+                                <li className="text-error font-bold">
+                                    فیلم ضبط شده خود را بررسی کنید
+                                </li>
+                                <li> اگر فیلم مناسب است «مرحله بعد» را انتخاب کنید</li>
+                                <li> برای رکورد جدید «ضبط مجدد» را انتخاب کنید</li>
+                            </ul>
+
                         </Box>
                     </Box>
                 )}
@@ -101,30 +102,31 @@ export function VideoRecorderView({
                             </Box>
 
                             {!isRecording && (
-                                <Box className="mb-4 rounded-lg">
+                                <Box className=" rounded-lg">
                                     <Box className="space-y-2 text-right">
                                         <Typography
                                             variant="h4"
-                                            className="border-primary-100 mt-2 flex min-h-10 flex-col items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
+                                            className="border-primary-100  flex min-h-10 flex-col items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
                                         >
                                             {randomText}
                                         </Typography>
-                                        <Box className="mt-2 flex flex-col items-center justify-between rounded-lg bg-gray-100 p-2">
-                                            <ul className="p-2 text-center text-sm leading-relaxed text-gray-800">
+                                        <Box className=" flex flex-col items-center justify-between rounded-lg bg-gray-100 p-2">
+                                            <Button
+                                                onClick={onStartRecording}
+                                                className="bg-success-600 mb-2 flex items-center gap-2 px-6 py-3 text-white"
+                                                disabled={!cameraActive}
+                                            >
+                                                <VideoCameraIcon className="h-5 w-5" />
+                                                شروع ضبط
+                                            </Button>
+                                            <ul className="bg-gray-200 w-full rounded-md p-2 text-center text-sm leading-relaxed text-gray-800">
                                                 <li className="text-primary-800 font-bold">
                                                     متن نمایش داده‌شده را واضح بخوانید
                                                 </li>
                                                 <li>طول ویدیو: حدود 30 ثانیه.</li>
                                                 <li>صورت در مرکز قاب قرار گیرد.</li>
                                             </ul>
-                                            <Button
-                                                onClick={onStartRecording}
-                                                className="bg-success-600 flex items-center gap-2 px-6 py-3 text-white"
-                                                disabled={!cameraActive}
-                                            >
-                                                <VideoCameraIcon className="h-5 w-5" />
-                                                شروع ضبط
-                                            </Button>
+
                                         </Box>
                                     </Box>
                                 </Box>
@@ -132,7 +134,7 @@ export function VideoRecorderView({
                             {isRecording && (
                                 <Typography
                                     variant="h4"
-                                    className="border-primary-100 mt-2 mb-2 flex min-h-10 items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
+                                    className="border-primary-100  flex min-h-10 items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
                                 >
                                     {randomText}
                                 </Typography>
@@ -142,11 +144,10 @@ export function VideoRecorderView({
                                     <Button
                                         onClick={onStopRecording}
                                         disabled={!isRecording}
-                                        className={`flex items-center gap-2 px-6 py-3 transition-colors ${
-                                            isRecording
-                                                ? 'bg-error-500 hover:bg-error-600 text-white'
-                                                : 'cursor-not-allowed bg-gray-400 text-gray-600'
-                                        }`}
+                                        className={`mt-2 flex items-center gap-2 px-6 py-3 transition-colors ${isRecording
+                                            ? 'bg-error-500 hover:bg-error-600 text-white'
+                                            : 'cursor-not-allowed bg-gray-400 text-gray-600'
+                                            }`}
                                     >
                                         <XMarkIcon className="h-5 w-5" />
                                         پایان ضبط
@@ -158,13 +159,11 @@ export function VideoRecorderView({
                 )}
             </Box>
 
-            <Box className="flex w-full items-center gap-2">
-                <LoadingButton
-                    onClick={onConfirm}
-                    loading={isUploading}
-                    disabled={!hasPreview || isUploading || isCompressing}
-                />
-            </Box>
+            <LoadingButton
+                onClick={onConfirm}
+                loading={isUploading}
+                disabled={!hasPreview || isUploading || isCompressing}
+            />
         </Box>
     );
 }

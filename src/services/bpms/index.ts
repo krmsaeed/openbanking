@@ -9,7 +9,7 @@ export interface ApiResponse<T = unknown> {
 export async function virtualOpenDepositSendMessage<T>(payload: T, authToken?: string) {
     const config = authToken ? { headers: { Authorization: `Bearer ${authToken}` } } : undefined;
     const response = await httpClient.post('/sendMessage', payload, config);
-    return response;
+    return { status: response.status, data: response.data };
 }
 
 export async function virtualOpenDepositKeKycUserFiles<T>(payload: T, authToken?: string) {
@@ -22,7 +22,7 @@ export async function virtualOpenDepositKeKycUserFiles<T>(payload: T, authToken?
         }
         : undefined;
     const response = await httpClient.post('/sendMultiPartMessage', payload, config);
-    return response;
+    return { status: response.status, data: response.data };
 }
 
 const bpms = {

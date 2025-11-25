@@ -55,8 +55,8 @@ function CameraView({
                 playsInline
                 muted
                 className={`absolute top-0 left-0 z-10 h-full w-full -scale-x-100 transform bg-black object-cover ${stream && !capturedPhoto && !cameraLoading
-                        ? 'visible opacity-100'
-                        : 'invisible opacity-0'
+                    ? 'visible opacity-100'
+                    : 'invisible opacity-0'
                     }`}
                 controls={false}
                 disablePictureInPicture
@@ -207,7 +207,7 @@ interface InstructionsProps {
 
 function Instructions({ capturedPhoto, onRetake, isUploading }: InstructionsProps) {
     return (
-        <Box className="rounded-xl bg-gray-100 p-4">
+        <Box className="rounded-xl bg-gray-100">
             {!capturedPhoto ? (
                 <>
                     <Typography
@@ -263,16 +263,7 @@ function Instructions({ capturedPhoto, onRetake, isUploading }: InstructionsProp
                 </>
             ) : (
                 <>
-                    <ul className="space-y-1 rounded-lg bg-gray-200 p-2 text-center text-sm">
-                        <li className="text-error-800 font-bold">عکس خود را بررسی کنید</li>
-                        <li className="text-gray-900">
-                            اگر عکس مناسب است، روی «مرحله بعد» کلیک کنید
-                        </li>
-                        <li className="text-gray-900">
-                            برای گرفتن عکس جدید، روی «عکس جدید» کلیک کنید
-                        </li>
-                    </ul>
-                    <Box className="mt-3 flex justify-center gap-4">
+                    <Box className="mb-3 flex justify-center gap-4">
                         <Button
                             onClick={onRetake}
                             disabled={isUploading}
@@ -284,6 +275,15 @@ function Instructions({ capturedPhoto, onRetake, isUploading }: InstructionsProp
                             </Typography>
                         </Button>
                     </Box>
+                    <ul className="space-y-1 rounded-lg bg-gray-200 p-2 text-center text-sm">
+                        <li className="text-error-800 font-bold">عکس خود را بررسی کنید</li>
+                        <li className="text-gray-900">
+                            اگر عکس مناسب است، روی «مرحله بعد» کلیک کنید
+                        </li>
+                        <li className="text-gray-900">
+                            برای گرفتن عکس جدید، روی «عکس جدید» کلیک کنید
+                        </li>
+                    </ul>
                 </>
             )}
         </Box>
@@ -366,8 +366,8 @@ function CaptureButton({ onCapture, disabled }: CaptureButtonProps) {
                 onClick={onCapture}
                 disabled={disabled}
                 className={`flex items-center gap-2 rounded-lg px-6 py-3 font-medium transition-all duration-300 ${!disabled
-                        ? 'bg-success-500 hover:bg-success-600 cursor-pointer text-white shadow-lg hover:shadow-xl active:scale-95'
-                        : 'cursor-not-allowed bg-gray-400 text-gray-600 opacity-60'
+                    ? 'bg-success-500 hover:bg-success-600 cursor-pointer text-white shadow-lg hover:shadow-xl active:scale-95'
+                    : 'cursor-not-allowed bg-gray-400 text-gray-600 opacity-60'
                     }`}
             >
                 <CameraIcon className="h-5 w-5" />
@@ -387,7 +387,7 @@ function LoadingState() {
                     <CameraIcon className="h-16 w-16 text-gray-400" />
                     <Box className="text-center">
                         <Typography variant="h3" className="mb-2 text-lg font-semibold">
-                            آماده عکس‌گیری
+                            آماده  سازی دوربین
                         </Typography>
                         <Typography variant="body1" className="mb-4 text-sm text-gray-300">
                             در حال بارگذاری
@@ -484,7 +484,7 @@ export default function SelfieStep() {
                 setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
             })
             .catch((error) => {
-                const { data } = error.response;
+                const { data } = error.response.data;
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });

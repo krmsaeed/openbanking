@@ -99,7 +99,7 @@ export default function LoginPage() {
                 router.push('/register');
             })
             .catch((error) => {
-                const { data } = error.response;
+                const { data } = error.response.data;
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });
@@ -194,7 +194,7 @@ export default function LoginPage() {
                                 />
                             </form>
                             {process.env.IS_STAGE == "true" && <Typography className="text-center font-bold text-gray-800">
-                                ورژن 1.0.0
+                                {process.env.PUBLIC_VERSION || '1.0.0'} ورژن
                             </Typography>}
                         </Card>
                     </Box>
