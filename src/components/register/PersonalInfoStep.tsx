@@ -66,7 +66,7 @@ export default function PersonalInfo() {
                     }
                 })
                 .catch((error) => {
-                    const { data } = error.response.data;
+                    const { data } = error.response;
                     toast.error(data?.digitalMessageException?.message, {
                         duration: 5000,
                     });

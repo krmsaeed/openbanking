@@ -484,7 +484,7 @@ export default function SelfieStep() {
                 setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
             })
             .catch((error) => {
-                const { data } = error.response.data;
+                const { data } = error.response;
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });
