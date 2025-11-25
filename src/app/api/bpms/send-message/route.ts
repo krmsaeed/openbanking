@@ -48,34 +48,19 @@ async function handler(request: AuthenticatedRequest) {
                 };
                 return NextResponse.json(errorResponse, { status: 400 });
             }
-            return NextResponse.json({ ...response }, { status: 200 });
+            return NextResponse.json({ ...(response.data || {}) }, { status: 200 });
         }
 
         return NextResponse.json({ error: response }, { status: response.status || 400 });
-    } catch (error) {
-        // Handle connection errors and other exceptions
-        const axiosError = error as Record<string, unknown>;
-        let errorMessage = 'خطای ارتباط با سرور';
-        const statusCode = 500;
-
-        if (axiosError.code === 'ECONNREFUSED') {
-            errorMessage = 'سرور در دسترس نیست';
-        } else if (axiosError.message && typeof axiosError.message === 'string') {
-            if (axiosError.message.includes('ECONNREFUSED')) {
-                errorMessage = 'سرور در دسترس نیست';
-            } else if (axiosError.message.includes('timeout')) {
-                errorMessage = 'درخواست timeout شد';
-            }
-        }
-
+    } catch {
         return NextResponse.json(
             {
                 digitalMessageException: {
-                    errorCode: statusCode,
-                    message: errorMessage,
+                    errorCode: 500,
+                    message: 'عدم برقراری ارتباط با سرور',
                 },
             },
-            { status: statusCode }
+            { status: 500 }
         );
     }
 }

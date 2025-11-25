@@ -48,7 +48,7 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                         body: { code },
                     })
                     .then((response) => {
-                        const { data } = response.data as ApiResponse;
+                        const { data } = response as ApiResponse;
 
                         const newState = {
                             nationalCode: code,
@@ -74,7 +74,7 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                         requestCache.set(code, true);
                     })
                     .catch((error) => {
-                        const { data } = error.response.data;
+                        const { data } = error.response;
                         toast.error(data?.digitalMessageException?.message, {
                             duration: 5000,
                         });

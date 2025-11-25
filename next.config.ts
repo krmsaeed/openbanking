@@ -1,10 +1,10 @@
 /// <reference types="node" />
 
-const BASE_URL = process.env.BASE_URL ?? 'http://192.168.91.112:9999';
+const BASE_URL = process.env.BASE_URL ?? 'http://10.224.2.3:9999';
 const IS_STAGE = process.env.IS_STAGE ?? 'true';
 
 const nextConfig = {
-    output: 'standalone',
+    output: 'standalone', // Enable standalone output
     compress: true, // Gzip compression
     productionBrowserSourceMaps: false, // Disable source maps in production
     images: {

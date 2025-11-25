@@ -10,7 +10,7 @@ import localFont from 'next/font/local';
 import { Suspense } from 'react';
 import './styles/globals.css';
 
-export const dynamic = 'force-dynamic';
+// export const dynamic = 'force-dynamic'; // Removed to fix standalone build issue
 
 export const metadata: Metadata = {
     title: 'اقتصاد نوین | هوشمندانه پرداخت کنید',

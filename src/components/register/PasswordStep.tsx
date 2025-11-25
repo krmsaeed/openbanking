@@ -53,7 +53,7 @@ export default function PasswordStep() {
                 setShowOtp(true);
             })
             .catch((error) => {
-                const { data } = error.response.data;
+                const { data } = error.response;
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });
@@ -79,7 +79,7 @@ export default function PasswordStep() {
                 },
             })
             .then((response) => {
-                const { data } = response.data;
+                const { data } = response;
                 if (data.body.success) {
                     toast.success('کد تایید مجدد ارسال شد');
                 } else {
@@ -87,7 +87,7 @@ export default function PasswordStep() {
                 }
             })
             .catch((error) => {
-                const { data } = error.response.data;
+                const { data } = error.response;
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });
@@ -271,7 +271,7 @@ export default function PasswordStep() {
                             setUserData({ step: 6 });
                         })
                         .catch((error) => {
-                            const { data } = error.response.data;
+                            const { data } = error.response;
                             toast.error(data?.digitalMessageException?.message, {
                                 duration: 5000,
                             });

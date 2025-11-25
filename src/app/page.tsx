@@ -20,7 +20,7 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
 
-export const dynamic = 'force-dynamic';
+// export const dynamic = 'force-dynamic';
 
 const loginSchema = z.object({
     code: z
@@ -87,7 +87,7 @@ export default function LoginPage() {
                 body: { code: getValues('code') },
             })
             .then((response) => {
-                const { data } = response.data;
+                const { data } = response;
 
                 setUserData({
                     nationalCode: getValues('code'),
@@ -99,7 +99,7 @@ export default function LoginPage() {
                 router.push('/register');
             })
             .catch((error) => {
-                const { data } = error.response.data;
+                const { data } = error.response;
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });
@@ -193,9 +193,9 @@ export default function LoginPage() {
                                     disabled={isLoading}
                                 />
                             </form>
-                            <Typography className="text-center font-bold text-gray-800">
+                            {process.env.IS_STAGE == "true" && <Typography className="text-center font-bold text-gray-800">
                                 ورژن 1.0.0
-                            </Typography>
+                            </Typography>}
                         </Card>
                     </Box>
                 </Box>

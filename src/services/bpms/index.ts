@@ -9,20 +9,20 @@ export interface ApiResponse<T = unknown> {
 export async function virtualOpenDepositSendMessage<T>(payload: T, authToken?: string) {
     const config = authToken ? { headers: { Authorization: `Bearer ${authToken}` } } : undefined;
     const response = await httpClient.post('/sendMessage', payload, config);
-    return { status: response.status, data: response.data };
+    return response;
 }
 
 export async function virtualOpenDepositKeKycUserFiles<T>(payload: T, authToken?: string) {
     const config = authToken
         ? {
-              headers: {
-                  'Content-Type': 'multipart/form-data',
-                  Authorization: `Bearer ${authToken}`,
-              },
-          }
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${authToken}`,
+            },
+        }
         : undefined;
     const response = await httpClient.post('/sendMultiPartMessage', payload, config);
-    return { status: response.status, data: response.data };
+    return response;
 }
 
 const bpms = {

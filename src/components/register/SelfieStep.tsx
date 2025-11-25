@@ -54,11 +54,10 @@ function CameraView({
                 autoPlay
                 playsInline
                 muted
-                className={`absolute top-0 left-0 z-10 h-full w-full -scale-x-100 transform bg-black object-cover ${
-                    stream && !capturedPhoto && !cameraLoading
+                className={`absolute top-0 left-0 z-10 h-full w-full -scale-x-100 transform bg-black object-cover ${stream && !capturedPhoto && !cameraLoading
                         ? 'visible opacity-100'
                         : 'invisible opacity-0'
-                }`}
+                    }`}
                 controls={false}
                 disablePictureInPicture
                 disableRemotePlayback
@@ -85,8 +84,8 @@ function CameraView({
                             closenessPercent === 100 && obstructionRatio < 0.15
                                 ? 'var(--color-success-500)'
                                 : closenessPercent < 80
-                                  ? 'var(--color-error-800)'
-                                  : 'var(--color-warning-500)'
+                                    ? 'var(--color-error-800)'
+                                    : 'var(--color-warning-500)'
                         }
                         strokeWidth="4"
                         fill="none"
@@ -332,10 +331,10 @@ function StatusMessage({
         const message = faceTooFar
             ? 'لطفاً نزدیک‌تر بیایید'
             : obstructionRatio <= MAX_OBSTRUCTION
-              ? 'عدم وضوح'
-              : eyeFeatureRatio < MIN_EYE_RATIO
-                ? 'مطمئن شوید چشم‌ها و ابروها به وضوح دیده می‌شوند'
-                : 'صورت خود را در مقابل دوربین قرار دهید';
+                ? 'عدم وضوح'
+                : eyeFeatureRatio < MIN_EYE_RATIO
+                    ? 'مطمئن شوید چشم‌ها و ابروها به وضوح دیده می‌شوند'
+                    : 'صورت خود را در مقابل دوربین قرار دهید';
 
         return (
             <Typography variant="body1" className="text-center text-sm font-medium text-red-500">
@@ -366,11 +365,10 @@ function CaptureButton({ onCapture, disabled }: CaptureButtonProps) {
             <Button
                 onClick={onCapture}
                 disabled={disabled}
-                className={`flex items-center gap-2 rounded-lg px-6 py-3 font-medium transition-all duration-300 ${
-                    !disabled
+                className={`flex items-center gap-2 rounded-lg px-6 py-3 font-medium transition-all duration-300 ${!disabled
                         ? 'bg-success-500 hover:bg-success-600 cursor-pointer text-white shadow-lg hover:shadow-xl active:scale-95'
                         : 'cursor-not-allowed bg-gray-400 text-gray-600 opacity-60'
-                }`}
+                    }`}
             >
                 <CameraIcon className="h-5 w-5" />
                 <Typography variant="body1" className="text-sm font-medium">
@@ -486,7 +484,7 @@ export default function SelfieStep() {
                 setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
             })
             .catch((error) => {
-                const { data } = error.response.data;
+                const { data } = error.response;
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });

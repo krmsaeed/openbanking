@@ -1,42 +1,50 @@
-FROM node:22-bullseye AS base
-
-ARG IS_STAGE="true"
-
-ENV IS_STAGE=${IS_STAGE} 
-	
-
-FROM base AS builder
+# ==============================
+# Builder stage
+# ==============================
+FROM node:22-alpine AS builder
 WORKDIR /app
 
+# Copy package files
+COPY package.json yarn.lock .yarnrc.yml ./
 
-COPY package.json ./
+# Install dependencies using Yarn 4
+RUN yarn install
+
+
+# Copy source code
 COPY . .
 
-RUN npm install --verbose  && npm run build
+# Build Next.js (with standalone output)
+RUN yarn build:
 
-FROM base AS runner
-
+# ==============================
+# Runner stage
+# ==============================
+FROM node:22-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs \
+    && adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/public ./public
+# Copy standalone build
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone .
 
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
+# Copy public files
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+# Copy static files
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Switch to non-root user
 USER nextjs
 
+# Expose port
 EXPOSE 80
-
 ENV PORT=80
-ENV HOSTNAME="0.0.0.0"
+ENV HOSTNAME=0.0.0.0
 
+# Start server
 CMD ["node", "server.js"]

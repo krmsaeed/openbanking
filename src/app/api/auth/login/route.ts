@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
         formData.append('client_secret', body.client_secret || 'XALaRPl5qwTEItdwCMiPS62nVpKs7dL7');
 
         const response = await axios.post(
-            'https://192.168.91.112:8443/auth/realms/camunda-platform/protocol/openid-connect/token',
+            'https://10.224.2.3:8443/auth/realms/camunda-platform/protocol/openid-connect/token',
             formData.toString(),
             {
                 headers: {
