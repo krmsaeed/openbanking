@@ -1,8 +1,5 @@
 /// <reference types="node" />
 
-const BASE_URL = process.env.BASE_URL ?? 'http://10.224.2.3:9999';
-const NEXT_PUBLIC_IS_STAGE = process.env.NEXT_PUBLIC_IS_STAGE ?? 'true';
-const PUBLIC_VERSION = process.env.PUBLIC_VERSION ?? '1.0.0';
 
 const nextConfig = {
     output: 'standalone', // Enable standalone output
@@ -30,14 +27,7 @@ const nextConfig = {
             'react-hook-form',
         ],
     },
-    turbopack: {
-        rules: {
-            '*.svg': {
-                loaders: ['@svgr/webpack'],
-                as: '*.js',
-            },
-        },
-    },
+    turbopack: {},
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     webpack: (config: any, { dev, isServer }: { dev: boolean; isServer: boolean }) => {
         if (!dev && !isServer) {
@@ -49,9 +39,11 @@ const nextConfig = {
         return config;
     },
     env: {
-        BASE_URL,
-        NEXT_PUBLIC_IS_STAGE,
-        PUBLIC_VERSION,
+        // BASE_URL: 'https://192.168.50.49:9999',
+        // BASE_URL: 'http://10.224.2.3:9999',
+        BASE_URL: 'http://192.168.91.112:9999',
+        // BASE_URL: 'http://192.168.50.49:9999',
+        IS_STAGE: 'true',
     },
 };
 

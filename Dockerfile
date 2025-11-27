@@ -4,12 +4,6 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-ARG NEXT_PUBLIC_IS_STAGE="true"
-ARG PUBLIC_VERSION="1.0.4"
-
-ENV NEXT_PUBLIC_IS_STAGE=${NEXT_PUBLIC_IS_STAGE}
-ENV PUBLIC_VERSION=${PUBLIC_VERSION} 
-
 COPY package.json yarn.lock .yarnrc.yml ./
 
 RUN corepack enable
@@ -32,13 +26,13 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs \
     && adduser --system --uid 1001 nextjs
 
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone .
+COPY --from=builder --chown=root:root /app/.next/standalone .
 
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=root:root /app/public ./public
 
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=root:root /app/.next/static ./.next/static
 
-USER nextjs
+# USER nextjs
 
 # Expose port
 EXPOSE 80

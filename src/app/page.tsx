@@ -45,8 +45,7 @@ export default function LoginPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const { setUserData } = useUser();
-    const isStage = process.env.NEXT_PUBLIC_IS_STAGE;
-
+    const isStage = process.env.IS_STAGE;
     const {
         register,
         handleSubmit,
@@ -193,9 +192,9 @@ export default function LoginPage() {
                                     disabled={isLoading}
                                 />
                             </form>
-                            {process.env.NEXT_PUBLIC_IS_STAGE === "true" && <Typography className="text-center font-bold text-gray-800">
+                            <Typography className="text-center font-bold text-gray-800">
                                 {process.env.PUBLIC_VERSION || '1.0.0'} ورژن
-                            </Typography>}
+                            </Typography>
                         </Card>
                     </Box>
                 </Box>

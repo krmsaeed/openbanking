@@ -74,10 +74,14 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                         requestCache.set(code, true);
                     })
                     .catch((error) => {
+
                         const { data } = error.response;
-                        toast.error(data?.digitalMessageException?.message, {
+
+                        toast.error(data?.error.status === 401 ? "اطلاعات احراز هویت یافت نشد" : data?.digitalMessageException?.message, {
                             duration: 5000,
                         });
+                        requestCache.delete(code);
+                        router.push('/');
                     });
             })();
 
@@ -122,13 +126,12 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
 
             if (!accessToken || !nationalId) {
                 toast.error('اطلاعات احراز هویت یافت نشد');
-                throw new Error('اطلاعات احراز هویت یافت نشد');
             }
 
             calledRef.current = true;
-            await makeApiCall(nationalId);
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'خطای نامشخص رخ داده';
+            await makeApiCall(nationalId ?? '');
+        } catch {
+            const errorMessage = 'عملیات با خطا مواجه شد';
             setError(errorMessage);
             calledRef.current = false;
         } finally {

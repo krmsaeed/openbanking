@@ -132,8 +132,8 @@ export default function RootLayout({
                 <ThemeProvider>
                     <UserProvider>
                         <ToastProvider>
-                            {process.env.NEXT_PUBLIC_IS_STAGE === 'true' && <InstallPWA />}
-                            <Suspense fallback={<div>Loading...</div>}>
+                            {process.env.IS_STAGE === "false" && <InstallPWA />}
+                            <Suspense fallback={<></>}>
                                 <AuthInitializer requireAuth={false}>
                                     {process.env.NODE_ENV === 'development' ? (
                                         <ServiceWorkerUnregistrar />
