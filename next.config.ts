@@ -1,6 +1,6 @@
 /// <reference types="node" />
 
-
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 const nextConfig = {
     output: 'standalone', // Enable standalone output
     compress: true, // Gzip compression
@@ -40,10 +40,10 @@ const nextConfig = {
     },
     env: {
         // BASE_URL: 'https://192.168.50.49:9999',
-        BASE_URL: 'http://10.224.2.3:9999',
-        // BASE_URL: 'http://192.168.91.112:9999',
+        // BASE_URL: 'https://10.224.2.3:4999',
+        BASE_URL: 'https://192.168.91.112:4999',
         // BASE_URL: 'https://novinhubtst.enbank.ir/',
-        IS_STAGE: 'false',
+        IS_STAGE: 'true',
     },
 };
 
