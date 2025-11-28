@@ -36,7 +36,8 @@ export function useVideoRecorder(): VideoRecorderResult {
     const recordedChunksRef = useRef<Blob[]>([]);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-    // کمپرس ویدیو با حفظ صدا - روش ساده‌تر
+    // کمپرس ویدیو با حفظ صدا - روش ساده‌تر (فعلا غیرفعال)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const compressVideoSimple = useCallback(async (originalBlob: Blob): Promise<File> => {
         setIsCompressing(true);
         setCompressionProgress(0);
@@ -263,24 +264,32 @@ export function useVideoRecorder(): VideoRecorderResult {
                 const mimeType = mediaRecorder.mimeType || 'video/webm';
                 const blob = new Blob(recordedChunksRef.current, { type: mimeType });
 
-                try {
-                    const compressedFile = await compressVideoSimple(blob);
+                // Compression disabled - use original file directly
+                const file = new File([blob], `verification_video_${Date.now()}.mp4`, {
+                    type: 'video/mp4',
+                });
+                const url = URL.createObjectURL(blob);
+                setVideoPreviewUrl(url);
+                setTimeout(() => setVideoFile(file), 100);
 
-                    const url = URL.createObjectURL(compressedFile);
-                    setVideoPreviewUrl(url);
-                    setTimeout(() => setVideoFile(compressedFile), 100);
-                } catch (error) {
-                    console.error('Compression failed:', error);
-                    toast.error('خطا در فشرده‌سازی، از فایل اصلی استفاده می‌شود', {
-                        id: 'compress',
-                    });
-                    const file = new File([blob], `verification_video_${Date.now()}.mp4`, {
-                        type: 'video/mp4',
-                    });
-                    const url = URL.createObjectURL(blob);
-                    setVideoPreviewUrl(url);
-                    setTimeout(() => setVideoFile(file), 100);
-                }
+                // try {
+                //     const compressedFile = await compressVideoSimple(blob);
+
+                //     const url = URL.createObjectURL(compressedFile);
+                //     setVideoPreviewUrl(url);
+                //     setTimeout(() => setVideoFile(compressedFile), 100);
+                // } catch (error) {
+                //     console.error('Compression failed:', error);
+                //     toast.error('خطا در فشرده‌سازی، از فایل اصلی استفاده می‌شود', {
+                //         id: 'compress',
+                //     });
+                //     const file = new File([blob], `verification_video_${Date.now()}.mp4`, {
+                //         type: 'video/mp4',
+                //     });
+                //     const url = URL.createObjectURL(blob);
+                //     setVideoPreviewUrl(url);
+                //     setTimeout(() => setVideoFile(file), 100);
+                // }
             };
 
             mediaRecorder.start(1000);
@@ -291,7 +300,7 @@ export function useVideoRecorder(): VideoRecorderResult {
             console.error('Error starting recording:', error);
             toast.error('خطا در شروع ضبط');
         }
-    }, [compressVideoSimple]);
+    }, []);
 
     const stopVideoRecording = useCallback(() => {
         if (mediaRecorderRef.current && isRecording) {

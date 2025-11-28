@@ -12,11 +12,15 @@ const getCacheKey = (config: InternalAxiosRequestConfig): string => {
 
 export const httpClient: AxiosInstance = axios.create({
     baseURL: `${baseURL}/bpms`,
-    timeout: 60000, // افزایش timeout به 60 ثانیه
-    validateStatus: () => true, // همه status ها رو resolve کن، نه reject
+    timeout: 60000,
+    validateStatus: () => true,
+    withCredentials: true,
 });
 
+// Setup global axios interceptors for all axios requests (including direct axios calls)
 export function setupAxiosInterceptors() {
+    axios.defaults.withCredentials = true;
+
     axios.interceptors.request.use(
         (config) => {
             const token = getAccessToken();
@@ -41,18 +45,9 @@ export function setupAxiosInterceptors() {
     );
 }
 
-export function createAuthenticatedAxios() {
-    const instance = axios.create();
-
-    instance.interceptors.request.use((config) => {
-        const token = getAccessToken();
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    });
-
-    return instance;
+// Auto-setup interceptors when module is loaded
+if (typeof window !== 'undefined') {
+    setupAxiosInterceptors();
 }
 
 httpClient.interceptors.request.use(
@@ -61,9 +56,8 @@ httpClient.interceptors.request.use(
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-        config.withCredentials = true;
 
-        // Request deduplication: اگر درخواست دقیق مثل این پنجره دارد، منتظر بمان
+        // Request deduplication
         const cacheKey = getCacheKey(config);
         if (pendingRequests.has(cacheKey)) {
             return Promise.reject(new Error('Duplicate request deferred'));

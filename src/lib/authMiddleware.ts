@@ -12,17 +12,20 @@ export function withAuth(handler: (req: AuthenticatedRequest) => Promise<NextRes
         try {
             const { accessToken, nationalId } = getServerAuthTokens(req);
 
-            if (!accessToken || !nationalId) {
+            if (!accessToken) {
                 return NextResponse.json(
-                    { error: 'Missing authentication credentials' },
+                    { error: 'Missing authentication token' },
                     { status: 401 }
                 );
             }
 
+            // If nationalId is not in cookies, try to extract from token or use a default
+            const finalNationalId = nationalId || '';
+
             const authenticatedReq = req as AuthenticatedRequest;
             authenticatedReq.auth = {
                 token: accessToken,
-                nationalId: nationalId,
+                nationalId: finalNationalId,
             };
 
             return handler(authenticatedReq);

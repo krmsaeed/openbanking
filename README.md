@@ -1,3 +1,52 @@
+# OpenBanking Frontend
+
+این پروژه frontend بانکداری باز است که با Next.js ساخته شده.
+
+## اجرای با Docker (SSL Enabled)
+
+پروژه برای اجرا روی IP `192.168.50.49` با SSL خودامضا تنظیم شده.
+
+### پیش‌نیازها
+
+- Docker
+- Docker Compose
+
+### اجرای سریع
+
+```bash
+# Build و run با docker-compose
+npm run docker:up
+
+# یا مستقیم
+docker-compose up --build
+```
+
+### دسترسی به برنامه
+
+- **HTTPS URL**: https://192.168.50.49
+- **HTTP URL**: http://192.168.50.49 (redirect می‌شود به HTTPS)
+
+### SSL Certificate
+
+- برنامه از SSL certificate خودامضا استفاده می‌کند
+- برای مرورگرهای مدرن، باید certificate رو accept کنید
+- Certificate برای IP `192.168.50.49` تولید شده
+
+### متوقف کردن
+
+```bash
+npm run docker:down
+# یا
+docker-compose down
+```
+
+## Development
+
+```bash
+npm install
+npm run dev
+```
+
 # Docker Build & Run
 
 This project uses Docker and Docker Compose for development and production builds.

@@ -17,7 +17,7 @@ export async function virtualOpenDepositLogin() {
 
     try {
         const apiResponse = await axios.post(
-            'http://192.168.91.112:18080/auth/realms/camunda-platform/protocol/openid-connect/token',
+            `${process.env.BASE_TOKEN}/auth/realms/camunda-platform/protocol/openid-connect/token`,
             formData,
             {
                 headers: {

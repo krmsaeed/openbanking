@@ -14,6 +14,7 @@ import {
 } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
+import '@/lib/httpClient'; // Import to setup axios interceptors
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -192,9 +193,9 @@ export default function LoginPage() {
                                     disabled={isLoading}
                                 />
                             </form>
-                            <Typography className="text-center font-bold text-gray-800">
+                            {/* <Typography className="text-center font-bold text-gray-800">
                                 {process.env.PUBLIC_VERSION || '1.0.0'} ورژن
-                            </Typography>
+                            </Typography> */}
                         </Card>
                     </Box>
                 </Box>
