@@ -18,9 +18,7 @@ interface VideoRecorderViewProps {
     canvasRef: RefObject<HTMLCanvasElement | null>;
     isRecording: boolean;
     recordingTime: number;
-    videoFile: File | null;
     videoPreviewUrl: string | null;
-    recordedBlob?: Blob | null;
     isUploading: boolean;
     cameraActive: boolean;
     onStartRecording: () => void;
@@ -30,6 +28,9 @@ interface VideoRecorderViewProps {
     onBack: () => void;
     randomText?: string;
     videoQualityInfo?: VideoQualityInfo | null;
+    isConverting?: boolean;
+    convertProgress?: number;
+    uploadProgress?: number;
 }
 
 export function VideoRecorderView({
@@ -37,7 +38,6 @@ export function VideoRecorderView({
     canvasRef,
     isRecording,
     recordingTime,
-    videoFile,
     videoPreviewUrl,
     isUploading,
     cameraActive,
@@ -46,37 +46,11 @@ export function VideoRecorderView({
     onRetake,
     onConfirm,
     randomText,
-    recordedBlob,
-    videoQualityInfo,
+    isConverting = false,
+    convertProgress = 0,
+    uploadProgress = 0,
 }: VideoRecorderViewProps) {
     const hasPreview = Boolean(videoPreviewUrl);
-    const formatBytes = (bytes?: number | null) => {
-        if (bytes == null) return null;
-        const b = Number(bytes);
-        if (b === 0) return '0 B';
-        const sizes = ['B', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(b) / Math.log(1024));
-        const value = parseFloat((b / Math.pow(1024, i)).toFixed(2));
-        return `${value} ${sizes[i]}`;
-    };
-
-    const fileSize = recordedBlob?.size ?? videoFile?.size ?? null;
-    const fileSizeLabel = formatBytes(fileSize);
-
-    // Gather video file info
-    const [videoInfo, setVideoInfo] = React.useState<{ duration?: number, width?: number, height?: number } | null>(null);
-    React.useEffect(() => {
-        if (!videoPreviewUrl) return;
-        const video = document.createElement('video');
-        video.src = videoPreviewUrl;
-        video.onloadedmetadata = () => {
-            setVideoInfo({
-                duration: video.duration,
-                width: video.videoWidth,
-                height: video.videoHeight,
-            });
-        };
-    }, [videoPreviewUrl]);
 
     return (
         <Box className="space-y-6">
@@ -84,34 +58,6 @@ export function VideoRecorderView({
                 {hasPreview && (
                     <Box className="w-full space-y-2">
                         <Box className="w-full rounded-lg bg-gray-50 p-2">
-                            <div className="mb-2 text-right text-sm text-gray-600">
-                                {fileSizeLabel && <>سایز فایل: {fileSizeLabel} <br /></>}
-                                {videoFile && <>
-                                    نام فایل: {videoFile.name} <br />
-                                    نوع فایل: {videoFile.type} <br />
-                                </>}
-                                {videoInfo && <>
-                                    مدت: {videoInfo.duration ? videoInfo.duration.toFixed(2) : '-'} ثانیه<br />
-                                    ابعاد: {videoInfo.width} × {videoInfo.height} پیکسل<br />
-                                </>}
-                                {videoQualityInfo && (
-                                    <>
-                                        <span className="block mt-2 text-blue-700">کیفیت واقعی دوربین:</span>
-                                        {videoQualityInfo.width && videoQualityInfo.height && (
-                                            <>وضوح: {videoQualityInfo.width} × {videoQualityInfo.height} پیکسل<br /></>
-                                        )}
-                                        {videoQualityInfo.frameRate && (
-                                            <>فریم بر ثانیه: {videoQualityInfo.frameRate}<br /></>
-                                        )}
-                                        {videoQualityInfo.facingMode && (
-                                            <>جهت دوربین: {videoQualityInfo.facingMode}<br /></>
-                                        )}
-                                        {videoQualityInfo.deviceId && (
-                                            <>deviceId: {videoQualityInfo.deviceId}<br /></>
-                                        )}
-                                    </>
-                                )}
-                            </div>
                             <video
                                 src={videoPreviewUrl ?? undefined}
                                 controls
@@ -120,6 +66,19 @@ export function VideoRecorderView({
                                 مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
                             </video>
                         </Box>
+
+                        {isConverting && (
+                            <Box className="mb-4 flex flex-col items-center justify-center">
+                                <div className="mb-2 text-blue-700 font-bold">در حال آماده‌سازی ویدیو...</div>
+                                <div className="w-full max-w-md bg-gray-200 rounded-full h-4 dark:bg-gray-700">
+                                    <div
+                                        className="bg-blue-600 h-4 rounded-full transition-all duration-200"
+                                        style={{ width: `${convertProgress}%` }}
+                                    ></div>
+                                </div>
+                                <div className="mt-1 text-xs text-gray-700">{convertProgress}%</div>
+                            </Box>
+                        )}
 
                         <Box className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl bg-gray-100 p-2">
                             <Button
@@ -197,20 +156,12 @@ export function VideoRecorderView({
                                     </Box>
                                 </Box>
                             )}
-                            {isRecording && (
-                                <Typography
-                                    variant="h4"
-                                    className="border-primary-100  flex min-h-10 items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
-                                >
-                                    {randomText}
-                                </Typography>
-                            )}
                             <Box className="flex justify-center gap-3">
                                 {isRecording && (
                                     <Button
                                         onClick={onStopRecording}
                                         disabled={!isRecording}
-                                        className={`mt-2 flex items-center gap-2 px-6 py-3 transition-colors ${isRecording
+                                        className={`mb-2 flex items-center gap-2 px-6 py-3 transition-colors ${isRecording
                                             ? 'bg-error-500 hover:bg-error-600 text-white'
                                             : 'cursor-not-allowed bg-gray-400 text-gray-600'
                                             }`}
@@ -220,10 +171,45 @@ export function VideoRecorderView({
                                     </Button>
                                 )}
                             </Box>
+                            {isRecording && (
+                                <Typography
+                                    variant="h4"
+                                    className="border-primary-100  flex min-h-10 items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
+                                >
+                                    {randomText}
+                                </Typography>
+                            )}
+
                         </Box>
                     </Box>
                 )}
             </Box>
+
+            {isConverting && (
+                <Box className="mb-4 flex flex-col items-center justify-center">
+                    <div className="mb-2 text-blue-700 font-bold">در حال آماده‌سازی ویدیو...</div>
+                    <div className="w-full max-w-md bg-gray-200 rounded-full h-4 dark:bg-gray-700">
+                        <div
+                            className="bg-blue-600 h-4 rounded-full transition-all duration-200"
+                            style={{ width: `${convertProgress}%` }}
+                        ></div>
+                    </div>
+                    <div className="mt-1 text-xs text-gray-700">{convertProgress}%</div>
+                </Box>
+            )}
+
+            {isUploading && (
+                <Box className="mb-4 flex flex-col items-center justify-center">
+                    <div className="mb-2 text-green-700 font-bold">در حال آپلود ویدیو...</div>
+                    <div className="w-full max-w-md bg-gray-200 rounded-full h-4 dark:bg-gray-700">
+                        <div
+                            className="bg-green-600 h-4 rounded-full transition-all duration-200"
+                            style={{ width: `${uploadProgress}%` }}
+                        ></div>
+                    </div>
+                    <div className="mt-1 text-xs text-gray-700">{uploadProgress}%</div>
+                </Box>
+            )}
 
             <LoadingButton
                 onClick={onConfirm}

@@ -12,7 +12,6 @@ interface VideoRecorderResult {
     recordingTime: number;
     videoFile: File | null;
     videoPreviewUrl: string | null;
-    recordedBlob: Blob | null;
     isUploading: boolean;
     cameraActive: boolean;
     startCamera: () => Promise<void>;
@@ -20,6 +19,8 @@ interface VideoRecorderResult {
     stopVideoRecording: () => void;
     handleRetake: () => void;
     setIsUploading: (value: boolean) => void;
+    isConverting: boolean;
+    convertProgress: number;
 }
 
 interface VideoQualityInfo {
@@ -35,9 +36,10 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
     const [recordingTime, setRecordingTime] = useState(0);
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
-    const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
     const [cameraActive, setCameraActive] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [isConverting, setIsConverting] = useState(false);
+    const [convertProgress, setConvertProgress] = useState(0);
 
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -159,18 +161,27 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
             mediaRecorder.onstop = async () => {
                 const mimeType = mediaRecorder.mimeType || 'video/webm';
                 const blob = new Blob(recordedChunksRef.current, { type: mimeType });
-                setRecordedBlob(blob);
 
-                // ffmpeg.wasm: convert to mp4/h264
+                // Start converting immediately after recording stops
+                setIsConverting(true);
+                setConvertProgress(0);
+
+                // ffmpeg.wasm: convert to mp4/h264 and mirror
                 let mp4File: File | null = null;
                 let mp4Url: string | null = null;
                 try {
                     const ffmpeg = new FFmpeg();
+                    ffmpeg.on('progress', ({ progress }) => {
+                        console.log('FFmpeg progress:', progress);
+                        const percent = Math.max(0, Math.min(100, Math.round(progress * 100)));
+                        setConvertProgress(prev => Math.max(prev, percent));
+                    });
                     await ffmpeg.load();
                     const inputName = 'input.webm';
                     const outputName = 'output.mp4';
                     await ffmpeg.writeFile(inputName, await fetchFile(blob));
-                    await ffmpeg.exec(['-i', inputName, '-c:v', 'libx264', '-preset', 'ultrafast', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', outputName]);
+
+                    await ffmpeg.exec(['-i', inputName, '-vf', 'hflip', '-c:v', 'libx264', '-preset', 'ultrafast', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', outputName]);
                     const data = await ffmpeg.readFile(outputName);
                     // Convert FileData (Uint8Array) to ArrayBuffer for Blob
                     let mp4Blob: Blob;
@@ -190,8 +201,11 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
                     mp4File = new File([blob], `verification_video_${Date.now()}.webm`, { type: mimeType });
                     mp4Url = URL.createObjectURL(blob);
                 }
+
+                setConvertProgress(100);
                 setVideoPreviewUrl(mp4Url);
-                setTimeout(() => setVideoFile(mp4File), 100);
+                setVideoFile(mp4File);
+                setIsConverting(false);
             };
 
             mediaRecorder.start(1000);
@@ -255,6 +269,7 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
 
         setCameraActive(false);
         setVideoFile(null);
+        setConvertProgress(0);
 
         if (videoPreviewUrl) {
             URL.revokeObjectURL(videoPreviewUrl);
@@ -271,7 +286,6 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
         recordingTime,
         videoFile,
         videoPreviewUrl,
-        recordedBlob,
         isUploading,
         setIsUploading,
         cameraActive,
@@ -280,5 +294,7 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
         stopVideoRecording,
         handleRetake,
         videoQualityInfo,
+        isConverting,
+        convertProgress,
     };
 }
