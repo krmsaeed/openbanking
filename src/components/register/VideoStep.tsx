@@ -26,7 +26,6 @@ export const VideoRecorderStep: React.FC = () => {
         isUploading,
         setIsUploading,
         cameraActive,
-        startCamera,
         startVideoRecording,
         stopVideoRecording,
         handleRetake,
@@ -68,6 +67,8 @@ export const VideoRecorderStep: React.FC = () => {
 
             const file = new File([mirroredBlob], `verification_video_${Date.now()}.mp4`, { type: 'video/mp4' });
 
+
+            // Only send the mirrored video file, do not include camera quality info
             const formData = createBPMSFormData(
                 file,
                 'virtual-open-deposit',
