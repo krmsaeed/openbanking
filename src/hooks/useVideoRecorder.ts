@@ -1,6 +1,9 @@
+
 import { mediaStreamManager } from '@/lib/mediaStreamManager';
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import toast from 'react-hot-toast';
+import { FFmpeg } from '@ffmpeg/ffmpeg';
+import { fetchFile } from '@ffmpeg/util';
 
 interface VideoRecorderResult {
     videoRef: RefObject<HTMLVideoElement | null>;
@@ -9,9 +12,8 @@ interface VideoRecorderResult {
     recordingTime: number;
     videoFile: File | null;
     videoPreviewUrl: string | null;
+    recordedBlob: Blob | null;
     isUploading: boolean;
-    isCompressing: boolean;
-    compressionProgress: number;
     cameraActive: boolean;
     startCamera: () => Promise<void>;
     startVideoRecording: () => Promise<void>;
@@ -20,159 +22,52 @@ interface VideoRecorderResult {
     setIsUploading: (value: boolean) => void;
 }
 
-export function useVideoRecorder(): VideoRecorderResult {
+interface VideoQualityInfo {
+    width?: number;
+    height?: number;
+    frameRate?: number;
+    deviceId?: string;
+    facingMode?: string;
+}
+
+export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: VideoQualityInfo | null } {
     const [isRecording, setIsRecording] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
+    const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
     const [cameraActive, setCameraActive] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const [isCompressing, setIsCompressing] = useState(false);
-    const [compressionProgress, setCompressionProgress] = useState(0);
+
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
     const recordedChunksRef = useRef<Blob[]>([]);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const [videoQualityInfo, setVideoQualityInfo] = useState<VideoQualityInfo | null>(null);
 
-    // کمپرس ویدیو با حفظ صدا - روش ساده‌تر (فعلا غیرفعال)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const compressVideoSimple = useCallback(async (originalBlob: Blob): Promise<File> => {
-        setIsCompressing(true);
-        setCompressionProgress(0);
-
-        try {
-            // مرحله 1: آماده‌سازی (0-15%)
-            setCompressionProgress(5);
-
-            const videoUrl = URL.createObjectURL(originalBlob);
-            const video = document.createElement('video');
-            video.src = videoUrl;
-            video.muted = true;
-
-            await new Promise((resolve) => {
-                video.onloadedmetadata = resolve;
-            });
-
-            setCompressionProgress(10);
-
-            const scale = 0.7;
-            const width = Math.floor(video.videoWidth * scale);
-            const height = Math.floor(video.videoHeight * scale);
-
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d', { alpha: false })!;
-
-            const canvasStream = canvas.captureStream(25);
-
-            // استخراج audio
-            const audioContext = new AudioContext();
-            const sourceElement = document.createElement('video');
-            sourceElement.src = videoUrl;
-            sourceElement.muted = false;
-
-            await sourceElement.play();
-            sourceElement.pause();
-            sourceElement.currentTime = 0;
-
-            const source = audioContext.createMediaElementSource(sourceElement);
-            const destination = audioContext.createMediaStreamDestination();
-            source.connect(destination);
-
-            const audioTrack = destination.stream.getAudioTracks()[0];
-            if (audioTrack) {
-                canvasStream.addTrack(audioTrack);
-            }
-
-            setCompressionProgress(15);
-
-            // شروع ضبط
-            const recorder = new MediaRecorder(canvasStream, {
-                mimeType: 'video/webm;codecs=vp8,opus',
-                videoBitsPerSecond: 700000,
-                audioBitsPerSecond: 64000,
-            });
-
-            const chunks: Blob[] = [];
-            recorder.ondataavailable = (e) => {
-                if (e.data.size > 0) chunks.push(e.data);
-            };
-
-            recorder.start(100);
-            video.play();
-            sourceElement.play();
-
-            // مرحله 2: پردازش فریم‌ها (15-90%)
-            let lastProgress = 15;
-            const renderFrame = () => {
-                if (video.ended || video.paused) return;
-                ctx.drawImage(video, 0, 0, width, height);
-                if (video.duration > 0) {
-                    const progress = Math.floor(15 + (video.currentTime / video.duration) * 75);
-                    if (progress > lastProgress && progress <= 90) {
-                        lastProgress = progress;
-                        setCompressionProgress(progress);
-                    }
-                }
-                requestAnimationFrame(renderFrame);
-            };
-
-            renderFrame();
-
-            // صبر برای پایان
-            await new Promise<void>((resolve) => {
-                video.onended = () => {
-                    recorder.stop();
-                    sourceElement.pause();
-                    audioContext.close();
-                    resolve();
-                };
-            });
-
-            setCompressionProgress(92);
-
-            // مرحله 3: دریافت blob (92-100%)
-            const compressedBlob = await Promise.race([
-                new Promise<Blob>((resolve) => {
-                    recorder.onstop = () => resolve(new Blob(chunks, { type: 'video/mp4' }));
-                    if (recorder.state === 'inactive' && chunks.length > 0) {
-                        resolve(new Blob(chunks, { type: 'video/mp4' }));
-                    }
-                }),
-                new Promise<Blob>((_, reject) => {
-                    const start = performance.now();
-                    const check = () => {
-                        if (performance.now() - start > 5000) {
-                            reject(new Error('Recorder timeout'));
-                        } else {
-                            requestAnimationFrame(check);
-                        }
-                    };
-                    requestAnimationFrame(check);
-                }),
-            ]);
-
-            setCompressionProgress(95);
-            URL.revokeObjectURL(videoUrl);
-            setCompressionProgress(100);
-
-            return new File([compressedBlob], `verification_video_${Date.now()}.mp4`, {
-                type: 'video/mp4',
-            });
-        } catch (error) {
-            console.error('Compression error:', error);
-            throw error;
-        } finally {
-            setIsCompressing(false);
-        }
-    }, []);
 
     const startCamera = useCallback(async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            const constraints = {
+                video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } },
+                audio: true,
+            };
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+            // Extract actual video track settings
+            const videoTrack = stream.getVideoTracks()[0];
+            if (videoTrack) {
+                const settings = videoTrack.getSettings();
+                setVideoQualityInfo({
+                    width: settings.width,
+                    height: settings.height,
+                    frameRate: settings.frameRate,
+                    deviceId: settings.deviceId,
+                    facingMode: settings.facingMode,
+                });
+            }
 
             mediaStreamManager.register(stream);
 
@@ -231,23 +126,23 @@ export function useVideoRecorder(): VideoRecorderResult {
         try {
             const options: MediaRecorderOptions = {
                 mimeType: 'video/webm;codecs=h264,opus',
-                videoBitsPerSecond: 1000000,
+                videoBitsPerSecond: 10000000,
                 audioBitsPerSecond: 64000,
             };
 
             if (!MediaRecorder.isTypeSupported(options.mimeType!)) {
                 options.mimeType = 'video/webm;codecs=vp9,opus';
-                options.videoBitsPerSecond = 1000000;
+                options.videoBitsPerSecond = 10000000;
             }
 
             if (!MediaRecorder.isTypeSupported(options.mimeType!)) {
                 options.mimeType = 'video/webm;codecs=vp8,opus';
-                options.videoBitsPerSecond = 1000000;
+                options.videoBitsPerSecond = 10000000;
             }
 
             if (!MediaRecorder.isTypeSupported(options.mimeType!)) {
                 delete options.mimeType;
-                options.videoBitsPerSecond = 1000000;
+                options.videoBitsPerSecond = 10000000;
                 options.audioBitsPerSecond = 64000;
             }
 
@@ -260,36 +155,43 @@ export function useVideoRecorder(): VideoRecorderResult {
                 }
             };
 
+
             mediaRecorder.onstop = async () => {
                 const mimeType = mediaRecorder.mimeType || 'video/webm';
                 const blob = new Blob(recordedChunksRef.current, { type: mimeType });
+                setRecordedBlob(blob);
 
-                // Compression disabled - use original file directly
-                const file = new File([blob], `verification_video_${Date.now()}.mp4`, {
-                    type: 'video/mp4',
-                });
-                const url = URL.createObjectURL(blob);
-                setVideoPreviewUrl(url);
-                setTimeout(() => setVideoFile(file), 100);
-
-                // try {
-                //     const compressedFile = await compressVideoSimple(blob);
-
-                //     const url = URL.createObjectURL(compressedFile);
-                //     setVideoPreviewUrl(url);
-                //     setTimeout(() => setVideoFile(compressedFile), 100);
-                // } catch (error) {
-                //     console.error('Compression failed:', error);
-                //     toast.error('خطا در فشرده‌سازی، از فایل اصلی استفاده می‌شود', {
-                //         id: 'compress',
-                //     });
-                //     const file = new File([blob], `verification_video_${Date.now()}.mp4`, {
-                //         type: 'video/mp4',
-                //     });
-                //     const url = URL.createObjectURL(blob);
-                //     setVideoPreviewUrl(url);
-                //     setTimeout(() => setVideoFile(file), 100);
-                // }
+                // ffmpeg.wasm: convert to mp4/h264
+                let mp4File: File | null = null;
+                let mp4Url: string | null = null;
+                try {
+                    const ffmpeg = new FFmpeg();
+                    await ffmpeg.load();
+                    const inputName = 'input.webm';
+                    const outputName = 'output.mp4';
+                    await ffmpeg.writeFile(inputName, await fetchFile(blob));
+                    await ffmpeg.exec(['-i', inputName, '-c:v', 'libx264', '-preset', 'ultrafast', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', outputName]);
+                    const data = await ffmpeg.readFile(outputName);
+                    // Convert FileData (Uint8Array) to ArrayBuffer for Blob
+                    let mp4Blob: Blob;
+                    if (data instanceof Uint8Array) {
+                        // Copy to a new ArrayBuffer to avoid SharedArrayBuffer issues
+                        const ab = new ArrayBuffer(data.length);
+                        const view = new Uint8Array(ab);
+                        view.set(data);
+                        mp4Blob = new Blob([ab], { type: 'video/mp4' });
+                    } else {
+                        mp4Blob = new Blob([data], { type: 'video/mp4' });
+                    }
+                    mp4File = new File([mp4Blob], `verification_video_${Date.now()}.mp4`, { type: 'video/mp4' });
+                    mp4Url = URL.createObjectURL(mp4Blob);
+                } catch (err) {
+                    console.error('ffmpeg mp4/h264 conversion failed, falling back to original blob', err);
+                    mp4File = new File([blob], `verification_video_${Date.now()}.webm`, { type: mimeType });
+                    mp4Url = URL.createObjectURL(blob);
+                }
+                setVideoPreviewUrl(mp4Url);
+                setTimeout(() => setVideoFile(mp4File), 100);
             };
 
             mediaRecorder.start(1000);
@@ -369,14 +271,14 @@ export function useVideoRecorder(): VideoRecorderResult {
         recordingTime,
         videoFile,
         videoPreviewUrl,
+        recordedBlob,
         isUploading,
-        isCompressing,
-        compressionProgress,
         setIsUploading,
         cameraActive,
         startCamera,
         startVideoRecording,
         stopVideoRecording,
         handleRetake,
+        videoQualityInfo,
     };
 }

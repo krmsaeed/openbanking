@@ -135,10 +135,6 @@ export function getMessageByCode(code: number | undefined, fallback?: string): s
     }
     return inMemoryByCode[code] ?? fallback ?? DEFAULT_ERROR_MESSAGE;
 }
-export function getMessageByName(name: string | undefined, fallback?: string): string | undefined {
-    if (!name) return fallback;
-    return inMemoryByName[name] ?? fallback;
-}
 
 export function clearInMemoryCatalog() {
     inMemoryByCode = {};
@@ -154,7 +150,6 @@ export function isErrorCatalogInitialized(): boolean {
 const api = {
     initErrorCatalog,
     getMessageByCode,
-    getMessageByName,
     clearInMemoryCatalog,
     isErrorCatalogInitialized,
 };

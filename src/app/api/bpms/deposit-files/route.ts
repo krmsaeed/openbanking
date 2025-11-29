@@ -10,17 +10,14 @@ import { NextResponse } from 'next/server';
  */
 async function mapExceptionMessage(exception: Record<string, unknown>): Promise<string> {
     const errorCode = (exception.code as number) || (exception.errorCode as number);
+    console.log("🚀 ~ mapExceptionMessage ~ errorCode:", errorCode)
     const originalMessage = exception.message as string;
+    console.log("🚀 ~ mapExceptionMessage ~ originalMessage:", originalMessage)
 
-    if (typeof errorCode === 'number' && errorCode < 0) {
-        // Initialize error catalog if needed
-        await initErrorCatalog();
-        // Try to get mapped message from error catalog
-        const mappedMessage = getMessageByCode(errorCode);
-        return mappedMessage || originalMessage;
-    }
+    await initErrorCatalog();
+    const mappedMessage = getMessageByCode(errorCode);
+    return mappedMessage || originalMessage;
 
-    return originalMessage;
 }
 
 async function handler(request: AuthenticatedRequest) {
@@ -38,6 +35,7 @@ async function handler(request: AuthenticatedRequest) {
             if (hasException) {
                 const data = response.data;
                 const exception = data.digitalMessageException;
+                console.log("🚀 ~ handler ~ exception:", exception)
                 const mappedMessage = await mapExceptionMessage(exception);
 
                 const errorResponse = {

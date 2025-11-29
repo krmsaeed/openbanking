@@ -17,6 +17,8 @@
         "generate-icons": "node generate-icons.js"
     },
     "dependencies": {
+        "@ffmpeg/ffmpeg": "^0.12.15",
+        "@ffmpeg/util": "^0.12.2",
         "@heroicons/react": "^2.2.0",
         "@hookform/resolvers": "^5.2.1",
         "@persian-tools/persian-tools": "^4.0.4",

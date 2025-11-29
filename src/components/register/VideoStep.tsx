@@ -2,13 +2,14 @@
 
 import { useUser } from '@/contexts/UserContext';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
-import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
+import { createBPMSFormData } from '@/lib/fileUtils';
+import { FFmpeg } from '@ffmpeg/ffmpeg';
+import { fetchFile } from '@ffmpeg/util';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { VideoRecorderView } from '../specialized/VideoRecorderView';
-import { Box, Typography } from '../ui/core';
 
 export const VideoRecorderStep: React.FC = () => {
     const { userData, setUserData, clearUserData } = useUser();
@@ -21,32 +22,60 @@ export const VideoRecorderStep: React.FC = () => {
         recordingTime,
         videoFile,
         videoPreviewUrl,
+        recordedBlob,
         isUploading,
-        isCompressing,
-        compressionProgress,
         setIsUploading,
         cameraActive,
+        startCamera,
         startVideoRecording,
         stopVideoRecording,
         handleRetake,
+        videoQualityInfo,
     } = useVideoRecorder();
 
     const handleUpload = async () => {
-        if (!videoFile) return;
+        const blobToSend = recordedBlob ?? (videoFile as Blob | null);
+        if (!blobToSend) return;
 
         setIsUploading(true);
 
         try {
-            const file = await convertToFile(videoFile, 'verification_video', 'video/mp4');
+            // Mirror the video using ffmpeg (horizontal flip)
+            let mirroredBlob = null;
+            try {
+                const ffmpeg = new FFmpeg();
+                await ffmpeg.load();
+                const inputName = 'input.mp4';
+                const outputName = 'output.mp4';
+                await ffmpeg.writeFile(inputName, await fetchFile(blobToSend));
+                // Apply horizontal flip (hflip)
+                await ffmpeg.exec(['-i', inputName, '-vf', 'hflip', '-c:v', 'libx264', '-preset', 'ultrafast', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', outputName]);
+                const data = await ffmpeg.readFile(outputName);
+                let mp4Blob;
+                if (data instanceof Uint8Array) {
+                    const ab = new ArrayBuffer(data.length);
+                    const view = new Uint8Array(ab);
+                    view.set(data);
+                    mp4Blob = new Blob([ab], { type: 'video/mp4' });
+                } else {
+                    mp4Blob = new Blob([data], { type: 'video/mp4' });
+                }
+                mirroredBlob = mp4Blob;
+            } catch (err) {
+                console.error('ffmpeg mirroring failed, sending original video', err);
+                mirroredBlob = blobToSend;
+            }
+
+            const file = new File([mirroredBlob], `verification_video_${Date.now()}.mp4`, { type: 'video/mp4' });
+
             const formData = createBPMSFormData(
-                file!,
+                file,
                 'virtual-open-deposit',
                 userData.processId,
                 'ImageInquiry'
             );
 
-            await axios
-                .post('/api/bpms/deposit-files', formData)
+            await axios.post('/api/bpms/deposit-files', formData)
                 .then((res) => {
                     setCount((prevCount) => prevCount + 1);
                     if (res.data.body.verified) {
@@ -65,8 +94,8 @@ export const VideoRecorderStep: React.FC = () => {
                     toast.error(data?.digitalMessageException?.message, {
                         duration: 5000,
                     });
-                    clearUserData();
-                    router.push('/');
+                    // clearUserData();
+                    // router.push('/');
                 });
         } catch (error) {
             console.error('Upload failed:', error);
@@ -76,37 +105,23 @@ export const VideoRecorderStep: React.FC = () => {
     };
 
     return (
-        <>
-            <VideoRecorderView
-                videoRef={videoRef}
-                canvasRef={canvasRef}
-                isRecording={isRecording}
-                recordingTime={recordingTime}
-                videoFile={videoFile}
-                videoPreviewUrl={videoPreviewUrl}
-                isUploading={isUploading}
-                isCompressing={isCompressing}
-                cameraActive={cameraActive}
-                onStartRecording={startVideoRecording}
-                onStopRecording={stopVideoRecording}
-                onRetake={handleRetake}
-                onConfirm={handleUpload}
-                onBack={() => setUserData({ step: 2 })}
-                randomText={userData.randomText ?? undefined}
-            />
-            {isCompressing && (
-                <Box className="mt-4 rounded-xl bg-blue-50 p-4 dark:bg-blue-900/30">
-                    <Typography variant="body2" className="mb-2 text-center font-semibold">
-                        در حال آماده سازی ویدیو... {compressionProgress}%
-                    </Typography>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                        <div
-                            className="h-full bg-blue-600 transition-all duration-300"
-                            style={{ width: `${compressionProgress}%` }}
-                        />
-                    </div>
-                </Box>
-            )}
-        </>
+        <VideoRecorderView
+            videoRef={videoRef}
+            canvasRef={canvasRef}
+            isRecording={isRecording}
+            recordingTime={recordingTime}
+            videoFile={videoFile}
+            videoPreviewUrl={videoPreviewUrl}
+            recordedBlob={recordedBlob}
+            isUploading={isUploading}
+            cameraActive={cameraActive}
+            onStartRecording={startVideoRecording}
+            onStopRecording={stopVideoRecording}
+            onRetake={handleRetake}
+            onConfirm={handleUpload}
+            onBack={() => setUserData({ step: 2 })}
+            randomText={userData.randomText ?? undefined}
+            videoQualityInfo={videoQualityInfo}
+        />
     );
 };

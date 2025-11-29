@@ -43,6 +43,48 @@ export async function convertToFile(
     }
 }
 
+export async function mirrorImageBlob(original: Blob, mimeType = 'image/jpeg', quality = 0.8): Promise<Blob | null> {
+    try {
+        const url = URL.createObjectURL(original);
+        const img = document.createElement('img');
+        img.src = url;
+
+        await new Promise<void>((resolve, reject) => {
+            img.onload = () => resolve();
+            img.onerror = () => reject(new Error('image load failed'));
+        });
+
+        const w = img.naturalWidth || 1;
+        const h = img.naturalHeight || 1;
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            URL.revokeObjectURL(url);
+            return null;
+        }
+
+        ctx.save();
+        ctx.translate(w, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(img, 0, 0, w, h);
+        ctx.restore();
+
+        const blob: Blob | null = await new Promise((resolve) => {
+            canvas.toBlob((b) => resolve(b), mimeType, quality);
+            // safety: if toBlob doesn't call back, resolve null after timeout
+            setTimeout(() => resolve(null), 2000);
+        });
+
+        URL.revokeObjectURL(url);
+        return blob;
+    } catch (error) {
+        console.warn('mirrorImageBlob failed', error);
+        return null;
+    }
+}
+
 export function generateUUID(): string {
     type MaybeCrypto = { crypto?: { randomUUID?: () => string } };
     const maybe = globalThis as unknown as MaybeCrypto;

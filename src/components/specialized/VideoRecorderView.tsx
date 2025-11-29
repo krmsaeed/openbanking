@@ -1,9 +1,17 @@
 'use client';
+import React, { RefObject } from 'react';
 import { VideoCameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { RefObject } from 'react';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
 import LoadingButton from '../ui/core/LoadingButton';
+
+interface VideoQualityInfo {
+    width?: number;
+    height?: number;
+    frameRate?: number;
+    deviceId?: string;
+    facingMode?: string;
+}
 
 interface VideoRecorderViewProps {
     videoRef: RefObject<HTMLVideoElement | null>;
@@ -12,8 +20,8 @@ interface VideoRecorderViewProps {
     recordingTime: number;
     videoFile: File | null;
     videoPreviewUrl: string | null;
+    recordedBlob?: Blob | null;
     isUploading: boolean;
-    isCompressing: boolean;
     cameraActive: boolean;
     onStartRecording: () => void;
     onStopRecording: () => void;
@@ -21,6 +29,7 @@ interface VideoRecorderViewProps {
     onConfirm: () => void;
     onBack: () => void;
     randomText?: string;
+    videoQualityInfo?: VideoQualityInfo | null;
 }
 
 export function VideoRecorderView({
@@ -31,21 +40,78 @@ export function VideoRecorderView({
     videoFile,
     videoPreviewUrl,
     isUploading,
-    isCompressing,
     cameraActive,
     onStartRecording,
     onStopRecording,
     onRetake,
     onConfirm,
     randomText,
+    recordedBlob,
+    videoQualityInfo,
 }: VideoRecorderViewProps) {
-    const hasPreview = Boolean(videoFile && videoPreviewUrl);
+    const hasPreview = Boolean(videoPreviewUrl);
+    const formatBytes = (bytes?: number | null) => {
+        if (bytes == null) return null;
+        const b = Number(bytes);
+        if (b === 0) return '0 B';
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(b) / Math.log(1024));
+        const value = parseFloat((b / Math.pow(1024, i)).toFixed(2));
+        return `${value} ${sizes[i]}`;
+    };
+
+    const fileSize = recordedBlob?.size ?? videoFile?.size ?? null;
+    const fileSizeLabel = formatBytes(fileSize);
+
+    // Gather video file info
+    const [videoInfo, setVideoInfo] = React.useState<{ duration?: number, width?: number, height?: number } | null>(null);
+    React.useEffect(() => {
+        if (!videoPreviewUrl) return;
+        const video = document.createElement('video');
+        video.src = videoPreviewUrl;
+        video.onloadedmetadata = () => {
+            setVideoInfo({
+                duration: video.duration,
+                width: video.videoWidth,
+                height: video.videoHeight,
+            });
+        };
+    }, [videoPreviewUrl]);
+
     return (
         <Box className="space-y-6">
             <Box className="text-center">
                 {hasPreview && (
                     <Box className="w-full space-y-2">
                         <Box className="w-full rounded-lg bg-gray-50 p-2">
+                            <div className="mb-2 text-right text-sm text-gray-600">
+                                {fileSizeLabel && <>سایز فایل: {fileSizeLabel} <br /></>}
+                                {videoFile && <>
+                                    نام فایل: {videoFile.name} <br />
+                                    نوع فایل: {videoFile.type} <br />
+                                </>}
+                                {videoInfo && <>
+                                    مدت: {videoInfo.duration ? videoInfo.duration.toFixed(2) : '-'} ثانیه<br />
+                                    ابعاد: {videoInfo.width} × {videoInfo.height} پیکسل<br />
+                                </>}
+                                {videoQualityInfo && (
+                                    <>
+                                        <span className="block mt-2 text-blue-700">کیفیت واقعی دوربین:</span>
+                                        {videoQualityInfo.width && videoQualityInfo.height && (
+                                            <>وضوح: {videoQualityInfo.width} × {videoQualityInfo.height} پیکسل<br /></>
+                                        )}
+                                        {videoQualityInfo.frameRate && (
+                                            <>فریم بر ثانیه: {videoQualityInfo.frameRate}<br /></>
+                                        )}
+                                        {videoQualityInfo.facingMode && (
+                                            <>جهت دوربین: {videoQualityInfo.facingMode}<br /></>
+                                        )}
+                                        {videoQualityInfo.deviceId && (
+                                            <>deviceId: {videoQualityInfo.deviceId}<br /></>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                             <video
                                 src={videoPreviewUrl ?? undefined}
                                 controls
@@ -59,7 +125,7 @@ export function VideoRecorderView({
                             <Button
                                 variant="secondary"
                                 onClick={onRetake}
-                                disabled={isUploading || isCompressing}
+                                disabled={isUploading}
                                 className="bg-warning-700 flex max-w-32 cursor-pointer items-center gap-2 text-white"
                             >
                                 <VideoCameraIcon className="h-4 w-4" />
@@ -162,7 +228,7 @@ export function VideoRecorderView({
             <LoadingButton
                 onClick={onConfirm}
                 loading={isUploading}
-                disabled={!hasPreview || isUploading || isCompressing}
+                disabled={!hasPreview || isUploading}
             />
         </Box>
     );
