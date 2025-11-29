@@ -11,7 +11,6 @@ import toast from 'react-hot-toast';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
 import LoadingButton from '../ui/core/LoadingButton';
-
 export function SignatureStep() {
     const { canvasRef, hasSignature, startDrawing, draw, stopDrawing, clearSignature } =
         useSignatureStep();

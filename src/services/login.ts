@@ -18,7 +18,15 @@ export async function virtualOpenDepositLogin() {
     try {
         const apiResponse = await axios.post(
             `${process.env.BASE_URL}/auth/token`,
-            formData,
+            new URLSearchParams({
+                client_id: "tasklist",
+                grant_type: "password",
+                username: "demo",
+                password: "demo",
+                client_secret: "XALaRPl5qwTEItdwCMiPS62nVpKs7dL7"
+            }),
+
+
             {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

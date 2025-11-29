@@ -70,8 +70,7 @@ export default function PersonalInfo() {
                     toast.error(data?.digitalMessageException?.message, {
                         duration: 5000,
                     });
-                    clearUserStateCookies();
-                    router.push('/');
+
                 });
         } finally {
             setIsLoading(false);

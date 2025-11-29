@@ -101,7 +101,7 @@ export async function initErrorCatalog(): Promise<void> {
             const url = `/api/errors/getAll`;
 
             const resp = await axios.get(url);
-            const data = resp?.data.data;
+            const data = resp?.data;
             if (!data) return;
 
             const items: RemoteError[] = Array.isArray(data)

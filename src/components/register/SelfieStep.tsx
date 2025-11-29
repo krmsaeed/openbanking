@@ -478,8 +478,6 @@ export default function SelfieStep() {
                 const { data } = res;
                 if (data.body.randomText === null) {
                     toast.error('تصویر شما تایید نشد. لطفاً دوباره تلاش کنید.');
-                    clearUserData();
-                    router.push('/');
                 }
                 setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
             })
@@ -488,11 +486,10 @@ export default function SelfieStep() {
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });
-                clearUserData();
-                router.push('/');
+
             })
             .finally(() => setIsUploading(false));
-    }, [capturedPhoto, userData, setUserData, clearUserData, setIsUploading, router]);
+    }, [capturedPhoto, userData, setUserData, setIsUploading]);
 
     const handleCapture = useCallback(() => {
         if (closenessPercent === 100 && obstructionRatio < 0.15) {

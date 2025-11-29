@@ -58,8 +58,7 @@ export default function PasswordStep() {
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });
-                clearUserData();
-                router.push('/');
+
             })
             .finally(() => {
                 setIsLoading(false);
@@ -276,8 +275,6 @@ export default function PasswordStep() {
                             toast.error(data?.digitalMessageException?.message, {
                                 duration: 5000,
                             });
-                            router.push('/');
-                            setUserData({});
                         })
                         .finally(() => {
                             setOtpLoading(false);
