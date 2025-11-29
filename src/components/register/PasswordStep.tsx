@@ -170,7 +170,9 @@ export default function PasswordStep() {
                         render={({ field }) => (
                             <Input
                                 {...field}
-                                type={showPassword ? 'text' : 'password'}
+                                type={showPassword ? 'tel' : 'password'}
+                                inputMode="numeric"
+                                pattern="\\d{8}"
                                 label="رمز عبور"
                                 placeholder="رمز عبور را وارد کنید"
                                 required
@@ -210,7 +212,9 @@ export default function PasswordStep() {
                         render={({ field }) => (
                             <Input
                                 {...field}
-                                type={showPassword ? 'text' : 'password'}
+                                type={showPassword ? 'tel' : 'password'}
+                                inputMode="numeric"
+                                pattern="\\d{8}"
                                 required
                                 fullWidth
                                 className="text-left"
