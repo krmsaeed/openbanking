@@ -65,7 +65,9 @@ export default function LoginPage() {
 
     const handleNationalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const converted = convertPersianToEnglish(e.target.value);
-        setValue('code', converted, { shouldValidate: true });
+        const numericOnly = converted.replace(/[^0-9]/g, '');
+        const trimmed = numericOnly.slice(0, 10);
+        setValue('code', trimmed, { shouldValidate: true, shouldDirty: true });
     };
 
     const onSubmit = async () => {
@@ -145,6 +147,10 @@ export default function LoginPage() {
                                         type="text"
                                         label="کد ملی"
                                         required
+                                        inputMode="numeric"
+                                        pattern="\d*"
+                                        maxLength={10}
+
                                         placeholder="کد ملی را وارد کنید"
                                         disabled={isLoading}
                                         {...register('code', {
