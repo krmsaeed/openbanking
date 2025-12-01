@@ -1,5 +1,5 @@
 'use client';
-import React, { RefObject } from 'react';
+import React, { RefObject, useRef, useEffect, useState } from 'react';
 import { VideoCameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
@@ -28,9 +28,6 @@ interface VideoRecorderViewProps {
     onBack: () => void;
     randomText?: string;
     videoQualityInfo?: VideoQualityInfo | null;
-    isConverting?: boolean;
-    convertProgress?: number;
-    uploadProgress?: number;
 }
 
 export function VideoRecorderView({
@@ -46,10 +43,23 @@ export function VideoRecorderView({
     onRetake,
     onConfirm,
     randomText,
-    isConverting = false,
-    convertProgress = 0,
-    uploadProgress = 0,
 }: VideoRecorderViewProps) {
+    const previewVideoRef = useRef<HTMLVideoElement>(null);
+
+    useEffect(() => {
+        if (previewVideoRef.current && videoPreviewUrl) {
+            const video = previewVideoRef.current;
+            video.load();
+
+            setTimeout(() => {
+                if (video.duration === 0) {
+                    video.load();
+                }
+            }, 100);
+        }
+    }, [videoPreviewUrl]);
+
+
     const hasPreview = Boolean(videoPreviewUrl);
 
     return (
@@ -62,23 +72,16 @@ export function VideoRecorderView({
                                 src={videoPreviewUrl ?? undefined}
                                 controls
                                 className="mx-auto w-full rounded-lg bg-gray-50"
+                                preload="metadata"
+                                ref={previewVideoRef}
+                                onContextMenu={(e) => e.preventDefault()}
+                                disablePictureInPicture
+                                controlsList="nodownload"
                             >
                                 مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
                             </video>
-                        </Box>
 
-                        {isConverting && (
-                            <Box className="mb-4 flex flex-col items-center justify-center">
-                                <div className="mb-2 text-blue-700 font-bold">در حال آماده‌سازی ویدیو...</div>
-                                <div className="w-full max-w-md bg-gray-200 rounded-full h-4 dark:bg-gray-700">
-                                    <div
-                                        className="bg-blue-600 h-4 rounded-full transition-all duration-200"
-                                        style={{ width: `${convertProgress}%` }}
-                                    ></div>
-                                </div>
-                                <div className="mt-1 text-xs text-gray-700">{convertProgress}%</div>
-                            </Box>
-                        )}
+                        </Box>
 
                         <Box className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl bg-gray-100 p-2">
                             <Button
@@ -184,32 +187,6 @@ export function VideoRecorderView({
                     </Box>
                 )}
             </Box>
-
-            {isConverting && (
-                <Box className="mb-4 flex flex-col items-center justify-center">
-                    <div className="mb-2 text-blue-700 font-bold">در حال آماده‌سازی ویدیو...</div>
-                    <div className="w-full max-w-md bg-gray-200 rounded-full h-4 dark:bg-gray-700">
-                        <div
-                            className="bg-blue-600 h-4 rounded-full transition-all duration-200"
-                            style={{ width: `${convertProgress}%` }}
-                        ></div>
-                    </div>
-                    <div className="mt-1 text-xs text-gray-700">{convertProgress}%</div>
-                </Box>
-            )}
-
-            {isUploading && (
-                <Box className="mb-4 flex flex-col items-center justify-center">
-                    <div className="mb-2 text-green-700 font-bold">در حال آپلود ویدیو...</div>
-                    <div className="w-full max-w-md bg-gray-200 rounded-full h-4 dark:bg-gray-700">
-                        <div
-                            className="bg-green-600 h-4 rounded-full transition-all duration-200"
-                            style={{ width: `${uploadProgress}%` }}
-                        ></div>
-                    </div>
-                    <div className="mt-1 text-xs text-gray-700">{uploadProgress}%</div>
-                </Box>
-            )}
 
             <LoadingButton
                 onClick={onConfirm}

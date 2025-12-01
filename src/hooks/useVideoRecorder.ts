@@ -2,8 +2,6 @@
 import { mediaStreamManager } from '@/lib/mediaStreamManager';
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import toast from 'react-hot-toast';
-import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile } from '@ffmpeg/util';
 
 interface VideoRecorderResult {
     videoRef: RefObject<HTMLVideoElement | null>;
@@ -19,8 +17,6 @@ interface VideoRecorderResult {
     stopVideoRecording: () => void;
     handleRetake: () => void;
     setIsUploading: (value: boolean) => void;
-    isConverting: boolean;
-    convertProgress: number;
 }
 
 interface VideoQualityInfo {
@@ -38,8 +34,6 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
     const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
     const [cameraActive, setCameraActive] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const [isConverting, setIsConverting] = useState(false);
-    const [convertProgress, setConvertProgress] = useState(0);
 
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -161,51 +155,10 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
             mediaRecorder.onstop = async () => {
                 const mimeType = mediaRecorder.mimeType || 'video/webm';
                 const blob = new Blob(recordedChunksRef.current, { type: mimeType });
-
-                // Start converting immediately after recording stops
-                setIsConverting(true);
-                setConvertProgress(0);
-
-                // ffmpeg.wasm: convert to mp4/h264 and mirror
-                let mp4File: File | null = null;
-                let mp4Url: string | null = null;
-                try {
-                    const ffmpeg = new FFmpeg();
-                    ffmpeg.on('progress', ({ progress }) => {
-                        console.log('FFmpeg progress:', progress);
-                        const percent = Math.max(0, Math.min(100, Math.round(progress * 100)));
-                        setConvertProgress(prev => Math.max(prev, percent));
-                    });
-                    await ffmpeg.load();
-                    const inputName = 'input.webm';
-                    const outputName = 'output.mp4';
-                    await ffmpeg.writeFile(inputName, await fetchFile(blob));
-
-                    await ffmpeg.exec(['-i', inputName, '-vf', 'hflip', '-c:v', 'libx264', '-preset', 'ultrafast', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', outputName]);
-                    const data = await ffmpeg.readFile(outputName);
-                    // Convert FileData (Uint8Array) to ArrayBuffer for Blob
-                    let mp4Blob: Blob;
-                    if (data instanceof Uint8Array) {
-                        // Copy to a new ArrayBuffer to avoid SharedArrayBuffer issues
-                        const ab = new ArrayBuffer(data.length);
-                        const view = new Uint8Array(ab);
-                        view.set(data);
-                        mp4Blob = new Blob([ab], { type: 'video/mp4' });
-                    } else {
-                        mp4Blob = new Blob([data], { type: 'video/mp4' });
-                    }
-                    mp4File = new File([mp4Blob], `verification_video_${Date.now()}.mp4`, { type: 'video/mp4' });
-                    mp4Url = URL.createObjectURL(mp4Blob);
-                } catch (err) {
-                    console.error('ffmpeg mp4/h264 conversion failed, falling back to original blob', err);
-                    mp4File = new File([blob], `verification_video_${Date.now()}.webm`, { type: mimeType });
-                    mp4Url = URL.createObjectURL(blob);
-                }
-
-                setConvertProgress(100);
+                const mp4File = new File([blob], `verification_video_${Date.now()}.webm`, { type: mimeType });
+                const mp4Url = URL.createObjectURL(blob);
                 setVideoPreviewUrl(mp4Url);
                 setVideoFile(mp4File);
-                setIsConverting(false);
             };
 
             mediaRecorder.start(1000);
@@ -230,6 +183,7 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
 
             if (streamRef.current) {
                 streamRef.current.getTracks().forEach((track) => track.stop());
+                mediaStreamManager.unregister(streamRef.current);
                 streamRef.current = null;
             }
 
@@ -269,7 +223,6 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
 
         setCameraActive(false);
         setVideoFile(null);
-        setConvertProgress(0);
 
         if (videoPreviewUrl) {
             URL.revokeObjectURL(videoPreviewUrl);
@@ -294,7 +247,5 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
         stopVideoRecording,
         handleRetake,
         videoQualityInfo,
-        isConverting,
-        convertProgress,
     };
 }

@@ -13,7 +13,6 @@ export const VideoRecorderStep: React.FC = () => {
     const { userData, setUserData, clearUserData } = useUser();
     const [count, setCount] = useState(0);
     const router = useRouter();
-    const [uploadProgress, setUploadProgress] = useState(0);
     const {
         videoRef,
         canvasRef,
@@ -28,8 +27,6 @@ export const VideoRecorderStep: React.FC = () => {
         stopVideoRecording,
         handleRetake,
         videoQualityInfo,
-        isConverting,
-        convertProgress,
     } = useVideoRecorder();
 
     const handleUpload = async () => {
@@ -38,7 +35,7 @@ export const VideoRecorderStep: React.FC = () => {
         setIsUploading(true);
 
         try {
-            // Only send the pre-converted video file
+            // Send the video file as webm
             const formData = createBPMSFormData(
                 videoFile,
                 'virtual-open-deposit',
@@ -46,14 +43,7 @@ export const VideoRecorderStep: React.FC = () => {
                 'ImageInquiry'
             );
 
-            await axios.post('/api/bpms/deposit-files', formData, {
-                onUploadProgress: (progressEvent) => {
-                    if (progressEvent.total) {
-                        const percentCompleted = Math.max(0, Math.min(100, Math.round((progressEvent.loaded * 100) / progressEvent.total)));
-                        setUploadProgress(percentCompleted);
-                    }
-                },
-            })
+            await axios.post('/api/bpms/deposit-files', formData)
                 .then((res) => {
                     setCount((prevCount) => prevCount + 1);
                     if (res.data.body.verified) {
@@ -79,7 +69,6 @@ export const VideoRecorderStep: React.FC = () => {
             console.error('Upload failed:', error);
         } finally {
             setIsUploading(false);
-            setUploadProgress(0);
         }
     };
 
@@ -99,9 +88,6 @@ export const VideoRecorderStep: React.FC = () => {
             onBack={() => setUserData({ step: 2 })}
             randomText={userData.randomText ?? undefined}
             videoQualityInfo={videoQualityInfo}
-            isConverting={isConverting}
-            convertProgress={convertProgress}
-            uploadProgress={uploadProgress}
         />
     );
 };
