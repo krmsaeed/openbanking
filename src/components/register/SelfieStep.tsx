@@ -480,7 +480,6 @@ export default function SelfieStep() {
 
         }).catch((error) => {
             const { data } = error?.response.data;
-            console.log("🚀 ~ SelfieStep ~ error:", data)
             toast.error(data.digitalMessageException.message, { duration: 5000 });
         }).finally(() => {
             setIsUploading(false);

@@ -1,6 +1,22 @@
 import { mediaStreamManager } from '@/lib/mediaStreamManager';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+const stopMediaTracks = (stream?: MediaStream | null): void => {
+    if (!stream) return;
+    try {
+        stream.getTracks().forEach((track) => {
+            try {
+                track.stop();
+            } catch {
+                // ignore
+            }
+            track.enabled = false;
+        });
+    } catch {
+        // ignore
+    }
+};
+
 interface UseCameraOptions {
     video?: MediaTrackConstraints | boolean;
     audio?: MediaTrackConstraints | boolean;
@@ -42,7 +58,17 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraResult {
         try {
             if (streamRef.current) {
                 mediaStreamManager.unregister(streamRef.current);
+                stopMediaTracks(streamRef.current);
                 streamRef.current = null;
+                setStream(null);
+                if (videoRef.current) {
+                    try {
+                        videoRef.current.pause();
+                    } catch {
+                        // ignore pause errors
+                    }
+                    videoRef.current.srcObject = null;
+                }
             }
 
             const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -58,12 +84,16 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraResult {
                 videoRef.current.srcObject = mediaStream;
 
                 if (videoRef.current.readyState >= 2) {
-                    videoRef.current.play().catch(() => {});
+                    videoRef.current.play().catch(() => {
+                        // ignore autoplay rejection
+                    });
                 } else {
                     videoRef.current.addEventListener(
                         'canplay',
                         () => {
-                            videoRef.current?.play().catch(() => {});
+                            videoRef.current?.play().catch(() => {
+                                // ignore autoplay rejection
+                            });
                         },
                         { once: true }
                     );
@@ -77,8 +107,8 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraResult {
                     err.name === 'NotAllowedError'
                         ? 'دسترسی به دوربین رد شد. لطفاً دسترسی را اجازه دهید.'
                         : err.name === 'NotFoundError'
-                          ? 'دوربین یافت نشد. لطفاً از وجود دوربین اطمینان حاصل کنید.'
-                          : 'خطا در دسترسی به دوربین. لطفاً دوباره تلاش کنید.';
+                            ? 'دوربین یافت نشد. لطفاً از وجود دوربین اطمینان حاصل کنید.'
+                            : 'خطا در دسترسی به دوربین. لطفاً دوباره تلاش کنید.';
                 setError(errorMessage);
             }
         } finally {
@@ -89,11 +119,17 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraResult {
     const stopCamera = useCallback(() => {
         if (streamRef.current) {
             mediaStreamManager.unregister(streamRef.current);
+            stopMediaTracks(streamRef.current);
             streamRef.current = null;
             setStream(null);
         }
 
         if (videoRef.current) {
+            try {
+                videoRef.current.pause();
+            } catch {
+                // ignore pause errors
+            }
             videoRef.current.srcObject = null;
         }
 

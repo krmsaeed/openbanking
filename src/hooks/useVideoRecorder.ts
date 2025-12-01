@@ -3,6 +3,22 @@ import { mediaStreamManager } from '@/lib/mediaStreamManager';
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import toast from 'react-hot-toast';
 
+const stopMediaTracks = (stream?: MediaStream | null): void => {
+    if (!stream) return;
+    try {
+        stream.getTracks().forEach((track) => {
+            try {
+                track.stop();
+            } catch {
+                // ignore
+            }
+            track.enabled = false;
+        });
+    } catch {
+        // ignore
+    }
+};
+
 interface VideoRecorderResult {
     videoRef: RefObject<HTMLVideoElement | null>;
     canvasRef: RefObject<HTMLCanvasElement | null>;
@@ -42,6 +58,21 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
     const recordedChunksRef = useRef<Blob[]>([]);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const [videoQualityInfo, setVideoQualityInfo] = useState<VideoQualityInfo | null>(null);
+    const preventAutoRestartRef = useRef(false);
+
+    const cleanupActiveStream = useCallback(() => {
+        if (streamRef.current) {
+            stopMediaTracks(streamRef.current);
+            mediaStreamManager.unregister(streamRef.current);
+            streamRef.current = null;
+        }
+
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+
+        setCameraActive(false);
+    }, []);
 
 
     const startCamera = useCallback(async () => {
@@ -79,16 +110,20 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
     }, []);
 
     useEffect(() => {
-        if (!videoFile && !isRecording && !streamRef.current && !cameraActive) {
+        if (
+            !preventAutoRestartRef.current &&
+            !videoFile &&
+            !isRecording &&
+            !streamRef.current &&
+            !cameraActive
+        ) {
             void startCamera();
         }
     }, [videoFile, isRecording, cameraActive, startCamera]);
 
     useEffect(() => {
         return () => {
-            if (streamRef.current) {
-                streamRef.current.getTracks().forEach((track) => track.stop());
-            }
+            stopMediaTracks(streamRef.current);
             if (videoPreviewUrl) {
                 URL.revokeObjectURL(videoPreviewUrl);
             }
@@ -100,11 +135,14 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
         const currentStream = streamRef.current;
 
         return () => {
+            preventAutoRestartRef.current = true;
             if (currentStream) {
+                stopMediaTracks(currentStream);
                 mediaStreamManager.unregister(currentStream);
             }
 
             if (streamRef.current && streamRef.current !== currentStream) {
+                stopMediaTracks(streamRef.current);
                 mediaStreamManager.unregister(streamRef.current);
             }
 
@@ -114,6 +152,7 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
                 currentVideoRef.srcObject = null;
             }
             setCameraActive(false);
+            stopMediaTracks(mediaRecorderRef.current?.stream);
         };
     }, []);
 
@@ -172,28 +211,29 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
     }, []);
 
     const stopVideoRecording = useCallback(() => {
-        if (mediaRecorderRef.current && isRecording) {
-            mediaRecorderRef.current.stop();
-            setIsRecording(false);
-
-            if (timerRef.current) {
-                clearTimeout(timerRef.current);
-                timerRef.current = null;
-            }
-
-            if (streamRef.current) {
-                streamRef.current.getTracks().forEach((track) => track.stop());
-                mediaStreamManager.unregister(streamRef.current);
-                streamRef.current = null;
-            }
-
-            if (videoRef.current) {
-                videoRef.current.srcObject = null;
-            }
-
-            setCameraActive(false);
+        if (!mediaRecorderRef.current && !streamRef.current) {
+            return;
         }
-    }, [isRecording]);
+
+        preventAutoRestartRef.current = true;
+
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+            try {
+                mediaRecorderRef.current.stop();
+            } catch {
+                // ignore
+            }
+        }
+
+        stopMediaTracks(mediaRecorderRef.current?.stream);
+        cleanupActiveStream();
+        setIsRecording(false);
+
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
+    }, [cleanupActiveStream]);
 
     useEffect(() => {
         if (recordingTime > 0 && isRecording) {
@@ -212,16 +252,8 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
     }, [recordingTime, isRecording, stopVideoRecording]);
 
     const handleRetake = useCallback(() => {
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track) => track.stop());
-            streamRef.current = null;
-        }
-
-        if (videoRef.current) {
-            videoRef.current.srcObject = null;
-        }
-
-        setCameraActive(false);
+        cleanupActiveStream();
+        preventAutoRestartRef.current = false;
         setVideoFile(null);
 
         if (videoPreviewUrl) {
@@ -230,7 +262,7 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
         }
 
         void startCamera();
-    }, [videoPreviewUrl, startCamera]);
+    }, [videoPreviewUrl, startCamera, cleanupActiveStream]);
 
     return {
         videoRef,

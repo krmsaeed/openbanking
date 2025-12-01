@@ -42,6 +42,7 @@ export default function NationalCardOcrScanner({
     const [ocrValid, setOcrValid] = useState<boolean>(false);
     const [ocrLoading, setOcrLoading] = useState<boolean>(false);
     const [showPermissionModal, setShowPermissionModal] = useState<boolean>(false);
+    const [captureLocked, setCaptureLocked] = useState<boolean>(false);
 
     const handleRequestPermission = useCallback(async () => {
         setShowPermissionModal(true);
@@ -53,7 +54,7 @@ export default function NationalCardOcrScanner({
             setShowPermissionModal(false);
             return true;
         } catch {
-            toast.error('دسترسی دوربین داده نشد');
+            setShowPermissionModal(true);
             return false;
         }
     }, [startCamera]);
@@ -64,17 +65,21 @@ export default function NationalCardOcrScanner({
         }
     }, [autoOpen, isCameraOpen, capturedUrl, startCamera]);
 
+    useEffect(() => {
+        if (isCameraOpen && !capturedUrl) {
+            setCaptureLocked(false);
+        }
+    }, [isCameraOpen, capturedUrl]);
+
     const processOcr = useCallback(
         async (file: File) => {
             setOcrLoading(true);
             try {
                 const text = await ocrRecognizeFile(file);
                 const fields = parseNationalCardFields(text);
-                // کم‌حساس‌تر: کد ملی 6 تا 12 رقم (با فاصله هم قبول میکنه)
                 const nationalIdClean = fields.nationalId?.replace(/\s+/g, '') || '';
                 const ok = !!(nationalIdClean && /^\d{6,12}$/.test(nationalIdClean));
                 setOcrValid(!!ok);
-                if (!ok) toast.error('تصویر کارت ملی نامعتبر است');
 
                 if (onCapture) {
                     onCapture(file, ok, fields);
@@ -103,7 +108,9 @@ export default function NationalCardOcrScanner({
         [onCapture, onConfirm]
     );
     const handleCapture = useCallback(() => {
-        if (ocrLoading) return;
+        if (ocrLoading || captureLocked) return;
+
+        setCaptureLocked(true);
 
         takePhoto((file) => {
             const url = URL.createObjectURL(file);
@@ -112,7 +119,7 @@ export default function NationalCardOcrScanner({
             processOcr(file);
             stopCamera();
         });
-    }, [ocrLoading, takePhoto, capturedUrl, stopCamera, processOcr]);
+    }, [ocrLoading, captureLocked, takePhoto, capturedUrl, stopCamera, processOcr]);
 
     const handleReset = useCallback(async () => {
         if (capturedUrl) {
@@ -121,13 +128,25 @@ export default function NationalCardOcrScanner({
             setOcrValid(false);
         }
 
+        setCaptureLocked(false);
+
+        stopCamera();
         try {
-            await startCamera();
+            const granted = await requestCameraPermission();
+            if (!granted) {
+                toast.error('برای گرفتن عکس جدید اجازه‌ی دوربین لازم است');
+            }
         } catch (err) {
             console.warn('failed to restart camera', err);
             toast.error('دوربین بازنشانی نشد');
         }
-    }, [capturedUrl, startCamera]);
+    }, [capturedUrl, requestCameraPermission, stopCamera]);
+
+    useEffect(() => {
+        return () => {
+            stopCamera();
+        };
+    }, [stopCamera]);
 
     return (
         <Box className="space-y-3">
@@ -216,7 +235,7 @@ export default function NationalCardOcrScanner({
                         onClick={handleCapture}
                         size="sm"
                         variant="success"
-                        disabled={ocrLoading || !isCameraOpen}
+                        disabled={ocrLoading || !isCameraOpen || captureLocked}
                         loading={ocrLoading}
                     >
                         <span className="flex items-center justify-center gap-2">

@@ -75,7 +75,6 @@ export function useNationalCardForm() {
     const handleConfirm = useCallback(
         (file: File, isValid: boolean = true) => {
             handleCapture(file, isValid);
-            if (isValid) toast.success('تصویر کارت ملی با موفقیت دریافت شد');
         },
         [handleCapture]
     );
