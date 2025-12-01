@@ -4,7 +4,7 @@ import axios, { AxiosError } from 'axios';
 export async function GET() {
     try {
         const base = process.env.BASE_URL;
-        const url = `${base}/errors/getAll`;
+        const url = `${process.env.BASE_URL}/errors/getAll`;
 
         console.log('Fetching from:', url);
 

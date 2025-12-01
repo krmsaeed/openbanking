@@ -92,10 +92,11 @@ export async function initErrorCatalog(): Promise<void> {
             if (typeof window !== 'undefined') {
                 await loadFromIndexedDB();
             }
-            const url = `http://localhost:3000/api/errors/getAll`;
-
-            const resp = await axios.get(url);
-            const data = resp?.data;
+            const url = new URL('/api/errors/getAll').toString();
+            const resp = await fetch(url);
+            console.log('Response status:', resp.status);
+            const data = await resp.json();
+            console.log('Fetched data:', data);
 
             if (!data) return;
 
@@ -111,6 +112,8 @@ export async function initErrorCatalog(): Promise<void> {
                 if (it.errorKey && it.message)
                     inMemoryByName[String(it.errorKey)] = String(it.message);
             }
+
+            console.log('inMemoryByCode after init:', inMemoryByCode);
 
             if (typeof window !== 'undefined') {
                 await saveToIndexedDB(items);

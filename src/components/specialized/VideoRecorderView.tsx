@@ -1,5 +1,5 @@
 'use client';
-import React, { RefObject, useRef, useEffect, useState } from 'react';
+import React, { RefObject, useRef, useEffect } from 'react';
 import { VideoCameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';

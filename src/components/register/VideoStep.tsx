@@ -34,42 +34,36 @@ export const VideoRecorderStep: React.FC = () => {
 
         setIsUploading(true);
 
-        try {
-            // Send the video file as webm
-            const formData = createBPMSFormData(
-                videoFile,
-                'virtual-open-deposit',
-                userData.processId,
-                'ImageInquiry'
-            );
+        // Send the video file as webm
+        const formData = createBPMSFormData(
+            videoFile,
+            'virtual-open-deposit',
+            userData.processId,
+            'ImageInquiry'
+        );
 
-            await axios.post('/api/bpms/deposit-files', formData)
-                .then((res) => {
-                    setCount((prevCount) => prevCount + 1);
-                    if (res.data.body.verified) {
-                        setUserData({ ...userData, step: 4 });
-                    } else {
-                        toast.error('ویدئو شما تایید نشد. لطفاً دوباره تلاش کنید.');
-                        if (count >= 2) {
-                            router.push('/');
-                            clearUserData();
-                        }
-                        handleRetake();
-                    }
-                })
-                .catch((error) => {
-                    const { data } = error.response.data;
-                    toast.error(data?.digitalMessageException?.message, {
-                        duration: 5000,
-                    });
-                    // clearUserData();
-                    // router.push('/');
+        await axios.post('/api/bpms/deposit-files', formData)
+            .then((res) => {
+                setCount((prevCount) => prevCount + 1);
+                if (res.data.body.verified) {
+                    setUserData({ ...userData, step: 4 });
+                } else {
+                    toast.error('ویدئو شما تایید نشد. لطفاً دوباره تلاش کنید.');
+
+                    handleRetake();
+                }
+            })
+            .catch((error) => {
+                console.log("🚀 ~ handleUpload ~ error:", error)
+                const { data } = error.response;
+                toast.error(data?.digitalMessageException?.message, {
+                    duration: 5000,
                 });
-        } catch (error) {
-            console.error('Upload failed:', error);
-        } finally {
-            setIsUploading(false);
-        }
+            }).finally(() => {
+                setIsUploading(false);
+            })
+
+
     };
 
     return (

@@ -315,7 +315,8 @@ export default function PasswordStep() {
                             setUserData({ step: 6 });
                         })
                         .catch((error) => {
-                            const { data } = error.response.data;
+                            console.log("🚀 ~ PasswordStep ~ error:", error)
+                            const { data } = error.response;
                             toast.error(data?.digitalMessageException?.message, {
                                 duration: 5000,
                             });

@@ -66,6 +66,7 @@ export default function PersonalInfo() {
                     }
                 })
                 .catch((error) => {
+                    console.log("🚀 ~ onSubmit ~ data:", error)
                     const { data } = error.response.data;
                     toast.error(data?.digitalMessageException?.message, {
                         duration: 5000,

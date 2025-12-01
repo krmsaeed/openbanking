@@ -34,7 +34,7 @@ async function handler(request: AuthenticatedRequest) {
                 const data = response.data;
                 const exception = data.digitalMessageException;
                 const mappedMessage = await mapExceptionMessage(exception);
-                const isKnownError = mappedMessage !== 'خطا در پردازش اطلاعات';
+                const isKnownError = mappedMessage !== (exception.message as string);
 
                 const errorResponse = {
                     status: 200,
