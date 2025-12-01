@@ -28,10 +28,14 @@ const DismissibleToast: React.FC<DismissibleToastProps> = ({ t, type = 'info', m
     };
 
     const colors = {
-        success: 'border-[var(--color-success-100)] bg-[var(--color-success-50)]',
-        error: 'border-[var(--color-error-100)] bg-[var(--color-error-50)]',
-        warning: 'border-[var(--color-warning-100)] bg-[var(--color-warning-50)]',
-        info: 'border-[var(--color-info-100)] bg-[var(--color-info-50)]',
+        success:
+            'border-[var(--color-success-200)] bg-[var(--color-success-100)] dark:border-[var(--color-success-100)] dark:bg-[var(--color-success-300)]',
+        error:
+            'border-[var(--color-error-200)] bg-[var(--color-error-100)] dark:border-[var(--color-error-100)] dark:bg-[var(--color-error-300)]',
+        warning:
+            'border-[var(--color-warning-200)] bg-[var(--color-warning-100)] dark:border-[var(--color-warning-100)] dark:bg-[var(--color-warning-300)]',
+        info:
+            'border-[var(--color-info-200)] bg-[var(--color-info-100)] dark:border-[var(--color-info-100)] dark:bg-[var(--color-info-300)]',
     };
 
     const handleDismiss = () => {
@@ -58,7 +62,7 @@ export const showDismissibleToast = (
 ) => {
     return toast.custom((t: Toast) => <DismissibleToast t={t} type={type} message={message} />, {
         duration: 10000,
-        position: 'top-center',
+        position: 'bottom-center',
     });
 };
 

@@ -60,7 +60,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         <ToastContext.Provider value={{ success, error, warning, info, loading, dismiss }}>
             {children}
             <Toaster
-                position="top-center"
+                position="bottom-center"
                 gutter={8}
                 containerStyle={{
                     fontFamily: 'var(--font-vazirmatn), "Tahoma", sans-serif',
