@@ -7,7 +7,6 @@ import { passwordStepSchema, type PasswordStepForm } from '@/lib/schemas/persona
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
@@ -15,8 +14,7 @@ import { Box } from '../ui';
 import { List, ListItem } from '../ui/list';
 import CertificateStep from './CertificateStep';
 export default function PasswordStep() {
-    const router = useRouter();
-    const { userData, setUserData, clearUserData } = useUser();
+    const { userData, setUserData } = useUser();
     const [isLoading, setIsLoading] = useState(false);
     const [showOtp, setShowOtp] = useState(false);
     const [otp, setOtp] = useState('');
@@ -109,7 +107,7 @@ export default function PasswordStep() {
                         نام و نام خانوادگی را به صورت حروف لاتین وارد کنید
                     </ListItem>
                     <ListItem className="text-md mb-0 pb-0">
-                        رمز عبور باید حداقل 8 کاراکتر باشد
+                        رمز عبور باید 8 رقم و فقط عدد باشد
                     </ListItem>
                 </List>
             </Box>
@@ -177,6 +175,7 @@ export default function PasswordStep() {
                                 placeholder="رمز عبور را وارد کنید"
                                 required
                                 fullWidth
+                                maxLength={8}
                                 className="mb-2 text-left"
                                 dir="ltr"
                                 autoComplete="new-password"
@@ -217,6 +216,7 @@ export default function PasswordStep() {
                                 pattern="\\d{8}"
                                 required
                                 fullWidth
+                                maxLength={8}
                                 className="text-left"
                                 dir="ltr"
                                 label="تایید رمز عبور"
