@@ -41,8 +41,8 @@ const nextConfig = {
     env: {
         // BASE_URL: 'https://novinhubtst.enbank.ir/',
         // BASE_URL: 'https://192.168.50.49:4999',
-        // BASE_URL: 'https://10.224.2.3:4999',
-        BASE_URL: 'https://192.168.91.112:4999',
+        BASE_URL: 'https://10.224.2.3:4999',
+        // BASE_URL: 'https://192.168.91.112:4999',
         // BASE_URL: 'https://novinhubtst.enbank.ir/',
         IS_STAGE: 'true',
     },

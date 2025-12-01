@@ -465,33 +465,28 @@ export default function SelfieStep() {
 
     const handleConfirm = useCallback(async () => {
         setIsUploading(true);
-        try {
-            const file = await convertToFile(capturedPhoto, 'selfie', 'image/jpeg', 0.8);
-            if (!file) throw new Error('failed to convert captured photo');
-            const formData = createBPMSFormData(
-                file,
-                'virtual-open-deposit',
-                userData.processId,
-                'GovahInquiry'
-            );
+        const file = await convertToFile(capturedPhoto, 'selfie', 'image/jpeg', 0.8);
+        if (!file) throw new Error('failed to convert captured photo');
+        const formData = createBPMSFormData(
+            file,
+            'virtual-open-deposit',
+            userData.processId,
+            'GovahInquiry'
+        );
 
-            const res = await axios.post('/api/bpms/deposit-files', formData);
+        await axios.post('/api/bpms/deposit-files', formData).then(res => {
             const { data } = res;
-            if (data.body.randomText === null) {
-                toast.error('تصویر شما تایید نشد. لطفاً دوباره تلاش کنید.');
-            }
             setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
-        } catch (error) {
-            const data = (error as { response?: { data?: { digitalMessageException?: { message?: string } } } })?.response?.data;
-            if (data?.digitalMessageException?.message) {
-                toast.error(data.digitalMessageException.message, { duration: 5000 });
-            } else {
-                console.error('Selfie upload failed', error);
-                toast.error('خطا در ارسال تصویر');
-            }
-        } finally {
+
+        }).catch((error) => {
+            const { data } = error?.response.data;
+            console.log("🚀 ~ SelfieStep ~ error:", data)
+            toast.error(data.digitalMessageException.message, { duration: 5000 });
+        }).finally(() => {
             setIsUploading(false);
-        }
+        })
+
+
     }, [capturedPhoto, userData, setUserData, setIsUploading]);
 
     const handleCapture = useCallback(() => {
