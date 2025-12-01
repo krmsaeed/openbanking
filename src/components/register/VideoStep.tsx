@@ -55,7 +55,7 @@ export const VideoRecorderStep: React.FC = () => {
             })
             .catch((error) => {
                 console.log("🚀 ~ handleUpload ~ error:", error)
-                const { data } = error.response;
+                const { data } = error.response.data;
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });

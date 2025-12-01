@@ -3,17 +3,15 @@ import axios, { AxiosError } from 'axios';
 
 export async function GET() {
     try {
-        const base = process.env.BASE_URL;
-        const url = `${process.env.BASE_URL}/errors/getAll`;
+        const base = process.env.BASE_URL?.replace(/\/$/, '');
+        if (!base) {
+            return NextResponse.json({ error: 'BASE_URL is not configured' }, { status: 500 });
+        }
 
-        console.log('Fetching from:', url);
-
-        const headers: Record<string, string> = {
-            'Content-Type': 'application/json',
-        };
-
+        const url = `${base}/errors/getAll`;
         const response = await axios.get(url, {
-            headers,
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 15000,
         });
 
         return NextResponse.json(response.data);

@@ -7,13 +7,12 @@ async function mapExceptionMessage(exception: Record<string, unknown>): Promise<
     const errorCode = (exception.code as number) || (exception.errorCode as number);
     const originalMessage = exception.message as string;
 
-    if (typeof errorCode === 'number' && errorCode < 0) {
+    if (typeof errorCode === 'number') {
         await initErrorCatalog();
-        const mappedMessage = getMessageByCode(errorCode);
-        return mappedMessage || originalMessage;
+        return getMessageByCode(errorCode, originalMessage);
     }
 
-    return originalMessage;
+    return originalMessage || 'خطا در پردازش اطلاعات';
 }
 
 async function handler(request: AuthenticatedRequest) {
@@ -36,7 +35,8 @@ async function handler(request: AuthenticatedRequest) {
                 const data = response.data;
                 const exception = data.digitalMessageException;
                 const mappedMessage = await mapExceptionMessage(exception);
-                const isKnownError = mappedMessage !== (exception.message as string);
+                const originalMessage = (exception.message as string) || 'خطا در پردازش اطلاعات';
+                const isKnownError = mappedMessage !== originalMessage;
                 const errorResponse = {
                     status: 200,
                     data: {

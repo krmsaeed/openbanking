@@ -85,6 +85,7 @@ export default function PasswordStep() {
                 }
             })
             .catch((error) => {
+                console.log("🚀 ~ handleResendOTP ~ error:", error)
                 const { data } = error.response.data;
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
@@ -316,7 +317,7 @@ export default function PasswordStep() {
                         })
                         .catch((error) => {
                             console.log("🚀 ~ PasswordStep ~ error:", error)
-                            const { data } = error.response;
+                            const { data } = error.response.data;
                             toast.error(data?.digitalMessageException?.message, {
                                 duration: 5000,
                             });

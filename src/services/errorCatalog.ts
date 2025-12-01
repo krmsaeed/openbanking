@@ -1,163 +1,125 @@
-import axios from 'axios';
+const DEFAULT_ERROR_MESSAGE = 'خطا در پردازش اطلاعات';
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-type RemoteError = {
+export type ErrorCatalogEntry = {
     id?: number;
     code?: number;
     errorKey?: string;
     message?: string;
     locale?: string;
-    isDeleted?: boolean;
-    createDateTime?: string;
-    updateDateTime?: string;
-    [k: string]: unknown;
 };
 
-const DB_NAME = 'openbank-errors';
-const STORE_NAME = 'errors';
-const DEFAULT_ERROR_MESSAGE = 'خطا در پردازش اطلاعات';
-let inMemoryByCode: Record<number, string> = {};
-let inMemoryByName: Record<string, string> = {};
+let cacheByCode: Map<number, ErrorCatalogEntry> = new Map();
+let cacheByKey: Map<string, ErrorCatalogEntry> = new Map();
+let cacheTimestamp: number | null = null;
+let inflight: Promise<void> | null = null;
 
-function openDb(): Promise<IDBDatabase> {
-    return new Promise((resolve, reject) => {
-        if (typeof window === 'undefined' || !('indexedDB' in window)) {
-            reject(new Error('IndexedDB not available'));
-            return;
-        }
-        const req = indexedDB.open(DB_NAME, 1);
-        req.onupgradeneeded = () => {
-            const db = req.result;
-            if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME, { keyPath: 'key' });
-            }
-        };
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
+function needsRefresh(force?: boolean): boolean {
+    if (force) return true;
+    if (!cacheTimestamp) return true;
+    return Date.now() - cacheTimestamp > CACHE_TTL_MS;
+}
+
+function resolveApiEndpoint(): string {
+    if (typeof window !== 'undefined') {
+        return '/api/errors/getAll';
+    }
+
+    const origin =
+        process.env.NEXT_PUBLIC_APP_URL ||
+        process.env.NEXT_PUBLIC_FRONTEND_URL ||
+        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '') ||
+        process.env.ORIGIN_URL ||
+        'http://localhost:3000';
+
+    return `${origin.replace(/\/$/, '')}/api/errors/getAll`;
+}
+
+async function fetchCatalogEntries(): Promise<ErrorCatalogEntry[]> {
+    const response = await fetch(resolveApiEndpoint(), {
+        cache: 'no-store',
     });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch error catalog (${response.status})`);
+    }
+
+    const payload = await response.json();
+    if (Array.isArray(payload)) {
+        return payload;
+    }
+    if (payload && typeof payload === 'object' && Array.isArray(payload.items)) {
+        return payload.items;
+    }
+    return [];
 }
 
-async function saveToIndexedDB(items: RemoteError[]) {
-    try {
-        const db = await openDb();
-        const tx = db.transaction(STORE_NAME, 'readwrite');
-        const store = tx.objectStore(STORE_NAME);
-        // Save the entire array
-        await new Promise((res, rej) => {
-            const r = store.put({ key: 'all_errors', payload: items });
-            r.onsuccess = () => res(undefined);
-            r.onerror = () => rej(r.error);
-        });
-        tx.commit?.();
-    } catch { }
-}
+function populateCache(entries: ErrorCatalogEntry[]): void {
+    cacheByCode = new Map();
+    cacheByKey = new Map();
 
-async function loadFromIndexedDB(): Promise<void> {
-    try {
-        const db = await openDb();
-        const tx = db.transaction(STORE_NAME, 'readonly');
-        const store = tx.objectStore(STORE_NAME);
-        const req = store.get('all_errors');
-        const result: { key: string; payload: RemoteError[] } | undefined = await new Promise(
-            (res, rej) => {
-                req.onsuccess = () => res(req.result);
-                req.onerror = () => rej(req.error);
-            }
-        );
-
-        if (result && Array.isArray(result.payload)) {
-            for (const it of result.payload) {
-                if (typeof it.code === 'number' && it.message)
-                    inMemoryByCode[it.code] = String(it.message);
-                if (it.errorKey && it.message)
-                    inMemoryByName[String(it.errorKey)] = String(it.message);
-            }
+    for (const entry of entries) {
+        if (typeof entry.code === 'number' && entry.message) {
+            cacheByCode.set(entry.code, entry);
         }
-    } catch { }
+        if (entry.errorKey && entry.message) {
+            cacheByKey.set(entry.errorKey, entry);
+        }
+    }
+
+    cacheTimestamp = Date.now();
 }
 
-let isInitialized = false;
-let initializationPromise: Promise<void> | null = null;
-
-export async function initErrorCatalog(): Promise<void> {
-    if (isInitialized) {
+export async function initErrorCatalog(options?: { forceRefresh?: boolean }): Promise<void> {
+    const force = options?.forceRefresh ?? false;
+    if (!needsRefresh(force)) {
         return;
     }
 
-    if (initializationPromise) {
-        return initializationPromise;
+    if (inflight) {
+        return inflight;
     }
 
-    initializationPromise = (async () => {
+    inflight = (async () => {
         try {
-            if (typeof window !== 'undefined') {
-                await loadFromIndexedDB();
-            }
-            const url = new URL('/api/errors/getAll').toString();
-            const resp = await fetch(url);
-            console.log('Response status:', resp.status);
-            const data = await resp.json();
-            console.log('Fetched data:', data);
-
-            if (!data) return;
-
-            const items: RemoteError[] = Array.isArray(data)
-                ? data
-                : Array.isArray(data.items)
-                    ? data.items
-                    : [];
-
-            for (const it of items) {
-                if (typeof it.code === 'number' && it.message)
-                    inMemoryByCode[it.code] = String(it.message);
-                if (it.errorKey && it.message)
-                    inMemoryByName[String(it.errorKey)] = String(it.message);
-            }
-
-            console.log('inMemoryByCode after init:', inMemoryByCode);
-
-            if (typeof window !== 'undefined') {
-                await saveToIndexedDB(items);
-            }
-
-            isInitialized = true;
-        } catch (error) {
-            console.error('Error initializing error catalog:', error);
+            const entries = await fetchCatalogEntries();
+            populateCache(entries);
         } finally {
-            initializationPromise = null;
+            inflight = null;
         }
     })();
 
-    return initializationPromise;
-}
-
-export function getMessageByCode(code: number | undefined, fallback?: string): string | undefined {
-    if (typeof code !== 'number') {
-        return fallback || DEFAULT_ERROR_MESSAGE;
-    }
-    return inMemoryByCode[code] ?? fallback ?? DEFAULT_ERROR_MESSAGE;
-}
-export function getMessageByName(name: string | undefined, fallback?: string): string | undefined {
-    if (!name) return fallback;
-    return inMemoryByName[name] ?? fallback;
-}
-
-export function clearInMemoryCatalog() {
-    inMemoryByCode = {};
-    inMemoryByName = {};
-    isInitialized = false;
-    initializationPromise = null;
+    return inflight;
 }
 
 export function isErrorCatalogInitialized(): boolean {
-    return isInitialized;
+    return cacheByCode.size > 0;
 }
 
-const api = {
+export function getMessageByCode(code: number | undefined, fallback?: string): string {
+    if (typeof code !== 'number') {
+        return fallback || DEFAULT_ERROR_MESSAGE;
+    }
+    return cacheByCode.get(code)?.message || fallback || DEFAULT_ERROR_MESSAGE;
+}
+
+export function getMessageByName(name: string | undefined, fallback?: string): string {
+    if (!name) {
+        return fallback || DEFAULT_ERROR_MESSAGE;
+    }
+    return cacheByKey.get(name)?.message || fallback || DEFAULT_ERROR_MESSAGE;
+}
+
+export function clearErrorCatalogCache(): void {
+    cacheByCode.clear();
+    cacheByKey.clear();
+    cacheTimestamp = null;
+}
+
+export default {
     initErrorCatalog,
+    isErrorCatalogInitialized,
     getMessageByCode,
     getMessageByName,
-    clearInMemoryCatalog,
-    isErrorCatalogInitialized,
+    clearErrorCatalogCache,
 };
-
-export default api;

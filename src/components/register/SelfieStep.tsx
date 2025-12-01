@@ -474,15 +474,14 @@ export default function SelfieStep() {
             'GovahInquiry'
         );
 
-        await axios.post('/api/bpms/deposit-files', formData).then((res) => {
+        await axios.post('/api/bpms/deposit-files', formData).then(res => {
             const { data } = res;
             setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
 
         }).catch((error) => {
-            const { data } = error.response.data;
-            toast.error(data?.digitalMessageException?.message, {
-                duration: 3000,
-            });
+            const { data } = error?.response.data;
+            console.log("🚀 ~ SelfieStep ~ error:", data)
+            toast.error(data.digitalMessageException.message, { duration: 5000 });
         }).finally(() => {
             setIsUploading(false);
         })
