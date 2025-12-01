@@ -468,8 +468,6 @@ export default function SelfieStep() {
         try {
             const file = await convertToFile(capturedPhoto, 'selfie', 'image/jpeg', 0.8);
             if (!file) throw new Error('failed to convert captured photo');
-
-            // send the image as-is (no mirroring or effects)
             const formData = createBPMSFormData(
                 file,
                 'virtual-open-deposit',

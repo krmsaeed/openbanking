@@ -75,7 +75,7 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                     })
                     .catch((error) => {
 
-                        const { data } = error.response;
+                        const { data } = error.response.data;
 
                         toast.error(data?.error.status === 401 ? "اطلاعات احراز هویت یافت نشد" : data?.digitalMessageException?.message, {
                             duration: 5000,

@@ -36,15 +36,14 @@ async function handler(request: AuthenticatedRequest) {
                 const data = response.data;
                 const exception = data.digitalMessageException;
                 const mappedMessage = await mapExceptionMessage(exception);
-
                 const errorResponse = {
-                    ...response,
+                    status: 200,
                     data: {
                         digitalMessageException: {
-                            ...exception,
-                            message: mappedMessage,
-                        },
-                    },
+                            code: exception.code || exception.errorCode,
+                            message: mappedMessage
+                        }
+                    }
                 };
                 return NextResponse.json(errorResponse, { status: 400 });
             }

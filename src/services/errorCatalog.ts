@@ -41,20 +41,12 @@ async function saveToIndexedDB(items: RemoteError[]) {
         const db = await openDb();
         const tx = db.transaction(STORE_NAME, 'readwrite');
         const store = tx.objectStore(STORE_NAME);
-        for (const it of items) {
-            const key =
-                typeof it.code === 'number'
-                    ? `code:${it.code}`
-                    : it.errorKey
-                        ? `errorKey:${it.errorKey}`
-                        : undefined;
-            if (!key) continue;
-            await new Promise((res, rej) => {
-                const r = store.put({ key, payload: it });
-                r.onsuccess = () => res(undefined);
-                r.onerror = () => rej(r.error);
-            });
-        }
+        // Save the entire array
+        await new Promise((res, rej) => {
+            const r = store.put({ key: 'all_errors', payload: items });
+            r.onsuccess = () => res(undefined);
+            r.onerror = () => rej(r.error);
+        });
         tx.commit?.();
     } catch { }
 }
@@ -64,20 +56,20 @@ async function loadFromIndexedDB(): Promise<void> {
         const db = await openDb();
         const tx = db.transaction(STORE_NAME, 'readonly');
         const store = tx.objectStore(STORE_NAME);
-        const allReq = store.getAll();
-        const results: Array<{ key: string; payload: RemoteError }> = await new Promise(
+        const req = store.get('all_errors');
+        const result: { key: string; payload: RemoteError[] } | undefined = await new Promise(
             (res, rej) => {
-                allReq.onsuccess = () =>
-                    res(allReq.result as unknown as Array<{ key: string; payload: RemoteError }>);
-                allReq.onerror = () => rej(allReq.error);
+                req.onsuccess = () => res(req.result);
+                req.onerror = () => rej(req.error);
             }
         );
 
-        for (const r of results) {
-            if (r.payload.code) {
-                const code = r.payload.code;
-                if (!isNaN(code) && r.payload.message)
-                    inMemoryByCode[code] = String(r.payload.message);
+        if (result && Array.isArray(result.payload)) {
+            for (const it of result.payload) {
+                if (typeof it.code === 'number' && it.message)
+                    inMemoryByCode[it.code] = String(it.message);
+                if (it.errorKey && it.message)
+                    inMemoryByName[String(it.errorKey)] = String(it.message);
             }
         }
     } catch { }
@@ -97,11 +89,14 @@ export async function initErrorCatalog(): Promise<void> {
 
     initializationPromise = (async () => {
         try {
-            await loadFromIndexedDB();
-            const url = `/api/errors/getAll`;
+            if (typeof window !== 'undefined') {
+                await loadFromIndexedDB();
+            }
+            const url = `http://localhost:3000/api/errors/getAll`;
 
             const resp = await axios.get(url);
             const data = resp?.data;
+
             if (!data) return;
 
             const items: RemoteError[] = Array.isArray(data)
@@ -117,10 +112,13 @@ export async function initErrorCatalog(): Promise<void> {
                     inMemoryByName[String(it.errorKey)] = String(it.message);
             }
 
-            await saveToIndexedDB(items);
+            if (typeof window !== 'undefined') {
+                await saveToIndexedDB(items);
+            }
 
             isInitialized = true;
-        } catch {
+        } catch (error) {
+            console.error('Error initializing error catalog:', error);
         } finally {
             initializationPromise = null;
         }
