@@ -739,11 +739,11 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
 
                 try {
                     initWebGL();
-                } catch {}
+                } catch { }
 
                 const video = videoRef.current;
                 const handleCanPlay = () => {
-                    video.play().catch(() => {});
+                    video.play().catch(() => { });
                     setCameraLoading(false);
                 };
 
@@ -759,8 +759,8 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                     err.name === 'NotAllowedError'
                         ? 'دسترسی به دوربین رد شد. لطفاً دسترسی را اجازه دهید.'
                         : err.name === 'NotFoundError'
-                          ? 'دوربین یافت نشد. لطفاً از وجود دوربین اطمینان حاصل کنید.'
-                          : 'خطا در دسترسی به دوربین. لطفاً دوباره تلاش کنید.';
+                            ? 'دوربین یافت نشد. لطفاً از وجود دوربین اطمینان حاصل کنید.'
+                            : 'خطا در دسترسی به دوربین. لطفاً دوباره تلاش کنید.';
                 setError(errorMessage);
             }
         } finally {
@@ -788,7 +788,7 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                 if (webglVaoRef.current) gl.deleteVertexArray(webglVaoRef.current);
                 if (webglVboRef.current) gl.deleteBuffer(webglVboRef.current);
             }
-        } catch {}
+        } catch { }
 
         glRef.current = null;
         webglTexRef.current = null;
@@ -853,9 +853,9 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
 
         try {
             if (video.readyState < 2) {
-                video.play().catch(() => {});
+                video.play().catch(() => { });
             }
-        } catch {}
+        } catch { }
 
         const vw = video.videoWidth || Math.round(video.clientWidth) || 640;
         const vh = video.videoHeight || Math.round(video.clientHeight) || 480;
@@ -1025,7 +1025,7 @@ export function useSelfieStep(config?: UseSelfieStepConfig): UseSelfieStepReturn
                     if (webglVaoRef.current) gl.deleteVertexArray(webglVaoRef.current);
                     if (webglVboRef.current) gl.deleteBuffer(webglVboRef.current);
                 }
-            } catch {}
+            } catch { }
             glRef.current = null;
             webglTexRef.current = null;
             webglFboRef.current = null;

@@ -52,14 +52,13 @@ export const englishFirstNameSchema = z
 
 export const englishLastNameSchema = z
     .string({ message: 'نام خانوادگی لاتین الزامی است' })
-    .length(8, 'رمز عبور باید دقیقاً ۸ رقم باشد')
-    .regex(/^[0-9]+$/, 'رمز عبور باید فقط شامل عدد باشد');
+    .regex(/^[a-zA-Z ]+$/, 'نام خانوادگی لاتین باید شامل حروف انگلیسی باشد');
 
 
 export const simplePasswordSchema = z
     .string({ message: 'رمز عبور الزامی است' })
-    .length(8, 'رمز عبور باید دقیقا ۸ رقم باشد')
-    .regex(/^\d{8}$/, 'رمز عبور باید شامل اعداد و دقیقا ۸ رقم باشد');
+    .length(8, 'رمز عبور باید ۸ رقم باشد')
+    .regex(/^\d{8}$/, 'رمز عبور باید شامل اعداد و ۸ رقم باشد');
 
 export const basicPersonalInfoSchema = z.object({
     firstName: firstNameSchema,

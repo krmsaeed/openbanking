@@ -13,8 +13,8 @@ export async function POST(request: NextRequest) {
         const formData = new URLSearchParams();
         formData.append('client_id', body.client_id || 'tasklist');
         formData.append('grant_type', body.grant_type || 'password');
-        formData.append('username', body.username || 'demo');
-        formData.append('password', body.password || 'demo');
+        formData.append('username', body.username || 'khanoumi');
+        formData.append('password', body.password || '123456');
         formData.append('client_secret', body.client_secret || 'XALaRPl5qwTEItdwCMiPS62nVpKs7dL7');
 
         const response = await axios.post(

@@ -58,8 +58,8 @@ export default function LoginPage() {
         mode: 'onBlur',
         defaultValues: {
             code: '',
-            username: 'demo',
-            password: 'demo',
+            username: 'khanoumi',
+            password: '123456',
         },
     });
 

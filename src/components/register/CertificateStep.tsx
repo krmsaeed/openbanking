@@ -11,9 +11,11 @@ interface Props {
     onIssue: () => void;
     onResend?: () => void;
     loading?: boolean;
+    children?: React.ReactNode;
+    passwordInput?: React.ReactNode;
 }
 
-export default function CertificateStep({ otp, setOtp, onIssue, onResend, loading }: Props) {
+export default function CertificateStep({ otp, setOtp, onIssue, onResend, loading, children, passwordInput }: Props) {
     const [timeLeft, setTimeLeft] = useState(120); // 2 دقیقه = 120 ثانیه
     const [canResend, setCanResend] = useState(false);
 
@@ -90,6 +92,8 @@ export default function CertificateStep({ otp, setOtp, onIssue, onResend, loadin
                 onSubmit={onIssue}
                 disabled={loading}
             />
+            {passwordInput}
+            {children}
             <Box className="space-y-2">
                 <LoadingButton
                     onClick={onIssue}

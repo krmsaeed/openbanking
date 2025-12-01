@@ -23,6 +23,7 @@ export default function PasswordStep() {
     const {
         control,
         formState: { errors },
+        setError,
         handleSubmit,
     } = useForm<PasswordStepForm>({
         resolver: zodResolver(passwordStepSchema),
@@ -56,7 +57,6 @@ export default function PasswordStep() {
                 toast.error(data?.digitalMessageException?.message, {
                     duration: 5000,
                 });
-
             })
             .finally(() => {
                 setIsLoading(false);
@@ -135,6 +135,16 @@ export default function PasswordStep() {
                                 data-form-type="other"
                                 disabled={isLoading}
                                 error={errors.ENFirstName?.message}
+                                onChange={(e) => {
+                                    const original = e.target.value;
+                                    const filtered = original.replace(/[^a-zA-Z ]/g, '');
+                                    if (original !== filtered) {
+                                        setError("ENFirstName", { type: "manual", message: 'فقط حروف انگلیسی مجاز است' });
+                                    } else {
+                                        setError("ENFirstName", { type: "manual", message: '' });
+                                    }
+                                    field.onChange(filtered);
+                                }}
                             />
                         )}
                     />
@@ -159,6 +169,16 @@ export default function PasswordStep() {
                                 maxLength={200}
                                 disabled={isLoading}
                                 error={errors.ENLastName?.message}
+                                onChange={(e) => {
+                                    const original = e.target.value;
+                                    const filtered = original.replace(/[^a-zA-Z ]/g, '');
+                                    if (original !== filtered) {
+                                        setError("ENLastName", { type: "manual", message: 'فقط حروف انگلیسی مجاز است' });
+                                    } else {
+                                        setError("ENLastName", { type: "manual", message: '' });
+                                    }
+                                    field.onChange(filtered);
+                                }}
                             />
                         )}
                     />
@@ -185,6 +205,16 @@ export default function PasswordStep() {
                                 data-form-type="other"
                                 disabled={isLoading}
                                 error={errors.password?.message}
+                                onChange={(e) => {
+                                    const original = e.target.value;
+                                    const filtered = original.replace(/\D/g, '');
+                                    if (original !== filtered) {
+                                        setError("password", { type: "manual", message: 'فقط عدد مجاز است' });
+                                    } else {
+                                        setError("password", { type: "manual", message: '' });
+                                    }
+                                    field.onChange(filtered.replace(/\D/g, ''));
+                                }}
                                 startAdornment={
                                     <Box
                                         onClick={() => !isLoading && setShowPassword(!showPassword)}
@@ -228,6 +258,16 @@ export default function PasswordStep() {
                                 data-form-type="other"
                                 disabled={isLoading}
                                 error={errors.confirmPassword?.message}
+                                onChange={(e) => {
+                                    const original = e.target.value;
+                                    const filtered = original.replace(/\D/g, '');
+                                    if (original !== filtered) {
+                                        setError("confirmPassword", { type: "manual", message: 'فقط عدد مجاز است' });
+                                    } else {
+                                        setError("confirmPassword", { type: "manual", message: '' });
+                                    }
+                                    field.onChange(filtered.replace(/\D/g, ''));
+                                }}
                                 startAdornment={
                                     <Box
                                         onClick={() => !isLoading && setShowPassword(!showPassword)}

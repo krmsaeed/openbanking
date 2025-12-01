@@ -13,9 +13,14 @@ import {
 } from '@/components/ui';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { PdfPreviewModal } from '@/components/ui/overlay/PdfPreviewModal';
-import { ArrowDownTrayIcon, DocumentTextIcon, EyeIcon } from '@heroicons/react/24/outline';
-import { useRouter } from 'next/navigation';
+import { ArrowDownTrayIcon, DocumentTextIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
+import Modal from '../ui/overlay/Modal';
+import { useUser } from '@/contexts/UserContext';
+import CertificateStep from './CertificateStep';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import { Controller, useForm } from 'react-hook-form';
 const PDF_URL = '/test.pdf';
 
 interface ContractDetails {
@@ -81,7 +86,11 @@ function useContractStep() {
     const [error, setError] = useState<string | null>(null);
     const [showPreview, setShowPreview] = useState(false);
     const [pdfUrl, setPdfUrl] = useState<string>('');
-    const router = useRouter();
+    const [showModal, setShowModal] = useState(false);
+    const [otp, setOtp] = useState('');
+    const [otpLoading, setOtpLoading] = useState(false);
+    const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const contractDetails: ContractDetails = {
         contractNumber: 'TC-2025-001234',
@@ -115,7 +124,7 @@ function useContractStep() {
                 }, 2000);
             });
 
-            router.push('/payment/gateway');
+            setShowModal(true);
         } catch (err) {
             console.error('Contract acceptance error:', err);
             setError(err instanceof Error ? err.message : 'خطای نامشخص رخ داده است');
@@ -159,6 +168,16 @@ function useContractStep() {
         showPreview,
         setShowPreview,
         pdfUrl,
+        showModal,
+        setShowModal,
+        otp,
+        setOtp,
+        otpLoading,
+        setOtpLoading,
+        password,
+        setPassword,
+        showPassword,
+        setShowPassword,
         handleAccept,
         handlePreview,
         handleDownload,
@@ -167,6 +186,16 @@ function useContractStep() {
 }
 
 export default function ContractStep() {
+    const { userData, setUserData } = useUser();
+    const {
+        control,
+        formState: { errors },
+        setError,
+    } = useForm({
+        defaultValues: {
+            password: '',
+        },
+    })
     const {
         agreed,
         setAgreed,
@@ -176,6 +205,16 @@ export default function ContractStep() {
         showPreview,
         setShowPreview,
         pdfUrl,
+        showModal,
+        setShowModal,
+        otp,
+        setOtp,
+        otpLoading,
+        setOtpLoading,
+        password,
+        setPassword,
+        showPassword,
+        setShowPassword,
         handleAccept,
         handlePreview,
         handleDownload,
@@ -360,6 +399,128 @@ export default function ContractStep() {
                 pdfUrl={pdfUrl}
                 title="پیش‌نمایش قرارداد"
             />
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title="تایید نهایی"
+                size="md"
+            >
+                <Box className="">
+                    <Box className="rounded-lg bg-gray-100 p-4 space-y-4">
+                        <Controller
+                            name="password"
+                            control={control}
+                            render={({ field }) => (
+                                <Box className="relative">
+                                    <Input
+                                        {...field}
+                                        type={showPassword ? 'text' : 'password'}
+                                        label="رمز عبور"
+                                        placeholder="رمز عبور خود را وارد کنید"
+                                        value={password}
+                                        onChange={(e) => {
+                                            const original = e.target.value;
+                                            const filtered = original.replace(/\D/g, '');
+                                            if (original !== filtered) {
+                                                setError("password", { type: "manual", message: 'رمز عبور باید فقط شامل اعداد باشد' });
+                                            } else {
+                                                setError("password", { type: "manual", message: '' });
+                                            }
+                                            setPassword(e.target.value.replace(/\D/g, ''))
+                                        }}
+                                        required
+                                        fullWidth
+                                        maxLength={8}
+                                        className="text-left"
+                                        dir="ltr"
+                                        error={errors.password?.message}
+                                        startAdornment={
+                                            <Box
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="cursor-pointer"
+                                            >
+                                                {showPassword ? (
+                                                    <EyeSlashIcon className="h-5 w-5" />
+                                                ) : (
+                                                    <EyeIcon className="h-5 w-5" />
+                                                )}
+                                            </Box>
+                                        }
+                                    />
+
+                                </Box>
+                            )}
+                        />
+                        <CertificateStep
+                            otp={otp}
+                            setOtp={setOtp}
+                            onResend={() => {
+                                setOtpLoading(true);
+                                axios
+                                    .post('/api/bpms/send-message', {
+                                        serviceName: 'virtual-open-deposit',
+                                        processId: userData.processId,
+                                        formName: 'CertificateRequest',
+                                        body: {
+                                            ENFirstName: userData.ENFirstName,
+                                            ENLastName: userData.ENLastName,
+                                            password: userData.password,
+                                        },
+                                    })
+                                    .then(() => {
+                                        toast.success('کد تایید مجدد ارسال شد');
+                                    })
+                                    .catch((error) => {
+                                        const data = (error as { response?: { data?: { digitalMessageException?: { message?: string } } } })?.response?.data;
+                                        toast.error(`${data?.digitalMessageException?.message}`, {
+                                            duration: 5000,
+                                        });
+
+                                    })
+                                    .finally(() => {
+                                        setOtpLoading(false);
+                                    });
+                            }}
+                            onIssue={() => {
+                                if (password !== userData.password) {
+                                    toast.error('رمز عبور اشتباه است');
+                                    return;
+                                }
+                                if (otp.length === 4) {
+                                    setOtpLoading(true);
+                                    axios
+                                        .post('/api/bpms/send-message', {
+                                            serviceName: 'virtual-open-deposit',
+                                            formName: 'CertificateOtpVerify',
+                                            processId: userData.processId,
+                                            body: {
+                                                otpCode: otp.trim(),
+                                                password: userData.password,
+                                            },
+                                        })
+                                        .then(() => {
+                                            setUserData({ step: 6 });
+                                            setShowModal(false);
+                                        })
+                                        .catch((error) => {
+                                            const data = (error as { response?: { data?: { digitalMessageException?: { message?: string } } } })?.response?.data;
+                                            toast.error(`${data?.digitalMessageException?.message}`, {
+                                                duration: 5000,
+                                            });
+                                        })
+                                        .finally(() => {
+                                            setOtpLoading(false);
+                                        });
+                                } else {
+                                    toast.error('کد تایید را کامل وارد کنید');
+                                }
+                            }}
+                            loading={otpLoading}
+                        />
+                    </Box>
+
+                </Box>
+            </Modal>
         </Box>
     );
 }
