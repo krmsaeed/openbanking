@@ -116,10 +116,12 @@ export function clearErrorCatalogCache(): void {
     cacheTimestamp = null;
 }
 
-export default {
+const errorCatalogService = {
     initErrorCatalog,
     isErrorCatalogInitialized,
     getMessageByCode,
     getMessageByName,
     clearErrorCatalogCache,
 };
+
+export default errorCatalogService;

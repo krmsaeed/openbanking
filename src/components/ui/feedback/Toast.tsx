@@ -4,11 +4,11 @@ import toast, { Toaster } from 'react-hot-toast';
 import { showDismissibleToast } from './DismissibleToast';
 
 interface ToastContextType {
-    success: (message: string, options?: object) => void;
-    error: (message: string, options?: object) => void;
-    warning: (message: string, options?: object) => void;
-    info: (message: string, options?: object) => void;
-    loading: (message: string, options?: object) => string;
+    success: (message: string) => void;
+    error: (message: string) => void;
+    warning: (message: string) => void;
+    info: (message: string) => void;
+    loading: (message: string) => string;
     dismiss: (toastId?: string) => void;
 }
 
@@ -23,23 +23,23 @@ export const useToast = () => {
 };
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const success = (message: string, options?: object) => {
+    const success = (message: string) => {
         return showDismissibleToast(message, 'success');
     };
 
-    const error = (message: string, options?: object) => {
+    const error = (message: string) => {
         return showDismissibleToast(message, 'error');
     };
 
-    const warning = (message: string, options?: object) => {
+    const warning = (message: string) => {
         return showDismissibleToast(message, 'warning');
     };
 
-    const info = (message: string, options?: object) => {
+    const info = (message: string) => {
         return showDismissibleToast(message, 'info');
     };
 
-    const loading = (message: string, options?: object) => {
+    const loading = (message: string) => {
         return toast.loading(message, {
             style: {
                 borderRadius: '12px',
@@ -48,7 +48,6 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 border: `1px solid var(--color-primary-100)`,
                 fontFamily: 'var(--font-vazirmatn), "Tahoma", sans-serif',
             },
-            ...options,
         });
     };
 

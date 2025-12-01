@@ -8,17 +8,17 @@ interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
     children?: ReactNode;
     className?: string;
     variant?:
-        | 'h1'
-        | 'h2'
-        | 'h3'
-        | 'h4'
-        | 'h5'
-        | 'subtitle1'
-        | 'subtitle2'
-        | 'p'
-        | 'span'
-        | 'LineWrapped'
-        | LegacyVariant;
+    | 'h1'
+    | 'h2'
+    | 'h3'
+    | 'h4'
+    | 'h5'
+    | 'subtitle1'
+    | 'subtitle2'
+    | 'p'
+    | 'span'
+    | 'LineWrapped'
+    | LegacyVariant;
     onClick?: MouseEventHandler<HTMLElement>;
     color?: string;
     weight?: string | number;
@@ -163,9 +163,9 @@ const Typography = ({
         case 'LineWrapped':
             return (
                 <Box className="flex w-full items-center justify-center gap-4">
-                    <Box className="bg-dark h-[1px] flex-1" />
+                    <Box className="bg-dark h-px flex-1" />
                     {renderSpan('w-fit md:text-base')}
-                    <Box className="bg-dark h-[1px] flex-1" />
+                    <Box className="bg-dark h-px flex-1" />
                 </Box>
             );
         case 'body1':

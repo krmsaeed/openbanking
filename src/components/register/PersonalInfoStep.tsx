@@ -4,17 +4,15 @@ import { Input } from '@/components/ui/forms';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { useUser } from '@/contexts/UserContext';
 import { personalInfoStepSchema, type PersonalInfoStepForm } from '@/lib/schemas/personal';
-import { clearUserStateCookies, getCookie } from '@/lib/utils';
+import { getCookie } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Box } from '../ui';
 
 export default function PersonalInfo() {
     const { userData, setUserData } = useUser();
-    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const {
         handleSubmit,

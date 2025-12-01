@@ -62,8 +62,8 @@ export default function Sidebar() {
                                         )}
                                     </span>
                                     {index > 0 && (
-                                        <span
-                                            className={`absolute top-1/2 left-[55px] z-0 h-0.5 w-10 -translate-y-1/2 transform md:-top-[10px] md:left-0 md:rotate-90 ${step > index
+                                        <Box
+                                            className={`absolute top-1/2 left-[55px] z-0 h-0.5 w-10 -translate-y-1/2 transform md:-top-2.5 md:left-0 md:rotate-90 ${step > index
                                                 ? 'bg-primary-600'
                                                 : 'bg-gray-400 dark:bg-gray-600'
                                                 }`}

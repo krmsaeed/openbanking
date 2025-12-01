@@ -18,13 +18,13 @@ interface DismissibleToastProps {
 const DismissibleToast: React.FC<DismissibleToastProps> = ({ t, type = 'info', message }) => {
     const icons = {
         success: (
-            <CheckCircleIcon className="ml-2 h-5 w-5 text-[var(--color-success-500)]" />
+            <CheckCircleIcon className="ml-2 h-5 w-5 text-(--color-success-500)" />
         ),
-        error: <XCircleIcon className="ml-2 h-5 w-5 text-[var(--color-error-500)]" />,
+        error: <XCircleIcon className="ml-2 h-5 w-5 text-(--color-error-500)" />,
         warning: (
-            <ExclamationTriangleIcon className="ml-2 h-5 w-5 text-[var(--color-warning-500)]" />
+            <ExclamationTriangleIcon className="ml-2 h-5 w-5 text-(--color-warning-500)" />
         ),
-        info: <InformationCircleIcon className="ml-2 h-5 w-5 text-[var(--color-info-500)]" />,
+        info: <InformationCircleIcon className="ml-2 h-5 w-5 text-(--color-info-500)" />,
     };
 
     const colors = {

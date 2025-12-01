@@ -44,7 +44,7 @@ export function SignatureStep() {
 
     return (
         <Box className="space-y-4">
-            <Box className="dark:bg-primary h-[25rem] w-full rounded-lg border-2 border-dashed border-gray-300 bg-gray-100 p-1 md:h-96">
+            <Box className="dark:bg-primary h-100 w-full rounded-lg border-2 border-dashed border-gray-300 bg-gray-100 p-1 md:h-96">
                 <canvas
                     ref={canvasRef}
                     className="bg-dark-900 touch-no const [transitionLoading, setTransitionLoading] = useState(false);ne h-full w-full cursor-crosshair rounded"

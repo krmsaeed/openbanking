@@ -267,7 +267,7 @@ export default function NationalCardOcrScanner({
                 size="md"
             >
                 <Box className="space-y-2 p-2 text-center">
-                    <Box className="from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-700 mx-auto flex items-center justify-center rounded-full bg-gradient-to-br">
+                    <Box className="from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-700 mx-auto flex items-center justify-center rounded-full bg-linear-to-br">
                         <CameraIcon className="text-primary-600 h-10 w-10 dark:text-blue-400" />
                     </Box>
 
