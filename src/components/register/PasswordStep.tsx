@@ -2,6 +2,7 @@
 
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { Input } from '@/components/ui/forms';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { useUser } from '@/contexts/UserContext';
 import { passwordStepSchema, type PasswordStepForm } from '@/lib/schemas/personal';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
@@ -9,7 +10,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { toast } from 'react-hot-toast';
 import { Box } from '../ui';
 import { List, ListItem } from '../ui/list';
 import CertificateStep from './CertificateStep';
@@ -54,9 +54,7 @@ export default function PasswordStep() {
             })
             .catch((error) => {
                 const { data } = error.response.data;
-                toast.error(data?.digitalMessageException?.message, {
-                    duration: 5000,
-                });
+                showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
             })
             .finally(() => {
                 setIsLoading(false);
@@ -79,17 +77,15 @@ export default function PasswordStep() {
             .then((response) => {
                 const { data } = response;
                 if (data.body.success) {
-                    toast.success('کد تایید مجدد ارسال شد');
+                    showDismissibleToast('کد تایید مجدد ارسال شد', 'success');
                 } else {
-                    toast.error('خطا در ارسال مجدد کد');
+                    showDismissibleToast('خطا در ارسال مجدد کد', 'error');
                 }
             })
             .catch((error) => {
                 console.log("🚀 ~ handleResendOTP ~ error:", error)
                 const { data } = error.response.data;
-                toast.error(data?.digitalMessageException?.message, {
-                    duration: 5000,
-                });
+                showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
             })
             .finally(() => {
                 setIsLoading(false);
@@ -318,15 +314,13 @@ export default function PasswordStep() {
                         .catch((error) => {
                             console.log("🚀 ~ PasswordStep ~ error:", error)
                             const { data } = error.response.data;
-                            toast.error(data?.digitalMessageException?.message, {
-                                duration: 5000,
-                            });
+                            showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
                         })
                         .finally(() => {
                             setOtpLoading(false);
                         });
                 } else {
-                    toast.error('کد تایید را کامل وارد کنید');
+                    showDismissibleToast('کد تایید را کامل وارد کنید', 'error');
                 }
             }}
             loading={otpLoading}

@@ -8,6 +8,7 @@ import {
 } from '@heroicons/react/24/solid';
 import React, { createContext, useContext } from 'react';
 import toast, { Toast, Toaster } from 'react-hot-toast';
+import { showDismissibleToast } from './DismissibleToast';
 
 interface ToastContextType {
     success: (message: string, options?: object) => void;
@@ -48,9 +49,8 @@ const CustomToast: React.FC<{ t: Toast; type: 'success' | 'error' | 'warning' | 
 
     return (
         <Box
-            className={`${
-                t.visible ? 'animate-enter' : 'animate-leave'
-            } flex items-center rounded-xl border p-4 ${colors[type]} max-w-md shadow-lg`}
+            className={`${t.visible ? 'animate-enter' : 'animate-leave'
+                } flex items-center rounded-xl border p-4 ${colors[type]} max-w-md shadow-lg`}
         >
             <Box className="flex items-center space-x-3 space-x-reverse">
                 {icons[type]}
@@ -70,31 +70,19 @@ const CustomToast: React.FC<{ t: Toast; type: 'success' | 'error' | 'warning' | 
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const success = (message: string, options?: object) => {
-        return toast.custom((t: Toast) => <CustomToast t={t} type="success" />, {
-            duration: 4000,
-            ...options,
-        });
+        return showDismissibleToast(message, 'success');
     };
 
     const error = (message: string, options?: object) => {
-        return toast.custom((t: Toast) => <CustomToast t={t} type="error" />, {
-            duration: 5000,
-            ...options,
-        });
+        return showDismissibleToast(message, 'error');
     };
 
     const warning = (message: string, options?: object) => {
-        return toast.custom((t: Toast) => <CustomToast t={t} type="warning" />, {
-            duration: 4000,
-            ...options,
-        });
+        return showDismissibleToast(message, 'warning');
     };
 
     const info = (message: string, options?: object) => {
-        return toast.custom((t: Toast) => <CustomToast t={t} type="info" />, {
-            duration: 4000,
-            ...options,
-        });
+        return showDismissibleToast(message, 'info');
     };
 
     const loading = (message: string, options?: object) => {

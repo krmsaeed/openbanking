@@ -4,6 +4,7 @@ import HomeLoader from '@/components/HomeLoader';
 
 import ThemeToggle from '@/components/ThemeToggle';
 import { Box, Card, Input, Typography } from '@/components/ui';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { useUser } from '@/contexts/UserContext';
 import {
@@ -18,7 +19,6 @@ import '@/lib/httpClient'; // Import to setup axios interceptors
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
 import { z } from 'zod';
 
 // export const dynamic = 'force-dynamic';
@@ -105,7 +105,7 @@ export default function LoginPage() {
                 const { data } = error.response?.data || {};
                 const message = data?.digitalMessageException?.message || 'خطای ناشناخته رخ داد';
 
-                toast.error(message, { duration: 3000 });
+                showDismissibleToast(message, 'error');
 
                 if (status === 500) {
                     clearUserStateCookies();

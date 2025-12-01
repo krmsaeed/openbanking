@@ -1,11 +1,11 @@
 'use client';
 
 import { useUser } from '@/contexts/UserContext';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { getCookie, saveUserStateToCookie, setCookie } from '@/lib/utils';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface ApiResponse {
     data: {
@@ -76,10 +76,11 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                     .catch((error) => {
 
                         const { data } = error.response.data;
-
-                        toast.error(data?.error.status === 401 ? "اطلاعات احراز هویت یافت نشد" : data?.digitalMessageException?.message, {
-                            duration: 5000,
-                        });
+                        const message =
+                            data?.error.status === 401
+                                ? 'اطلاعات احراز هویت یافت نشد'
+                                : data?.digitalMessageException?.message;
+                        showDismissibleToast(message || 'خطای ناشناخته رخ داد', 'error');
                         requestCache.delete(code);
                         router.push('/');
                     });
@@ -125,7 +126,7 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
             }
 
             if (!accessToken || !nationalId) {
-                toast.error('اطلاعات احراز هویت یافت نشد');
+                showDismissibleToast('اطلاعات احراز هویت یافت نشد', 'error');
             }
 
             calledRef.current = true;

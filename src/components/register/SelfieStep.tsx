@@ -3,13 +3,13 @@
 import { List, ListItem } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
 import { useSelfieStep } from '@/hooks/useSelfieStep';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
 import { ArrowPathIcon, CameraIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
-import toast from 'react-hot-toast';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
 import LoadingButton from '../ui/core/LoadingButton';
@@ -480,7 +480,7 @@ export default function SelfieStep() {
 
         }).catch((error) => {
             const { data } = error?.response.data;
-            toast.error(data.digitalMessageException.message, { duration: 5000 });
+            showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
         }).finally(() => {
             setIsUploading(false);
         })

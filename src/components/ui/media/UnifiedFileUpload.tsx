@@ -3,6 +3,7 @@
 import { useCamera } from '@/hooks/useCamera';
 import { useSimpleVideoRecorder } from '@/hooks/useSimpleVideoRecorder';
 import { cn } from '@/lib/utils';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import {
     CameraIcon,
     CloudArrowUpIcon,
@@ -17,7 +18,6 @@ import {
 import { cva, type VariantProps } from 'class-variance-authority';
 import Image from 'next/image';
 import { forwardRef, memo, useCallback, useEffect, useId, useState } from 'react';
-import toast from 'react-hot-toast';
 import { Box, Typography } from '../core';
 import { Button } from '../core/Button';
 
@@ -149,21 +149,19 @@ const CameraView = memo<CameraViewProps>(
                             <Box className="bg-opacity-50 flex rounded-full bg-black p-1">
                                 <button
                                     onClick={() => onRecordingModeChange('photo')}
-                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${
-                                        recordingMode === 'photo'
+                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${recordingMode === 'photo'
                                             ? 'bg-white text-black'
                                             : 'hover:bg-opacity-20 text-white hover:bg-white'
-                                    }`}
+                                        }`}
                                 >
                                     عکس
                                 </button>
                                 <button
                                     onClick={() => onRecordingModeChange('video')}
-                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${
-                                        recordingMode === 'video'
+                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${recordingMode === 'video'
                                             ? 'bg-white text-black'
                                             : 'hover:bg-opacity-20 text-white hover:bg-white'
-                                    }`}
+                                        }`}
                                 >
                                     ویدیو
                                 </button>
@@ -361,7 +359,7 @@ FileList.displayName = 'FileList';
 
 export interface UnifiedFileUploadProps
     extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'>,
-        VariantProps<typeof fileUploadVariants> {
+    VariantProps<typeof fileUploadVariants> {
     onFileSelect?: (files: FileList | null) => void;
     accept?: string;
     multiple?: boolean;
@@ -462,14 +460,17 @@ const UnifiedFileUpload = forwardRef<HTMLInputElement, UnifiedFileUploadProps>(
                 if (!selectedFiles) return false;
 
                 if (multiple && selectedFiles.length > maxFiles) {
-                    toast.error(`حداکثر ${maxFiles} فایل مجاز است`);
+                    showDismissibleToast(`حداکثر ${maxFiles} فایل مجاز است`, 'error');
                     return false;
                 }
 
                 for (let i = 0; i < selectedFiles.length; i++) {
                     const fileSizeMB = selectedFiles[i].size / (1024 * 1024);
                     if (fileSizeMB > maxSizeMB) {
-                        toast.error(`حجم فایل ${selectedFiles[i].name} بیش از ${maxSizeMB}MB است`);
+                        showDismissibleToast(
+                            `حجم فایل ${selectedFiles[i].name} بیش از ${maxSizeMB}MB است`,
+                            'error'
+                        );
                         return false;
                     }
                 }

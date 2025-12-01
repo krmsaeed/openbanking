@@ -2,12 +2,12 @@
 
 import { useUser } from '@/contexts/UserContext';
 import { useSignatureStep } from '@/hooks/useSignatureStep';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import toast from 'react-hot-toast';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
 import LoadingButton from '../ui/core/LoadingButton';
@@ -35,9 +35,7 @@ export function SignatureStep() {
             })
             .catch((error) => {
                 const { data } = error.response.data;
-                toast.error(data?.digitalMessageException?.message, {
-                    duration: 5000,
-                });
+                showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
                 clearUserData();
                 router.push('/');
             })

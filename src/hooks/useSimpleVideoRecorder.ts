@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import toast from 'react-hot-toast';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 
 export interface UseSimpleVideoRecorderReturn {
     isRecording: boolean;
@@ -56,7 +56,7 @@ export const useSimpleVideoRecorder = (): UseSimpleVideoRecorderReturn => {
                 }, 1000);
             } catch (error) {
                 console.error('Error starting recording:', error);
-                toast.error('خطا در شروع ضبط');
+                showDismissibleToast('خطا در شروع ضبط', 'error');
             }
         },
         []

@@ -1,6 +1,7 @@
 'use client';
 
 import { Box, Typography } from '@/components/ui';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { Button } from '@/components/ui/core/Button';
 import { Modal } from '@/components/ui/overlay';
 import { useCamera } from '@/hooks/useCamera';
@@ -8,7 +9,6 @@ import { OcrFields, ocrRecognizeFile, parseNationalCardFields } from '@/lib/ocr'
 import { ArrowPathIcon, CameraIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
 
 type Props = {
     onCapture?: (file: File, isValid: boolean, fields?: OcrFields) => void;
@@ -134,11 +134,11 @@ export default function NationalCardOcrScanner({
         try {
             const granted = await requestCameraPermission();
             if (!granted) {
-                toast.error('برای گرفتن عکس جدید اجازه‌ی دوربین لازم است');
+                showDismissibleToast('برای گرفتن عکس جدید اجازه‌ی دوربین لازم است', 'error');
             }
         } catch (err) {
             console.warn('failed to restart camera', err);
-            toast.error('دوربین بازنشانی نشد');
+            showDismissibleToast('دوربین بازنشانی نشد', 'error');
         }
     }, [capturedUrl, requestCameraPermission, stopCamera]);
 

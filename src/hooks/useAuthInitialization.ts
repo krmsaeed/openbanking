@@ -4,7 +4,7 @@ import { getAccessToken, getNationalId, initializeAuth } from '@/lib/auth';
 import { initErrorCatalog, isErrorCatalogInitialized } from '@/services/errorCatalog';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 
 interface UseAuthInitializationOptions {
     requireAuth?: boolean;
@@ -49,7 +49,7 @@ export const useAuthInitialization = ({
             if (!isErrorCatalogInitialized()) {
                 try {
                     await initErrorCatalog();
-                } catch {}
+                } catch { }
             }
 
             const existingToken = getAccessToken();
@@ -86,7 +86,7 @@ export const useAuthInitialization = ({
             setError(errorMessage);
 
             if (requireAuth) {
-                toast.error(errorMessage);
+                showDismissibleToast(errorMessage, 'error');
                 router.push('/not-eligible?error=initialization_failed');
             } else {
                 setIsInitialized(true);

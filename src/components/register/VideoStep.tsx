@@ -1,12 +1,12 @@
 'use client';
 
 import { useUser } from '@/contexts/UserContext';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
 import { createBPMSFormData } from '@/lib/fileUtils';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import toast from 'react-hot-toast';
 import { VideoRecorderView } from '../specialized/VideoRecorderView';
 
 export const VideoRecorderStep: React.FC = () => {
@@ -48,7 +48,7 @@ export const VideoRecorderStep: React.FC = () => {
                 if (res.data.body.verified) {
                     setUserData({ ...userData, step: 4 });
                 } else {
-                    toast.error('ویدئو شما تایید نشد. لطفاً دوباره تلاش کنید.');
+                    showDismissibleToast('ویدئو شما تایید نشد. لطفاً دوباره تلاش کنید.', 'error');
 
                     handleRetake();
                 }
@@ -56,9 +56,7 @@ export const VideoRecorderStep: React.FC = () => {
             .catch((error) => {
                 console.log("🚀 ~ handleUpload ~ error:", error)
                 const { data } = error.response.data;
-                toast.error(data?.digitalMessageException?.message, {
-                    duration: 5000,
-                });
+                showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
             }).finally(() => {
                 setIsUploading(false);
             })

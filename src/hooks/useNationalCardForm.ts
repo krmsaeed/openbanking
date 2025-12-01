@@ -1,12 +1,12 @@
 'use client';
 
 import { useUser } from '@/contexts/UserContext';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { nationalCardInfoSchema, type NationalCardInfoForm } from '@/lib/schemas/identity';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
 
 export interface Branch {
     value: number;
@@ -134,9 +134,7 @@ export function useNationalCardForm() {
             })
             .catch((error) => {
                 const { data } = error.response.data;
-                toast.error(data?.digitalMessageException?.message, {
-                    duration: 5000,
-                });
+                showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
             })
             .finally(() => {
                 setIsLoading(false);

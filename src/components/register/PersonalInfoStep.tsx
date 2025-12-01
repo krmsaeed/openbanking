@@ -1,6 +1,7 @@
 'use client';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { Input } from '@/components/ui/forms';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { useUser } from '@/contexts/UserContext';
 import { personalInfoStepSchema, type PersonalInfoStepForm } from '@/lib/schemas/personal';
 import { clearUserStateCookies, getCookie } from '@/lib/utils';
@@ -9,7 +10,6 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { toast } from 'react-hot-toast';
 import { Box } from '../ui';
 
 export default function PersonalInfo() {
@@ -68,9 +68,7 @@ export default function PersonalInfo() {
                 .catch((error) => {
                     console.log("🚀 ~ onSubmit ~ data:", error)
                     const { data } = error.response.data;
-                    toast.error(data?.digitalMessageException?.message, {
-                        duration: 5000,
-                    });
+                    showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
 
                 });
         } finally {

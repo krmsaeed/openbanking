@@ -1,7 +1,7 @@
 import { forwardRef, useCallback } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-import toast from 'react-hot-toast';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { DocumentIcon, PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const fileUploadVariants = cva(
@@ -28,7 +28,7 @@ const fileUploadVariants = cva(
 
 export interface FileUploadProps
     extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'>,
-        VariantProps<typeof fileUploadVariants> {
+    VariantProps<typeof fileUploadVariants> {
     onFileSelect?: (files: FileList | null) => void;
     accept?: string;
     multiple?: boolean;
@@ -64,15 +64,16 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
                 const selectedFiles = e.target.files;
                 if (selectedFiles) {
                     if (multiple && selectedFiles.length > maxFiles) {
-                        toast.error(`حداکثر ${maxFiles} فایل مجاز است`);
+                        showDismissibleToast(`حداکثر ${maxFiles} فایل مجاز است`, 'error');
                         return;
                     }
 
                     for (let i = 0; i < selectedFiles.length; i++) {
                         const fileSizeMB = selectedFiles[i].size / (1024 * 1024);
                         if (fileSizeMB > maxSizeMB) {
-                            toast.error(
-                                `حجم فایل ${selectedFiles[i].name} بیش از ${maxSizeMB}MB است`
+                            showDismissibleToast(
+                                `حجم فایل ${selectedFiles[i].name} بیش از ${maxSizeMB}MB است`,
+                                'error'
                             );
                             return;
                         }
@@ -90,15 +91,16 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
                 const droppedFiles = e.dataTransfer.files;
                 if (droppedFiles.length > 0) {
                     if (multiple && droppedFiles.length > maxFiles) {
-                        toast.error(`حداکثر ${maxFiles} فایل مجاز است`);
+                        showDismissibleToast(`حداکثر ${maxFiles} فایل مجاز است`, 'error');
                         return;
                     }
 
                     for (let i = 0; i < droppedFiles.length; i++) {
                         const fileSizeMB = droppedFiles[i].size / (1024 * 1024);
                         if (fileSizeMB > maxSizeMB) {
-                            toast.error(
-                                `حجم فایل ${droppedFiles[i].name} بیش از ${maxSizeMB}MB است`
+                            showDismissibleToast(
+                                `حجم فایل ${droppedFiles[i].name} بیش از ${maxSizeMB}MB است`,
+                                'error'
                             );
                             return;
                         }

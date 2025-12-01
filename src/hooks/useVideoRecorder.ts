@@ -1,7 +1,7 @@
 
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { mediaStreamManager } from '@/lib/mediaStreamManager';
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
-import toast from 'react-hot-toast';
 
 const stopMediaTracks = (stream?: MediaStream | null): void => {
     if (!stream) return;
@@ -105,7 +105,7 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
             }
         } catch (err) {
             console.warn('camera access failed', err);
-            toast.error('دسترسی به دوربین امکان‌پذیر نیست');
+            showDismissibleToast('دسترسی به دوربین امکان‌پذیر نیست', 'error');
         }
     }, []);
 
@@ -206,7 +206,7 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
             setRecordingTime(15);
         } catch (error) {
             console.error('Error starting recording:', error);
-            toast.error('خطا در شروع ضبط');
+            showDismissibleToast('خطا در شروع ضبط', 'error');
         }
     }, []);
 

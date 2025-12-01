@@ -11,6 +11,7 @@ import {
     Label,
     Typography,
 } from '@/components/ui';
+import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { PdfPreviewModal } from '@/components/ui/overlay/PdfPreviewModal';
 import { ArrowDownTrayIcon, DocumentTextIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
@@ -19,7 +20,6 @@ import Modal from '../ui/overlay/Modal';
 import { useUser } from '@/contexts/UserContext';
 import CertificateStep from './CertificateStep';
 import axios from 'axios';
-import { toast } from 'react-hot-toast';
 import { Controller, useForm } from 'react-hook-form';
 const PDF_URL = '/test.pdf';
 
@@ -468,13 +468,14 @@ export default function ContractStep() {
                                         },
                                     })
                                     .then(() => {
-                                        toast.success('کد تایید مجدد ارسال شد');
+                                        showDismissibleToast('کد تایید مجدد ارسال شد', 'success');
                                     })
                                     .catch((error) => {
                                         const data = (error as { response?: { data?: { digitalMessageException?: { message?: string } } } })?.response?.data;
-                                        toast.error(`${data?.digitalMessageException?.message}`, {
-                                            duration: 5000,
-                                        });
+                                        showDismissibleToast(
+                                            data?.digitalMessageException?.message || 'خطایی رخ داد',
+                                            'error'
+                                        );
 
                                     })
                                     .finally(() => {
@@ -483,7 +484,7 @@ export default function ContractStep() {
                             }}
                             onIssue={() => {
                                 if (password !== userData.password) {
-                                    toast.error('رمز عبور اشتباه است');
+                                    showDismissibleToast('رمز عبور اشتباه است', 'error');
                                     return;
                                 }
                                 if (otp.length === 4) {
@@ -504,15 +505,16 @@ export default function ContractStep() {
                                         })
                                         .catch((error) => {
                                             const data = (error as { response?: { data?: { digitalMessageException?: { message?: string } } } })?.response?.data;
-                                            toast.error(`${data?.digitalMessageException?.message}`, {
-                                                duration: 5000,
-                                            });
+                                            showDismissibleToast(
+                                                data?.digitalMessageException?.message || 'خطایی رخ داد',
+                                                'error'
+                                            );
                                         })
                                         .finally(() => {
                                             setOtpLoading(false);
                                         });
                                 } else {
-                                    toast.error('کد تایید را کامل وارد کنید');
+                                    showDismissibleToast('کد تایید را کامل وارد کنید', 'error');
                                 }
                             }}
                             loading={otpLoading}
