@@ -34,17 +34,18 @@ async function handler(request: AuthenticatedRequest) {
                 const data = response.data;
                 const exception = data.digitalMessageException;
                 const mappedMessage = await mapExceptionMessage(exception);
+                const isKnownError = mappedMessage !== 'خطا در پردازش اطلاعات';
 
                 const errorResponse = {
                     status: 200,
                     data: {
                         digitalMessageException: {
                             code: exception.code || exception.errorCode,
-                            message: mappedMessage
+                            message: isKnownError ? mappedMessage : 'عدم برقراری ارتباط با سرور'
                         }
                     }
                 };
-                return NextResponse.json(errorResponse, { status: 400 });
+                return NextResponse.json(errorResponse, { status: isKnownError ? 400 : 500 });
             }
 
             return NextResponse.json({ ...(response.data || {}) }, { status: 200 });
