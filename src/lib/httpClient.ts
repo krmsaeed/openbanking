@@ -50,7 +50,11 @@ function isTimeoutError(error: AxiosError): boolean {
     return typeof error.message === 'string' && error.message.toLowerCase().includes('timeout');
 }
 
-async function handleTimeoutSideEffects(): Promise<void> {
+function isServerError(error: AxiosError): boolean {
+    return error.response?.status === 500;
+}
+
+async function resetClientState(): Promise<void> {
     if (typeof window === 'undefined') return;
 
     try {
@@ -103,8 +107,8 @@ export function setupAxiosInterceptors() {
     axios.interceptors.response.use(
         (response) => response,
         (error: AxiosError) => {
-            if (isTimeoutError(error)) {
-                void handleTimeoutSideEffects();
+            if (isTimeoutError(error) || isServerError(error)) {
+                void resetClientState();
             }
 
             if (error.response?.status === 401) {
@@ -147,8 +151,8 @@ httpClient.interceptors.response.use(
         return response;
     },
     (error: AxiosError) => {
-        if (isTimeoutError(error)) {
-            void handleTimeoutSideEffects();
+        if (isTimeoutError(error) || isServerError(error)) {
+            void resetClientState();
         }
 
         if (error.response?.status === 401) {

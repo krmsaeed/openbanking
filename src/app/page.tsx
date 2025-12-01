@@ -101,13 +101,16 @@ export default function LoginPage() {
                 router.push('/register');
             })
             .catch((error) => {
-                const { data } = error.response.data;
-                toast.error(data?.digitalMessageException?.message, {
-                    duration: 3000,
-                });
+                const status = error.response?.status;
+                const { data } = error.response?.data || {};
+                const message = data?.digitalMessageException?.message || 'خطای ناشناخته رخ داد';
 
-                clearUserStateCookies();
-                setTimeout(() => router.push('/'), 1000);
+                toast.error(message, { duration: 3000 });
+
+                if (status === 500) {
+                    clearUserStateCookies();
+                    setTimeout(() => router.push('/'), 1000);
+                }
             })
             .finally(() => {
                 setIsLoading(false);
