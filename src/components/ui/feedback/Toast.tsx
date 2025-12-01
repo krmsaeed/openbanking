@@ -1,13 +1,6 @@
 'use client';
-import { Box } from '@/components/ui';
-import {
-    CheckCircleIcon,
-    ExclamationTriangleIcon,
-    InformationCircleIcon,
-    XCircleIcon,
-} from '@heroicons/react/24/solid';
 import React, { createContext, useContext } from 'react';
-import toast, { Toast, Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { showDismissibleToast } from './DismissibleToast';
 
 interface ToastContextType {
@@ -27,45 +20,6 @@ export const useToast = () => {
         throw new Error('useToast must be used within a ToastProvider');
     }
     return context;
-};
-
-const CustomToast: React.FC<{ t: Toast; type: 'success' | 'error' | 'warning' | 'info' }> = ({
-    t,
-    type,
-}) => {
-    const icons = {
-        success: <CheckCircleIcon className="h-5 w-5 text-[var(--color-success-500)]" />,
-        error: <XCircleIcon className="h-5 w-5 text-[var(--color-error-500)]" />,
-        warning: <ExclamationTriangleIcon className="h-5 w-5 text-[var(--color-warning-500)]" />,
-        info: <InformationCircleIcon className="h-5 w-5 text-[var(--color-info-500)]" />,
-    };
-
-    const colors = {
-        success: 'border-[var(--color-success-100)] bg-[var(--color-success-50)]',
-        error: 'border-[var(--color-error-100)] bg-[var(--color-error-50)]',
-        warning: 'border-[var(--color-warning-100)] bg-[var(--color-warning-50)]',
-        info: 'border-[var(--color-info-100)] bg-[var(--color-info-50)]',
-    };
-
-    return (
-        <Box
-            className={`${t.visible ? 'animate-enter' : 'animate-leave'
-                } flex items-center rounded-xl border p-4 ${colors[type]} max-w-md shadow-lg`}
-        >
-            <Box className="flex items-center space-x-3 space-x-reverse">
-                {icons[type]}
-                <p className="text-sm font-medium text-gray-900">
-                    {typeof t.message === 'function' ? t.message(t) : t.message}
-                </p>
-            </Box>
-            <button
-                onClick={() => toast.dismiss(t.id)}
-                className="mr-auto text-gray-400 transition-colors hover:text-gray-600"
-            >
-                <XCircleIcon className="h-5 w-5" />
-            </button>
-        </Box>
-    );
 };
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
