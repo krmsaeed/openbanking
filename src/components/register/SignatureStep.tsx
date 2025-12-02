@@ -4,6 +4,7 @@ import { useUser } from '@/contexts/UserContext';
 import { useSignatureStep } from '@/hooks/useSignatureStep';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
+import { resolveCatalogMessage } from '@/services/errorCatalog';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -33,9 +34,12 @@ export function SignatureStep() {
             .then(() => {
                 setUserData({ ...userData, step: 5 });
             })
-            .catch((error) => {
-                const { data } = error.response.data;
-                showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
+            .catch(async (error) => {
+                const message = await resolveCatalogMessage(
+                    error.response?.data,
+                    'خطایی رخ داد'
+                );
+                showDismissibleToast(message, 'error');
                 clearUserData();
                 router.push('/');
             })

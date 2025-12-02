@@ -14,6 +14,7 @@ import {
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { PdfPreviewModal } from '@/components/ui/overlay/PdfPreviewModal';
+import { resolveCatalogMessage } from '@/services/errorCatalog';
 import { ArrowDownTrayIcon, DocumentTextIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import Modal from '../ui/overlay/Modal';
@@ -470,13 +471,12 @@ export default function ContractStep() {
                                     .then(() => {
                                         showDismissibleToast('کد تایید مجدد ارسال شد', 'success');
                                     })
-                                    .catch((error) => {
-                                        const data = (error as { response?: { data?: { digitalMessageException?: { message?: string } } } })?.response?.data;
-                                        showDismissibleToast(
-                                            data?.digitalMessageException?.message || 'خطایی رخ داد',
-                                            'error'
+                                    .catch(async (error) => {
+                                        const message = await resolveCatalogMessage(
+                                            error.response?.data,
+                                            'خطایی رخ داد'
                                         );
-
+                                        showDismissibleToast(message, 'error');
                                     })
                                     .finally(() => {
                                         setOtpLoading(false);
@@ -503,12 +503,12 @@ export default function ContractStep() {
                                             setUserData({ step: 6 });
                                             setShowModal(false);
                                         })
-                                        .catch((error) => {
-                                            const data = (error as { response?: { data?: { digitalMessageException?: { message?: string } } } })?.response?.data;
-                                            showDismissibleToast(
-                                                data?.digitalMessageException?.message || 'خطایی رخ داد',
-                                                'error'
+                                        .catch(async (error) => {
+                                            const message = await resolveCatalogMessage(
+                                                error.response?.data,
+                                                'خطایی رخ داد'
                                             );
+                                            showDismissibleToast(message, 'error');
                                         })
                                         .finally(() => {
                                             setOtpLoading(false);

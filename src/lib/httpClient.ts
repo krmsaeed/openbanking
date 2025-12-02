@@ -2,8 +2,6 @@ import { clearAuthTokens, getAccessToken } from '@/lib/auth';
 import { clearUserStateCookies } from '@/lib/utils';
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
-const baseURL = process.env.BASE_URL;
-
 type IDBFactoryWithDatabases = IDBFactory & {
     databases?: () => Promise<Array<{ name?: string }>>;
 };
@@ -81,7 +79,7 @@ const getCacheKey = (config: InternalAxiosRequestConfig): string => {
 };
 
 export const httpClient: AxiosInstance = axios.create({
-    baseURL: `${baseURL}/bpms`,
+    baseURL: '', // برای استفاده از API routes داخلی Next.js
     timeout: 60000,
     validateStatus: () => true,
     withCredentials: true,

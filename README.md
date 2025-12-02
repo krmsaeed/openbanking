@@ -57,7 +57,7 @@ Copy `env.example` to `.env` and set the values. Key variables:
 
 - `IMAGE_NAME`: Docker image name (default: `opencbanking`)
 - `IMAGE_TAG`: Docker image tag (default: `latest`)
-- `BASE_URL`: API base URL (runtime only, not embedded in build)
+- `NEXT_PUBLIC_BASE_URL`: API base URL (runtime only, not embedded in build)
 
 ## Build & Run with Custom Tags
 
@@ -96,7 +96,7 @@ docker push myuser/opencbanking:1.2.3
 
 ## Notes
 
-- `BASE_URL` is only used at runtime (not embedded in client bundle since you use nginx proxy)
+- `NEXT_PUBLIC_BASE_URL` is only used at runtime (not embedded in client bundle since you use nginx proxy)
 - The container uses npm for builds (switched from yarn due to network issues in Docker)
 - Use `docker exec -it opencbanking-pwa printenv` to validate environment variables
 - The `.env` file is gitignored; never commit secrets

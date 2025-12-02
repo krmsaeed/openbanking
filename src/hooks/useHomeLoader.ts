@@ -3,6 +3,7 @@
 import { useUser } from '@/contexts/UserContext';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { getCookie, saveUserStateToCookie, setCookie } from '@/lib/utils';
+import { resolveCatalogMessage } from '@/services/errorCatalog';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -73,14 +74,16 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                         router.push('/register');
                         requestCache.set(code, true);
                     })
-                    .catch((error) => {
-
-                        const { data } = error.response.data;
+                    .catch(async (error) => {
+                        const data = error.response?.data;
                         const message =
-                            data?.error.status === 401
+                            data?.error?.status === 401
                                 ? 'اطلاعات احراز هویت یافت نشد'
-                                : data?.digitalMessageException?.message;
-                        showDismissibleToast(message || 'خطای ناشناخته رخ داد', 'error');
+                                : await resolveCatalogMessage(
+                                    data,
+                                    'عملیات ناموفق'
+                                );
+                        showDismissibleToast(message, 'error');
                         requestCache.delete(code);
                         router.push('/');
                     });

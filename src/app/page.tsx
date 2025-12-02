@@ -104,7 +104,7 @@ export default function LoginPage() {
             };
             const message = await resolveCatalogMessage(
                 axiosError.response?.data,
-                'خطای ناشناخته رخ داد'
+                'عملیات ناموفق'
             );
             showDismissibleToast(message, 'error');
         } finally {

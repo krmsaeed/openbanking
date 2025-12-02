@@ -5,6 +5,7 @@ import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast'
 import { useUser } from '@/contexts/UserContext';
 import { personalInfoStepSchema, type PersonalInfoStepForm } from '@/lib/schemas/personal';
 import { getCookie } from '@/lib/utils';
+import { resolveCatalogMessage } from '@/services/errorCatalog';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useState } from 'react';
@@ -63,12 +64,13 @@ export default function PersonalInfo() {
                         setUserData({ ...userData, step: 6 });
                     }
                 })
-                .catch((error) => {
+                .catch(async (error) => {
                     console.log("🚀 ~ onSubmit ~ error:", error);
-                    const errorMessage = error.response?.data?.data?.digitalMessageException?.message ||
-                        error.response?.data?.digitalMessageException?.message ||
-                        'خطایی رخ داد';
-                    showDismissibleToast(errorMessage, 'error');
+                    const message = await resolveCatalogMessage(
+                        error.response?.data,
+                        'خطایی رخ داد'
+                    );
+                    showDismissibleToast(message, 'error');
                 });
         } finally {
             setIsLoading(false);

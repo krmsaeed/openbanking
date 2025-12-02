@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
         formData.append('client_secret', body.client_secret || 'XALaRPl5qwTEItdwCMiPS62nVpKs7dL7');
 
         const response = await axios.post(
-            `${process.env.BASE_URL}/auth/token`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/auth/token`,
             formData.toString(),
             {
                 headers: {

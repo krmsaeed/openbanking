@@ -13,9 +13,9 @@ export type RemoteError = {
 };
 
 function buildErrorsUrl(): string {
-    const base = process.env.BASE_URL?.replace(/\/$/, '');
+    const base = process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, '');
     if (!base) {
-        throw new Error('BASE_URL is not configured');
+        throw new Error('NEXT_PUBLIC_BASE_URL is not configured');
     }
     return `${base}/errors/getAll`;
 }

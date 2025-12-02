@@ -25,7 +25,9 @@ export function convertPersianToEnglish(value: string): string {
 export function setCookie(name: string, value: string, days: number = 365): void {
     if (typeof window === 'undefined') return;
     const maxAge = days * 24 * 60 * 60;
-    document.cookie = `${name}=${value}; path=/; max-age=${maxAge}`;
+    const isSecure = window.location.protocol === 'https:';
+    const secureFlag = isSecure ? '; Secure' : '';
+    document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
 }
 
 export function getCookie(name: string): string | null {

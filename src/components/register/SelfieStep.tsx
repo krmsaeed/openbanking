@@ -9,7 +9,6 @@ import { resolveCatalogMessage } from '@/services/errorCatalog';
 import { ArrowPathIcon, CameraIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import { Box, Typography } from '../ui/core';
 import { Button } from '../ui/core/Button';
@@ -478,9 +477,12 @@ export default function SelfieStep() {
             const { data } = res;
             setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
 
-        }).catch((error) => {
-            const { data } = error?.response.data;
-            showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
+        }).catch(async (error) => {
+            const message = await resolveCatalogMessage(
+                error?.response?.data,
+                'خطایی رخ داد'
+            );
+            showDismissibleToast(message, 'error');
         }).finally(() => {
             setIsUploading(false);
         })

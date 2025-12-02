@@ -1,43 +1,43 @@
 import { withAuth, type AuthenticatedRequest } from '@/lib/authMiddleware';
-import { virtualOpenDepositKeKycUserFiles } from '@/services/bpms';
 import { NextResponse } from 'next/server';
+import axios from 'axios';
+import https from 'https';
+
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 async function handler(request: AuthenticatedRequest) {
     try {
-        const data = await request.formData();
+        const formData = await request.formData();
         const authToken = request.auth?.token;
-        const response = await virtualOpenDepositKeKycUserFiles(data, authToken);
-        console.log('BPMS File Upload Response:', response);
-        if (response.status === 200) {
-            const hasException =
-                response.data &&
-                typeof response.data === 'object' &&
-                'digitalMessageException' in response.data;
 
-            if (hasException) {
-                const exception = response.data.digitalMessageException;
-                const errorResponse = {
-                    status: 400,
-                    ...response.data,
-                    digitalMessageException: {
-                        code: exception.code || exception.errorCode,
-                        errorKey: exception.errorKey,
-                        message: exception.message,
-                    },
-                };
-                return NextResponse.json(errorResponse, { status: 400 });
-            }
+        const backendRes = await axios.post(`${BACKEND_BASE_URL}/bpms/sendMultiPartMessage`, formData, {
+            headers: {
+                ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+            },
+            httpsAgent,
+            validateStatus: () => true,
+        });
 
-            return NextResponse.json({ ...(response.data || {}) }, { status: 200 });
+        const data = backendRes.data;
+
+        if (backendRes.status === 200 && data?.digitalMessageException) {
+            const exception = data.digitalMessageException;
+            const errorResponse = {
+                ...data,
+                digitalMessageException: {
+                    code: exception.code || exception.errorCode,
+                    errorKey: exception.errorKey,
+                    message: exception.message,
+                },
+            };
+            return NextResponse.json(errorResponse, { status: 400 });
         }
-        return NextResponse.json({ data: response.data });
-    } catch (error) {
-        const errorData = error && typeof error === 'object' && 'response' in error
-            ? error?.response
-            : undefined;
+
+        return NextResponse.json(data, { status: backendRes.status });
+    } catch {
         return NextResponse.json(
             {
-                errorData,
                 digitalMessageException: {
                     errorCode: 500,
                     message: 'عدم برقراری ارتباط با سرور',

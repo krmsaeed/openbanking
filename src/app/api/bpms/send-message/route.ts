@@ -1,44 +1,52 @@
 import { withAuth, type AuthenticatedRequest } from '@/lib/authMiddleware';
-import { virtualOpenDepositSendMessage } from '@/services/bpms';
 import { NextResponse } from 'next/server';
+import axios from 'axios';
+import https from 'https';
+
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 async function handler(request: AuthenticatedRequest) {
     try {
         const body = await request.json();
-
-        const requestBody = {
-            ...body,
-        };
         const authToken = request.auth?.token;
-        const response = await virtualOpenDepositSendMessage(requestBody, authToken);
 
-        if (response.status === 200) {
-            const hasException =
-                response.data &&
-                typeof response.data === 'object' &&
-                'digitalMessageException' in response.data;
+        const backendRes = await axios.post(`${BACKEND_BASE_URL}/bpms/sendMessage`, body, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+            },
+            httpsAgent,
+            validateStatus: () => true,
+        });
 
-            if (hasException) {
-                const exception = response.data.digitalMessageException;
-                const errorResponse = {
+        const data = backendRes.data;
 
-                    ...response.data,
-                    digitalMessageException: {
-                        code: exception.code || exception.errorCode,
-                        errorKey: exception.errorKey,
-                        message: exception.message,
-                    },
-                };
-                return NextResponse.json(errorResponse, { status: 400 });
-            }
-            return NextResponse.json({ ...(response.data || {}) }, { status: 200 });
+        // اگر backend status 200 و exception وجود دارد → status 400 بده
+        if (backendRes.status === 200 && data?.digitalMessageException) {
+            const exception = data.digitalMessageException;
+            const errorResponse = {
+                ...data,
+                digitalMessageException: {
+                    code: exception.code || exception.errorCode,
+                    errorKey: exception.errorKey,
+                    message: exception.message,
+                },
+            };
+            return NextResponse.json(errorResponse, { status: 400 });
         }
 
-        return NextResponse.json({ error: response }, { status: response.status || 400 });
+        if (backendRes.status === 200) {
+            return NextResponse.json(data, { status: 200 });
+        }
+
+        return NextResponse.json({ error: data }, { status: backendRes.status || 400 });
+
     } catch (error) {
         const errorData = error && typeof error === 'object' && 'response' in error
             ? error?.response
             : undefined;
+
         return NextResponse.json(
             {
                 errorData,

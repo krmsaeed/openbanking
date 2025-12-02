@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/forms';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { useUser } from '@/contexts/UserContext';
 import { passwordStepSchema, type PasswordStepForm } from '@/lib/schemas/personal';
+import { resolveCatalogMessage } from '@/services/errorCatalog';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
@@ -52,9 +53,12 @@ export default function PasswordStep() {
             .then(() => {
                 setShowOtp(true);
             })
-            .catch((error) => {
-                const { data } = error.response.data;
-                showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
+            .catch(async (error) => {
+                const message = await resolveCatalogMessage(
+                    error.response?.data,
+                    'خطایی رخ داد'
+                );
+                showDismissibleToast(message, 'error');
             })
             .finally(() => {
                 setIsLoading(false);
@@ -82,10 +86,13 @@ export default function PasswordStep() {
                     showDismissibleToast('خطا در ارسال مجدد کد', 'error');
                 }
             })
-            .catch((error) => {
+            .catch(async (error) => {
                 console.log("🚀 ~ handleResendOTP ~ error:", error)
-                const { data } = error.response.data;
-                showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
+                const message = await resolveCatalogMessage(
+                    error.response?.data,
+                    'خطایی رخ داد'
+                );
+                showDismissibleToast(message, 'error');
             })
             .finally(() => {
                 setIsLoading(false);
@@ -311,10 +318,13 @@ export default function PasswordStep() {
                         .then(() => {
                             setUserData({ step: 6 });
                         })
-                        .catch((error) => {
+                        .catch(async (error) => {
                             console.log("🚀 ~ PasswordStep ~ error:", error)
-                            const { data } = error.response.data;
-                            showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
+                            const message = await resolveCatalogMessage(
+                                error.response?.data,
+                                'خطایی رخ داد'
+                            );
+                            showDismissibleToast(message, 'error');
                         })
                         .finally(() => {
                             setOtpLoading(false);

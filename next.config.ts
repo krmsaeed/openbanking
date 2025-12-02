@@ -39,12 +39,14 @@ const nextConfig = {
         return config;
     },
     env: {
-        // BASE_URL: 'https://novinhubtst.enbank.ir/',
-        // BASE_URL: 'https://192.168.50.49:4999',
-        BASE_URL: 'https://10.224.2.3:4999',
-        // BASE_URL: 'https://192.168.91.112:4999',
-        // BASE_URL: 'https://novinhubtst.enbank.ir/',
-        IS_STAGE: 'true',
+        // NEXT_PUBLIC_BASE_URL: 'https://novinhubtst.enbank.ir',
+        NEXT_PUBLIC_BASE_URL: 'https://192.168.50.49:4999',
+        // NEXT_PUBLIC_BASE_URL: 'https://10.224.2.12',
+        // NEXT_PUBLIC_BASE_URL: 'https://10.224.2.3:4999',
+        // NEXT_PUBLIC_BASE_URL: 'https://192.168.91.112:4999',
+        IS_STAGE: 'false',
+        BPMS_USERNAME: 'demo',
+        BPMS_PASSWORD: 'demo',
     },
 };
 

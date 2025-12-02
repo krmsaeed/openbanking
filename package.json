@@ -5,9 +5,9 @@
     "scripts": {
         "dev": "NODE_OPTIONS='--no-deprecation' next dev",
         "build": "next build",
-        "start": "next start -p 80",
+        "start": "next start -p 4000",
         "start:standalone": "NODE_ENV=production node .next/standalone/server.js",
-        "prod": "npm run build:prod && npm run start:standalone",
+        "prod": "npm run build && npm run start:standalone",
         "analyze": "ANALYZE=true next build",
         "lint": "eslint",
         "format": "prettier --write .",
@@ -56,6 +56,7 @@
         "prettier-plugin-tailwindcss": "^0.6.14",
         "source-map-explorer": "^2.5.3",
         "tailwindcss": "^4",
+        "ts-node": "^10.9.2",
         "typescript": "^5.9.2"
     }
 }

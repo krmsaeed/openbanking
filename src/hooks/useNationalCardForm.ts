@@ -3,6 +3,7 @@
 import { useUser } from '@/contexts/UserContext';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { nationalCardInfoSchema, type NationalCardInfoForm } from '@/lib/schemas/identity';
+import { resolveCatalogMessage } from '@/services/errorCatalog';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useCallback, useState } from 'react';
@@ -132,9 +133,12 @@ export function useNationalCardForm() {
                 });
                 setShowWelcomeModal(true);
             })
-            .catch((error) => {
-                const { data } = error.response.data;
-                showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
+            .catch(async (error) => {
+                const message = await resolveCatalogMessage(
+                    error.response?.data,
+                    'خطایی رخ داد'
+                );
+                showDismissibleToast(message, 'error');
             })
             .finally(() => {
                 setIsLoading(false);

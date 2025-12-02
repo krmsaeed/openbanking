@@ -1,26 +1,43 @@
 import { NextResponse } from 'next/server';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
+import https from 'https';
+import { withAuth, type AuthenticatedRequest } from '@/lib/authMiddleware';
 
-export async function GET() {
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+
+async function handler(request: AuthenticatedRequest) {
     try {
-        const base = process.env.BASE_URL?.replace(/\/$/, '');
-        if (!base) {
-            return NextResponse.json({ error: 'BASE_URL is not configured' }, { status: 500 });
+        if (!BACKEND_BASE_URL) {
+            return NextResponse.json({ error: 'NEXT_PUBLIC_BASE_URL is not configured' }, { status: 500 });
         }
 
-        const url = `${base}/errors/getAll`;
+        const token = request.auth?.token;
+        const url = `${BACKEND_BASE_URL}/errors/getAll`;
+
         const response = await axios.get(url, {
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            httpsAgent,
             timeout: 15000,
+            validateStatus: () => true,
         });
 
-        return NextResponse.json(response.data);
+        return NextResponse.json(response.data, { status: response.status });
     } catch (error) {
         console.error('Error fetching errors:', error);
-        if (error instanceof AxiosError) {
-            return NextResponse.json({ error: 'Failed to fetch errors' }, { status: error.response?.status || 500 });
-        } else {
-            return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
-        }
+        return NextResponse.json(
+            {
+                digitalMessageException: {
+                    code: 500,
+                    message: 'عدم برقراری ارتباط با سرور',
+                },
+            },
+            { status: 500 }
+        );
     }
 }
+
+export const GET = withAuth(handler);
