@@ -5,6 +5,7 @@ import { useUser } from '@/contexts/UserContext';
 import { useSelfieStep } from '@/hooks/useSelfieStep';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
+import { resolveCatalogMessage } from '@/services/errorCatalog';
 import { ArrowPathIcon, CameraIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import Image from 'next/image';
@@ -439,8 +440,7 @@ function ErrorState({ error, onRetry, onCancel }: ErrorStateProps) {
 }
 
 export default function SelfieStep() {
-    const { userData, setUserData, clearUserData } = useUser();
-    const router = useRouter();
+    const { userData, setUserData } = useUser();
     const {
         videoRef,
         canvasRef,

@@ -8,11 +8,11 @@ import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast'
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { useUser } from '@/contexts/UserContext';
 import {
-    clearUserStateCookies,
     convertPersianToEnglish,
     isValidNationalId,
     setCookie,
 } from '@/lib/utils';
+import { resolveCatalogMessage } from '@/services/errorCatalog';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import '@/lib/httpClient'; // Import to setup axios interceptors
@@ -72,49 +72,44 @@ export default function LoginPage() {
 
     const onSubmit = async () => {
         setIsLoading(true);
+        try {
+            const loginResponse = await axios.post('/api/bpms/login');
+            const { access_token } = loginResponse.data;
 
-        const loginResponse = await axios.post('/api/bpms/login');
-        const { access_token } = loginResponse.data;
+            if (!access_token) {
+                throw new Error('اطلاعات ورود نامعتبر است');
+            }
 
-        if (!access_token) {
-            throw new Error('اطلاعات ورود نامعتبر است');
-        }
+            setCookie('access_token', access_token);
+            setCookie('national_id', getValues('code'));
 
-        setCookie('access_token', access_token);
-        setCookie('national_id', getValues('code'));
-
-        await axios
-            .post('/api/bpms/send-message', {
+            const response = await axios.post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',
                 body: { code: getValues('code') },
-            })
-            .then((response) => {
-                const { data } = response;
-
-                setUserData({
-                    nationalCode: getValues('code'),
-                    step: 1,
-                    processId: data?.processId,
-                    isCustomer: data?.body?.isCustomer,
-                    isDeposit: data?.body?.isDeposit,
-                });
-                router.push('/register');
-            })
-            .catch((error) => {
-                const status = error.response?.status;
-                const { data } = error.response?.data || {};
-                const message = data?.digitalMessageException?.message || 'خطای ناشناخته رخ داد';
-
-                showDismissibleToast(message, 'error');
-
-                if (status === 500) {
-                    clearUserStateCookies();
-                    setTimeout(() => router.push('/'), 1000);
-                }
-            })
-            .finally(() => {
-                setIsLoading(false);
             });
+
+            const { data } = response;
+
+            setUserData({
+                nationalCode: getValues('code'),
+                step: 1,
+                processId: data?.processId,
+                isCustomer: data?.body?.isCustomer,
+                isDeposit: data?.body?.isDeposit,
+            });
+            router.push('/register');
+        } catch (error) {
+            const axiosError = error as {
+                response?: { data?: Record<string, unknown> };
+            };
+            const message = await resolveCatalogMessage(
+                axiosError.response?.data,
+                'خطای ناشناخته رخ داد'
+            );
+            showDismissibleToast(message, 'error');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (

@@ -1,19 +1,6 @@
 import { withAuth, type AuthenticatedRequest } from '@/lib/authMiddleware';
 import { virtualOpenDepositSendMessage } from '@/services/bpms';
-import { getMessageByCode, initErrorCatalog } from '@/services/errorCatalog';
 import { NextResponse } from 'next/server';
-
-async function mapExceptionMessage(exception: Record<string, unknown>): Promise<string> {
-    const errorCode = (exception.code as number) || (exception.errorCode as number);
-    const originalMessage = exception.message as string;
-
-    if (typeof errorCode === 'number') {
-        await initErrorCatalog();
-        return getMessageByCode(errorCode, originalMessage);
-    }
-
-    return originalMessage || 'خطا در پردازش اطلاعات';
-}
 
 async function handler(request: AuthenticatedRequest) {
     try {
@@ -32,29 +19,29 @@ async function handler(request: AuthenticatedRequest) {
                 'digitalMessageException' in response.data;
 
             if (hasException) {
-                const data = response.data;
-                const exception = data.digitalMessageException;
-                const mappedMessage = await mapExceptionMessage(exception);
-                const originalMessage = (exception.message as string) || 'خطا در پردازش اطلاعات';
-                const isKnownError = mappedMessage !== originalMessage;
+                const exception = response.data.digitalMessageException;
                 const errorResponse = {
-                    status: 200,
-                    data: {
-                        digitalMessageException: {
-                            code: exception.code || exception.errorCode,
-                            message: isKnownError ? mappedMessage : 'عدم برقراری ارتباط با سرور'
-                        }
-                    }
+
+                    ...response.data,
+                    digitalMessageException: {
+                        code: exception.code || exception.errorCode,
+                        errorKey: exception.errorKey,
+                        message: exception.message,
+                    },
                 };
-                return NextResponse.json(errorResponse, { status: isKnownError ? 400 : 500 });
+                return NextResponse.json(errorResponse, { status: 400 });
             }
             return NextResponse.json({ ...(response.data || {}) }, { status: 200 });
         }
 
         return NextResponse.json({ error: response }, { status: response.status || 400 });
-    } catch {
+    } catch (error) {
+        const errorData = error && typeof error === 'object' && 'response' in error
+            ? error?.response
+            : undefined;
         return NextResponse.json(
             {
+                errorData,
                 digitalMessageException: {
                     errorCode: 500,
                     message: 'عدم برقراری ارتباط با سرور',

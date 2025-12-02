@@ -1,4 +1,5 @@
 import AuthInitializer from '@/components/AuthInitializer';
+import ErrorCatalogInitializer from '@/components/ErrorCatalogInitializer';
 import InstallPWA from '@/components/InstallPWA';
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
@@ -132,6 +133,7 @@ export default function RootLayout({
                 <ThemeProvider>
                     <UserProvider>
                         <ToastProvider>
+                            <ErrorCatalogInitializer />
                             {process.env.IS_STAGE === "false" && <InstallPWA />}
                             <Suspense fallback={<></>}>
                                 <AuthInitializer requireAuth={false}>

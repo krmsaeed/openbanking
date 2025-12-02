@@ -64,10 +64,11 @@ export default function PersonalInfo() {
                     }
                 })
                 .catch((error) => {
-                    console.log("🚀 ~ onSubmit ~ data:", error)
-                    const { data } = error.response.data;
-                    showDismissibleToast(data?.digitalMessageException?.message || 'خطایی رخ داد', 'error');
-
+                    console.log("🚀 ~ onSubmit ~ error:", error);
+                    const errorMessage = error.response?.data?.data?.digitalMessageException?.message ||
+                        error.response?.data?.digitalMessageException?.message ||
+                        'خطایی رخ داد';
+                    showDismissibleToast(errorMessage, 'error');
                 });
         } finally {
             setIsLoading(false);
