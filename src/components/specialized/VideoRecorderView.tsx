@@ -147,12 +147,15 @@ export function VideoRecorderView({
                                                 <VideoCameraIcon className="h-5 w-5" />
                                                 شروع ضبط
                                             </Button>
-                                            <ul className="bg-gray-200 w-full rounded-md p-2 text-center text-sm leading-relaxed text-gray-800">
-                                                <li className="text-primary-800 font-bold">
-                                                    متن نمایش داده‌شده را واضح بخوانید
+                                            <ul className="bg-gray-200 w-full rounded-md p-2 text-sm leading-relaxed text-gray-900">
+                                                <li className="text-primary-800 font-bold text-center mb-1">
+                                                    شرایط تصویربرداری
                                                 </li>
-                                                <li>طول ویدیو: حدود 30 ثانیه.</li>
-                                                <li>صورت در مرکز قاب قرار گیرد.</li>
+                                                <li>
+                                                    <span className="text-primary-600 ml-1">•</span> تصویربرداری باید در محیطی آرام و بدون صداهای مزاحم و با نور کافی انجام شود.
+                                                </li>
+                                                <li><span className="text-warning-600 ml-1">•</span> در پس‌زمینه چهره اصلی نباید تصویری از چهره فرد دیگر، قاب عکس، مجسمه یا هر چیزی شبیه به چهره وجود داشته باشد.</li>
+                                                <li><span className="text-error-600 ml-1">•</span> خوانش متن باید به صورت واضح، با سرعت یکنواخت و بدون وقفه، به زبان فارسی و بدون لحجه باشد</li>
                                             </ul>
 
                                         </Box>

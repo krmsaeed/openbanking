@@ -7,7 +7,7 @@ import { personalInfoStepSchema, type PersonalInfoStepForm } from '@/lib/schemas
 import { getCookie } from '@/lib/utils';
 import { resolveCatalogMessage } from '@/services/errorCatalog';
 import { zodResolver } from '@hookform/resolvers/zod';
-import axios from 'axios';
+import httpClient from '@/lib/httpClient';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Box } from '../ui';
@@ -44,7 +44,7 @@ export default function PersonalInfo() {
                 postalCode: data.postalCode?.trim(),
             };
 
-            await axios
+            await httpClient
                 .post('/api/bpms/send-message', {
                     serviceName: 'virtual-open-deposit',
                     processId: userData.processId,
@@ -65,7 +65,6 @@ export default function PersonalInfo() {
                     }
                 })
                 .catch(async (error) => {
-                    console.log("🚀 ~ onSubmit ~ error:", error);
                     const message = await resolveCatalogMessage(
                         error.response?.data,
                         'خطایی رخ داد'

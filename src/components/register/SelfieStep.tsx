@@ -7,7 +7,7 @@ import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast'
 import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
 import { resolveCatalogMessage } from '@/services/errorCatalog';
 import { ArrowPathIcon, CameraIcon } from '@heroicons/react/24/outline';
-import axios from 'axios';
+import httpClient from '@/lib/httpClient';
 import Image from 'next/image';
 import { useCallback } from 'react';
 import { Box, Typography } from '../ui/core';
@@ -210,41 +210,41 @@ function Instructions({ capturedPhoto, onRetake, isUploading }: InstructionsProp
         <Box className="rounded-xl bg-gray-100">
             {!capturedPhoto ? (
                 <>
-                    <Typography
-                        variant="h3"
-                        className="mb-3 text-center text-sm font-bold text-gray-800"
-                    >
-                        راهنمای عکس‌برداری
-                    </Typography>
-                    <ul className="leading-rela41.21xed text-bold space-y-1.5 rounded-lg bg-gray-200 p-2 text-right text-xs text-gray-900">
+
+                    <ul className=" text-bold space-y-1.5 rounded-lg bg-gray-200 p-2 text-right text-sm text-gray-900">
+                        <li className="text-primary-800 font-bold text-center mb-2">
+                            راهنمای عکس‌برداری
+                        </li>
                         <li className="flex items-start">
                             <span className="text-primary-600 ml-2">•</span>
                             <span>
-                                صورت خود را کاملاً در قاب قرار دهید و مستقیماً به دوربین نگاه کنید
+                                تصویر میبایست با رعایت حجاب و شیونات اسلامی گرفته شود.
                             </span>
                         </li>
                         <li className="flex items-start">
                             <span className="text-primary-600 ml-2">•</span>
-                            <span>در هر تصویر تنها چهره یک فرد باید وجود داشته باشد</span>
+                            <span> فرد نباید از ماسک استفاده کند.</span>
                         </li>
                         <li className="flex items-start">
                             <span className="text-error-600 ml-2">•</span>
                             <span>
-                                در مکانی با روشنایی کافی قرار بگیرید (نه خیلی تاریک و نه خیلی روشن)
+                                بهتر است عینک از چهره برداشته شود.
                             </span>
                         </li>
                         <li className="flex items-start">
                             <span className="text-primary-600 ml-2">•</span>
-                            <span>چهره نباید از فاصله بسیار دور یا بسیار نزدیک گرفته شود</span>
+                            <span>
+                                کلاه، مو یا هر پوششی که مانع از مشاهده چهره شود باید برداشته شود.
+                            </span>
                         </li>
                         <li className="flex items-start">
                             <span className="text-primary-600 ml-2">•</span>
-                            <span>چهره نباید تار یا محو باشد</span>
+                            <span>چشم‌های فرد باید باز و به‌وضوح قابل مشاهده و رو به دوربین باشد.</span>
                         </li>
                         <li className="flex items-start">
                             <span className="text-warning-600 ml-2">•</span>
                             <span>
-                                در پس‌زمینه نباید تصویر چهره دیگر، قاب عکس یا مجسمه وجود داشته باشد
+                                پس‌زمینه باید سفید و یکدست باشد.
                             </span>
                         </li>
                         <li className="flex items-start">
@@ -473,7 +473,7 @@ export default function SelfieStep() {
             'GovahInquiry'
         );
 
-        await axios.post('/api/bpms/deposit-files', formData).then(res => {
+        await httpClient.post('/api/bpms/deposit-files', formData).then(res => {
             const { data } = res;
             setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
 

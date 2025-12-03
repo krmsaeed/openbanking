@@ -80,7 +80,7 @@ export default function PasswordStep() {
             })
             .then((response) => {
                 const { data } = response;
-                if (data.body.success) {
+                if (data?.body?.success) {
                     showDismissibleToast('کد تایید مجدد ارسال شد', 'success');
                 } else {
                     showDismissibleToast('خطا در ارسال مجدد کد', 'error');

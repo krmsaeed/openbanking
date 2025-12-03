@@ -99,6 +99,7 @@ export default function LoginPage() {
             });
             router.push('/register');
         } catch (error) {
+            console.log("🚀 ~ onSubmit ~ error:", error)
             const axiosError = error as {
                 response?: { data?: Record<string, unknown> };
             };

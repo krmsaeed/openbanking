@@ -18,6 +18,7 @@ yarn.lock
 # next.js
 /.next/
 /out/
+/scripts
 
 # production
 /build
@@ -50,7 +51,7 @@ next-env.d.ts
 .qodo
 .vscode/
 .vscode/launch.json
-
+nginx.conf
 # archive files
 *.gz
 *.gzip

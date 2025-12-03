@@ -5,7 +5,7 @@ import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast'
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
 import { createBPMSFormData } from '@/lib/fileUtils';
 import { resolveCatalogMessage } from '@/services/errorCatalog';
-import axios from 'axios';
+import httpClient from '@/lib/httpClient';
 import { VideoRecorderView } from '../specialized/VideoRecorderView';
 
 export const VideoRecorderStep: React.FC = () => {
@@ -34,9 +34,16 @@ export const VideoRecorderStep: React.FC = () => {
             userData.processId,
             'ImageInquiry'
         );
-        await axios.post('/api/bpms/deposit-files', formData)
+        await httpClient.post('/api/bpms/deposit-files', formData)
             .then((res) => {
-                if (res.data.body.verified) {
+                const body = res?.data?.body;
+                if (!body) {
+                    showDismissibleToast('پاسخ نامعتبر از سرور دریافت شد، لطفاً دوباره تلاش کنید', 'error');
+                    handleRetake();
+                    return;
+                }
+
+                if (body.verified) {
                     setUserData({ ...userData, step: 4 });
                 } else {
                     showDismissibleToast('ویدئو شما تایید نشد. لطفاً دوباره تلاش کنید.', 'error');

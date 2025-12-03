@@ -20,7 +20,7 @@ import { useState } from 'react';
 import Modal from '../ui/overlay/Modal';
 import { useUser } from '@/contexts/UserContext';
 import CertificateStep from './CertificateStep';
-import axios from 'axios';
+import httpClient from '@/lib/httpClient';
 import { Controller, useForm } from 'react-hook-form';
 const PDF_URL = '/test.pdf';
 
@@ -457,7 +457,7 @@ export default function ContractStep() {
                             setOtp={setOtp}
                             onResend={() => {
                                 setOtpLoading(true);
-                                axios
+                                httpClient
                                     .post('/api/bpms/send-message', {
                                         serviceName: 'virtual-open-deposit',
                                         processId: userData.processId,
@@ -489,7 +489,7 @@ export default function ContractStep() {
                                 }
                                 if (otp.length === 4) {
                                     setOtpLoading(true);
-                                    axios
+                                    httpClient
                                         .post('/api/bpms/send-message', {
                                             serviceName: 'virtual-open-deposit',
                                             formName: 'CertificateOtpVerify',

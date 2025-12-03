@@ -51,6 +51,12 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                     .then((response) => {
                         const { data } = response as ApiResponse;
 
+                        if (!data || !data.body) {
+                            showDismissibleToast('پاسخ نامعتبر از سرور دریافت شد', 'error');
+                            requestCache.delete(code);
+                            return;
+                        }
+
                         const newState = {
                             nationalCode: code,
                             step: 1,

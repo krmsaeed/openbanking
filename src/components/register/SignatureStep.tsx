@@ -6,7 +6,7 @@ import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast'
 import { convertToFile, createBPMSFormData } from '@/lib/fileUtils';
 import { resolveCatalogMessage } from '@/services/errorCatalog';
 import { TrashIcon } from '@heroicons/react/24/outline';
-import axios from 'axios';
+import httpClient from '@/lib/httpClient';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Box, Typography } from '../ui/core';
@@ -29,7 +29,7 @@ export function SignatureStep() {
             'VideoInquiry'
         );
 
-        await axios
+        await httpClient
             .post('/api/bpms/deposit-files', formData)
             .then(() => {
                 setUserData({ ...userData, step: 5 });

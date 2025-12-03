@@ -40,14 +40,12 @@ async function clearIndexedDBDatabases(): Promise<void> {
     const fallbackDatabases: string[] = [];
     await Promise.all(fallbackDatabases.map((name) => deleteDatabase(name)));
 }
-
 function isTimeoutError(error: AxiosError): boolean {
     if (!error) return false;
     if (error.code === 'ECONNABORTED') return true;
     if (error.response?.status === 408) return true;
     return typeof error.message === 'string' && error.message.toLowerCase().includes('timeout');
 }
-
 function isServerError(error: AxiosError): boolean {
     return error.response?.status === 500;
 }
@@ -81,7 +79,6 @@ const getCacheKey = (config: InternalAxiosRequestConfig): string => {
 export const httpClient: AxiosInstance = axios.create({
     baseURL: '', // برای استفاده از API routes داخلی Next.js
     timeout: 60000,
-    validateStatus: () => true,
     withCredentials: true,
 });
 
@@ -103,7 +100,13 @@ export function setupAxiosInterceptors() {
     );
 
     axios.interceptors.response.use(
-        (response) => response,
+        (response) => {
+            // Check for 500 error
+            if (response.status === 500) {
+                void resetClientState();
+            }
+            return response;
+        },
         (error: AxiosError) => {
             if (isTimeoutError(error) || isServerError(error)) {
                 void resetClientState();
@@ -146,19 +149,23 @@ httpClient.interceptors.response.use(
     (response) => {
         const cacheKey = getCacheKey(response.config as InternalAxiosRequestConfig);
         pendingRequests.delete(cacheKey);
+
+        // Check for 500 error in successful response (when validateStatus allows it)
+        if (response.status === 500) {
+            void resetClientState();
+        }
+
         return response;
     },
     (error: AxiosError) => {
-        if (isTimeoutError(error) || isServerError(error)) {
+        // Reset state only on 500 errors
+        if (isServerError(error)) {
             void resetClientState();
         }
 
         if (error.response?.status === 401) {
             console.warn('Unauthorized request detected:', error.config?.url);
-            clearAuthTokens();
-            if (typeof window !== 'undefined') {
-                window.location.href = '/';
-            }
+            // Don't clear cookies on 401 - let components handle this
         }
 
         if (error.config) {

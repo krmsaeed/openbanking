@@ -1,4 +1,4 @@
-import axios from 'axios';
+import httpClient from '@/lib/httpClient';
 
 export type RemoteError = {
     id?: number;
@@ -34,7 +34,7 @@ function normalizePayload(payload: unknown): RemoteError[] {
 
 export async function fetchRemoteErrorCatalog(): Promise<RemoteError[]> {
     const url = buildErrorsUrl();
-    const response = await axios.get(url, {
+    const response = await httpClient.get(url, {
         headers: {
             'Content-Type': 'application/json',
         },
