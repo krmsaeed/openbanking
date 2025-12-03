@@ -56,7 +56,7 @@ export default function PasswordStep() {
             .catch(async (error) => {
                 const message = await resolveCatalogMessage(
                     error.response?.data,
-                    'خطایی رخ داد'
+                    'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
                 );
                 showDismissibleToast(message, 'error');
             })
@@ -90,7 +90,7 @@ export default function PasswordStep() {
                 console.log("🚀 ~ handleResendOTP ~ error:", error)
                 const message = await resolveCatalogMessage(
                     error.response?.data,
-                    'خطایی رخ داد'
+                    'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
                 );
                 showDismissibleToast(message, 'error');
             })
@@ -322,7 +322,7 @@ export default function PasswordStep() {
                             console.log("🚀 ~ PasswordStep ~ error:", error)
                             const message = await resolveCatalogMessage(
                                 error.response?.data,
-                                'خطایی رخ داد'
+                                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
                             );
                             showDismissibleToast(message, 'error');
                         })

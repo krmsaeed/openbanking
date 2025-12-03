@@ -212,7 +212,7 @@ function Instructions({ capturedPhoto, onRetake, isUploading }: InstructionsProp
                 <>
 
                     <ul className=" text-bold space-y-1.5 rounded-lg bg-gray-200 p-2 text-right text-sm text-gray-900">
-                        <li className="text-primary-800 font-bold text-center mb-2">
+                        <li className="text-primary-800 font-bold text-center mb-1">
                             راهنمای عکس‌برداری
                         </li>
                         <li className="flex items-start">
@@ -480,7 +480,7 @@ export default function SelfieStep() {
         }).catch(async (error) => {
             const message = await resolveCatalogMessage(
                 error?.response?.data,
-                'خطایی رخ داد'
+                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
             );
             showDismissibleToast(message, 'error');
         }).finally(() => {

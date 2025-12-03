@@ -120,6 +120,43 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'CLEAR_CACHE') {
+        log('info', 'Received cache clear request');
+        event.waitUntil(
+            (async () => {
+                try {
+                    const keys = await caches.keys();
+                    await Promise.all(keys.map(key => caches.delete(key)));
+                    log('info', 'All caches cleared');
+                    event.ports[0]?.postMessage({ success: true });
+                } catch (error) {
+                    log('error', 'Failed to clear caches', error);
+                    event.ports[0]?.postMessage({ success: false, error: error.message });
+                }
+            })()
+        );
+    }
+});
+
+self.addEventListener('error', (event) => {
+    log('error', 'Service worker error', event.error);
+    self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+            client.postMessage({ type: 'SW_ERROR', error: event.error?.message });
+        });
+    });
+});
+
+self.addEventListener('unhandledrejection', (event) => {
+    log('error', 'Unhandled promise rejection in SW', event.reason);
+    self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+            client.postMessage({ type: 'SW_ERROR', error: event.reason?.message || 'Unhandled rejection' });
+        });
+    });
+});
+
 async function handleNetworkFirst(req, cache) {
     try {
         const fetchPromise = fetch(req);

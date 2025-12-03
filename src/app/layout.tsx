@@ -138,7 +138,10 @@ export default function RootLayout({
                             <Suspense fallback={<></>}>
                                 <AuthInitializer requireAuth={false}>
                                     {process.env.NODE_ENV === 'development' ? (
-                                        <ServiceWorkerUnregistrar />
+                                        <>
+                                            <ServiceWorkerUnregistrar />
+                                            <ServiceWorkerRegistrar />
+                                        </>
                                     ) : (
                                         <ServiceWorkerRegistrar />
                                     )}

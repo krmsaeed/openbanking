@@ -474,7 +474,7 @@ export default function ContractStep() {
                                     .catch(async (error) => {
                                         const message = await resolveCatalogMessage(
                                             error.response?.data,
-                                            'خطایی رخ داد'
+                                            'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
                                         );
                                         showDismissibleToast(message, 'error');
                                     })
@@ -506,7 +506,7 @@ export default function ContractStep() {
                                         .catch(async (error) => {
                                             const message = await resolveCatalogMessage(
                                                 error.response?.data,
-                                                'خطایی رخ داد'
+                                                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
                                             );
                                             showDismissibleToast(message, 'error');
                                         })

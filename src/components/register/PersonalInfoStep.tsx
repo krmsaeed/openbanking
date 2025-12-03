@@ -67,7 +67,7 @@ export default function PersonalInfo() {
                 .catch(async (error) => {
                     const message = await resolveCatalogMessage(
                         error.response?.data,
-                        'خطایی رخ داد'
+                        'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
                     );
                     showDismissibleToast(message, 'error');
                 });
