@@ -4,7 +4,6 @@ import { useUser } from '@/contexts/UserContext';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { nationalCardInfoSchema, type NationalCardInfoForm } from '@/lib/schemas/identity';
 import { resolveCatalogMessage } from '@/services/errorCatalog';
-import { OcrFields } from '@/lib/ocr';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useState } from 'react';
@@ -37,7 +36,7 @@ export function useNationalCardForm() {
         },
     });
 
-    const handleCapture = (file: File, isValid: boolean = true, fields?: OcrFields) => {
+    const handleCapture = (file: File, isValid: boolean = true) => {
         setCapturedFile(file);
         setOcrValid(isValid);
         if (isValid) {

@@ -4,7 +4,6 @@ import {
     Button,
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
     Input,
@@ -23,11 +22,15 @@ import { useUser } from '@/contexts/UserContext';
 import CertificateStep from './CertificateStep';
 import httpClient from '@/lib/httpClient';
 import { Controller, useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
+import Swal from 'sweetalert2';
 import { toPersianDate } from '@/lib/utils';
 const PDF_URL = '/test.pdf';
 
 
 function useContractStep() {
+    const router = useRouter();
+    const { clearUserData } = useUser();
     const [agreed, setAgreed] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -93,6 +96,11 @@ function useContractStep() {
         }
     };
 
+    const handleCancelConfirm = () => {
+        clearUserData();
+        router.push('/');
+    };
+
     return {
         agreed,
         setAgreed,
@@ -114,11 +122,13 @@ function useContractStep() {
         handleAccept,
         handlePreview,
         handleDownload,
+        handleCancelConfirm,
     };
 }
 
 export default function ContractStep() {
-    const { userData, setUserData } = useUser();
+    const { userData, setUserData, clearUserData } = useUser();
+    const router = useRouter();
     const userLoan = userData.userLoan;
     const {
         control,
@@ -150,6 +160,7 @@ export default function ContractStep() {
         handleAccept,
         handlePreview,
         handleDownload,
+        handleCancelConfirm,
     } = useContractStep();
     return (
         <Box className="h-full space-y-6 py-4">
@@ -289,12 +300,36 @@ export default function ContractStep() {
 
             <Box>
                 <Box className="mx-auto flex w-full flex-col justify-center gap-4 sm:flex-row md:w-1/2">
+                    <Button
+                        variant="outline"
+                        onClick={() => {
+                            Swal.fire({
+                                title: 'انصراف از ثبت‌نام',
+                                text: 'آیا مطمئن هستید که می‌خواهید از فرآیند ثبت‌نام انصراف دهید؟',
+                                icon: 'error',
+                                showCancelButton: true,
+                                confirmButtonText: 'بله، انصراف می‌دهم',
+                                cancelButtonText: 'خیر، ادامه می‌دهم',
+                                confirmButtonColor: 'var(--color-error-500)',
+                                cancelButtonColor: 'var(--color-primary-500)',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    handleCancelConfirm();
+                                }
+                            });
+                        }}
+                        className="border-red-500 text-red-500 hover:bg-red-50"
+                        title="انصراف"
+                    >
+                        انصراف
+                    </Button>
                     <LoadingButton
                         loading={loading}
                         onClick={handleAccept}
                         disabled={!agreed || loading}
                         title="ثبت نهایی و ادامه"
                     />
+
                 </Box>
             </Box>
             <PdfPreviewModal
