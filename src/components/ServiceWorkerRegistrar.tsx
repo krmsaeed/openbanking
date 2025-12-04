@@ -1,7 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
-import Modal from '@/components/ui/overlay/Modal';
-import { Button } from '@/components/ui';
+import { useEffect, useState, useRef } from 'react';
 
 export default function ServiceWorkerRegistrar() {
     const [status, setStatus] = useState<string | null>(null);
@@ -18,10 +16,21 @@ export default function ServiceWorkerRegistrar() {
         cleared?: boolean;
     }>({});
 
+    // Flag to prevent modal from showing again after user clicks update
+    const isUpdatingRef = useRef(false);
+    const updateIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Global flag to ensure version checking starts only once across all instances
+    const versionCheckStartedRef = useRef(false);
+
     // Check for app updates
     const checkForAppUpdate = async () => {
+        // Don't check if we're already updating
+        if (isUpdatingRef.current) return;
+
         try {
-            const response = await fetch('/version.json', { cache: 'no-cache' });
+            // Force a network fetch for version.json (cache-busting query + no-store)
+            const response = await fetch(`/version.json?_ts=${Date.now()}`, { cache: 'no-store' });
             const currentVersion = await response.json();
 
             const cachedVersion = localStorage.getItem('app-version');
@@ -35,13 +44,9 @@ export default function ServiceWorkerRegistrar() {
             }
 
             if (cachedVersion !== currentVersion.version || cachedBuild !== currentVersion.build) {
-                // New version available
-                if (process.env.NODE_ENV === 'production') {
-                    setShowUpdateModal(true);
-                }
-                // Update stored version
-                localStorage.setItem('app-version', currentVersion.version);
-                localStorage.setItem('app-build', currentVersion.build);
+                // New version available — show update modal
+                setShowUpdateModal(true);
+                // Update stored version after user clicks update
             }
         } catch (error) {
             console.warn('Failed to check app version:', error);
@@ -66,15 +71,10 @@ export default function ServiceWorkerRegistrar() {
                 reg.addEventListener('updatefound', () => {
                     setStatus('updatefound');
                     updateSwInfo(reg);
-                    if (process.env.NODE_ENV === 'production') {
-                        setShowUpdateModal(true);
-                    }
                 });
 
                 if (reg.waiting) {
-                    if (process.env.NODE_ENV === 'production') {
-                        setShowUpdateModal(true);
-                    }
+                    // New version waiting — can be activated on next reload
                 }
 
                 navigator.serviceWorker.addEventListener('controllerchange', () => {
@@ -84,9 +84,8 @@ export default function ServiceWorkerRegistrar() {
 
                 navigator.serviceWorker.addEventListener('message', (event) => {
                     if (event.data && event.data.type === 'SW_ERROR') {
-                        if (process.env.NODE_ENV === 'production') {
-                            setShowUpdateModal(true);
-                        }
+                        console.warn('SW_ERROR received:', event.data.error);
+                        // Don't show modal on SW errors - only on version change
                     }
                 });
             } catch (err) {
@@ -94,9 +93,7 @@ export default function ServiceWorkerRegistrar() {
                 if (mounted) {
                     setStatus('error');
                     setSwInfo({ error: err instanceof Error ? err.message : 'Unknown error' });
-                    if (process.env.NODE_ENV === 'production') {
-                        setShowUpdateModal(true);
-                    }
+                    // Don't show modal on registration error - only on version change
                 }
             }
         };
@@ -113,97 +110,118 @@ export default function ServiceWorkerRegistrar() {
 
         register();
 
-        // Check for app updates periodically
-        checkForAppUpdate();
-        const updateInterval = setInterval(checkForAppUpdate, 30000); // Check every 30 seconds
-
         return () => {
             mounted = false;
-            clearInterval(updateInterval);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!versionCheckStartedRef.current) {
+            versionCheckStartedRef.current = true;
+            checkForAppUpdate();
+            updateIntervalRef.current = setInterval(checkForAppUpdate, 30000); // Check every 30 seconds
+        }
+
+        return () => {
+            // Don't clear interval - let it run globally once started
         };
     }, []);
 
     const clearCacheAndReload = async () => {
-        if (!registration) return;
+        // Set updating flag to prevent modal from re-appearing
+        isUpdatingRef.current = true;
 
+        // Update stored version FIRST so modal won't show again
         try {
-            setSwInfo(prev => ({ ...prev, clearing: true }));
-
-            // Send message to SW to clear caches
-            const messageChannel = new MessageChannel();
-            registration.active?.postMessage({ type: 'CLEAR_CACHE' }, [messageChannel.port2]);
-
-            // Wait for response
-            await new Promise((resolve, reject) => {
-                messageChannel.port1.onmessage = (event) => {
-                    if (event.data.success) {
-                        resolve(true);
-                    } else {
-                        reject(new Error(event.data.error));
-                    }
-                };
-                setTimeout(() => reject(new Error('Timeout')), 5000);
-            });
-
-            setSwInfo(prev => ({ ...prev, cleared: true }));
-            setTimeout(() => window.location.reload(), 1000);
-        } catch (error) {
-            console.error('Failed to clear cache:', error);
-            setSwInfo(prev => ({ ...prev, error: error instanceof Error ? error.message : 'Unknown error', clearing: false }));
-            // Still reload even if clearing failed
-            setTimeout(() => window.location.reload(), 2000);
+            const response = await fetch(`/version.json?_ts=${Date.now()}`, { cache: 'no-store' });
+            const currentVersion = await response.json();
+            localStorage.setItem('app-version', currentVersion.version);
+            localStorage.setItem('app-build', currentVersion.build);
+        } catch {
+            // Ignore version fetch errors
         }
+
+        // Close modal after version is saved
+        setShowUpdateModal(false);
+
+        // Show clearing status
+        setSwInfo(prev => ({ ...prev, clearing: true }));
+
+        // Clear caches directly using the Cache API
+        try {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+            console.log('All caches cleared successfully');
+            setSwInfo(prev => ({ ...prev, cleared: true, clearing: false }));
+        } catch (error) {
+            console.error('Failed to clear caches:', error);
+            setSwInfo(prev => ({ ...prev, error: error instanceof Error ? error.message : 'Unknown error', clearing: false }));
+        }
+
+        // Unregister service worker to force fresh install
+        if (registration) {
+            try {
+                await registration.unregister();
+                console.log('Service worker unregistered');
+            } catch (error) {
+                console.error('Failed to unregister SW:', error);
+            }
+        }
+
+        // Reload after a short delay
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
     };
 
     if (!status) return null;
 
     return (
         <>
-            {/* Update Modal */}
-            <Modal
-                isOpen={showUpdateModal}
-                onClose={() => setShowUpdateModal(false)}
-                title="بروزرسانی برنامه"
-                size="md"
-                closeOnClickOutside={false}
-            >
-                <div className="space-y-4">
-                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p className="text-blue-800 text-sm">
-                            نسخه جدیدی از برنامه آماده شده است. برای دسترسی به ویژگی‌های جدید و بهبود عملکرد، لطفاً برنامه را بروزرسانی کنید.
-                        </p>
+            {/* Update Modal - Custom Implementation */}
+            {showUpdateModal && (
+                <div className="fixed inset-0 z-70 flex items-center justify-center">
+                    {/* Backdrop */}
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+
+                    {/* Modal Content */}
+                    <div className="relative z-10 w-full max-w-md mx-4 bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6">
+                        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                            بروزرسانی برنامه
+                        </h2>
+
+                        <div className="space-y-4">
+                            <div className="p-3 bg-blue-200  border border-blue-200  rounded-lg">
+                                <p className="text-blue-800 text-sm">
+                                    نسخه جدیدی از برنامه آماده شده است. برای دسترسی به ویژگی‌های جدید و بهبود عملکرد، لطفاً برنامه را بروزرسانی کنید.
+                                </p>
+                            </div>
+
+                            {swInfo.clearing && (
+                                <div className="text-blue-600 dark:text-blue-400 text-sm">
+                                    در حال پاک کردن کش...
+                                </div>
+                            )}
+
+                            {swInfo.cleared && (
+                                <div className="text-green-600 dark:text-green-400 text-sm">
+                                    کش پاک شد، صفحه ریلود می‌شود...
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex justify-center mt-6">
+                            <button
+                                onClick={clearCacheAndReload}
+                                disabled={swInfo.clearing}
+                                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors duration-200"
+                            >
+                                {swInfo.clearing ? 'در حال پاک کردن...' : 'بروزرسانی'}
+                            </button>
+                        </div>
                     </div>
-                    {swInfo.clearing && (
-                        <div className="text-blue-600 text-sm">
-                            در حال پاک کردن کش...
-                        </div>
-                    )}
-
-                    {swInfo.cleared && (
-                        <div className="text-green-600 text-sm">
-                            کش پاک شد، صفحه ریلود می‌شود...
-                        </div>
-                    )}
                 </div>
-
-                <div className="flex gap-3 justify-end mt-6">
-                    <Button
-                        onClick={clearCacheAndReload}
-                        disabled={swInfo.clearing}
-                        variant="primary"
-                        size="md"
-                    >
-                        {swInfo.clearing ? 'در حال پاک کردن...' : 'بروزرسانی'}
-                    </Button>
-                    <Button
-                        onClick={() => setShowUpdateModal(false)}
-                        variant="outline"
-                        size="md"
-                    >
-                        بعداً
-                    </Button>
-                </div>
-            </Modal>
+            )}
         </>
     );
 }

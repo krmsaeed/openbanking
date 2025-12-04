@@ -8,7 +8,8 @@ import {
     CardHeader,
     CardTitle,
     Input,
-    Label,
+    List,
+    ListItem,
     Typography,
 } from '@/components/ui';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
@@ -22,64 +23,9 @@ import { useUser } from '@/contexts/UserContext';
 import CertificateStep from './CertificateStep';
 import httpClient from '@/lib/httpClient';
 import { Controller, useForm } from 'react-hook-form';
+import { toPersianDate } from '@/lib/utils';
 const PDF_URL = '/test.pdf';
 
-interface ContractDetails {
-    contractNumber: string;
-    date: string;
-    customerName: string;
-    nationalId: string;
-    phoneNumber: string;
-    facilityAmount: string;
-    interestRate: string;
-    duration: string;
-    monthlyPayment: string;
-}
-
-interface ContractClause {
-    id: string;
-    title: string;
-    content: string;
-}
-
-const CONTRACT_CLAUSES: ContractClause[] = [
-    {
-        id: 'subject',
-        title: 'ماده ۱ - موضوع قرارداد',
-        content:
-            'بانک اقتصاد نوین متعهد می‌شود مبلغ {facilityAmount} ریال را به عنوان تسهیلات بانکی در اختیار مشتری قرار دهد. این مبلغ باید طی مدت {duration} ماه به صورت اقساط ماهانه بازپرداخت شود.',
-    },
-    {
-        id: 'repayment',
-        title: 'ماده ۲ - نحوه بازپرداخت',
-        content:
-            'مشتری متعهد است مبلغ {monthlyPayment} ریال را در هر ماه تا تاریخ ۵ هر ماه به حساب بانک واریز نماید. در صورت تأخیر در پرداخت، جریمه تأخیر طبق نرخ‌های مصوب بانک مرکزی محاسبه خواهد شد.',
-    },
-    {
-        id: 'interest',
-        title: 'ماده ۳ - نرخ سود',
-        content:
-            'نرخ سود این تسهیلات {interestRate}% در سال بوده که طبق مقررات بانک مرکزی جمهوری اسلامی ایران تعیین شده است. این نرخ ممکن است طبق تصمیمات بانک مرکزی تغییر یابد.',
-    },
-    {
-        id: 'guarantees',
-        title: 'ماده ۴ - تضامین',
-        content:
-            'مشتری متعهد است تضامین لازم شامل اسناد و مدارک مورد نیاز بانک را ارائه داده و در طول مدت قرارداد حفظ نماید. در صورت کاهش ارزش تضامین، بانک حق درخواست تضامین اضافی را دارد.',
-    },
-    {
-        id: 'termination',
-        title: 'ماده ۵ - فسخ قرارداد',
-        content:
-            'در صورت عدم رعایت شرایط قرارداد از سوی مشتری، بانک حق فسخ قرارداد و مطالبه کل مبلغ باقیمانده را دارد. همچنین مشتری می‌تواند در هر زمان نسبت به تسویه زودهنگام اقدام نماید.',
-    },
-    {
-        id: 'dispute',
-        title: 'ماده ۶ - حل اختلاف',
-        content:
-            'کلیه اختلافات ناشی از این قرارداد در مراجع ذی‌صلاح قضایی تهران قابل رسیدگی است. قوانین جمهوری اسلامی ایران بر این قرارداد حاکم خواهد بود.',
-    },
-];
 
 function useContractStep() {
     const [agreed, setAgreed] = useState(false);
@@ -92,19 +38,6 @@ function useContractStep() {
     const [otpLoading, setOtpLoading] = useState(false);
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-
-    const contractDetails: ContractDetails = {
-        contractNumber: 'TC-2025-001234',
-        date: '۱۴۰۴/۰۶/۰۹',
-        customerName: 'محمد احمدی',
-        nationalId: '1234567890',
-        phoneNumber: '09123456789',
-        facilityAmount: '50,000,000',
-        interestRate: '18',
-        duration: '12',
-        monthlyPayment: '4,583,333',
-    };
-
     const handleAccept = async () => {
         if (!agreed) {
             setError('لطفا ابتدا شرایط قرارداد را مطالعه و تأیید کنید.');
@@ -165,7 +98,6 @@ function useContractStep() {
         setAgreed,
         loading,
         error,
-        contractDetails,
         showPreview,
         setShowPreview,
         pdfUrl,
@@ -182,12 +114,12 @@ function useContractStep() {
         handleAccept,
         handlePreview,
         handleDownload,
-        contractClauses: CONTRACT_CLAUSES,
     };
 }
 
 export default function ContractStep() {
     const { userData, setUserData } = useUser();
+    const userLoan = userData.userLoan;
     const {
         control,
         formState: { errors },
@@ -202,7 +134,6 @@ export default function ContractStep() {
         setAgreed,
         loading,
         error,
-        contractDetails,
         showPreview,
         setShowPreview,
         pdfUrl,
@@ -219,21 +150,7 @@ export default function ContractStep() {
         handleAccept,
         handlePreview,
         handleDownload,
-        contractClauses,
     } = useContractStep();
-
-    const renderContractDetail = (label: string, value: string, highlight = false) => (
-        <Box className="space-y-1">
-            <Label className="text-muted-foreground text-sm font-medium">{label}</Label>
-            <Typography
-                variant="p"
-                className={`text-sm ${highlight ? 'text-primary-700 font-bold' : 'text-foreground'}`}
-            >
-                {value}
-            </Typography>
-        </Box>
-    );
-
     return (
         <Box className="h-full space-y-6 py-4">
             {/* Contract Header */}
@@ -268,86 +185,72 @@ export default function ContractStep() {
                             دانلود
                         </Button>
                     </Box>
-                    <Typography variant="h5" className="text-center">
-                        مشخصات قرارداد
-                    </Typography>
+
                 </Box>
             </Box>
 
             <Card className="bg-gray-200">
                 <CardHeader>
                     <CardTitle>جزئیات قرارداد</CardTitle>
-                    <CardDescription>اطلاعات کامل قرارداد تسهیلاتی شما</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Box className="grid gap-6 md:grid-cols-2">
-                        <Box className="space-y-4">
-                            {renderContractDetail(
-                                'شماره قرارداد',
-                                contractDetails.contractNumber,
-                                true
-                            )}
-                            {renderContractDetail('تاریخ قرارداد', contractDetails.date)}
-                            {renderContractDetail('نام مشتری', contractDetails.customerName)}
-                            {renderContractDetail('کد ملی', contractDetails.nationalId)}
-                        </Box>
-                        <Box className="space-y-4">
-                            {renderContractDetail(
-                                'مبلغ تسهیلات',
-                                `${contractDetails.facilityAmount} ریال`,
-                                true
-                            )}
-                            {renderContractDetail(
-                                'نرخ سود',
-                                `${contractDetails.interestRate}% سالانه`
-                            )}
-                            {renderContractDetail(
-                                'مدت بازپرداخت',
-                                `${contractDetails.duration} ماه`
-                            )}
-                            {renderContractDetail(
-                                'قسط ماهانه',
-                                `${contractDetails.monthlyPayment} ریال`,
-                                true
-                            )}
+
+                        <Box className="space-y-4 ">
+                            <Typography variant="h4" className="text-sm leading-relaxed font-semibold text-right">
+                                مشخصات وام شما به شرح زیر است:
+                            </Typography>
+                            <List className="list-disc list-inside space-y-1 text-right">
+                                <ListItem className="text-gray-700 flex gap-2">
+                                    نام و نام خانوادگی:
+                                    <Typography variant="span" className="font-medium text-gray-900">
+                                        {userLoan?.fullName || ''}
+                                    </Typography>
+                                </ListItem>
+                                <ListItem className="text-gray-700 flex gap-2">
+                                    شماره وام:
+                                    <Typography variant="span" className="font-medium text-gray-900">
+                                        {userLoan?.LoanNumber || '0'}
+                                    </Typography>
+                                </ListItem>
+                                <ListItem className="text-gray-700 flex gap-2">
+                                    مبلغ قابل پرداخت: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.payableAmount?.toLocaleString() || '0'} ریال</Typography>
+                                </ListItem>
+                                <ListItem className="text-gray-700 flex gap-2">
+                                    تعداد اقساط: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.installmentCount || '0'}  قسط </Typography>
+                                </ListItem>
+                                <ListItem className="text-gray-700 flex gap-2">
+                                    اولین قسط:
+                                    <Typography variant="span" className="font-medium text-gray-900">{toPersianDate(userLoan?.firstPaymentDate) || ''}</Typography>
+                                </ListItem>
+                                <ListItem className="text-gray-700 flex gap-2">
+                                    نرخ جریمه: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.penaltyRate || ''} درصد </Typography>
+                                </ListItem>
+                                <ListItem className="text-gray-700 flex gap-2">
+                                    مبلغ پیش پرداخت: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.advancedAmount?.toLocaleString() || '0'} ریال</Typography>
+                                </ListItem>
+
+                                <ListItem className="text-gray-700 flex gap-2">
+                                    توضیحات: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.description || 'ندارد'}</Typography>
+                                </ListItem>
+                                <ListItem className="text-gray-700 flex gap-2">
+                                    تاریخ شروع قرارداد: <Typography variant="span" className="font-medium text-gray-900">{toPersianDate(userLoan?.contractStartDate) || ''}</Typography>
+                                </ListItem>
+                                <ListItem className="text-gray-700 flex gap-2">
+                                    فاصله زمانی بین اقساط: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.installmentInterval || ''}  ماه </Typography>
+                                </ListItem>
+                                <ListItem className="text-gray-700 flex gap-2">
+                                    درصد تخفیف: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.discountRate || '0'} درصد </Typography>
+                                </ListItem>
+
+                            </List>
+
+
                         </Box>
                     </Box>
                 </CardContent>
             </Card>
 
-            {/* Contract Clauses */}
-            <Card className="bg-gray-200">
-                <CardHeader>
-                    <CardTitle>شرایط و ضوابط قرارداد</CardTitle>
-                    <CardDescription>مواد قرارداد که لازم است مطالعه فرمایید</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Box className="space-y-6">
-                        {contractClauses.map((clause) => (
-                            <Box key={clause.id} className="space-y-2">
-                                <Typography
-                                    variant="h6"
-                                    className="text-foreground dark:text-foreground font-bold"
-                                >
-                                    {clause.title}
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    className="text-muted-foreground dark:text-muted-foreground text-justify leading-relaxed"
-                                >
-                                    {clause.content
-                                        .replace('{facilityAmount}', contractDetails.facilityAmount)
-                                        .replace('{duration}', contractDetails.duration)
-                                        .replace('{monthlyPayment}', contractDetails.monthlyPayment)
-                                        .replace('{interestRate}', contractDetails.interestRate)}
-                                </Typography>
-                            </Box>
-                        ))}
-                    </Box>
-                </CardContent>
-            </Card>
-
-            {/* Agreement Section */}
             <Card className="bg-gray-200">
                 <CardContent>
                     <Box className="space-y-4">

@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { digitsEnToFa } from '@persian-tools/persian-tools';
 
 export default clsx;
 
@@ -20,6 +21,27 @@ export function convertPersianToEnglish(value: string): string {
         }
     }
     return out;
+}
+
+export function toPersianDate(dateString?: string): string {
+    if (!dateString) return '';
+
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return '';
+
+        // Convert to Persian date using Persian tools
+        const persianDate = new Intl.DateTimeFormat('fa-IR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        }).format(date);
+
+        return digitsEnToFa(persianDate);
+    } catch (error) {
+        console.error('Error converting date to Persian:', error);
+        return 'نامشخص';
+    }
 }
 
 export function setCookie(name: string, value: string, days: number = 365): void {

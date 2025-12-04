@@ -1,7 +1,6 @@
 'use client';
 
 import { Box, Label } from '@/components/ui';
-import { useUser } from '@/contexts/UserContext';
 import { useNationalCardForm } from '@/hooks/useNationalCardForm';
 import dynamic from 'next/dynamic';
 import LoadingButton from '../ui/core/LoadingButton';
@@ -15,14 +14,13 @@ const NationalCardOcrScanner = dynamic(() => import('../specialized/NationalCard
 });
 
 export default function NationalCardStep() {
-    const { userData } = useUser();
     const {
         form,
         isLoading,
         showWelcomeModal,
         handleConfirm,
+        handleCapture,
         submit,
-        setShowWelcomeModal,
         errors,
         fileError,
     } = useNationalCardForm();
@@ -33,6 +31,7 @@ export default function NationalCardStep() {
                 اسکن کارت ملی
             </Label>
             <NationalCardOcrScanner
+                onCapture={handleCapture}
                 onConfirm={handleConfirm}
                 autoOpen={true}
                 showConfirmButton={true}
@@ -46,9 +45,6 @@ export default function NationalCardStep() {
 
             <WelcomeModal
                 isOpen={showWelcomeModal}
-                onClose={() => setShowWelcomeModal(false)}
-                customerNumber={userData.customerNumber}
-                accountNumber={userData.accountNumber}
             />
         </Box>
     );

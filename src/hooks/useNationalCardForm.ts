@@ -4,9 +4,10 @@ import { useUser } from '@/contexts/UserContext';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { nationalCardInfoSchema, type NationalCardInfoForm } from '@/lib/schemas/identity';
 import { resolveCatalogMessage } from '@/services/errorCatalog';
+import { OcrFields } from '@/lib/ocr';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 export interface Branch {
@@ -19,30 +20,6 @@ export interface DigitalMessageException {
     errorCode?: number;
 }
 
-interface ApiResponseData {
-    body?: {
-        CustomerNumber?: string;
-        depositNum?: string;
-    };
-    data?: {
-        body?: {
-            CustomerNumber?: string;
-            depositNum?: string;
-        };
-    };
-    response?: {
-        body?: {
-            CustomerNumber?: string;
-            depositNum?: string;
-        };
-        CustomerNumber?: string;
-        depositNum?: string;
-    };
-    digitalMessageException?: DigitalMessageException;
-    CustomerNumber?: string;
-    depositNum?: string;
-}
-
 export const defaultBranches: Branch[] = [{ value: 102, label: 'تهران' }];
 
 export function useNationalCardForm() {
@@ -52,7 +29,6 @@ export function useNationalCardForm() {
     const [ocrValid, setOcrValid] = useState<boolean>(false);
     const [showWelcomeModal, setShowWelcomeModal] = useState(false);
     const [fileError, setFileError] = useState<string | null>(null);
-
     const form = useForm<NationalCardInfoForm>({
         resolver: zodResolver(nationalCardInfoSchema),
         defaultValues: {
@@ -61,26 +37,20 @@ export function useNationalCardForm() {
         },
     });
 
-    const handleCapture = useCallback(
-        (file: File, isValid: boolean = true) => {
-            setCapturedFile(file);
-            setOcrValid(isValid);
-            if (isValid) {
-                setFileError(null);
-                setUserData({ ...userData, hasScannedNationalCard: true });
-            }
-        },
-        [setUserData, userData]
-    );
+    const handleCapture = (file: File, isValid: boolean = true, fields?: OcrFields) => {
+        setCapturedFile(file);
+        setOcrValid(isValid);
+        if (isValid) {
+            setFileError(null);
+            setUserData({ ...userData, hasScannedNationalCard: true });
+        }
+    };
 
-    const handleConfirm = useCallback(
-        (file: File, isValid: boolean = true) => {
-            handleCapture(file, isValid);
-        },
-        [handleCapture]
-    );
+    const handleConfirm = (file: File, isValid: boolean = true) => {
+        handleCapture(file, isValid);
+    };
 
-    const handleSubmit = useCallback(async () => {
+    const handleSubmit = async () => {
         console.debug('handleSubmit called', {
             capturedFile,
             ocrValid,
@@ -112,25 +82,10 @@ export function useNationalCardForm() {
         await axios
             .post('/api/bpms/deposit-files', formData)
             .then((response) => {
-                const data = response.data as ApiResponseData;
+                const data = response.data;
+                setUserData({ ...userData, userLoan: data.body });
 
-                const customerNumber =
-                    data?.body?.CustomerNumber ||
-                    data?.CustomerNumber ||
-                    data?.data?.body?.CustomerNumber ||
-                    data?.response?.body?.CustomerNumber ||
-                    data?.response?.CustomerNumber;
-                const accountNumber =
-                    data?.body?.depositNum ||
-                    data?.depositNum ||
-                    data?.data?.body?.depositNum ||
-                    data?.response?.body?.depositNum ||
-                    data?.response?.depositNum;
-                setUserData({
-                    ...userData,
-                    customerNumber: customerNumber || '',
-                    accountNumber: accountNumber || '',
-                });
+
                 setShowWelcomeModal(true);
             })
             .catch(async (error) => {
@@ -143,12 +98,12 @@ export function useNationalCardForm() {
             .finally(() => {
                 setIsLoading(false);
             });
-    }, [capturedFile, userData, setUserData, form, fileError, ocrValid]);
+    };
 
-    const handleWelcomeModalClose = useCallback(() => {
+    const handleWelcomeModalClose = () => {
         setShowWelcomeModal(false);
         setUserData({ ...userData, step: 7 });
-    }, [userData, setUserData]);
+    };
 
     return {
         form,
@@ -158,8 +113,9 @@ export function useNationalCardForm() {
         showWelcomeModal,
         setShowWelcomeModal,
         handleConfirm,
+        handleCapture,
         handleSubmit,
-        submit: useCallback(async () => {
+        submit: async () => {
             setFileError(null);
 
             if (!capturedFile) {
@@ -172,7 +128,7 @@ export function useNationalCardForm() {
             if (!capturedFile) return;
 
             await handleSubmit();
-        }, [capturedFile, form, handleSubmit, setFileError]),
+        },
         handleWelcomeModalClose,
         isFormValid: form.formState.isValid,
         errors: form.formState.errors,

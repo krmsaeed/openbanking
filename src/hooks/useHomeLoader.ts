@@ -87,7 +87,7 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                                 ? 'اطلاعات احراز هویت یافت نشد'
                                 : await resolveCatalogMessage(
                                     data,
-                                    'عملیات ناموفق'
+                                    'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
                                 );
                         showDismissibleToast(message, 'error');
                         requestCache.delete(code);

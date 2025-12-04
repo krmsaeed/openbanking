@@ -22,8 +22,8 @@ export type DigitalMessageException = {
 
 let cacheByCode: Map<number, ErrorCatalogEntry> = new Map();
 let cacheByKey: Map<string, ErrorCatalogEntry> = new Map();
-let cacheTimestamp: number | null = null;
 let inflight: Promise<void> | null = null;
+let apiCalled = false;
 
 function isBrowser(): boolean {
     return typeof window !== 'undefined';
@@ -66,12 +66,6 @@ async function saveToStorage(entries: ErrorCatalogEntry[]): Promise<void> {
     }
 }
 
-function needsRefresh(force?: boolean): boolean {
-    if (force) return true;
-    if (!cacheTimestamp) return true;
-    return Date.now() - cacheTimestamp > CACHE_TTL_MS;
-}
-
 function resolveApiEndpoint(): string {
     if (typeof window !== 'undefined') {
         return '/api/errors/getAll';
@@ -95,6 +89,7 @@ async function fetchCatalogEntries(): Promise<ErrorCatalogEntry[]> {
         const response = await fetch(resolveApiEndpoint(), {
             cache: 'no-store',
             signal: controller.signal,
+            credentials: 'include', // Include cookies for authentication
         });
 
         clearTimeout(timeoutId);
@@ -133,7 +128,6 @@ function populateCache(entries: ErrorCatalogEntry[]): void {
         }
     }
 
-    cacheTimestamp = Date.now();
     // Fire and forget persistence into IndexedDB
     void saveToStorage(entries);
 }
@@ -147,11 +141,10 @@ export async function initErrorCatalog(options?: { forceRefresh?: boolean }): Pr
         if (stored && stored.length > 0) {
             populateCache(stored);
             console.log(`Error catalog loaded from IndexedDB with ${stored.length} entries`);
-            return;
         }
     }
 
-    if (!needsRefresh(force)) {
+    if (apiCalled && !force) {
         return;
     }
 
@@ -163,11 +156,10 @@ export async function initErrorCatalog(options?: { forceRefresh?: boolean }): Pr
         try {
             const entries = await fetchCatalogEntries();
             populateCache(entries);
+            apiCalled = true;
             console.log(`Error catalog fetched and cached with ${entries.length} entries`);
         } catch (error) {
             console.error('Failed to initialize error catalog:', error);
-            // Don't throw - let the calling code handle fallback
-            // but clear inflight so retry is possible
             inflight = null;
             throw error;
         } finally {
@@ -201,7 +193,7 @@ export function getMessageByName(name: string | undefined, fallback?: string): s
 export function clearErrorCatalogCache(): void {
     cacheByCode.clear();
     cacheByKey.clear();
-    cacheTimestamp = null;
+    apiCalled = false;
 
     if (isBrowser()) {
         // Best-effort async cleanup of IndexedDB
@@ -244,7 +236,7 @@ export async function resolveCatalogMessage(
     const key = exception?.errorKey;
 
     if (code === -1) {
-        return 'خطای برقراری ارتباط';
+        return 'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید';
     }
 
     try {

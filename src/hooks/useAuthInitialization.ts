@@ -1,8 +1,8 @@
 'use client';
 
 import { getAccessToken, getNationalId, initializeAuth } from '@/lib/auth';
-import { initErrorCatalog, isErrorCatalogInitialized } from '@/services/errorCatalog';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { initErrorCatalog, isErrorCatalogInitialized, clearErrorCatalogCache } from '@/services/errorCatalog';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 
@@ -21,6 +21,7 @@ export const useAuthInitialization = ({
 }: UseAuthInitializationOptions = {}): UseAuthInitializationReturn => {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const pathname = usePathname();
     const [isInitialized, setIsInitialized] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -46,16 +47,23 @@ export const useAuthInitialization = ({
         try {
             setError(null);
 
-            if (!isErrorCatalogInitialized()) {
-                try {
-                    await initErrorCatalog();
-                } catch { }
-            }
-
             const existingToken = getAccessToken();
             const existingNationalId = getNationalId();
 
             if (existingToken && existingNationalId) {
+                // Token exists - now load error catalog (needs auth for IS_STAGE)
+                if (pathname === '/' && !isErrorCatalogInitialized()) {
+                    // Reset IndexedDB once on project load
+                    if (!localStorage.getItem('indexeddb_reset_done')) {
+                        try {
+                            await clearErrorCatalogCache();
+                            localStorage.setItem('indexeddb_reset_done', 'true');
+                        } catch { }
+                    }
+                    try {
+                        await initErrorCatalog();
+                    } catch { }
+                }
                 setIsInitialized(true);
                 return;
             }
@@ -75,6 +83,21 @@ export const useAuthInitialization = ({
             const cleanedNationalId = await validateAndCleanNationalId(code);
 
             initializeAuth({ token, nationalId: cleanedNationalId });
+
+            // Now that we have a token, load error catalog
+            if (pathname === '/' && !isErrorCatalogInitialized()) {
+                // Reset IndexedDB once on project load
+                if (!localStorage.getItem('indexeddb_reset_done')) {
+                    try {
+                        await clearErrorCatalogCache();
+                        localStorage.setItem('indexeddb_reset_done', 'true');
+                    } catch { }
+                }
+                try {
+                    await initErrorCatalog();
+                } catch { }
+            }
+
             setIsInitialized(true);
 
             const url = new URL(window.location.href);
@@ -94,7 +117,7 @@ export const useAuthInitialization = ({
         } finally {
             setIsLoading(false);
         }
-    }, [searchParams, router, requireAuth, validateAndCleanNationalId]);
+    }, [searchParams, router, requireAuth, validateAndCleanNationalId, pathname]);
 
     useEffect(() => {
         initializeAuthentication();

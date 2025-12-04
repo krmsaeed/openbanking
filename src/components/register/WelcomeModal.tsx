@@ -8,12 +8,9 @@ import Image from 'next/image';
 
 interface WelcomeModalProps {
     isOpen: boolean;
-    onClose: () => void;
-    customerNumber?: string;
-    accountNumber?: string;
 }
 
-export function WelcomeModal({ isOpen, customerNumber, accountNumber }: WelcomeModalProps) {
+export function WelcomeModal({ isOpen }: WelcomeModalProps) {
     const { userData, setUserData } = useUser();
     return (
         <Modal
@@ -46,32 +43,6 @@ export function WelcomeModal({ isOpen, customerNumber, accountNumber }: WelcomeM
                         خدمات نوین، امن و شایسته به شماست.
                     </Typography>
 
-                    <Box className="space-y-4">
-                        <Box>
-                            <Typography variant="p" className="font-semibold text-gray-800">
-                                شماره مشتری
-                            </Typography>
-                            <Typography
-                                variant="h5"
-                                className="border-primary-200 mt-2 rounded-lg border-2 border-dashed bg-gray-50 p-3 text-lg font-bold"
-                            >
-                                {customerNumber && customerNumber}
-                            </Typography>
-                        </Box>
-
-                        <Box>
-                            <Typography variant="p" className="font-semibold text-gray-800">
-                                شماره حساب
-                            </Typography>
-                            <Typography
-                                variant="h5"
-                                className="border-primary-300 mt-2 rounded-lg border-2 border-dashed bg-gray-50 p-3 font-bold"
-                                dir="ltr"
-                            >
-                                {accountNumber && accountNumber}
-                            </Typography>
-                        </Box>
-                    </Box>
 
                     <Typography variant="p" className="text-primary-700 text-lg font-bold">
                         ✨ بانک اقتصاد نوین؛ همسفر مطمئن شما در مسیر رشد و شکوفایی ✨

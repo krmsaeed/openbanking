@@ -105,7 +105,7 @@ export default function LoginPage() {
             };
             const message = await resolveCatalogMessage(
                 axiosError.response?.data,
-                'عملیات ناموفق'
+                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
             );
             showDismissibleToast(message, 'error');
         } finally {

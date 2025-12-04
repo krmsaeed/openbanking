@@ -28,6 +28,8 @@ function isValidUrlForCaching(url) {
 
 function getCacheStrategy(req) {
     const url = new URL(req.url);
+    // Always use network-first for the version file so clients can detect updates
+    if (url.pathname === '/version.json') return 'network-first';
     if (url.pathname.startsWith('/api/')) {
         return 'network-first';
     }

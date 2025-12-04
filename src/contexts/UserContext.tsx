@@ -33,6 +33,19 @@ interface UserData {
     isCustomer?: boolean;
     isDeposit?: boolean;
     hasScannedNationalCard?: boolean;
+    userLoan?: {
+        discountRate: number; // درصد تخفیف 
+        installmentInterval: number; // فاصله زمانی بین اقساط   
+        contractStartDate: string; // تاریخ شروع قرارداد    
+        fullName: string;      // نام و نام خانوادگی کامل   
+        firstPaymentDate: string; // تاریخ اولین قسط    
+        description: string; // توضیحات     
+        penaltyRate: number;    // نرخ جریمه
+        payableAmount: number; // مبلغ قابل پرداخت
+        LoanNumber: string; // شماره وام
+        advancedAmount: number; // مبلغ پیش پرداخت
+        installmentCount: number; // تعداد اقساط
+    } | null;
 }
 
 interface UserContextType {
@@ -72,6 +85,7 @@ const initialState: UserData = {
     signature: undefined,
     nationalCard: undefined,
     branch: '',
+    userLoan: null,
     isCustomer: getCookie('national_id') ? true : false,
     isDeposit: getCookie('national_id') ? true : false,
     nationalFile: undefined,
@@ -85,6 +99,15 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         // بازیابی state از کوکی در initial load
         if (typeof window !== 'undefined') {
             const cookieState = getUserStateFromCookie();
+            const storedUserLoan = localStorage.getItem('userLoan');
+            let parsedUserLoan = null;
+            if (storedUserLoan) {
+                try {
+                    parsedUserLoan = JSON.parse(storedUserLoan);
+                } catch (error) {
+                    console.warn('Failed to parse userLoan from localStorage:', error);
+                }
+            }
             return {
                 ...initialState,
                 step: cookieState.step ?? initialState.step,
@@ -92,6 +115,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 isCustomer: cookieState.isCustomer ?? initialState.isCustomer,
                 isDeposit: cookieState.isDeposit ?? initialState.isDeposit,
                 randomText: cookieState.randomText ?? initialState.randomText,
+                userLoan: parsedUserLoan,
             };
         }
         return initialState;
@@ -108,6 +132,14 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 isDeposit: newData.isDeposit,
                 randomText: newData.randomText,
             });
+            // ذخیره userLoan در localStorage
+            if (newData.userLoan !== undefined) {
+                try {
+                    localStorage.setItem('userLoan', JSON.stringify(newData.userLoan));
+                } catch (error) {
+                    console.warn('Failed to save userLoan to localStorage:', error);
+                }
+            }
             return newData;
         });
     };
@@ -123,6 +155,14 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 isDeposit: newData.isDeposit,
                 randomText: newData.randomText,
             });
+            // ذخیره userLoan در localStorage اگر تغییر کرده
+            if (key === 'userLoan') {
+                try {
+                    localStorage.setItem('userLoan', JSON.stringify(value));
+                } catch (error) {
+                    console.warn('Failed to save userLoan to localStorage:', error);
+                }
+            }
             return newData;
         });
     };
@@ -131,6 +171,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         setUserDataState(initialState);
         removeCookie(['access_token']);
         clearUserStateCookies();
+        localStorage.removeItem('userLoan');
     };
 
     return (
