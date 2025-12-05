@@ -26,7 +26,6 @@ export function useNationalCardForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [capturedFile, setCapturedFile] = useState<File | null>(null);
     const [ocrValid, setOcrValid] = useState<boolean>(false);
-    const [showWelcomeModal, setShowWelcomeModal] = useState(false);
     const [fileError, setFileError] = useState<string | null>(null);
     const form = useForm<NationalCardInfoForm>({
         resolver: zodResolver(nationalCardInfoSchema),
@@ -82,10 +81,7 @@ export function useNationalCardForm() {
             .post('/api/bpms/deposit-files', formData)
             .then((response) => {
                 const data = response.data;
-                setUserData({ ...userData, userLoan: data.body });
-
-
-                setShowWelcomeModal(true);
+                setUserData({ ...userData, userLoan: data.body, step: 7 });
             })
             .catch(async (error) => {
                 const message = await resolveCatalogMessage(
@@ -99,18 +95,13 @@ export function useNationalCardForm() {
             });
     };
 
-    const handleWelcomeModalClose = () => {
-        setShowWelcomeModal(false);
-        setUserData({ ...userData, step: 7 });
-    };
+
 
     return {
         form,
         isLoading,
         capturedFile,
         ocrValid,
-        showWelcomeModal,
-        setShowWelcomeModal,
         handleConfirm,
         handleCapture,
         handleSubmit,
@@ -128,7 +119,6 @@ export function useNationalCardForm() {
 
             await handleSubmit();
         },
-        handleWelcomeModalClose,
         isFormValid: form.formState.isValid,
         errors: form.formState.errors,
         fileError,

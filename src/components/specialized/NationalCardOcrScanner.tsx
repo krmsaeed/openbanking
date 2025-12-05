@@ -107,16 +107,18 @@ export default function NationalCardOcrScanner({
         },
         [onCapture, onConfirm]
     );
-    const handleCapture = useCallback(() => {
+    const handleCapture = useCallback(async () => {
         if (ocrLoading || captureLocked) return;
 
         setCaptureLocked(true);
 
-        takePhoto((file) => {
+        takePhoto(async (file) => {
             const url = URL.createObjectURL(file);
-            if (capturedUrl) URL.revokeObjectURL(capturedUrl);
+            if (capturedUrl) {
+                URL.revokeObjectURL(capturedUrl);
+            }
             setCapturedUrl(url);
-            processOcr(file);
+            await processOcr(file);
             stopCamera();
         });
     }, [ocrLoading, captureLocked, takePhoto, capturedUrl, stopCamera, processOcr]);

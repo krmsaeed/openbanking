@@ -1,5 +1,4 @@
 import AuthInitializer from '@/components/AuthInitializer';
-import ErrorCatalogInitializer from '@/components/ErrorCatalogInitializer';
 import InstallPWA from '@/components/InstallPWA';
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
@@ -10,6 +9,7 @@ import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import { Suspense } from 'react';
 import './styles/globals.css';
+import ErrorCatalogInitializer from '@/components/ErrorCatalogInitializer';
 
 // export const dynamic = 'force-dynamic'; // Removed to fix standalone build issue
 
@@ -133,8 +133,8 @@ export default function RootLayout({
                 <ThemeProvider>
                     <UserProvider>
                         <ToastProvider>
-                            <ErrorCatalogInitializer />
-                            {process.env.IS_STAGE === "false" && <InstallPWA />}
+                            {process.env.NEXT_PUBLIC_IS_STAGE === "false" && <ErrorCatalogInitializer />}
+                            {process.env.NEXT_PUBLIC_IS_STAGE === "false" && <InstallPWA />}
                             <Suspense fallback={<></>}>
                                 <AuthInitializer requireAuth={false}>
                                     {process.env.NODE_ENV === 'development' ? (

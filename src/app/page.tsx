@@ -46,7 +46,7 @@ export default function LoginPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const { setUserData } = useUser();
-    const isStage = process.env.IS_STAGE;
+    const isStage = process.env.NEXT_PUBLIC_IS_STAGE;
     const {
         register,
         handleSubmit,
@@ -82,6 +82,11 @@ export default function LoginPage() {
 
             setCookie('access_token', access_token);
             setCookie('national_id', getValues('code'));
+
+            // Initialize error catalog after successful login if IS_STAGE is true
+            import('@/services/errorCatalog').then(({ initErrorCatalog }) => {
+                initErrorCatalog().catch(console.error);
+            });
 
             const response = await axios.post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',

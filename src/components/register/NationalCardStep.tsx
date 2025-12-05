@@ -5,7 +5,6 @@ import { useNationalCardForm } from '@/hooks/useNationalCardForm';
 import dynamic from 'next/dynamic';
 import LoadingButton from '../ui/core/LoadingButton';
 import { PersonalInfoForm } from './PersonalInfoForm';
-import { WelcomeModal } from './WelcomeModal';
 
 // Dynamic import برای OCR Scanner (6MB+)
 const NationalCardOcrScanner = dynamic(() => import('../specialized/NationalCardOcrScanner'), {
@@ -17,7 +16,6 @@ export default function NationalCardStep() {
     const {
         form,
         isLoading,
-        showWelcomeModal,
         handleConfirm,
         handleCapture,
         submit,
@@ -43,9 +41,6 @@ export default function NationalCardStep() {
                 <LoadingButton loading={isLoading} onClick={submit} disabled={isLoading} />
             </Box>
 
-            <WelcomeModal
-                isOpen={showWelcomeModal}
-            />
         </Box>
     );
 }

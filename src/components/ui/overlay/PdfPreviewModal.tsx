@@ -3,12 +3,15 @@
 import { Box, Button } from '@/components/ui';
 import { Modal } from '@/components/ui/overlay';
 import { useState } from 'react';
+import LoadingButton from '@/components/ui/core/LoadingButton';
 
 interface PdfPreviewModalProps {
     isOpen: boolean;
     onClose: () => void;
     pdfUrl: string;
     title?: string;
+    onConfirm?: () => void | Promise<void>;
+    loading?: boolean;
 }
 
 export function PdfPreviewModal({
@@ -16,6 +19,8 @@ export function PdfPreviewModal({
     onClose,
     pdfUrl,
     title = 'پیش‌نمایش قرارداد',
+    onConfirm,
+    loading: externalLoading = false,
 }: PdfPreviewModalProps) {
     const [loading, setLoading] = useState(true);
 
@@ -47,9 +52,19 @@ export function PdfPreviewModal({
                 </Box>
             </Box>
             <Box className="mt-5 flex justify-center">
-                <Button className="min-w-[20rem]" variant="primary" onClick={onClose}>
-                    تایید
-                </Button>
+                {onConfirm ? (
+                    <LoadingButton
+                        className="min-w-[20rem]"
+                        onClick={onConfirm}
+                        loading={externalLoading}
+                        disabled={externalLoading}
+                        title="تایید"
+                    />
+                ) : (
+                    <Button className="min-w-[20rem]" variant="primary" onClick={onClose}>
+                        تایید
+                    </Button>
+                )}
             </Box>
         </Modal>
     );

@@ -20,11 +20,12 @@ export default function PasswordStep() {
     const [showOtp, setShowOtp] = useState(false);
     const [otp, setOtp] = useState('');
     const [otpLoading, setOtpLoading] = useState(false);
-
+    const [timeLeft, setTimeLeft] = useState(120)
     const {
         control,
         formState: { errors },
         setError,
+        getValues,
         handleSubmit,
     } = useForm<PasswordStepForm>({
         resolver: zodResolver(passwordStepSchema),
@@ -52,6 +53,7 @@ export default function PasswordStep() {
             })
             .then(() => {
                 setShowOtp(true);
+                setTimeLeft(120);
             })
             .catch(async (error) => {
                 const message = await resolveCatalogMessage(
@@ -71,23 +73,18 @@ export default function PasswordStep() {
             .post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',
                 processId: userData.processId,
-                formName: 'CertificateRequest',
+                formName: 'CertificateOtpVerify',
                 body: {
-                    ENFirstName: userData.ENFirstName,
-                    ENLastName: userData.ENLastName,
-                    password: userData.password,
+                    ENFirstName: getValues('ENFirstName'),
+                    ENLastName: getValues('ENLastName'),
+                    password: getValues('password'),
+                    tryAgain: true,
                 },
             })
-            .then((response) => {
-                const { data } = response;
-                if (data?.body?.success) {
-                    showDismissibleToast('کد تایید مجدد ارسال شد', 'success');
-                } else {
-                    showDismissibleToast('خطا در ارسال مجدد کد', 'error');
-                }
+            .then(() => {
+                setShowOtp(false)
             })
             .catch(async (error) => {
-                console.log("🚀 ~ handleResendOTP ~ error:", error)
                 const message = await resolveCatalogMessage(
                     error.response?.data,
                     'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
@@ -99,7 +96,37 @@ export default function PasswordStep() {
             });
     };
     const [showPassword, setShowPassword] = useState(false);
-
+    const onIssue = () => {
+        if (otp.length === 6) {
+            setOtpLoading(true);
+            axios
+                .post('/api/bpms/send-message', {
+                    serviceName: 'virtual-open-deposit',
+                    formName: 'CertificateOtpVerify',
+                    processId: userData.processId,
+                    body: {
+                        otpCode: otp.trim(),
+                        password: userData.password,
+                    },
+                })
+                .then(() => {
+                    setUserData({ step: 6 });
+                })
+                .catch(async (error) => {
+                    console.log("🚀 ~ PasswordStep ~ error:", error)
+                    const message = await resolveCatalogMessage(
+                        error.response?.data,
+                        'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
+                    );
+                    showDismissibleToast(message, 'error');
+                })
+                .finally(() => {
+                    setOtpLoading(false);
+                });
+        } else {
+            showDismissibleToast('کد تایید را کامل وارد کنید', 'error');
+        }
+    }
     return !showOtp ? (
         <Box className="space-y-3">
             <Box className="rounded-xl bg-gray-100 dark:bg-gray-800">
@@ -298,42 +325,23 @@ export default function PasswordStep() {
             </form>
         </Box>
     ) : (
-        <CertificateStep
-            otp={otp}
-            setOtp={setOtp}
-            onResend={handleResendOTP}
-            onIssue={() => {
-                if (otp.length === 6) {
-                    setOtpLoading(true);
-                    axios
-                        .post('/api/bpms/send-message', {
-                            serviceName: 'virtual-open-deposit',
-                            formName: 'CertificateOtpVerify',
-                            processId: userData.processId,
-                            body: {
-                                otpCode: otp.trim(),
-                                password: userData.password,
-                            },
-                        })
-                        .then(() => {
-                            setUserData({ step: 6 });
-                        })
-                        .catch(async (error) => {
-                            console.log("🚀 ~ PasswordStep ~ error:", error)
-                            const message = await resolveCatalogMessage(
-                                error.response?.data,
-                                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-                            );
-                            showDismissibleToast(message, 'error');
-                        })
-                        .finally(() => {
-                            setOtpLoading(false);
-                        });
-                } else {
-                    showDismissibleToast('کد تایید را کامل وارد کنید', 'error');
-                }
-            }}
-            loading={otpLoading}
-        />
+        <>
+            <CertificateStep
+                otp={otp}
+                setOtp={setOtp}
+                onResend={handleResendOTP}
+                onIssue={onIssue}
+                loading={otpLoading}
+                timeLeft={timeLeft}
+                setTimeLeft={setTimeLeft}
+            />
+            <Box className="space-y-2">
+                <LoadingButton
+                    onClick={onIssue}
+                    loading={otpLoading}
+                    disabled={otp.length !== 6 || otpLoading}
+                />
+            </Box>
+        </>
     );
 }

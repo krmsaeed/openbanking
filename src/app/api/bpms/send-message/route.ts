@@ -11,9 +11,15 @@ async function handler(request: AuthenticatedRequest) {
         const body = await request.json();
         const authToken = request.auth?.token;
 
+        // Log the incoming request body for debugging
+        console.log('Incoming request body:', JSON.stringify(body, null, 2));
+        console.log('Auth token present:', !!authToken);
+
         const backendRes = await axios.post(`${BACKEND_BASE_URL}/bpms/sendMessage`, body, {
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'User-Agent': 'Mozilla/5.0 (compatible; App/1.0)',
                 ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
             },
             httpsAgent,
@@ -21,6 +27,10 @@ async function handler(request: AuthenticatedRequest) {
         });
 
         const data = backendRes.data;
+
+        // Log the backend response for debugging
+        console.log('Backend response status:', backendRes.status);
+        console.log('Backend response data:', JSON.stringify(data, null, 2));
 
         // اگر backend status 200 و exception وجود دارد → status 400 بده
         if (backendRes.status === 200 && data?.digitalMessageException) {

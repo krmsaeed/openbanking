@@ -97,9 +97,7 @@ export function clearAuthTokens(): void {
 export function initializeAuth(authData: InitialAuthData): void {
     saveAuthTokens({ accessToken: authData.token });
     saveNationalId(authData.nationalId);
-}
-
-export function getServerAuthTokens(request: Request): {
+} export function getServerAuthTokens(request: Request): {
     accessToken: string | null;
     nationalId: string | null;
 } {

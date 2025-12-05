@@ -1,7 +1,6 @@
 'use client';
 
 import { getAccessToken, getNationalId, initializeAuth } from '@/lib/auth';
-import { initErrorCatalog, isErrorCatalogInitialized, clearErrorCatalogCache } from '@/services/errorCatalog';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
@@ -51,19 +50,7 @@ export const useAuthInitialization = ({
             const existingNationalId = getNationalId();
 
             if (existingToken && existingNationalId) {
-                // Token exists - now load error catalog (needs auth for IS_STAGE)
-                if (pathname === '/' && !isErrorCatalogInitialized()) {
-                    // Reset IndexedDB once on project load
-                    if (!localStorage.getItem('indexeddb_reset_done')) {
-                        try {
-                            await clearErrorCatalogCache();
-                            localStorage.setItem('indexeddb_reset_done', 'true');
-                        } catch { }
-                    }
-                    try {
-                        await initErrorCatalog();
-                    } catch { }
-                }
+                // Token exists - error catalog should already be initialized
                 setIsInitialized(true);
                 return;
             }
@@ -84,20 +71,7 @@ export const useAuthInitialization = ({
 
             initializeAuth({ token, nationalId: cleanedNationalId });
 
-            // Now that we have a token, load error catalog
-            if (pathname === '/' && !isErrorCatalogInitialized()) {
-                // Reset IndexedDB once on project load
-                if (!localStorage.getItem('indexeddb_reset_done')) {
-                    try {
-                        await clearErrorCatalogCache();
-                        localStorage.setItem('indexeddb_reset_done', 'true');
-                    } catch { }
-                }
-                try {
-                    await initErrorCatalog();
-                } catch { }
-            }
-
+            // Error catalog is now initialized in initializeAuth
             setIsInitialized(true);
 
             const url = new URL(window.location.href);

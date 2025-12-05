@@ -2,7 +2,6 @@
 import { MultiOTPInput } from '@/components/forms';
 import { Box, Typography } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
-import LoadingButton from '@/components/ui/core/LoadingButton';
 import { useEffect, useState } from 'react';
 
 interface Props {
@@ -13,10 +12,12 @@ interface Props {
     loading?: boolean;
     children?: React.ReactNode;
     passwordInput?: React.ReactNode;
+    isValid?: boolean;
+    timeLeft: number;
+    setTimeLeft: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export default function CertificateStep({ otp, setOtp, onIssue, onResend, loading, children, passwordInput }: Props) {
-    const [timeLeft, setTimeLeft] = useState(120); // 2 دقیقه = 120 ثانیه
+export default function CertificateStep({ otp, setOtp, onIssue, onResend, loading, timeLeft, setTimeLeft }: Props) {
     const [canResend, setCanResend] = useState(false);
 
     useEffect(() => {
@@ -26,7 +27,7 @@ export default function CertificateStep({ otp, setOtp, onIssue, onResend, loadin
         }
 
         const timer = setInterval(() => {
-            setTimeLeft((prev) => {
+            setTimeLeft((prev: number) => {
                 if (prev <= 1) {
                     setCanResend(true);
                     return 0;
@@ -36,12 +37,11 @@ export default function CertificateStep({ otp, setOtp, onIssue, onResend, loadin
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [timeLeft]);
+    }, [timeLeft, setTimeLeft]);
 
     const handleResend = () => {
         if (onResend) {
             onResend();
-            setTimeLeft(120);
             setCanResend(false);
             setOtp('');
         }
@@ -91,16 +91,10 @@ export default function CertificateStep({ otp, setOtp, onIssue, onResend, loadin
                 length={6}
                 onSubmit={onIssue}
                 disabled={loading}
+
             />
-            {passwordInput}
-            {children}
-            <Box className="space-y-2">
-                <LoadingButton
-                    onClick={onIssue}
-                    loading={loading}
-                    disabled={otp.length < 6 || loading}
-                />
-            </Box>
+
+
         </Box>
     );
 }

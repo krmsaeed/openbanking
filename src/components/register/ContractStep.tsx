@@ -4,8 +4,6 @@ import {
     Button,
     Card,
     CardContent,
-    CardHeader,
-    CardTitle,
     Input,
     List,
     ListItem,
@@ -15,22 +13,31 @@ import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast'
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { PdfPreviewModal } from '@/components/ui/overlay/PdfPreviewModal';
 import { resolveCatalogMessage } from '@/services/errorCatalog';
-import { ArrowDownTrayIcon, DocumentTextIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import Modal from '../ui/overlay/Modal';
 import { useUser } from '@/contexts/UserContext';
-import CertificateStep from './CertificateStep';
+import ContractOtpStep from './ContractOtpStep';
 import httpClient from '@/lib/httpClient';
-import { Controller, useForm } from 'react-hook-form';
+
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import { toPersianDate } from '@/lib/utils';
+import { Controller, useForm, FieldValues, Control, FieldErrors, UseFormSetError, UseFormGetValues } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { simplePasswordSchema } from '@/lib/schemas/personal';
+import axios from 'axios';
+
+type PasswordFormData = {
+    password: string;
+};
+
 const PDF_URL = '/test.pdf';
 
 
 function useContractStep() {
     const router = useRouter();
-    const { clearUserData } = useUser();
+    const { userData, clearUserData } = useUser();
     const [agreed, setAgreed] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -39,8 +46,12 @@ function useContractStep() {
     const [showModal, setShowModal] = useState(false);
     const [otp, setOtp] = useState('');
     const [otpLoading, setOtpLoading] = useState(false);
-    const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [signedPdfUrl, setSignedPdfUrl] = useState<string>('');
+    const [signedPdfUrlByBank, setSignedPdfUrlByBank] = useState<string>('');
+    const [showSignedPreview, setShowSignedPreview] = useState(false);
+    const [showSignedPreviewByBank, setShowSignedPreviewByBank] = useState(false);
+    const [bankSignLoading, setBankSignLoading] = useState(false);
     const handleAccept = async () => {
         if (!agreed) {
             setError('لطفا ابتدا شرایط قرارداد را مطالعه و تأیید کنید.');
@@ -50,24 +61,27 @@ function useContractStep() {
         setLoading(true);
         setError(null);
 
-        try {
-            await new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    if (Math.random() > 0.9) {
-                        reject(new Error('خطا در اتصال به سرور'));
-                    } else {
-                        resolve(true);
-                    }
-                }, 2000);
+        await httpClient
+            .post('/api/bpms/send-message', {
+                serviceName: 'virtual-open-deposit',
+                processId: userData.processId,
+                formName: 'SignCustomerLoanContract',
+                body: {
+                    accept: true,
+                }
+            }).then(() => {
+                setShowModal(true);
+            }).catch(async (err) => {
+                const message = await resolveCatalogMessage(
+                    err.response?.data,
+                    'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
+                );
+                showDismissibleToast(message, 'error');
+            }).finally(() => {
+                setLoading(false);
             });
 
-            setShowModal(true);
-        } catch (err) {
-            console.error('Contract acceptance error:', err);
-            setError(err instanceof Error ? err.message : 'خطای نامشخص رخ داده است');
-        } finally {
-            setLoading(false);
-        }
+
     };
 
     const handlePreview = async () => {
@@ -115,10 +129,18 @@ function useContractStep() {
         setOtp,
         otpLoading,
         setOtpLoading,
-        password,
-        setPassword,
         showPassword,
         setShowPassword,
+        signedPdfUrl,
+        setSignedPdfUrl,
+        signedPdfUrlByBank,
+        setSignedPdfUrlByBank,
+        showSignedPreview,
+        setShowSignedPreview,
+        showSignedPreviewByBank,
+        setShowSignedPreviewByBank,
+        bankSignLoading,
+        setBankSignLoading,
         handleAccept,
         handlePreview,
         handleDownload,
@@ -126,24 +148,29 @@ function useContractStep() {
     };
 }
 
+
+
 export default function ContractStep() {
-    const { userData, setUserData, clearUserData } = useUser();
+    const { userData } = useUser();
     const router = useRouter();
     const userLoan = userData.userLoan;
+    const passwordSchema = z.object({ password: simplePasswordSchema });
     const {
         control,
-        formState: { errors },
+        formState: { errors, isValid },
         setError,
-    } = useForm({
+        getValues
+    } = useForm<PasswordFormData>({
+        resolver: zodResolver(passwordSchema),
         defaultValues: {
             password: '',
         },
-    })
+        mode: 'onChange',
+    });
     const {
         agreed,
         setAgreed,
         loading,
-        error,
         showPreview,
         setShowPreview,
         pdfUrl,
@@ -153,57 +180,63 @@ export default function ContractStep() {
         setOtp,
         otpLoading,
         setOtpLoading,
-        password,
-        setPassword,
         showPassword,
         setShowPassword,
+        signedPdfUrl,
+        setSignedPdfUrl,
+        signedPdfUrlByBank,
+        setSignedPdfUrlByBank,
+        showSignedPreview,
+        setShowSignedPreview,
+        showSignedPreviewByBank,
+        setShowSignedPreviewByBank,
+        bankSignLoading,
+        setBankSignLoading,
         handleAccept,
-        handlePreview,
-        handleDownload,
         handleCancelConfirm,
     } = useContractStep();
+    const onIssue = () => {
+        setOtpLoading(true);
+        httpClient
+            .post('/api/bpms/send-message', {
+                serviceName: 'virtual-open-deposit',
+                formName: 'MtcRequestSignResult',
+                processId: userData.processId,
+                body: {
+                    otpCode: otp,
+                    password: getValues('password')
+                },
+            })
+            .then((response) => {
+                console.log("🚀 ~ onIssue ~ response:", response)
+                if (response.status === 200 && response.data?.body?.responseBase64) {
+                    try {
+                        setSignedPdfUrl(`data:application/pdf;base64,${response.data.body.responseBase64}`);
+                        setShowModal(false);
+                        setShowSignedPreview(true);
+                    } catch (error) {
+                        console.error('Error setting PDF URL:', error);
+                        showDismissibleToast('خطا در نمایش PDF', 'error');
+                    }
+                } else {
+                    showDismissibleToast('پاسخ نامعتبر دریافت شد', 'error');
+                }
+            })
+            .catch(async (error) => {
+                const message = await resolveCatalogMessage(
+                    error.response?.data,
+                    'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
+                );
+                showDismissibleToast(message, 'error');
+            })
+            .finally(() => {
+                setOtpLoading(false);
+            });
+
+    }
     return (
         <Box className="h-full space-y-6 py-4">
-            {/* Contract Header */}
-            <Box className="space-y-6 bg-gray-100 py-3 text-center">
-                <Box>
-                    <DocumentTextIcon className="text-primary-700 mx-auto mb-4 h-16 w-16" />
-                    <Typography variant="h4" className="mb-2">
-                        قرارداد فی‌مابین مشتری و بانک اقتصاد نوین
-                    </Typography>
-                    <Typography variant="body2" className="text-muted-foreground">
-                        لطفا شرایط قرارداد را به دقت مطالعه فرمایید
-                    </Typography>
-                </Box>
-
-                <Box className="flex flex-col items-center gap-4">
-                    <Box className="flex gap-3">
-                        <Button
-                            variant="outline"
-                            onClick={handlePreview}
-                            leftIcon={<EyeIcon className="ml-1 h-4 w-4" />}
-                            className="py-5 text-gray-900 transition-all duration-200 hover:scale-105"
-                        >
-                            پیش‌نمایش
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleDownload}
-                            leftIcon={<ArrowDownTrayIcon className="h-4 w-4" />}
-                            className="min-w-32 py-5 transition-all duration-200 hover:scale-105"
-                        >
-                            دانلود
-                        </Button>
-                    </Box>
-
-                </Box>
-            </Box>
-
             <Card className="bg-gray-200">
-                <CardHeader>
-                    <CardTitle>جزئیات قرارداد</CardTitle>
-                </CardHeader>
                 <CardContent>
                     <Box className="grid gap-6 md:grid-cols-2">
 
@@ -262,41 +295,24 @@ export default function ContractStep() {
                 </CardContent>
             </Card>
 
-            <Card className="bg-gray-200">
-                <CardContent>
-                    <Box className="space-y-4">
-                        <Box className="flex gap-4">
-                            <Input
-                                type="checkbox"
-                                id="agreement"
-                                checked={agreed}
-                                onChange={(e) => setAgreed(e.target.checked)}
-                                className="border-primary text-primary dark:text-primary mt-1 h-5 w-5 cursor-pointer rounded"
-                                aria-describedby="agreement-error"
-                            />
-                            <Box className="flex-1">
-                                <label
-                                    htmlFor="agreement"
-                                    className="text-foreground dark:text-foreground cursor-pointer text-sm leading-relaxed font-medium"
-                                >
-                                    با مطالعه کامل متن قرارداد، تمامی شرایط و ضوابط آن را پذیرفته و
-                                    متعهد به رعایت آن می‌باشم. اطلاعات ارائه شده صحیح بوده و در صورت
-                                    عدم صحت، مسئولیت کامل بر عهده من خواهد بود.
-                                </label>
-                                {error && (
-                                    <p
-                                        id="agreement-error"
-                                        className="text-destructive dark:text-destructive mt-2 text-sm"
-                                        role="alert"
-                                    >
-                                        {error}
-                                    </p>
-                                )}
-                            </Box>
-                        </Box>
-                    </Box>
-                </CardContent>
-            </Card>
+            <Box className="flex gap-2 items-center">
+                <Input
+                    type="checkbox"
+                    id="agreement"
+                    checked={agreed}
+                    onChange={(e) => setAgreed(e.target.checked)}
+                    className="text-primary  h-5 w-5 cursor-pointer rounded"
+                    aria-describedby="agreement-error"
+                />
+                <Box className="flex-1">
+                    <label
+                        htmlFor="agreement"
+                        className=" cursor-pointer text-sm  font-medium"
+                    >
+                        موارد فوق مورد تایید میباشد
+                    </label>
+                </Box>
+            </Box>
 
             <Box>
                 <Box className="mx-auto flex w-full flex-col justify-center gap-4 sm:flex-row md:w-1/2">
@@ -338,128 +354,96 @@ export default function ContractStep() {
                 pdfUrl={pdfUrl}
                 title="پیش‌نمایش قرارداد"
             />
+            <PdfPreviewModal
+                isOpen={showSignedPreview}
+                onClose={() => setShowSignedPreview(false)}
+                pdfUrl={signedPdfUrl}
+                title="قرارداد امضا شده توسط مشتری"
+                onConfirm={async () => {
+                    setBankSignLoading(true);
+                    await httpClient.post('/api/bpms/send-message', {
+                        serviceName: 'virtual-open-deposit',
+                        processId: userData.processId,
+                        formName: 'SignDocumentResult',
+                        body: {}
+                    }).then((response) => {
+                        console.log("🚀 ~ ContractStep ~ response:", response)
+                        if (response.status === 200 && response.data?.body?.stampedData) {
+                            try {
+                                setSignedPdfUrlByBank(`data:application/pdf;base64,${response.data.body.stampedData}`);
+                                setShowSignedPreview(false);
+                                setShowSignedPreviewByBank(true);
+
+                            } catch (error) {
+                                console.error('Error setting PDF URL:', error);
+                                showDismissibleToast('خطا در نمایش PDF', 'error');
+                            }
+
+                        } else {
+                            showDismissibleToast('پاسخ نامعتبر دریافت شد', 'error');
+                        }
+                    }).catch(async (error) => {
+                        await resolveCatalogMessage(
+                            axios.isAxiosError(error) ? error.response?.data : undefined,
+                            'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
+                        );
+                    }).finally(() => {
+                        setBankSignLoading(false);
+                    })
+
+                }}
+                loading={bankSignLoading}
+            />
+            <PdfPreviewModal
+                isOpen={showSignedPreviewByBank}
+                onClose={() => setShowSignedPreviewByBank(false)}
+                pdfUrl={signedPdfUrlByBank}
+                title="قرارداد امضا شده توسط بانک"
+                onConfirm={async () => {
+                    if (!signedPdfUrlByBank) {
+                        showDismissibleToast('PDF امضا شده در دسترس نیست', 'error');
+                        return;
+                    }
+
+                    try {
+                        // Download PDF
+                        const link = document.createElement('a');
+                        link.href = signedPdfUrlByBank;
+                        link.download = 'قرارداد-امضا-شده.pdf';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+
+                        showDismissibleToast('تسهیلات با موفقیت ایجاد شد', 'success');
+                        router.push("/");
+                    } catch (error) {
+                        console.error('Error downloading PDF:', error);
+                        showDismissibleToast('خطا در دانلود فایل PDF', 'error');
+                    }
+                }}
+            />
             <Modal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
                 title="تایید نهایی"
                 size="md"
+                closeOnClickOutside={false}
             >
-                <Box className="">
-                    <Box className="rounded-lg bg-gray-100 p-4 space-y-4">
-                        <Controller
-                            name="password"
-                            control={control}
-                            render={({ field }) => (
-                                <Box className="relative">
-                                    <Input
-                                        {...field}
-                                        type={showPassword ? 'text' : 'password'}
-                                        label="رمز عبور"
-                                        placeholder="رمز عبور خود را وارد کنید"
-                                        value={password}
-                                        onChange={(e) => {
-                                            const original = e.target.value;
-                                            const filtered = original.replace(/\D/g, '');
-                                            if (original !== filtered) {
-                                                setError("password", { type: "manual", message: 'رمز عبور باید فقط شامل اعداد باشد' });
-                                            } else {
-                                                setError("password", { type: "manual", message: '' });
-                                            }
-                                            setPassword(e.target.value.replace(/\D/g, ''))
-                                        }}
-                                        required
-                                        fullWidth
-                                        maxLength={8}
-                                        className="text-left"
-                                        dir="ltr"
-                                        error={errors.password?.message}
-                                        startAdornment={
-                                            <Box
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                className="cursor-pointer"
-                                            >
-                                                {showPassword ? (
-                                                    <EyeSlashIcon className="h-5 w-5" />
-                                                ) : (
-                                                    <EyeIcon className="h-5 w-5" />
-                                                )}
-                                            </Box>
-                                        }
-                                    />
-
-                                </Box>
-                            )}
-                        />
-                        <CertificateStep
-                            otp={otp}
-                            setOtp={setOtp}
-                            onResend={() => {
-                                setOtpLoading(true);
-                                httpClient
-                                    .post('/api/bpms/send-message', {
-                                        serviceName: 'virtual-open-deposit',
-                                        processId: userData.processId,
-                                        formName: 'CertificateRequest',
-                                        body: {
-                                            ENFirstName: userData.ENFirstName,
-                                            ENLastName: userData.ENLastName,
-                                            password: userData.password,
-                                        },
-                                    })
-                                    .then(() => {
-                                        showDismissibleToast('کد تایید مجدد ارسال شد', 'success');
-                                    })
-                                    .catch(async (error) => {
-                                        const message = await resolveCatalogMessage(
-                                            error.response?.data,
-                                            'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-                                        );
-                                        showDismissibleToast(message, 'error');
-                                    })
-                                    .finally(() => {
-                                        setOtpLoading(false);
-                                    });
-                            }}
-                            onIssue={() => {
-                                if (password !== userData.password) {
-                                    showDismissibleToast('رمز عبور اشتباه است', 'error');
-                                    return;
-                                }
-                                if (otp.length === 4) {
-                                    setOtpLoading(true);
-                                    httpClient
-                                        .post('/api/bpms/send-message', {
-                                            serviceName: 'virtual-open-deposit',
-                                            formName: 'CertificateOtpVerify',
-                                            processId: userData.processId,
-                                            body: {
-                                                otpCode: otp.trim(),
-                                                password: userData.password,
-                                            },
-                                        })
-                                        .then(() => {
-                                            setUserData({ step: 6 });
-                                            setShowModal(false);
-                                        })
-                                        .catch(async (error) => {
-                                            const message = await resolveCatalogMessage(
-                                                error.response?.data,
-                                                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-                                            );
-                                            showDismissibleToast(message, 'error');
-                                        })
-                                        .finally(() => {
-                                            setOtpLoading(false);
-                                        });
-                                } else {
-                                    showDismissibleToast('کد تایید را کامل وارد کنید', 'error');
-                                }
-                            }}
-                            loading={otpLoading}
-                        />
-                    </Box>
-
-                </Box>
+                <ContractOtpStep
+                    control={control}
+                    errors={errors}
+                    setError={setError}
+                    getValues={getValues}
+                    otp={otp}
+                    setOtp={setOtp}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    userData={userData}
+                    setOtpLoading={setOtpLoading}
+                    onIssue={onIssue}
+                    loading={otpLoading}
+                    isValid={isValid}
+                />
             </Modal>
         </Box>
     );
