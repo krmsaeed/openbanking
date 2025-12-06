@@ -11,13 +11,17 @@ async function handler(request: AuthenticatedRequest) {
         const formData = await request.formData();
         const authToken = request.auth?.token;
 
-        const backendRes = await axios.post(`${BACKEND_BASE_URL}/bpms/sendMultiPartMessage`, formData, {
-            headers: {
-                ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-            },
-            httpsAgent,
-            validateStatus: () => true,
-        });
+        const backendRes = await axios.post(
+            `${BACKEND_BASE_URL}/bpms/sendMultiPartMessage`,
+            formData,
+            {
+                headers: {
+                    ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+                },
+                httpsAgent,
+                validateStatus: () => true,
+            }
+        );
 
         const data = backendRes.data;
 

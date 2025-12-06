@@ -133,8 +133,10 @@ export default function RootLayout({
                 <ThemeProvider>
                     <UserProvider>
                         <ToastProvider>
-                            {process.env.NEXT_PUBLIC_IS_STAGE === "false" && <ErrorCatalogInitializer />}
-                            {process.env.NEXT_PUBLIC_IS_STAGE === "false" && <InstallPWA />}
+                            {process.env.NEXT_PUBLIC_IS_STAGE === 'false' && (
+                                <ErrorCatalogInitializer />
+                            )}
+                            {process.env.NEXT_PUBLIC_IS_STAGE === 'false' && <InstallPWA />}
                             <Suspense fallback={<></>}>
                                 <AuthInitializer requireAuth={false}>
                                     {process.env.NODE_ENV === 'development' ? (

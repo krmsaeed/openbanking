@@ -107,8 +107,8 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraResult {
                     err.name === 'NotAllowedError'
                         ? 'دسترسی به دوربین رد شد. لطفاً دسترسی را اجازه دهید.'
                         : err.name === 'NotFoundError'
-                            ? 'دوربین یافت نشد. لطفاً از وجود دوربین اطمینان حاصل کنید.'
-                            : 'خطا در دسترسی به دوربین. لطفاً دوباره تلاش کنید.';
+                          ? 'دوربین یافت نشد. لطفاً از وجود دوربین اطمینان حاصل کنید.'
+                          : 'خطا در دسترسی به دوربین. لطفاً دوباره تلاش کنید.';
                 setError(errorMessage);
             }
         } finally {

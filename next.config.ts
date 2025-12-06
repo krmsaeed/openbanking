@@ -1,6 +1,6 @@
 /// <reference types="node" />
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const nextConfig = {
     output: 'standalone', // Enable standalone output
     compress: true, // Gzip compression
@@ -41,8 +41,8 @@ const nextConfig = {
     env: {
         // NEXT_PUBLIC_BASE_URL: 'https://novinhubtst.enbank.ir',
         // NEXT_PUBLIC_BASE_URL: 'https://192.168.50.49:4999',
-        // NEXT_PUBLIC_BASE_URL: 'https://10.224.2.3:4999',
-        NEXT_PUBLIC_BASE_URL: 'https://192.168.91.112:4999',
+        NEXT_PUBLIC_BASE_URL: 'https://10.224.2.3:4999',
+        // NEXT_PUBLIC_BASE_URL: 'https://192.168.91.112:4999',
         NEXT_PUBLIC_IS_STAGE: 'true',
         BPMS_USERNAME: 'khanoumi',
         BPMS_PASSWORD: '123456',

@@ -34,13 +34,13 @@ interface UserData {
     isDeposit?: boolean;
     hasScannedNationalCard?: boolean;
     userLoan?: {
-        discountRate: number; // درصد تخفیف 
-        installmentInterval: number; // فاصله زمانی بین اقساط   
-        contractStartDate: string; // تاریخ شروع قرارداد    
-        fullName: string;      // نام و نام خانوادگی کامل   
-        firstPaymentDate: string; // تاریخ اولین قسط    
-        description: string; // توضیحات     
-        penaltyRate: number;    // نرخ جریمه
+        discountRate: number; // درصد تخفیف
+        installmentInterval: number; // فاصله زمانی بین اقساط
+        contractStartDate: string; // تاریخ شروع قرارداد
+        fullName: string; // نام و نام خانوادگی کامل
+        firstPaymentDate: string; // تاریخ اولین قسط
+        description: string; // توضیحات
+        penaltyRate: number; // نرخ جریمه
         payableAmount: number; // مبلغ قابل پرداخت
         LoanNumber: string; // شماره وام
         advancedAmount: number; // مبلغ پیش پرداخت

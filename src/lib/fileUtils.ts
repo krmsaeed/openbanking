@@ -43,7 +43,11 @@ export async function convertToFile(
     }
 }
 
-export async function mirrorImageBlob(original: Blob, mimeType = 'image/jpeg', quality = 0.8): Promise<Blob | null> {
+export async function mirrorImageBlob(
+    original: Blob,
+    mimeType = 'image/jpeg',
+    quality = 0.8
+): Promise<Blob | null> {
     try {
         const url = URL.createObjectURL(original);
         const img = document.createElement('img');

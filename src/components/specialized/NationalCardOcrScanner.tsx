@@ -61,7 +61,7 @@ export default function NationalCardOcrScanner({
 
     useEffect(() => {
         if (autoOpen && !isCameraOpen && !capturedUrl) {
-            startCamera().catch(() => { });
+            startCamera().catch(() => {});
         }
     }, [autoOpen, isCameraOpen, capturedUrl, startCamera]);
 

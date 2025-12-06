@@ -59,7 +59,6 @@ export function VideoRecorderView({
         }
     }, [videoPreviewUrl]);
 
-
     const hasPreview = Boolean(videoPreviewUrl);
 
     return (
@@ -80,7 +79,6 @@ export function VideoRecorderView({
                             >
                                 مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
                             </video>
-
                         </Box>
 
                         <Box className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl bg-gray-100 p-2">
@@ -100,7 +98,6 @@ export function VideoRecorderView({
                                 <li> اگر فیلم مناسب است «مرحله بعد» را انتخاب کنید</li>
                                 <li> برای رکورد جدید «ضبط مجدد» را انتخاب کنید</li>
                             </ul>
-
                         </Box>
                     </Box>
                 )}
@@ -130,15 +127,15 @@ export function VideoRecorderView({
                             </Box>
 
                             {!isRecording && (
-                                <Box className=" rounded-lg">
+                                <Box className="rounded-lg">
                                     <Box className="space-y-2 text-right">
                                         <Typography
                                             variant="h4"
-                                            className="border-primary-100  flex min-h-10 flex-col items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
+                                            className="border-primary-100 flex min-h-10 flex-col items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
                                         >
                                             {randomText}
                                         </Typography>
-                                        <Box className=" flex flex-col items-center justify-between rounded-lg bg-gray-100 p-2">
+                                        <Box className="flex flex-col items-center justify-between rounded-lg bg-gray-100 p-2">
                                             <Button
                                                 onClick={onStartRecording}
                                                 className="bg-success-600 mb-2 flex items-center gap-2 px-6 py-3 text-white"
@@ -147,17 +144,27 @@ export function VideoRecorderView({
                                                 <VideoCameraIcon className="h-5 w-5" />
                                                 شروع ضبط
                                             </Button>
-                                            <ul className="bg-gray-200 w-full rounded-md p-2 text-sm leading-relaxed text-gray-900">
-                                                <li className="text-primary-800 font-bold text-center mb-1">
+                                            <ul className="w-full rounded-md bg-gray-200 p-2 text-sm leading-relaxed text-gray-900">
+                                                <li className="text-primary-800 mb-1 text-center font-bold">
                                                     شرایط تصویربرداری
                                                 </li>
                                                 <li>
-                                                    <span className="text-primary-600 ml-1">•</span> تصویربرداری باید در محیطی آرام و بدون صداهای مزاحم و با نور کافی انجام شود.
+                                                    <span className="text-primary-600 ml-1">•</span>{' '}
+                                                    تصویربرداری باید در محیطی آرام و بدون صداهای
+                                                    مزاحم و با نور کافی انجام شود.
                                                 </li>
-                                                <li><span className="text-warning-600 ml-1">•</span> در پس‌زمینه چهره اصلی نباید تصویری از چهره فرد دیگر، قاب عکس، مجسمه یا هر چیزی شبیه به چهره وجود داشته باشد.</li>
-                                                <li><span className="text-error-600 ml-1">•</span> خوانش متن باید به صورت واضح، با سرعت یکنواخت و بدون وقفه، به زبان فارسی و بدون لحجه باشد</li>
+                                                <li>
+                                                    <span className="text-warning-600 ml-1">•</span>{' '}
+                                                    در پس‌زمینه چهره اصلی نباید تصویری از چهره فرد
+                                                    دیگر، قاب عکس، مجسمه یا هر چیزی شبیه به چهره
+                                                    وجود داشته باشد.
+                                                </li>
+                                                <li>
+                                                    <span className="text-error-600 ml-1">•</span>{' '}
+                                                    خوانش متن باید به صورت واضح، با سرعت یکنواخت و
+                                                    بدون وقفه، به زبان فارسی و بدون لحجه باشد
+                                                </li>
                                             </ul>
-
                                         </Box>
                                     </Box>
                                 </Box>
@@ -167,10 +174,11 @@ export function VideoRecorderView({
                                     <Button
                                         onClick={onStopRecording}
                                         disabled={!isRecording}
-                                        className={`mb-2 flex items-center gap-2 px-6 py-3 transition-colors ${isRecording
-                                            ? 'bg-error-500 hover:bg-error-600 text-white'
-                                            : 'cursor-not-allowed bg-gray-400 text-gray-600'
-                                            }`}
+                                        className={`mb-2 flex items-center gap-2 px-6 py-3 transition-colors ${
+                                            isRecording
+                                                ? 'bg-error-500 hover:bg-error-600 text-white'
+                                                : 'cursor-not-allowed bg-gray-400 text-gray-600'
+                                        }`}
                                     >
                                         <XMarkIcon className="h-5 w-5" />
                                         پایان ضبط
@@ -180,12 +188,11 @@ export function VideoRecorderView({
                             {isRecording && (
                                 <Typography
                                     variant="h4"
-                                    className="border-primary-100  flex min-h-10 items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
+                                    className="border-primary-100 flex min-h-10 items-center justify-center rounded-lg border bg-gray-100 text-center text-base leading-relaxed"
                                 >
                                     {randomText}
                                 </Typography>
                             )}
-
                         </Box>
                     </Box>
                 )}

@@ -9,7 +9,10 @@ const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 async function handler(request: AuthenticatedRequest) {
     try {
         if (!BACKEND_BASE_URL) {
-            return NextResponse.json({ error: 'NEXT_PUBLIC_BASE_URL is not configured' }, { status: 500 });
+            return NextResponse.json(
+                { error: 'NEXT_PUBLIC_BASE_URL is not configured' },
+                { status: 500 }
+            );
         }
 
         const token = request.auth?.token;

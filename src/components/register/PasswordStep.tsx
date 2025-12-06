@@ -20,7 +20,7 @@ export default function PasswordStep() {
     const [showOtp, setShowOtp] = useState(false);
     const [otp, setOtp] = useState('');
     const [otpLoading, setOtpLoading] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(120)
+    const [timeLeft, setTimeLeft] = useState(120);
     const {
         control,
         formState: { errors },
@@ -82,7 +82,7 @@ export default function PasswordStep() {
                 },
             })
             .then(() => {
-                setShowOtp(false)
+                setShowOtp(false);
             })
             .catch(async (error) => {
                 const message = await resolveCatalogMessage(
@@ -113,7 +113,7 @@ export default function PasswordStep() {
                     setUserData({ step: 6 });
                 })
                 .catch(async (error) => {
-                    console.log("🚀 ~ PasswordStep ~ error:", error)
+                    console.log('🚀 ~ PasswordStep ~ error:', error);
                     const message = await resolveCatalogMessage(
                         error.response?.data,
                         'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
@@ -126,7 +126,7 @@ export default function PasswordStep() {
         } else {
             showDismissibleToast('کد تایید را کامل وارد کنید', 'error');
         }
-    }
+    };
     return !showOtp ? (
         <Box className="space-y-3">
             <Box className="rounded-xl bg-gray-100 dark:bg-gray-800">
@@ -170,9 +170,12 @@ export default function PasswordStep() {
                                     const original = e.target.value;
                                     const filtered = original.replace(/[^a-zA-Z ]/g, '');
                                     if (original !== filtered) {
-                                        setError("ENFirstName", { type: "manual", message: 'فقط حروف انگلیسی مجاز است' });
+                                        setError('ENFirstName', {
+                                            type: 'manual',
+                                            message: 'فقط حروف انگلیسی مجاز است',
+                                        });
                                     } else {
-                                        setError("ENFirstName", { type: "manual", message: '' });
+                                        setError('ENFirstName', { type: 'manual', message: '' });
                                     }
                                     field.onChange(filtered);
                                 }}
@@ -204,9 +207,12 @@ export default function PasswordStep() {
                                     const original = e.target.value;
                                     const filtered = original.replace(/[^a-zA-Z ]/g, '');
                                     if (original !== filtered) {
-                                        setError("ENLastName", { type: "manual", message: 'فقط حروف انگلیسی مجاز است' });
+                                        setError('ENLastName', {
+                                            type: 'manual',
+                                            message: 'فقط حروف انگلیسی مجاز است',
+                                        });
                                     } else {
-                                        setError("ENLastName", { type: "manual", message: '' });
+                                        setError('ENLastName', { type: 'manual', message: '' });
                                     }
                                     field.onChange(filtered);
                                 }}
@@ -240,9 +246,12 @@ export default function PasswordStep() {
                                     const original = e.target.value;
                                     const filtered = original.replace(/\D/g, '');
                                     if (original !== filtered) {
-                                        setError("password", { type: "manual", message: 'فقط عدد مجاز است' });
+                                        setError('password', {
+                                            type: 'manual',
+                                            message: 'فقط عدد مجاز است',
+                                        });
                                     } else {
-                                        setError("password", { type: "manual", message: '' });
+                                        setError('password', { type: 'manual', message: '' });
                                     }
                                     field.onChange(filtered.replace(/\D/g, ''));
                                 }}
@@ -293,9 +302,15 @@ export default function PasswordStep() {
                                     const original = e.target.value;
                                     const filtered = original.replace(/\D/g, '');
                                     if (original !== filtered) {
-                                        setError("confirmPassword", { type: "manual", message: 'فقط عدد مجاز است' });
+                                        setError('confirmPassword', {
+                                            type: 'manual',
+                                            message: 'فقط عدد مجاز است',
+                                        });
                                     } else {
-                                        setError("confirmPassword", { type: "manual", message: '' });
+                                        setError('confirmPassword', {
+                                            type: 'manual',
+                                            message: '',
+                                        });
                                     }
                                     field.onChange(filtered.replace(/\D/g, ''));
                                 }}

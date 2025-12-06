@@ -123,7 +123,7 @@ export default function Register() {
                     }
                 }
             })();
-        } catch { }
+        } catch {}
     }, [setValue]);
 
     // Read national id from cookie (if present) and set into form

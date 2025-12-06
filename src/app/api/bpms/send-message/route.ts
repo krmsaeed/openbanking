@@ -18,7 +18,7 @@ async function handler(request: AuthenticatedRequest) {
         const backendRes = await axios.post(`${BACKEND_BASE_URL}/bpms/sendMessage`, body, {
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
+                Accept: 'application/json',
                 'User-Agent': 'Mozilla/5.0 (compatible; App/1.0)',
                 ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
             },
@@ -51,11 +51,9 @@ async function handler(request: AuthenticatedRequest) {
         }
 
         return NextResponse.json({ error: data }, { status: backendRes.status || 400 });
-
     } catch (error) {
-        const errorData = error && typeof error === 'object' && 'response' in error
-            ? error?.response
-            : undefined;
+        const errorData =
+            error && typeof error === 'object' && 'response' in error ? error?.response : undefined;
 
         return NextResponse.json(
             {

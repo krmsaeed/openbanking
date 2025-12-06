@@ -85,7 +85,10 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
         const savedDevice = getCookie('preferredUsbCameraId');
         if (savedDevice) {
             try {
-                await startWithConstraints({ video: { deviceId: { exact: savedDevice } }, audio: false });
+                await startWithConstraints({
+                    video: { deviceId: { exact: savedDevice } },
+                    audio: false,
+                });
                 return;
             } catch (error) {
                 console.warn('Saved camera unavailable', error);
@@ -148,7 +151,10 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
                 setOcrChecked(true);
                 setOcrValid(false);
                 setErrorMessage('پردازش کارت ملی با مشکل مواجه شد. لطفاً دوباره تلاش کنید.');
-                showDismissibleToast('پردازش کارت ملی با مشکل مواجه شد. لطفاً دوباره تلاش کنید.', 'error');
+                showDismissibleToast(
+                    'پردازش کارت ملی با مشکل مواجه شد. لطفاً دوباره تلاش کنید.',
+                    'error'
+                );
             } finally {
                 setLoading(false);
             }
@@ -265,7 +271,7 @@ export default function OcrReader({ onRecognize, showControls = true }: Props) {
                             type="button"
                             onClick={handleCapture}
                             disabled={loading || !cameraActive}
-                            className="rounded bg-primary-600 px-3 py-2 text-white disabled:cursor-not-allowed disabled:opacity-60"
+                            className="bg-primary-600 rounded px-3 py-2 text-white disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             گرفتن عکس
                         </button>

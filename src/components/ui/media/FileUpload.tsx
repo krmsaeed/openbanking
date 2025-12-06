@@ -28,7 +28,7 @@ const fileUploadVariants = cva(
 
 export interface FileUploadProps
     extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'>,
-    VariantProps<typeof fileUploadVariants> {
+        VariantProps<typeof fileUploadVariants> {
     onFileSelect?: (files: FileList | null) => void;
     accept?: string;
     multiple?: boolean;

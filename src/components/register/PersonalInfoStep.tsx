@@ -113,7 +113,9 @@ export default function PersonalInfo() {
                                     required
                                     className="text-center"
                                     error={errors.phoneNumber?.message}
-                                    onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ''))}
+                                    onChange={(e) =>
+                                        field.onChange(e.target.value.replace(/\D/g, ''))
+                                    }
                                 />
                             )}
                         />
@@ -130,7 +132,9 @@ export default function PersonalInfo() {
                                     className="text-center"
                                     error={errors.postalCode?.message}
                                     required
-                                    onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ''))}
+                                    onChange={(e) =>
+                                        field.onChange(e.target.value.replace(/\D/g, ''))
+                                    }
                                 />
                             )}
                         />

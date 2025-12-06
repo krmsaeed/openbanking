@@ -2,12 +2,19 @@
 import { Box, Input } from '@/components/ui';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import { Controller, Control, FieldErrors, UseFormSetError, UseFormGetValues } from 'react-hook-form';
+import {
+    Controller,
+    Control,
+    FieldErrors,
+    UseFormSetError,
+    UseFormGetValues,
+} from 'react-hook-form';
 import CertificateStep from './CertificateStep';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { resolveCatalogMessage } from '@/services/errorCatalog';
 import httpClient from '@/lib/httpClient';
 import { useState } from 'react';
+import { set } from 'zod';
 
 type PasswordFormData = {
     password: string;
@@ -42,7 +49,7 @@ export default function ContractOtpStep({
     loading,
     isValid,
 }: ContractOtpStepProps) {
-    const [timeLeft, setTimeLeft] = useState(120)
+    const [timeLeft, setTimeLeft] = useState(5);
     const onResend = () => {
         setOtpLoading(true);
         httpClient
@@ -52,10 +59,11 @@ export default function ContractOtpStep({
                 formName: 'SignCustomerLoanContract',
                 body: {
                     accept: true,
-                    tryagain: true
-                }
+                    tryagain: true,
+                },
             })
             .then(() => {
+                setTimeLeft(5);
                 showDismissibleToast('کد تایید مجدد ارسال شد', 'success');
             })
             .catch(async (error) => {
@@ -70,7 +78,7 @@ export default function ContractOtpStep({
             });
     };
     return (
-        <Box className="rounded-lg bg-gray-100 p-4 space-y-4">
+        <Box className="space-y-4 rounded-lg bg-gray-100 p-4">
             <Controller
                 name="password"
                 control={control}
@@ -117,7 +125,6 @@ export default function ContractOtpStep({
                 loading={loading}
                 timeLeft={timeLeft}
                 setTimeLeft={setTimeLeft}
-
             />
             <Box className="space-y-2">
                 <LoadingButton

@@ -13,15 +13,8 @@ const NationalCardOcrScanner = dynamic(() => import('../specialized/NationalCard
 });
 
 export default function NationalCardStep() {
-    const {
-        form,
-        isLoading,
-        handleConfirm,
-        handleCapture,
-        submit,
-        errors,
-        fileError,
-    } = useNationalCardForm();
+    const { form, isLoading, handleConfirm, handleCapture, submit, errors, fileError } =
+        useNationalCardForm();
 
     return (
         <Box className="mx-auto max-w-2xl space-y-6">
@@ -40,7 +33,6 @@ export default function NationalCardStep() {
             <Box className="flex w-full justify-center">
                 <LoadingButton loading={isLoading} onClick={submit} disabled={isLoading} />
             </Box>
-
         </Box>
     );
 }

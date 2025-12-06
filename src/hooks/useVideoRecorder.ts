@@ -1,4 +1,3 @@
-
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { mediaStreamManager } from '@/lib/mediaStreamManager';
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
@@ -43,7 +42,9 @@ interface VideoQualityInfo {
     facingMode?: string;
 }
 
-export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: VideoQualityInfo | null } {
+export function useVideoRecorder(): VideoRecorderResult & {
+    videoQualityInfo: VideoQualityInfo | null;
+} {
     const [isRecording, setIsRecording] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
     const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -73,7 +74,6 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
 
         setCameraActive(false);
     }, []);
-
 
     const startCamera = useCallback(async () => {
         try {
@@ -190,11 +190,12 @@ export function useVideoRecorder(): VideoRecorderResult & { videoQualityInfo: Vi
                 }
             };
 
-
             mediaRecorder.onstop = async () => {
                 const mimeType = mediaRecorder.mimeType || 'video/webm';
                 const blob = new Blob(recordedChunksRef.current, { type: mimeType });
-                const mp4File = new File([blob], `verification_video_${Date.now()}.webm`, { type: mimeType });
+                const mp4File = new File([blob], `verification_video_${Date.now()}.webm`, {
+                    type: mimeType,
+                });
                 const mp4Url = URL.createObjectURL(blob);
                 setVideoPreviewUrl(mp4Url);
                 setVideoFile(mp4File);

@@ -1,14 +1,5 @@
 'use client';
-import {
-    Box,
-    Button,
-    Card,
-    CardContent,
-    Input,
-    List,
-    ListItem,
-    Typography,
-} from '@/components/ui';
+import { Box, Button, Card, CardContent, Input, List, ListItem, Typography } from '@/components/ui';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { PdfPreviewModal } from '@/components/ui/overlay/PdfPreviewModal';
@@ -22,7 +13,7 @@ import httpClient from '@/lib/httpClient';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import { toPersianDate } from '@/lib/utils';
-import { Controller, useForm, FieldValues, Control, FieldErrors, UseFormSetError, UseFormGetValues } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { simplePasswordSchema } from '@/lib/schemas/personal';
@@ -33,7 +24,6 @@ type PasswordFormData = {
 };
 
 const PDF_URL = '/test.pdf';
-
 
 function useContractStep() {
     const router = useRouter();
@@ -68,20 +58,21 @@ function useContractStep() {
                 formName: 'SignCustomerLoanContract',
                 body: {
                     accept: true,
-                }
-            }).then(() => {
+                },
+            })
+            .then(() => {
                 setShowModal(true);
-            }).catch(async (err) => {
+            })
+            .catch(async (err) => {
                 const message = await resolveCatalogMessage(
                     err.response?.data,
                     'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
                 );
                 showDismissibleToast(message, 'error');
-            }).finally(() => {
+            })
+            .finally(() => {
                 setLoading(false);
             });
-
-
     };
 
     const handlePreview = async () => {
@@ -148,8 +139,6 @@ function useContractStep() {
     };
 }
 
-
-
 export default function ContractStep() {
     const { userData } = useUser();
     const router = useRouter();
@@ -159,7 +148,7 @@ export default function ContractStep() {
         control,
         formState: { errors, isValid },
         setError,
-        getValues
+        getValues,
     } = useForm<PasswordFormData>({
         resolver: zodResolver(passwordSchema),
         defaultValues: {
@@ -204,14 +193,15 @@ export default function ContractStep() {
                 processId: userData.processId,
                 body: {
                     otpCode: otp,
-                    password: getValues('password')
+                    password: getValues('password'),
                 },
             })
             .then((response) => {
-                console.log("🚀 ~ onIssue ~ response:", response)
                 if (response.status === 200 && response.data?.body?.responseBase64) {
                     try {
-                        setSignedPdfUrl(`data:application/pdf;base64,${response.data.body.responseBase64}`);
+                        setSignedPdfUrl(
+                            `data:application/pdf;base64,${response.data.body.responseBase64}`
+                        );
                         setShowModal(false);
                         setShowSignedPreview(true);
                     } catch (error) {
@@ -232,83 +222,137 @@ export default function ContractStep() {
             .finally(() => {
                 setOtpLoading(false);
             });
-
-    }
+    };
     return (
         <Box className="h-full space-y-6 py-4">
             <Card className="bg-gray-200">
                 <CardContent>
                     <Box className="grid gap-6 md:grid-cols-2">
-
-                        <Box className="space-y-4 ">
-                            <Typography variant="h4" className="text-sm leading-relaxed font-semibold text-right">
+                        <Box className="space-y-4">
+                            <Typography
+                                variant="h4"
+                                className="text-right text-sm leading-relaxed font-semibold"
+                            >
                                 مشخصات وام شما به شرح زیر است:
                             </Typography>
-                            <List className="list-disc list-inside space-y-1 text-right">
-                                <ListItem className="text-gray-700 flex gap-2">
+                            <List className="list-inside list-disc space-y-1 text-right">
+                                <ListItem className="flex gap-2 text-gray-700">
                                     نام و نام خانوادگی:
-                                    <Typography variant="span" className="font-medium text-gray-900">
+                                    <Typography
+                                        variant="span"
+                                        className="font-medium text-gray-900"
+                                    >
                                         {userLoan?.fullName || ''}
                                     </Typography>
                                 </ListItem>
-                                <ListItem className="text-gray-700 flex gap-2">
+                                <ListItem className="flex gap-2 text-gray-700">
                                     شماره وام:
-                                    <Typography variant="span" className="font-medium text-gray-900">
+                                    <Typography
+                                        variant="span"
+                                        className="font-medium text-gray-900"
+                                    >
                                         {userLoan?.LoanNumber || '0'}
                                     </Typography>
                                 </ListItem>
-                                <ListItem className="text-gray-700 flex gap-2">
-                                    مبلغ قابل پرداخت: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.payableAmount?.toLocaleString() || '0'} ریال</Typography>
+                                <ListItem className="flex gap-2 text-gray-700">
+                                    مبلغ قابل پرداخت:{' '}
+                                    <Typography
+                                        variant="span"
+                                        className="font-medium text-gray-900"
+                                    >
+                                        {userLoan?.payableAmount?.toLocaleString() || '0'} ریال
+                                    </Typography>
                                 </ListItem>
-                                <ListItem className="text-gray-700 flex gap-2">
-                                    تعداد اقساط: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.installmentCount || '0'}  قسط </Typography>
+                                <ListItem className="flex gap-2 text-gray-700">
+                                    تعداد اقساط:{' '}
+                                    <Typography
+                                        variant="span"
+                                        className="font-medium text-gray-900"
+                                    >
+                                        {userLoan?.installmentCount || '0'} قسط{' '}
+                                    </Typography>
                                 </ListItem>
-                                <ListItem className="text-gray-700 flex gap-2">
+                                <ListItem className="flex gap-2 text-gray-700">
                                     اولین قسط:
-                                    <Typography variant="span" className="font-medium text-gray-900">{toPersianDate(userLoan?.firstPaymentDate) || ''}</Typography>
+                                    <Typography
+                                        variant="span"
+                                        className="font-medium text-gray-900"
+                                    >
+                                        {toPersianDate(userLoan?.firstPaymentDate) || ''}
+                                    </Typography>
                                 </ListItem>
-                                <ListItem className="text-gray-700 flex gap-2">
-                                    نرخ جریمه: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.penaltyRate || ''} درصد </Typography>
+                                <ListItem className="flex gap-2 text-gray-700">
+                                    نرخ جریمه:{' '}
+                                    <Typography
+                                        variant="span"
+                                        className="font-medium text-gray-900"
+                                    >
+                                        {userLoan?.penaltyRate || ''} درصد{' '}
+                                    </Typography>
                                 </ListItem>
-                                <ListItem className="text-gray-700 flex gap-2">
-                                    مبلغ پیش پرداخت: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.advancedAmount?.toLocaleString() || '0'} ریال</Typography>
+                                <ListItem className="flex gap-2 text-gray-700">
+                                    مبلغ پیش پرداخت:{' '}
+                                    <Typography
+                                        variant="span"
+                                        className="font-medium text-gray-900"
+                                    >
+                                        {userLoan?.advancedAmount?.toLocaleString() || '0'} ریال
+                                    </Typography>
                                 </ListItem>
 
-                                <ListItem className="text-gray-700 flex gap-2">
-                                    توضیحات: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.description || 'ندارد'}</Typography>
+                                <ListItem className="flex gap-2 text-gray-700">
+                                    توضیحات:{' '}
+                                    <Typography
+                                        variant="span"
+                                        className="font-medium text-gray-900"
+                                    >
+                                        {userLoan?.description || 'ندارد'}
+                                    </Typography>
                                 </ListItem>
-                                <ListItem className="text-gray-700 flex gap-2">
-                                    تاریخ شروع قرارداد: <Typography variant="span" className="font-medium text-gray-900">{toPersianDate(userLoan?.contractStartDate) || ''}</Typography>
+                                <ListItem className="flex gap-2 text-gray-700">
+                                    تاریخ شروع قرارداد:{' '}
+                                    <Typography
+                                        variant="span"
+                                        className="font-medium text-gray-900"
+                                    >
+                                        {toPersianDate(userLoan?.contractStartDate) || ''}
+                                    </Typography>
                                 </ListItem>
-                                <ListItem className="text-gray-700 flex gap-2">
-                                    فاصله زمانی بین اقساط: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.installmentInterval || ''}  ماه </Typography>
+                                <ListItem className="flex gap-2 text-gray-700">
+                                    فاصله زمانی بین اقساط:{' '}
+                                    <Typography
+                                        variant="span"
+                                        className="font-medium text-gray-900"
+                                    >
+                                        {userLoan?.installmentInterval || ''} ماه{' '}
+                                    </Typography>
                                 </ListItem>
-                                <ListItem className="text-gray-700 flex gap-2">
-                                    درصد تخفیف: <Typography variant="span" className="font-medium text-gray-900">{userLoan?.discountRate || '0'} درصد </Typography>
+                                <ListItem className="flex gap-2 text-gray-700">
+                                    درصد تخفیف:{' '}
+                                    <Typography
+                                        variant="span"
+                                        className="font-medium text-gray-900"
+                                    >
+                                        {userLoan?.discountRate || '0'} درصد{' '}
+                                    </Typography>
                                 </ListItem>
-
                             </List>
-
-
                         </Box>
                     </Box>
                 </CardContent>
             </Card>
 
-            <Box className="flex gap-2 items-center">
+            <Box className="flex items-center gap-2">
                 <Input
                     type="checkbox"
                     id="agreement"
                     checked={agreed}
                     onChange={(e) => setAgreed(e.target.checked)}
-                    className="text-primary  h-5 w-5 cursor-pointer rounded"
+                    className="text-primary h-5 w-5 cursor-pointer rounded"
                     aria-describedby="agreement-error"
                 />
                 <Box className="flex-1">
-                    <label
-                        htmlFor="agreement"
-                        className=" cursor-pointer text-sm  font-medium"
-                    >
+                    <label htmlFor="agreement" className="cursor-pointer text-sm font-medium">
                         موارد فوق مورد تایید میباشد
                     </label>
                 </Box>
@@ -345,7 +389,6 @@ export default function ContractStep() {
                         disabled={!agreed || loading}
                         title="ثبت نهایی و ادامه"
                     />
-
                 </Box>
             </Box>
             <PdfPreviewModal
@@ -361,36 +404,39 @@ export default function ContractStep() {
                 title="قرارداد امضا شده توسط مشتری"
                 onConfirm={async () => {
                     setBankSignLoading(true);
-                    await httpClient.post('/api/bpms/send-message', {
-                        serviceName: 'virtual-open-deposit',
-                        processId: userData.processId,
-                        formName: 'SignDocumentResult',
-                        body: {}
-                    }).then((response) => {
-                        console.log("🚀 ~ ContractStep ~ response:", response)
-                        if (response.status === 200 && response.data?.body?.stampedData) {
-                            try {
-                                setSignedPdfUrlByBank(`data:application/pdf;base64,${response.data.body.stampedData}`);
-                                setShowSignedPreview(false);
-                                setShowSignedPreviewByBank(true);
-
-                            } catch (error) {
-                                console.error('Error setting PDF URL:', error);
-                                showDismissibleToast('خطا در نمایش PDF', 'error');
+                    await httpClient
+                        .post('/api/bpms/send-message', {
+                            serviceName: 'virtual-open-deposit',
+                            processId: userData.processId,
+                            formName: 'SignDocumentResult',
+                            body: {},
+                        })
+                        .then((response) => {
+                            console.log('🚀 ~ ContractStep ~ response:', response);
+                            if (response.status === 200 && response.data?.body?.stampedData) {
+                                try {
+                                    setSignedPdfUrlByBank(
+                                        `data:application/pdf;base64,${response.data.body.stampedData}`
+                                    );
+                                    setShowSignedPreview(false);
+                                    setShowSignedPreviewByBank(true);
+                                } catch (error) {
+                                    console.error('Error setting PDF URL:', error);
+                                    showDismissibleToast('خطا در نمایش PDF', 'error');
+                                }
+                            } else {
+                                showDismissibleToast('پاسخ نامعتبر دریافت شد', 'error');
                             }
-
-                        } else {
-                            showDismissibleToast('پاسخ نامعتبر دریافت شد', 'error');
-                        }
-                    }).catch(async (error) => {
-                        await resolveCatalogMessage(
-                            axios.isAxiosError(error) ? error.response?.data : undefined,
-                            'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-                        );
-                    }).finally(() => {
-                        setBankSignLoading(false);
-                    })
-
+                        })
+                        .catch(async (error) => {
+                            await resolveCatalogMessage(
+                                axios.isAxiosError(error) ? error.response?.data : undefined,
+                                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
+                            );
+                        })
+                        .finally(() => {
+                            setBankSignLoading(false);
+                        });
                 }}
                 loading={bankSignLoading}
             />
@@ -406,7 +452,6 @@ export default function ContractStep() {
                     }
 
                     try {
-                        // Download PDF
                         const link = document.createElement('a');
                         link.href = signedPdfUrlByBank;
                         link.download = 'قرارداد-امضا-شده.pdf';
@@ -415,7 +460,7 @@ export default function ContractStep() {
                         document.body.removeChild(link);
 
                         showDismissibleToast('تسهیلات با موفقیت ایجاد شد', 'success');
-                        router.push("/");
+                        router.push('/');
                     } catch (error) {
                         console.error('Error downloading PDF:', error);
                         showDismissibleToast('خطا در دانلود فایل PDF', 'error');

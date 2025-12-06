@@ -17,8 +17,6 @@ export default function NotFound() {
                     >
                         بازگشت به خانه
                     </Link>
-
-
                 </div>
             </div>
         </div>

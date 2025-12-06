@@ -8,7 +8,7 @@ const USERNAME = process.env.BPMS_USERNAME || 'khanoumi';
 const PASSWORD = process.env.BPMS_PASSWORD || '123456';
 
 const httpsAgent = new https.Agent({
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
 });
 
 export async function POST() {
@@ -38,7 +38,6 @@ export async function POST() {
         console.log('Backend response headers:', backendRes.headers);
 
         return NextResponse.json(backendRes.data, { status: backendRes.status });
-
     } catch (error) {
         console.error('Login error:', error);
         return NextResponse.json(

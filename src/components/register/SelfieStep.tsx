@@ -54,10 +54,11 @@ function CameraView({
                 autoPlay
                 playsInline
                 muted
-                className={`absolute top-0 left-0 z-10 h-full w-full -scale-x-100 transform bg-black object-cover ${stream && !capturedPhoto && !cameraLoading
-                    ? 'visible opacity-100'
-                    : 'invisible opacity-0'
-                    }`}
+                className={`absolute top-0 left-0 z-10 h-full w-full -scale-x-100 transform bg-black object-cover ${
+                    stream && !capturedPhoto && !cameraLoading
+                        ? 'visible opacity-100'
+                        : 'invisible opacity-0'
+                }`}
                 controls={false}
                 disablePictureInPicture
                 disableRemotePlayback
@@ -84,8 +85,8 @@ function CameraView({
                             closenessPercent === 100 && obstructionRatio < 0.15
                                 ? 'var(--color-success-500)'
                                 : closenessPercent < 80
-                                    ? 'var(--color-error-800)'
-                                    : 'var(--color-warning-500)'
+                                  ? 'var(--color-error-800)'
+                                  : 'var(--color-warning-500)'
                         }
                         strokeWidth="4"
                         fill="none"
@@ -210,16 +211,13 @@ function Instructions({ capturedPhoto, onRetake, isUploading }: InstructionsProp
         <Box className="rounded-xl bg-gray-100">
             {!capturedPhoto ? (
                 <>
-
-                    <ul className=" text-bold space-y-1.5 rounded-lg bg-gray-200 p-2 text-right text-sm text-gray-900">
-                        <li className="text-primary-800 font-bold text-center mb-1">
+                    <ul className="text-bold space-y-1.5 rounded-lg bg-gray-200 p-2 text-right text-sm text-gray-900">
+                        <li className="text-primary-800 mb-1 text-center font-bold">
                             راهنمای عکس‌برداری
                         </li>
                         <li className="flex items-start">
                             <span className="text-primary-600 ml-2">•</span>
-                            <span>
-                                تصویر میبایست با رعایت حجاب و شیونات اسلامی گرفته شود.
-                            </span>
+                            <span>تصویر میبایست با رعایت حجاب و شیونات اسلامی گرفته شود.</span>
                         </li>
                         <li className="flex items-start">
                             <span className="text-primary-600 ml-2">•</span>
@@ -227,9 +225,7 @@ function Instructions({ capturedPhoto, onRetake, isUploading }: InstructionsProp
                         </li>
                         <li className="flex items-start">
                             <span className="text-error-600 ml-2">•</span>
-                            <span>
-                                بهتر است عینک از چهره برداشته شود.
-                            </span>
+                            <span>بهتر است عینک از چهره برداشته شود.</span>
                         </li>
                         <li className="flex items-start">
                             <span className="text-primary-600 ml-2">•</span>
@@ -239,13 +235,13 @@ function Instructions({ capturedPhoto, onRetake, isUploading }: InstructionsProp
                         </li>
                         <li className="flex items-start">
                             <span className="text-primary-600 ml-2">•</span>
-                            <span>چشم‌های فرد باید باز و به‌وضوح قابل مشاهده و رو به دوربین باشد.</span>
+                            <span>
+                                چشم‌های فرد باید باز و به‌وضوح قابل مشاهده و رو به دوربین باشد.
+                            </span>
                         </li>
                         <li className="flex items-start">
                             <span className="text-warning-600 ml-2">•</span>
-                            <span>
-                                پس‌زمینه باید سفید و یکدست باشد.
-                            </span>
+                            <span>پس‌زمینه باید سفید و یکدست باشد.</span>
                         </li>
                         <li className="flex items-start">
                             <span className="text-warning-600 ml-2">•</span>
@@ -331,10 +327,10 @@ function StatusMessage({
         const message = faceTooFar
             ? 'لطفاً نزدیک‌تر بیایید'
             : obstructionRatio <= MAX_OBSTRUCTION
-                ? 'عدم وضوح'
-                : eyeFeatureRatio < MIN_EYE_RATIO
-                    ? 'مطمئن شوید چشم‌ها و ابروها به وضوح دیده می‌شوند'
-                    : 'صورت خود را در مقابل دوربین قرار دهید';
+              ? 'عدم وضوح'
+              : eyeFeatureRatio < MIN_EYE_RATIO
+                ? 'مطمئن شوید چشم‌ها و ابروها به وضوح دیده می‌شوند'
+                : 'صورت خود را در مقابل دوربین قرار دهید';
 
         return (
             <Typography variant="body1" className="text-center text-sm font-medium text-red-500">
@@ -365,10 +361,11 @@ function CaptureButton({ onCapture, disabled }: CaptureButtonProps) {
             <Button
                 onClick={onCapture}
                 disabled={disabled}
-                className={`flex items-center gap-2 rounded-lg px-6 py-3 font-medium transition-all duration-300 ${!disabled
-                    ? 'bg-success-500 hover:bg-success-600 cursor-pointer text-white shadow-lg hover:shadow-xl active:scale-95'
-                    : 'cursor-not-allowed bg-gray-400 text-gray-600 opacity-60'
-                    }`}
+                className={`flex items-center gap-2 rounded-lg px-6 py-3 font-medium transition-all duration-300 ${
+                    !disabled
+                        ? 'bg-success-500 hover:bg-success-600 cursor-pointer text-white shadow-lg hover:shadow-xl active:scale-95'
+                        : 'cursor-not-allowed bg-gray-400 text-gray-600 opacity-60'
+                }`}
             >
                 <CameraIcon className="h-5 w-5" />
                 <Typography variant="body1" className="text-sm font-medium">
@@ -387,7 +384,7 @@ function LoadingState() {
                     <CameraIcon className="h-16 w-16 text-gray-400" />
                     <Box className="text-center">
                         <Typography variant="h3" className="mb-2 text-lg font-semibold">
-                            آماده  سازی دوربین
+                            آماده سازی دوربین
                         </Typography>
                         <Typography variant="body1" className="mb-4 text-sm text-gray-300">
                             در حال بارگذاری
@@ -473,21 +470,22 @@ export default function SelfieStep() {
             'GovahInquiry'
         );
 
-        await httpClient.post('/api/bpms/deposit-files', formData).then(res => {
-            const { data } = res;
-            setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
-
-        }).catch(async (error) => {
-            const message = await resolveCatalogMessage(
-                error?.response?.data,
-                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-            );
-            showDismissibleToast(message, 'error');
-        }).finally(() => {
-            setIsUploading(false);
-        })
-
-
+        await httpClient
+            .post('/api/bpms/deposit-files', formData)
+            .then((res) => {
+                const { data } = res;
+                setUserData({ ...userData, randomText: data?.body?.randomText, step: 3 });
+            })
+            .catch(async (error) => {
+                const message = await resolveCatalogMessage(
+                    error?.response?.data,
+                    'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
+                );
+                showDismissibleToast(message, 'error');
+            })
+            .finally(() => {
+                setIsUploading(false);
+            });
     }, [capturedPhoto, userData, setUserData, setIsUploading]);
 
     const handleCapture = useCallback(() => {

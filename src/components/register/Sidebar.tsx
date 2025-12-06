@@ -43,17 +43,18 @@ export default function Sidebar() {
                     return (
                         <li
                             key={item.title}
-                            className="group relative min-w-[5.5rem] flex-shrink-0 items-center py-2 md:flex md:w-auto md:min-w-full md:flex-shrink md:flex-row md:gap-3"
+                            className="group relative min-w-22 shrink-0 items-center py-2 md:flex md:w-auto md:min-w-full md:shrink md:flex-row md:gap-3"
                         >
                             <Box className="flex w-full flex-col items-center md:flex-row md:items-center">
                                 <Box className="relative flex items-center justify-center text-gray-900">
                                     <span
-                                        className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-sm transition-all duration-200 md:h-10 md:w-10 ${completed
-                                            ? 'bg-primary-600 border-2 border-gray-100 text-gray-100'
-                                            : current
-                                                ? 'bg-primary-400 text-white'
-                                                : 'bg-gray-300 text-gray-700'
-                                            }`}
+                                        className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-sm transition-all duration-200 md:h-10 md:w-10 ${
+                                            completed
+                                                ? 'bg-primary-600 border-2 border-gray-100 text-gray-100'
+                                                : current
+                                                  ? 'bg-primary-400 text-white'
+                                                  : 'bg-gray-300 text-gray-700'
+                                        }`}
                                     >
                                         {completed ? (
                                             <CheckCircleIcon className="mx-auto h-6 w-6 border-gray-100 text-white" />
@@ -63,21 +64,26 @@ export default function Sidebar() {
                                     </span>
                                     {index > 0 && (
                                         <Box
-                                            className={`absolute top-1/2 left-[55px] z-0 h-0.5 w-10 -translate-y-1/2 transform md:-top-2.5 md:left-0 md:rotate-90 ${step > index
-                                                ? 'bg-primary-600'
-                                                : 'bg-gray-400 dark:bg-gray-600'
-                                                }`}
+                                            className={`absolute top-1/2 left-[55px] z-0 h-0.5 w-10 -translate-y-1/2 transform md:-top-2.5 md:left-0 md:rotate-90 ${
+                                                step > index
+                                                    ? 'bg-primary-600'
+                                                    : 'bg-gray-400 dark:bg-gray-600'
+                                            }`}
                                         />
                                     )}
                                 </Box>
                                 <Typography
-                                    className={`group-hover:text-primary mt-2 px-2 text-center text-xs font-medium transition-colors duration-150 md:mt-0 md:text-right md:text-sm ${completed
-                                        ? 'text-primary-700 dark:text-white'
-                                        : current
-                                            ? 'text-secondary-600 dark:text-secondary-400'
-                                            : 'text-gray-600 dark:text-gray-400'
-                                        }`}
-                                    onClick={() => setUserData({ step: index + 1 })}
+                                    className={`group-hover:text-primary mt-2 px-2 text-center text-xs font-medium transition-colors duration-150 md:mt-0 md:text-right md:text-sm ${
+                                        completed
+                                            ? 'text-primary-700 dark:text-white'
+                                            : current
+                                              ? 'text-secondary-600 dark:text-secondary-400'
+                                              : 'text-gray-600 dark:text-gray-400'
+                                    }`}
+                                    onClick={() =>
+                                        process.env.NEXT_PUBLIC_IS_STAGE === 'true' &&
+                                        setUserData({ ...userData, step: index + 1 })
+                                    }
                                     tabIndex={0}
                                     aria-current={current ? 'step' : undefined}
                                     variant="body2"

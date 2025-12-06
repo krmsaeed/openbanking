@@ -104,7 +104,7 @@ export default function ServiceWorkerRegistrar() {
                 active: !!reg.active,
                 waiting: !!reg.waiting,
                 installing: !!reg.installing,
-                state: reg.active?.state || 'unknown'
+                state: reg.active?.state || 'unknown',
             });
         };
 
@@ -145,17 +145,21 @@ export default function ServiceWorkerRegistrar() {
         setShowUpdateModal(false);
 
         // Show clearing status
-        setSwInfo(prev => ({ ...prev, clearing: true }));
+        setSwInfo((prev) => ({ ...prev, clearing: true }));
 
         // Clear caches directly using the Cache API
         try {
             const cacheNames = await caches.keys();
-            await Promise.all(cacheNames.map(name => caches.delete(name)));
+            await Promise.all(cacheNames.map((name) => caches.delete(name)));
             console.log('All caches cleared successfully');
-            setSwInfo(prev => ({ ...prev, cleared: true, clearing: false }));
+            setSwInfo((prev) => ({ ...prev, cleared: true, clearing: false }));
         } catch (error) {
             console.error('Failed to clear caches:', error);
-            setSwInfo(prev => ({ ...prev, error: error instanceof Error ? error.message : 'Unknown error', clearing: false }));
+            setSwInfo((prev) => ({
+                ...prev,
+                error: error instanceof Error ? error.message : 'Unknown error',
+                clearing: false,
+            }));
         }
 
         // Unregister service worker to force fresh install
@@ -185,36 +189,37 @@ export default function ServiceWorkerRegistrar() {
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
                     {/* Modal Content */}
-                    <div className="relative z-10 w-full max-w-md mx-4 bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6">
-                        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                    <div className="relative z-10 mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800">
+                        <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">
                             بروزرسانی برنامه
                         </h2>
 
                         <div className="space-y-4">
-                            <div className="p-3 bg-blue-200  border border-blue-200  rounded-lg">
-                                <p className="text-blue-800 text-sm">
-                                    نسخه جدیدی از برنامه آماده شده است. برای دسترسی به ویژگی‌های جدید و بهبود عملکرد، لطفاً برنامه را بروزرسانی کنید.
+                            <div className="rounded-lg border border-blue-200 bg-blue-200 p-3">
+                                <p className="text-sm text-blue-800">
+                                    نسخه جدیدی از برنامه آماده شده است. برای دسترسی به ویژگی‌های
+                                    جدید و بهبود عملکرد، لطفاً برنامه را بروزرسانی کنید.
                                 </p>
                             </div>
 
                             {swInfo.clearing && (
-                                <div className="text-blue-600 dark:text-blue-400 text-sm">
+                                <div className="text-sm text-blue-600 dark:text-blue-400">
                                     در حال پاک کردن کش...
                                 </div>
                             )}
 
                             {swInfo.cleared && (
-                                <div className="text-green-600 dark:text-green-400 text-sm">
+                                <div className="text-sm text-green-600 dark:text-green-400">
                                     کش پاک شد، صفحه ریلود می‌شود...
                                 </div>
                             )}
                         </div>
 
-                        <div className="flex justify-center mt-6">
+                        <div className="mt-6 flex justify-center">
                             <button
                                 onClick={clearCacheAndReload}
                                 disabled={swInfo.clearing}
-                                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors duration-200"
+                                className="rounded-lg bg-blue-600 px-6 py-2.5 font-medium text-white transition-colors duration-200 hover:bg-blue-700 disabled:bg-blue-400"
                             >
                                 {swInfo.clearing ? 'در حال پاک کردن...' : 'بروزرسانی'}
                             </button>

@@ -54,7 +54,6 @@ export const englishLastNameSchema = z
     .string({ message: 'نام خانوادگی لاتین الزامی است' })
     .regex(/^[a-zA-Z ]+$/, 'نام خانوادگی لاتین باید شامل حروف انگلیسی باشد');
 
-
 export const simplePasswordSchema = z
     .string({ message: 'رمز عبور الزامی است' })
     .length(8, 'رمز عبور باید ۸ رقم باشد')

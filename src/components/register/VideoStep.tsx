@@ -34,11 +34,15 @@ export const VideoRecorderStep: React.FC = () => {
             userData.processId,
             'ImageInquiry'
         );
-        await httpClient.post('/api/bpms/deposit-files', formData)
+        await httpClient
+            .post('/api/bpms/deposit-files', formData)
             .then((res) => {
                 const body = res?.data?.body;
                 if (!body) {
-                    showDismissibleToast('پاسخ نامعتبر از سرور دریافت شد، لطفاً دوباره تلاش کنید', 'error');
+                    showDismissibleToast(
+                        'پاسخ نامعتبر از سرور دریافت شد، لطفاً دوباره تلاش کنید',
+                        'error'
+                    );
                     handleRetake();
                     return;
                 }
@@ -56,9 +60,10 @@ export const VideoRecorderStep: React.FC = () => {
                     'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
                 );
                 showDismissibleToast(message, 'error');
-            }).finally(() => {
-                setIsUploading(false);
             })
+            .finally(() => {
+                setIsUploading(false);
+            });
     };
 
     return (

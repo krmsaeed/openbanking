@@ -86,9 +86,9 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
                             data?.error?.status === 401
                                 ? 'اطلاعات احراز هویت یافت نشد'
                                 : await resolveCatalogMessage(
-                                    data,
-                                    'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-                                );
+                                      data,
+                                      'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
+                                  );
                         showDismissibleToast(message, 'error');
                         requestCache.delete(code);
                         router.push('/');

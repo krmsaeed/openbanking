@@ -17,7 +17,15 @@ interface Props {
     setTimeLeft: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export default function CertificateStep({ otp, setOtp, onIssue, onResend, loading, timeLeft, setTimeLeft }: Props) {
+export default function CertificateStep({
+    otp,
+    setOtp,
+    onIssue,
+    onResend,
+    loading,
+    timeLeft,
+    setTimeLeft,
+}: Props) {
     const [canResend, setCanResend] = useState(false);
 
     useEffect(() => {
@@ -91,10 +99,7 @@ export default function CertificateStep({ otp, setOtp, onIssue, onResend, loadin
                 length={6}
                 onSubmit={onIssue}
                 disabled={loading}
-
             />
-
-
         </Box>
     );
 }

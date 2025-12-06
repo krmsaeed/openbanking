@@ -1,7 +1,7 @@
 'use client';
 
 import { getAccessToken, getNationalId, initializeAuth } from '@/lib/auth';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 
@@ -20,7 +20,6 @@ export const useAuthInitialization = ({
 }: UseAuthInitializationOptions = {}): UseAuthInitializationReturn => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const pathname = usePathname();
     const [isInitialized, setIsInitialized] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -91,7 +90,7 @@ export const useAuthInitialization = ({
         } finally {
             setIsLoading(false);
         }
-    }, [searchParams, router, requireAuth, validateAndCleanNationalId, pathname]);
+    }, [searchParams, router, requireAuth, validateAndCleanNationalId]);
 
     useEffect(() => {
         initializeAuthentication();

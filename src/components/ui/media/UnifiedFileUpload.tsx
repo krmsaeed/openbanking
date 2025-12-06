@@ -149,19 +149,21 @@ const CameraView = memo<CameraViewProps>(
                             <Box className="bg-opacity-50 flex rounded-full bg-black p-1">
                                 <button
                                     onClick={() => onRecordingModeChange('photo')}
-                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${recordingMode === 'photo'
+                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${
+                                        recordingMode === 'photo'
                                             ? 'bg-white text-black'
                                             : 'hover:bg-opacity-20 text-white hover:bg-white'
-                                        }`}
+                                    }`}
                                 >
                                     عکس
                                 </button>
                                 <button
                                     onClick={() => onRecordingModeChange('video')}
-                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${recordingMode === 'video'
+                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${
+                                        recordingMode === 'video'
                                             ? 'bg-white text-black'
                                             : 'hover:bg-opacity-20 text-white hover:bg-white'
-                                        }`}
+                                    }`}
                                 >
                                     ویدیو
                                 </button>
@@ -359,7 +361,7 @@ FileList.displayName = 'FileList';
 
 export interface UnifiedFileUploadProps
     extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'>,
-    VariantProps<typeof fileUploadVariants> {
+        VariantProps<typeof fileUploadVariants> {
     onFileSelect?: (files: FileList | null) => void;
     accept?: string;
     multiple?: boolean;

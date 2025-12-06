@@ -15,11 +15,11 @@ export async function virtualOpenDepositSendMessage<T>(payload: T, authToken?: s
 export async function virtualOpenDepositKeKycUserFiles<T>(payload: T, authToken?: string) {
     const config = authToken
         ? {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${authToken}`,
-            },
-        }
+              headers: {
+                  'Content-Type': 'multipart/form-data',
+                  Authorization: `Bearer ${authToken}`,
+              },
+          }
         : undefined;
     const response = await httpClient.post('/api/bpms/deposit-files', payload, config);
     return { status: response.status, data: response.data };

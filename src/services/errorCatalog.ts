@@ -57,10 +57,7 @@ async function saveToStorage(entries: ErrorCatalogEntry[]): Promise<void> {
     if (!isBrowser()) return;
 
     try {
-        await Promise.all([
-            kvSet(STORAGE_KEY, entries),
-            kvSet(TIMESTAMP_KEY, Date.now()),
-        ]);
+        await Promise.all([kvSet(STORAGE_KEY, entries), kvSet(TIMESTAMP_KEY, Date.now())]);
     } catch (error) {
         console.warn('Failed to save error catalog to IndexedDB:', error);
     }
@@ -197,10 +194,7 @@ export function clearErrorCatalogCache(): void {
 
     if (isBrowser()) {
         // Best-effort async cleanup of IndexedDB
-        void Promise.all([
-            kvDelete(STORAGE_KEY),
-            kvDelete(TIMESTAMP_KEY),
-        ]).catch((error) => {
+        void Promise.all([kvDelete(STORAGE_KEY), kvDelete(TIMESTAMP_KEY)]).catch((error) => {
             console.warn('Failed to clear error catalog from IndexedDB:', error);
         });
     }
@@ -226,7 +220,11 @@ export async function resolveCatalogMessage(
     if (input && typeof input === 'object') {
         if ('digitalMessageException' in input) {
             exception = input.digitalMessageException;
-        } else if (input.data && typeof input.data === 'object' && 'digitalMessageException' in input.data) {
+        } else if (
+            input.data &&
+            typeof input.data === 'object' &&
+            'digitalMessageException' in input.data
+        ) {
             exception = input.data.digitalMessageException;
         }
     }

@@ -7,11 +7,7 @@ import { Box, Card, Input, Typography } from '@/components/ui';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { useUser } from '@/contexts/UserContext';
-import {
-    convertPersianToEnglish,
-    isValidNationalId,
-    setCookie,
-} from '@/lib/utils';
+import { convertPersianToEnglish, isValidNationalId, setCookie } from '@/lib/utils';
 import { resolveCatalogMessage } from '@/services/errorCatalog';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
@@ -104,7 +100,7 @@ export default function LoginPage() {
             });
             router.push('/register');
         } catch (error) {
-            console.log("🚀 ~ onSubmit ~ error:", error)
+            console.log('🚀 ~ onSubmit ~ error:', error);
             const axiosError = error as {
                 response?: { data?: Record<string, unknown> };
             };
@@ -120,7 +116,7 @@ export default function LoginPage() {
 
     return (
         <main className="flex min-h-screen w-full items-center justify-center">
-            {isStage === "false" ? (
+            {isStage === 'false' ? (
                 <HomeLoader />
             ) : (
                 <Box className="container flex min-h-screen items-center justify-center">
@@ -154,7 +150,6 @@ export default function LoginPage() {
                                         inputMode="numeric"
                                         pattern="\d*"
                                         maxLength={10}
-
                                         placeholder="کد ملی را وارد کنید"
                                         disabled={isLoading}
                                         {...register('code', {

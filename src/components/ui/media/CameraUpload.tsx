@@ -237,19 +237,21 @@ export function CameraUpload({
                             <div className="bg-opacity-50 flex rounded-full bg-black p-1">
                                 <button
                                     onClick={() => setRecordingMode('photo')}
-                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${recordingMode === 'photo'
+                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${
+                                        recordingMode === 'photo'
                                             ? 'bg-white text-black'
                                             : 'hover:bg-opacity-20 text-white hover:bg-white'
-                                        }`}
+                                    }`}
                                 >
                                     عکس
                                 </button>
                                 <button
                                     onClick={() => setRecordingMode('video')}
-                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${recordingMode === 'video'
+                                    className={`rounded-full px-3 py-1 text-sm transition-colors ${
+                                        recordingMode === 'video'
                                             ? 'bg-white text-black'
                                             : 'hover:bg-opacity-20 text-white hover:bg-white'
-                                        }`}
+                                    }`}
                                 >
                                     ویدیو
                                 </button>
@@ -318,10 +320,11 @@ export function CameraUpload({
     return (
         <div>
             <div
-                className={`cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-colors ${dragOver
+                className={`cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-colors ${
+                    dragOver
                         ? 'border-primary-500 bg-primary-50'
                         : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-                    }`}
+                }`}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}

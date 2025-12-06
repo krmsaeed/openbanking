@@ -25,7 +25,11 @@ function normalizePayload(payload: unknown): RemoteError[] {
         return payload;
     }
 
-    if (payload && typeof payload === 'object' && Array.isArray((payload as { items?: unknown[] }).items)) {
+    if (
+        payload &&
+        typeof payload === 'object' &&
+        Array.isArray((payload as { items?: unknown[] }).items)
+    ) {
         return (payload as { items: RemoteError[] }).items;
     }
 
