@@ -51,42 +51,30 @@ export function MultiOTPInput({
                 } as CredentialRequestOptions & { otp: { transport: string[] } });
 
                 if (credential && 'code' in credential && typeof credential.code === 'string') {
-                    // Find all numeric sequences and take the last one that matches the required length
                     const matches = credential.code.match(/\d+/g);
                     let numericCode = '';
 
                     if (matches && matches.length > 0) {
-                        // Look for the last sequence with exact length match
                         for (let i = matches.length - 1; i >= 0; i--) {
                             if (matches[i].length === length) {
                                 numericCode = matches[i];
                                 break;
                             }
                         }
-                        // If no exact match, use the last numeric sequence
                         if (!numericCode) {
                             numericCode = matches[matches.length - 1];
                         }
                     }
 
-                    // Only use if it matches the required length
                     if (numericCode && numericCode.length === length) {
-                        // Update both digits state and call onChange
                         const newDigits = numericCode.split('');
                         setDigits(newDigits);
-
-                        // Call onChange with the numeric code
-                        // This should trigger parent component to update the OTP value
                         onChange(numericCode);
 
-                        // Auto-submit after a small delay to ensure state is updated
-                        // setTimeout(() => {
-                        //     onSubmit?.();
-                        // }, 50);
+
                     }
                 }
             } catch (error) {
-                // WebOTP API not available or user cancelled
                 console.log('WebOTP error:', error);
             }
         };
@@ -102,25 +90,13 @@ export function MultiOTPInput({
 
         const newValue = newDigits.join('');
         onChange(newValue);
-
-        // Don't auto-submit - user should click submit button manually
-        // if (digit && newValue.length === length && onSubmit) {
-        //     setTimeout(() => onSubmit(), 0);
-        // }
-
         if (digit && index < length - 1) {
             inputRefs.current[index + 1]?.focus();
         }
     };
 
     const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const currentValue = digits.join('');
-            if (currentValue.length === length && onSubmit) {
-                onSubmit();
-            }
-        } else if (e.key === 'Backspace' && !digits[index] && index > 0) {
+        if (e.key === 'Backspace' && !digits[index] && index > 0) {
             inputRefs.current[index - 1]?.focus();
         } else if (e.key === 'ArrowLeft' && index > 0) {
             inputRefs.current[index - 1]?.focus();

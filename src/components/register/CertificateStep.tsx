@@ -4,6 +4,7 @@ import { Box, Typography } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useContractStep } from '@/hooks/useContractStep';
 
 interface Props {
     otp: string;
@@ -11,12 +12,13 @@ interface Props {
     onIssue: () => void;
     onResend?: () => void;
     loading?: boolean;
-    children?: React.ReactNode;
     passwordInput?: React.ReactNode;
     isValid?: boolean;
-    timeLeft: number;
-    setTimeLeft: React.Dispatch<React.SetStateAction<number>>;
     resendLoading?: boolean;
+    children?: React.ReactNode;
+    // optional timeLeft & setter — when provided by parent (e.g. PasswordStep)
+    timeLeft?: number;
+    setTimeLeft?: React.Dispatch<React.SetStateAction<number>>;
 }
 const Spinner = ({ className }: { className?: string }) => (
     <svg
@@ -26,7 +28,6 @@ const Spinner = ({ className }: { className?: string }) => (
         height="16"
         viewBox="0 0 24 24"
         fill="none"
-        aria-hidden="true"
     >
         <circle
             className="opacity-25"
@@ -43,19 +44,13 @@ export default function CertificateStep({
     otp,
     setOtp,
     onIssue,
-    onResend,
     loading,
-    timeLeft,
-    setTimeLeft,
+
     resendLoading,
 }: Props) {
-    const [canResend, setCanResend] = useState(false);
 
+    const { timeLeft, setTimeLeft, onResend, canResend, setCanResend } = useContractStep();
     useEffect(() => {
-        if (timeLeft <= 0) {
-            setCanResend(true);
-            return;
-        }
 
         const timer = setInterval(() => {
             setTimeLeft((prev: number) => {
@@ -68,13 +63,13 @@ export default function CertificateStep({
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [timeLeft, setTimeLeft]);
+    }, [timeLeft, setTimeLeft, setCanResend]);
 
     const handleResend = () => {
         if (onResend) {
-            onResend();
-            setCanResend(false);
+
             setOtp('');
+            onResend();
         }
     };
 
@@ -95,7 +90,7 @@ export default function CertificateStep({
                 className=' mt-2 '
             />
             <Box className=" flex justify-end">
-                {canResend && onResend && (
+                {canResend && (
                     <Button
                         onClick={handleResend}
                         variant="secondary"

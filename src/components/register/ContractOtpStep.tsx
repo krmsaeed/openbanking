@@ -5,7 +5,6 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { resolveCatalogMessage } from '@/services/errorCatalog';
 import httpClient from '@/lib/httpClient';
-import { useState } from 'react';
 import axios from 'axios';
 import CertificateStep from './CertificateStep';
 import { useUser } from '@/contexts/UserContext';
@@ -25,10 +24,18 @@ const passwordSchema = z.object({
 
 export default function ContractOtpStep() {
     const { userData } = useUser();
-    const [timeLeft, setTimeLeft] = useState(120);
-    const [isResending, setIsResending] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
 
+    const {
+        setTimeLeft,
+        isResending,
+        showPassword,
+        setShowPassword,
+        onResend,
+        otp,
+        setOtp,
+        otpLoading,
+        setOtpLoading,
+    } = useContractStep();
     const {
         control,
         formState: { errors, isValid },
@@ -41,12 +48,7 @@ export default function ContractOtpStep() {
         },
     });
 
-    const {
-        otp,
-        setOtp,
-        otpLoading,
-        setOtpLoading,
-    } = useContractStep();
+
 
     const onIssue = async () => {
         setOtpLoading(true);
@@ -72,41 +74,16 @@ export default function ContractOtpStep() {
                 axios.isAxiosError(error) ? error.response?.data : undefined,
                 'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
             );
+            setTimeLeft(0)
             showDismissibleToast(message, 'error');
         } finally {
             setOtpLoading(false);
         }
     };
 
-    const onResend = async (e?: React.MouseEvent) => {
-        e?.preventDefault();
-        e?.stopPropagation();
-        setIsResending(true);
-        try {
-            await httpClient.post('/api/bpms/send-message', {
-                serviceName: 'virtual-open-deposit',
-                processId: userData.processId,
-                formName: 'SignCustomerLoanContract',
-                body: {
-                    accept: true,
-                    tryagain: true,
-                },
-            });
-            setTimeLeft(5);
-            showDismissibleToast('کد تایید مجدد ارسال شد', 'success');
-        } catch (error) {
-            const message = await resolveCatalogMessage(
-                axios.isAxiosError(error) ? error.response?.data : undefined,
-                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-            );
-            showDismissibleToast(message, 'error');
-        } finally {
-            setIsResending(false);
-        }
-    };
+
     return (
         <>
-
             <Box className="  text-center p-3 rounded-lg shadow-sm felx gap-3 justify-between items-center flex-col mb-2 bg-gray-100">
                 <Typography variant="p" className='text-primary-900 text-md mb-2'>
                     لطفا کد تایید پیامک شده را وارد کنید
@@ -117,21 +94,6 @@ export default function ContractOtpStep() {
             </Box>
             <Box className="space-y-4 bg-gray-100 p-3 rounded-lg">
 
-
-                <Box>
-                    <Label required>کد تایید</Label>
-                    <CertificateStep
-                        otp={otp}
-                        setOtp={setOtp}
-                        onResend={onResend}
-                        onIssue={onIssue}
-                        loading={otpLoading}
-                        resendLoading={isResending}
-                        timeLeft={timeLeft}
-                        setTimeLeft={setTimeLeft}
-                    />
-
-                </Box>
                 <Box className="relative">
                     <Controller
                         name="password"
@@ -189,6 +151,20 @@ export default function ContractOtpStep() {
                     />
 
                 </Box>
+                <Box>
+                    <Label required>کد تایید</Label>
+                    <CertificateStep
+                        otp={otp}
+                        setOtp={setOtp}
+                        onResend={onResend}
+                        onIssue={onIssue}
+                        loading={otpLoading}
+                        resendLoading={isResending}
+
+                    />
+
+                </Box>
+
                 <Box className="mt-4">
                     <LoadingButton
                         onClick={(e) => {

@@ -88,123 +88,119 @@ export default function ContractStep() {
         }
     }
     return (
-        <Box className="h-full space-y-6 py-4">
-            <Card className="bg-gray-200">
-                <CardContent>
-                    <Box className="grid gap-6 md:grid-cols-2">
-                        <Box className="space-y-4">
+        <Box className="h-full space-y-6 py-4 ">
+            <Box className='bg-gray-200 p-4'>
+                <Box>
+                    <Typography
+                        variant="h4"
+                        className="text-right text-sm leading-relaxed font-semibold"
+                    >
+                        مشخصات وام شما به شرح زیر است:
+                    </Typography>
+                    <List className="list-inside list-disc space-y-1 text-right">
+                        <ListItem className="flex gap-2 text-gray-700">
+                            نام و نام خانوادگی:
                             <Typography
-                                variant="h4"
-                                className="text-right text-sm leading-relaxed font-semibold"
+                                variant="span"
+                                className="font-medium text-gray-900"
                             >
-                                مشخصات وام شما به شرح زیر است:
+                                {userLoan?.fullName || ''}
                             </Typography>
-                            <List className="list-inside list-disc space-y-1 text-right">
-                                <ListItem className="flex gap-2 text-gray-700">
-                                    نام و نام خانوادگی:
-                                    <Typography
-                                        variant="span"
-                                        className="font-medium text-gray-900"
-                                    >
-                                        {userLoan?.fullName || ''}
-                                    </Typography>
-                                </ListItem>
-                                <ListItem className="flex gap-2 text-gray-700">
-                                    شماره وام:
-                                    <Typography
-                                        variant="span"
-                                        className="font-medium text-gray-900"
-                                    >
-                                        {userLoan?.LoanNumber || '0'}
-                                    </Typography>
-                                </ListItem>
-                                <ListItem className="flex gap-2 text-gray-700">
-                                    مبلغ قابل پرداخت:{' '}
-                                    <Typography
-                                        variant="span"
-                                        className="font-medium text-gray-900"
-                                    >
-                                        {userLoan?.payableAmount?.toLocaleString() || '0'} ریال
-                                    </Typography>
-                                </ListItem>
-                                <ListItem className="flex gap-2 text-gray-700">
-                                    تعداد اقساط:{' '}
-                                    <Typography
-                                        variant="span"
-                                        className="font-medium text-gray-900"
-                                    >
-                                        {userLoan?.installmentCount || '0'} قسط{' '}
-                                    </Typography>
-                                </ListItem>
-                                <ListItem className="flex gap-2 text-gray-700">
-                                    اولین قسط:
-                                    <Typography
-                                        variant="span"
-                                        className="font-medium text-gray-900"
-                                    >
-                                        {toPersianDate(userLoan?.firstPaymentDate) || ''}
-                                    </Typography>
-                                </ListItem>
-                                <ListItem className="flex gap-2 text-gray-700">
-                                    نرخ جریمه:{' '}
-                                    <Typography
-                                        variant="span"
-                                        className="font-medium text-gray-900"
-                                    >
-                                        {userLoan?.penaltyRate || ''} درصد{' '}
-                                    </Typography>
-                                </ListItem>
-                                <ListItem className="flex gap-2 text-gray-700">
-                                    مبلغ پیش پرداخت:{' '}
-                                    <Typography
-                                        variant="span"
-                                        className="font-medium text-gray-900"
-                                    >
-                                        {userLoan?.advancedAmount?.toLocaleString() || '0'} ریال
-                                    </Typography>
-                                </ListItem>
+                        </ListItem>
+                        <ListItem className="flex gap-2 text-gray-700">
+                            شماره وام:
+                            <Typography
+                                variant="span"
+                                className="font-medium text-gray-900"
+                            >
+                                {userLoan?.LoanNumber || '0'}
+                            </Typography>
+                        </ListItem>
+                        <ListItem className="flex gap-2 text-gray-700">
+                            مبلغ قابل پرداخت:{' '}
+                            <Typography
+                                variant="span"
+                                className="font-medium text-gray-900"
+                            >
+                                {userLoan?.payableAmount?.toLocaleString() || '0'} ریال
+                            </Typography>
+                        </ListItem>
+                        <ListItem className="flex gap-2 text-gray-700">
+                            تعداد اقساط:{' '}
+                            <Typography
+                                variant="span"
+                                className="font-medium text-gray-900"
+                            >
+                                {userLoan?.installmentCount || '0'} قسط{' '}
+                            </Typography>
+                        </ListItem>
+                        <ListItem className="flex gap-2 text-gray-700">
+                            اولین قسط:
+                            <Typography
+                                variant="span"
+                                className="font-medium text-gray-900"
+                            >
+                                {toPersianDate(userLoan?.firstPaymentDate) || ''}
+                            </Typography>
+                        </ListItem>
+                        <ListItem className="flex gap-2 text-gray-700">
+                            نرخ جریمه:{' '}
+                            <Typography
+                                variant="span"
+                                className="font-medium text-gray-900"
+                            >
+                                {userLoan?.penaltyRate || ''} درصد{' '}
+                            </Typography>
+                        </ListItem>
+                        <ListItem className="flex gap-2 text-gray-700">
+                            مبلغ پیش پرداخت:{' '}
+                            <Typography
+                                variant="span"
+                                className="font-medium text-gray-900"
+                            >
+                                {userLoan?.advancedAmount?.toLocaleString() || '0'} ریال
+                            </Typography>
+                        </ListItem>
 
-                                <ListItem className="flex gap-2 text-gray-700">
-                                    توضیحات:{' '}
-                                    <Typography
-                                        variant="span"
-                                        className="font-medium text-gray-900"
-                                    >
-                                        {userLoan?.description || 'ندارد'}
-                                    </Typography>
-                                </ListItem>
-                                <ListItem className="flex gap-2 text-gray-700">
-                                    تاریخ شروع قرارداد:{' '}
-                                    <Typography
-                                        variant="span"
-                                        className="font-medium text-gray-900"
-                                    >
-                                        {toPersianDate(userLoan?.contractStartDate) || ''}
-                                    </Typography>
-                                </ListItem>
-                                <ListItem className="flex gap-2 text-gray-700">
-                                    فاصله زمانی بین اقساط:{' '}
-                                    <Typography
-                                        variant="span"
-                                        className="font-medium text-gray-900"
-                                    >
-                                        {userLoan?.installmentInterval || ''} ماه{' '}
-                                    </Typography>
-                                </ListItem>
-                                <ListItem className="flex gap-2 text-gray-700">
-                                    درصد تخفیف:{' '}
-                                    <Typography
-                                        variant="span"
-                                        className="font-medium text-gray-900"
-                                    >
-                                        {userLoan?.discountRate || '0'} درصد{' '}
-                                    </Typography>
-                                </ListItem>
-                            </List>
-                        </Box>
-                    </Box>
-                </CardContent>
-            </Card>
+                        <ListItem className="flex gap-2 text-gray-700">
+                            توضیحات:{' '}
+                            <Typography
+                                variant="span"
+                                className="font-medium text-gray-900"
+                            >
+                                {userLoan?.description || 'ندارد'}
+                            </Typography>
+                        </ListItem>
+                        <ListItem className="flex gap-2 text-gray-700">
+                            تاریخ شروع قرارداد:{' '}
+                            <Typography
+                                variant="span"
+                                className="font-medium text-gray-900"
+                            >
+                                {toPersianDate(userLoan?.contractStartDate) || ''}
+                            </Typography>
+                        </ListItem>
+                        <ListItem className="flex gap-2 text-gray-700">
+                            فاصله زمانی بین اقساط:{' '}
+                            <Typography
+                                variant="span"
+                                className="font-medium text-gray-900"
+                            >
+                                {userLoan?.installmentInterval || ''} ماه{' '}
+                            </Typography>
+                        </ListItem>
+                        <ListItem className="flex gap-2 text-gray-700">
+                            درصد تخفیف:{' '}
+                            <Typography
+                                variant="span"
+                                className="font-medium text-gray-900"
+                            >
+                                {userLoan?.discountRate || '0'} درصد{' '}
+                            </Typography>
+                        </ListItem>
+                    </List>
+                </Box>
+            </Box>
 
             <Box className="flex items-center gap-2">
                 <Input

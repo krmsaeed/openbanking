@@ -70,7 +70,7 @@ export function VideoRecorderView({
                             <video
                                 src={videoPreviewUrl ?? undefined}
                                 controls
-                                className="mx-auto w-full rounded-lg bg-gray-50"
+                                className="mx-auto w-full rounded-lg bg-gray-50 object-contain aspect-video max-h-[60vh]"
                                 preload="metadata"
                                 ref={previewVideoRef}
                                 onContextMenu={(e) => e.preventDefault()}
@@ -110,7 +110,7 @@ export function VideoRecorderView({
                                     ref={videoRef}
                                     autoPlay
                                     muted
-                                    className="h-64 w-full rounded-lg object-cover"
+                                    className="h-64 w-full rounded-lg object-contain object-center bg-black"
                                     style={{ transform: 'scaleX(-1)' }}
                                 />
                                 <canvas ref={canvasRef} className="hidden" />
@@ -174,11 +174,10 @@ export function VideoRecorderView({
                                     <Button
                                         onClick={onStopRecording}
                                         disabled={!isRecording}
-                                        className={`mb-2 flex items-center gap-2 px-6 py-3 transition-colors ${
-                                            isRecording
-                                                ? 'bg-error-500 hover:bg-error-600 text-white'
-                                                : 'cursor-not-allowed bg-gray-400 text-gray-600'
-                                        }`}
+                                        className={`mb-2 flex items-center gap-2 px-6 py-3 transition-colors ${isRecording
+                                            ? 'bg-error-500 hover:bg-error-600 text-white'
+                                            : 'cursor-not-allowed bg-gray-400 text-gray-600'
+                                            }`}
                                     >
                                         <XMarkIcon className="h-5 w-5" />
                                         پایان ضبط
