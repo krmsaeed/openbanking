@@ -56,8 +56,7 @@ export const englishLastNameSchema = z
 
 export const simplePasswordSchema = z
     .string({ message: 'رمز عبور الزامی است' })
-    .length(8, 'رمز عبور باید ۸ رقم باشد')
-    .regex(/^\d{8}$/, 'رمز عبور باید شامل اعداد و ۸ رقم باشد');
+    .regex(/^\d{8}$/, 'رمز عبور فقط عدد و ۸ رقم باشد');
 
 export const basicPersonalInfoSchema = z.object({
     firstName: firstNameSchema,

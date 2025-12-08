@@ -1,59 +1,89 @@
 'use client';
-import { Box, Input } from '@/components/ui';
+import { Box, Input, Label, Typography } from '@/components/ui';
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import {
-    Controller,
-    Control,
-    FieldErrors,
-    UseFormSetError,
-    UseFormGetValues,
-} from 'react-hook-form';
-import CertificateStep from './CertificateStep';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { resolveCatalogMessage } from '@/services/errorCatalog';
 import httpClient from '@/lib/httpClient';
 import { useState } from 'react';
-import { set } from 'zod';
+import axios from 'axios';
+import CertificateStep from './CertificateStep';
+import { useUser } from '@/contexts/UserContext';
+import { useContractStep } from '@/hooks/useContractStep';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { simplePasswordSchema as personalPasswordSchema } from '@/lib/schemas/personal';
 
 type PasswordFormData = {
     password: string;
 };
 
-interface ContractOtpStepProps {
-    control: Control<PasswordFormData>;
-    errors: FieldErrors<PasswordFormData>;
-    setError: UseFormSetError<PasswordFormData>;
-    getValues: UseFormGetValues<PasswordFormData>;
-    otp: string;
-    setOtp: (otp: string) => void;
-    showPassword: boolean;
-    setShowPassword: (show: boolean) => void;
-    userData: { processId: number | null };
-    setOtpLoading: (loading: boolean) => void;
-    onIssue: () => void;
-    loading: boolean;
-    isValid: boolean;
-}
+const passwordSchema = z.object({
+    password: personalPasswordSchema,
+});
 
-export default function ContractOtpStep({
-    control,
-    errors,
-    otp,
-    setOtp,
-    showPassword,
-    setShowPassword,
-    userData,
-    setOtpLoading,
-    onIssue,
-    loading,
-    isValid,
-}: ContractOtpStepProps) {
-    const [timeLeft, setTimeLeft] = useState(5);
-    const onResend = () => {
+export default function ContractOtpStep() {
+    const { userData } = useUser();
+    const [timeLeft, setTimeLeft] = useState(120);
+    const [isResending, setIsResending] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
+    const {
+        control,
+        formState: { errors, isValid },
+        setError,
+        getValues,
+    } = useForm<PasswordFormData>({
+        resolver: zodResolver(passwordSchema),
+        defaultValues: {
+            password: '',
+        },
+    });
+
+    const {
+        otp,
+        setOtp,
+        otpLoading,
+        setOtpLoading,
+    } = useContractStep();
+
+    const onIssue = async () => {
         setOtpLoading(true);
-        httpClient
-            .post('/api/bpms/send-message', {
+        try {
+            const response = await httpClient.post('/api/bpms/send-message', {
+                serviceName: 'virtual-open-deposit',
+                formName: 'MtcRequestSignResult',
+                processId: userData.processId,
+                body: {
+                    otpCode: otp,
+                    password: getValues('password'),
+                },
+            });
+
+            if (response.status === 200 && response.data?.body?.responseBase64) {
+                showDismissibleToast('تسهیلات با موفقیت امضا شد', 'success');
+                // Handle next step here
+            } else {
+                showDismissibleToast('پاسخ نامعتبر دریافت شد', 'error');
+            }
+        } catch (error) {
+            const message = await resolveCatalogMessage(
+                axios.isAxiosError(error) ? error.response?.data : undefined,
+                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
+            );
+            showDismissibleToast(message, 'error');
+        } finally {
+            setOtpLoading(false);
+        }
+    };
+
+    const onResend = async (e?: React.MouseEvent) => {
+        e?.preventDefault();
+        e?.stopPropagation();
+        setIsResending(true);
+        try {
+            await httpClient.post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',
                 processId: userData.processId,
                 formName: 'SignCustomerLoanContract',
@@ -61,78 +91,116 @@ export default function ContractOtpStep({
                     accept: true,
                     tryagain: true,
                 },
-            })
-            .then(() => {
-                setTimeLeft(5);
-                showDismissibleToast('کد تایید مجدد ارسال شد', 'success');
-            })
-            .catch(async (error) => {
-                const message = await resolveCatalogMessage(
-                    error.response?.data,
-                    'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-                );
-                showDismissibleToast(message, 'error');
-            })
-            .finally(() => {
-                setOtpLoading(false);
             });
+            setTimeLeft(5);
+            showDismissibleToast('کد تایید مجدد ارسال شد', 'success');
+        } catch (error) {
+            const message = await resolveCatalogMessage(
+                axios.isAxiosError(error) ? error.response?.data : undefined,
+                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
+            );
+            showDismissibleToast(message, 'error');
+        } finally {
+            setIsResending(false);
+        }
     };
     return (
-        <Box className="space-y-4 rounded-lg bg-gray-100 p-4">
-            <Controller
-                name="password"
-                control={control}
-                render={({ field }) => (
-                    <Box className="relative">
-                        <Input
-                            {...field}
-                            type={showPassword ? 'text' : 'password'}
-                            label="رمز عبور"
-                            placeholder="رمز عبور خود را وارد کنید"
-                            value={field.value}
-                            onChange={(e) => {
-                                const original = e.target.value;
-                                const filtered = original.replace(/\D/g, '');
-                                field.onChange(filtered);
-                            }}
-                            required
-                            fullWidth
-                            maxLength={8}
-                            className="text-left"
-                            dir="ltr"
-                            error={`${errors.password?.message ?? ''}`}
-                            startAdornment={
-                                <Box
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="cursor-pointer"
-                                >
-                                    {showPassword ? (
-                                        <EyeSlashIcon className="h-5 w-5" />
-                                    ) : (
-                                        <EyeIcon className="h-5 w-5" />
-                                    )}
-                                </Box>
-                            }
-                        />
-                    </Box>
-                )}
-            />
-            <CertificateStep
-                otp={otp}
-                setOtp={setOtp}
-                onResend={onResend}
-                onIssue={onIssue}
-                loading={loading}
-                timeLeft={timeLeft}
-                setTimeLeft={setTimeLeft}
-            />
-            <Box className="space-y-2">
-                <LoadingButton
-                    onClick={onIssue}
-                    loading={loading}
-                    disabled={otp.length !== 6 || !isValid || loading}
-                />
+        <>
+
+            <Box className="  text-center p-3 rounded-lg shadow-sm felx gap-3 justify-between items-center flex-col mb-2 bg-gray-100">
+                <Typography variant="p" className='text-primary-900 text-md mb-2'>
+                    لطفا کد تایید پیامک شده را وارد کنید
+                </Typography>
+                <Typography variant="p" className='text-primary-900 text-md'>
+                    رمز عبوری که در مرحله قبل تنظیم کرده اید را وارد کنید
+                </Typography>
             </Box>
-        </Box>
+            <Box className="space-y-4 bg-gray-100 p-3 rounded-lg">
+
+
+                <Box>
+                    <Label required>کد تایید</Label>
+                    <CertificateStep
+                        otp={otp}
+                        setOtp={setOtp}
+                        onResend={onResend}
+                        onIssue={onIssue}
+                        loading={otpLoading}
+                        resendLoading={isResending}
+                        timeLeft={timeLeft}
+                        setTimeLeft={setTimeLeft}
+                    />
+
+                </Box>
+                <Box className="relative">
+                    <Controller
+                        name="password"
+                        control={control}
+                        render={({ field }) => (
+                            <Input
+                                {...field}
+                                type={showPassword ? 'tel' : 'password'}
+                                inputMode="numeric"
+                                pattern="\\d{8}"
+                                label="رمز عبور"
+                                placeholder="رمز عبور را وارد کنید"
+                                required
+                                fullWidth
+                                maxLength={8}
+                                className="mb-2 text-left"
+                                dir="ltr"
+                                autoComplete="new-password"
+                                autoCorrect="off"
+                                autoCapitalize="off"
+                                spellCheck={false}
+                                data-form-type="other"
+                                disabled={otpLoading}
+                                error={errors.password?.message}
+                                onChange={(e) => {
+                                    const original = e.target.value;
+                                    const filtered = original.replace(/\D/g, '');
+                                    if (original !== filtered) {
+                                        setError('password', {
+                                            message: 'فقط عدد مجاز است',
+                                        });
+                                    } else {
+                                        setError('password', { type: 'manual', message: '' });
+                                    }
+                                    field.onChange(filtered.replace(/\D/g, ''));
+                                }}
+                                startAdornment={
+                                    <Box
+                                        onClick={() => !isResending && setShowPassword(!showPassword)}
+                                        className={
+                                            isResending
+                                                ? 'cursor-not-allowed opacity-50'
+                                                : 'cursor-pointer'
+                                        }
+                                    >
+                                        {showPassword ? (
+                                            <EyeSlashIcon className="dark:text-dark h-5 w-5" />
+                                        ) : (
+                                            <EyeIcon className="dark:text-dark h-5 w-5" />
+                                        )}
+                                    </Box>
+                                }
+                            />
+                        )}
+                    />
+
+                </Box>
+                <Box className="mt-4">
+                    <LoadingButton
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onIssue();
+                        }}
+                        loading={otpLoading}
+                        disabled={otp.length !== 6 || !isValid || otpLoading || isResending}
+                    />
+                </Box>
+            </Box>
+        </>
     );
 }

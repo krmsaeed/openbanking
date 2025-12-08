@@ -18,7 +18,7 @@ export function PdfPreviewModal({
     isOpen,
     onClose,
     pdfUrl,
-    title = 'پیش‌نمایش قرارداد',
+    title,
     onConfirm,
     loading: externalLoading = false,
 }: PdfPreviewModalProps) {
@@ -31,6 +31,7 @@ export function PdfPreviewModal({
             title={title}
             size="xl"
             closeOnClickOutside={false}
+            showCloseButton={false}
         >
             <Box className="relative h-[75vh] w-full">
                 {loading && (

@@ -41,7 +41,7 @@ package-lock.json
 env*
 # vercel
 .vercel 
-
+/certificates
 # typescript
 *.tsbuildinfo
 next-env.d.ts
@@ -59,3 +59,5 @@ nginx.conf
 *.tar
 *.tar.gz
 *.tgz
+
+server.js

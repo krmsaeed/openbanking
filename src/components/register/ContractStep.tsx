@@ -4,158 +4,18 @@ import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast'
 import LoadingButton from '@/components/ui/core/LoadingButton';
 import { PdfPreviewModal } from '@/components/ui/overlay/PdfPreviewModal';
 import { resolveCatalogMessage } from '@/services/errorCatalog';
-import { useState } from 'react';
 import Modal from '../ui/overlay/Modal';
 import { useUser } from '@/contexts/UserContext';
 import ContractOtpStep from './ContractOtpStep';
 import httpClient from '@/lib/httpClient';
-
-import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import { toPersianDate } from '@/lib/utils';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { simplePasswordSchema } from '@/lib/schemas/personal';
 import axios from 'axios';
-
-type PasswordFormData = {
-    password: string;
-};
-
-const PDF_URL = '/test.pdf';
-
-function useContractStep() {
-    const router = useRouter();
-    const { userData, clearUserData } = useUser();
-    const [agreed, setAgreed] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [showPreview, setShowPreview] = useState(false);
-    const [pdfUrl, setPdfUrl] = useState<string>('');
-    const [showModal, setShowModal] = useState(false);
-    const [otp, setOtp] = useState('');
-    const [otpLoading, setOtpLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [signedPdfUrl, setSignedPdfUrl] = useState<string>('');
-    const [signedPdfUrlByBank, setSignedPdfUrlByBank] = useState<string>('');
-    const [showSignedPreview, setShowSignedPreview] = useState(false);
-    const [showSignedPreviewByBank, setShowSignedPreviewByBank] = useState(false);
-    const [bankSignLoading, setBankSignLoading] = useState(false);
-    const handleAccept = async () => {
-        if (!agreed) {
-            setError('لطفا ابتدا شرایط قرارداد را مطالعه و تأیید کنید.');
-            return;
-        }
-
-        setLoading(true);
-        setError(null);
-
-        await httpClient
-            .post('/api/bpms/send-message', {
-                serviceName: 'virtual-open-deposit',
-                processId: userData.processId,
-                formName: 'SignCustomerLoanContract',
-                body: {
-                    accept: true,
-                },
-            })
-            .then(() => {
-                setShowModal(true);
-            })
-            .catch(async (err) => {
-                const message = await resolveCatalogMessage(
-                    err.response?.data,
-                    'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-                );
-                showDismissibleToast(message, 'error');
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    };
-
-    const handlePreview = async () => {
-        try {
-            setPdfUrl(PDF_URL);
-            setShowPreview(true);
-        } catch (err) {
-            setError(
-                'خطا در نمایش پیش‌نمایش: ' + (err instanceof Error ? err.message : String(err))
-            );
-        }
-    };
-
-    const handleDownload = () => {
-        try {
-            const element = document.createElement('a');
-            element.href = PDF_URL;
-            element.download = 'contract.pdf';
-            document.body.appendChild(element);
-            element.click();
-            document.body.removeChild(element);
-        } catch (err) {
-            setError(
-                'خطا در دانلود فایل قرارداد: ' + (err instanceof Error ? err.message : String(err))
-            );
-        }
-    };
-
-    const handleCancelConfirm = () => {
-        clearUserData();
-        router.push('/');
-    };
-
-    return {
-        agreed,
-        setAgreed,
-        loading,
-        error,
-        showPreview,
-        setShowPreview,
-        pdfUrl,
-        showModal,
-        setShowModal,
-        otp,
-        setOtp,
-        otpLoading,
-        setOtpLoading,
-        showPassword,
-        setShowPassword,
-        signedPdfUrl,
-        setSignedPdfUrl,
-        signedPdfUrlByBank,
-        setSignedPdfUrlByBank,
-        showSignedPreview,
-        setShowSignedPreview,
-        showSignedPreviewByBank,
-        setShowSignedPreviewByBank,
-        bankSignLoading,
-        setBankSignLoading,
-        handleAccept,
-        handlePreview,
-        handleDownload,
-        handleCancelConfirm,
-    };
-}
+import { useContractStep } from '@/hooks/useContractStep';
 
 export default function ContractStep() {
     const { userData } = useUser();
-    const router = useRouter();
     const userLoan = userData.userLoan;
-    const passwordSchema = z.object({ password: simplePasswordSchema });
-    const {
-        control,
-        formState: { errors, isValid },
-        setError,
-        getValues,
-    } = useForm<PasswordFormData>({
-        resolver: zodResolver(passwordSchema),
-        defaultValues: {
-            password: '',
-        },
-        mode: 'onChange',
-    });
     const {
         agreed,
         setAgreed,
@@ -165,14 +25,7 @@ export default function ContractStep() {
         pdfUrl,
         showModal,
         setShowModal,
-        otp,
-        setOtp,
-        otpLoading,
-        setOtpLoading,
-        showPassword,
-        setShowPassword,
         signedPdfUrl,
-        setSignedPdfUrl,
         signedPdfUrlByBank,
         setSignedPdfUrlByBank,
         showSignedPreview,
@@ -184,45 +37,56 @@ export default function ContractStep() {
         handleAccept,
         handleCancelConfirm,
     } = useContractStep();
-    const onIssue = () => {
-        setOtpLoading(true);
-        httpClient
-            .post('/api/bpms/send-message', {
+    const handleConfirmSignByCustomer = async () => {
+        setBankSignLoading(true);
+        try {
+            const response = await httpClient.post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',
-                formName: 'MtcRequestSignResult',
                 processId: userData.processId,
-                body: {
-                    otpCode: otp,
-                    password: getValues('password'),
-                },
-            })
-            .then((response) => {
-                if (response.status === 200 && response.data?.body?.responseBase64) {
-                    try {
-                        setSignedPdfUrl(
-                            `data:application/pdf;base64,${response.data.body.responseBase64}`
-                        );
-                        setShowModal(false);
-                        setShowSignedPreview(true);
-                    } catch (error) {
-                        console.error('Error setting PDF URL:', error);
-                        showDismissibleToast('خطا در نمایش PDF', 'error');
-                    }
-                } else {
-                    showDismissibleToast('پاسخ نامعتبر دریافت شد', 'error');
-                }
-            })
-            .catch(async (error) => {
-                const message = await resolveCatalogMessage(
-                    error.response?.data,
-                    'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-                );
-                showDismissibleToast(message, 'error');
-            })
-            .finally(() => {
-                setOtpLoading(false);
+                formName: 'SignDocumentResult',
+                body: {},
             });
-    };
+
+            if (response.status === 200 && response.data?.body?.stampedData) {
+                setSignedPdfUrlByBank(
+                    `data:application/pdf;base64,${response.data.body.stampedData}`
+                );
+                setShowSignedPreview(false);
+                setShowSignedPreviewByBank(true);
+            } else {
+                showDismissibleToast('پاسخ نامعتبر دریافت شد', 'error');
+            }
+        } catch (error) {
+            const message = await resolveCatalogMessage(
+                axios.isAxiosError(error) ? error.response?.data : undefined,
+                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
+            );
+            showDismissibleToast(message, 'error');
+        } finally {
+            setBankSignLoading(false);
+        }
+    }
+    const handleConfirmSignByBank = async () => {
+        if (!signedPdfUrlByBank) {
+            showDismissibleToast('PDF امضا شده در دسترس نیست', 'error');
+            return;
+        }
+
+        try {
+            const link = document.createElement('a');
+            link.href = signedPdfUrlByBank;
+            link.download = 'قرارداد-امضا-شده.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showDismissibleToast('تسهیلات با موفقیت ایجاد شد', 'success');
+            handleCancelConfirm();
+        } catch (error) {
+            console.error('Error downloading PDF:', error);
+            showDismissibleToast('خطا در دانلود فایل PDF', 'error');
+        }
+    }
     return (
         <Box className="h-full space-y-6 py-4">
             <Card className="bg-gray-200">
@@ -393,51 +257,17 @@ export default function ContractStep() {
             </Box>
             <PdfPreviewModal
                 isOpen={showPreview}
+
                 onClose={() => setShowPreview(false)}
                 pdfUrl={pdfUrl}
-                title="پیش‌نمایش قرارداد"
+                title='قرارداد امضا شده توسط بانک'
             />
             <PdfPreviewModal
                 isOpen={showSignedPreview}
                 onClose={() => setShowSignedPreview(false)}
                 pdfUrl={signedPdfUrl}
                 title="قرارداد امضا شده توسط مشتری"
-                onConfirm={async () => {
-                    setBankSignLoading(true);
-                    await httpClient
-                        .post('/api/bpms/send-message', {
-                            serviceName: 'virtual-open-deposit',
-                            processId: userData.processId,
-                            formName: 'SignDocumentResult',
-                            body: {},
-                        })
-                        .then((response) => {
-                            console.log('🚀 ~ ContractStep ~ response:', response);
-                            if (response.status === 200 && response.data?.body?.stampedData) {
-                                try {
-                                    setSignedPdfUrlByBank(
-                                        `data:application/pdf;base64,${response.data.body.stampedData}`
-                                    );
-                                    setShowSignedPreview(false);
-                                    setShowSignedPreviewByBank(true);
-                                } catch (error) {
-                                    console.error('Error setting PDF URL:', error);
-                                    showDismissibleToast('خطا در نمایش PDF', 'error');
-                                }
-                            } else {
-                                showDismissibleToast('پاسخ نامعتبر دریافت شد', 'error');
-                            }
-                        })
-                        .catch(async (error) => {
-                            await resolveCatalogMessage(
-                                axios.isAxiosError(error) ? error.response?.data : undefined,
-                                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-                            );
-                        })
-                        .finally(() => {
-                            setBankSignLoading(false);
-                        });
-                }}
+                onConfirm={handleConfirmSignByCustomer}
                 loading={bankSignLoading}
             />
             <PdfPreviewModal
@@ -445,27 +275,7 @@ export default function ContractStep() {
                 onClose={() => setShowSignedPreviewByBank(false)}
                 pdfUrl={signedPdfUrlByBank}
                 title="قرارداد امضا شده توسط بانک"
-                onConfirm={async () => {
-                    if (!signedPdfUrlByBank) {
-                        showDismissibleToast('PDF امضا شده در دسترس نیست', 'error');
-                        return;
-                    }
-
-                    try {
-                        const link = document.createElement('a');
-                        link.href = signedPdfUrlByBank;
-                        link.download = 'قرارداد-امضا-شده.pdf';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-
-                        showDismissibleToast('تسهیلات با موفقیت ایجاد شد', 'success');
-                        router.push('/');
-                    } catch (error) {
-                        console.error('Error downloading PDF:', error);
-                        showDismissibleToast('خطا در دانلود فایل PDF', 'error');
-                    }
-                }}
+                onConfirm={handleConfirmSignByBank}
             />
             <Modal
                 isOpen={showModal}
@@ -473,22 +283,9 @@ export default function ContractStep() {
                 title="تایید نهایی"
                 size="md"
                 closeOnClickOutside={false}
+                showCloseButton={false}
             >
-                <ContractOtpStep
-                    control={control}
-                    errors={errors}
-                    setError={setError}
-                    getValues={getValues}
-                    otp={otp}
-                    setOtp={setOtp}
-                    showPassword={showPassword}
-                    setShowPassword={setShowPassword}
-                    userData={userData}
-                    setOtpLoading={setOtpLoading}
-                    onIssue={onIssue}
-                    loading={otpLoading}
-                    isValid={isValid}
-                />
+                <ContractOtpStep />
             </Modal>
         </Box>
     );

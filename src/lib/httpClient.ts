@@ -77,7 +77,7 @@ const getCacheKey = (config: InternalAxiosRequestConfig): string => {
 };
 
 export const httpClient: AxiosInstance = axios.create({
-    baseURL: '', // برای استفاده از API routes داخلی Next.js
+    baseURL: process.env.NEXT_PUBLIC_API_URL || '', // Use environment variable or relative paths
     timeout: 60000,
     withCredentials: true,
 });

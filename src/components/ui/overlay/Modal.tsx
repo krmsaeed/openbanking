@@ -79,7 +79,7 @@ const Modal = forwardRef<ModalRef, ModalProps>(
 
         const { modalRef: accessibilityRef, modalProps } = useModalAccessibility({
             isOpen,
-            onClose: closeOnEscape ? onClose : () => {},
+            onClose: closeOnEscape ? onClose : () => { },
             autoFocus,
         });
 
@@ -174,7 +174,7 @@ const Modal = forwardRef<ModalRef, ModalProps>(
                         )}
 
                         {/* Content */}
-                        <Box className="flex-1 overflow-y-auto p-6">{children}</Box>
+                        <Box className="flex-1 overflow-y-auto p-2">{children}</Box>
 
                         {/* Footer */}
                         {footer && (

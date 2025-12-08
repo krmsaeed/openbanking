@@ -64,7 +64,7 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
                 autoComplete={autoComplete ?? 'one-time-code'}
                 onKeyDown={onKeyDown}
                 className={cn(
-                    'h-12 w-12 rounded-xl border border-gray-100 text-center text-lg font-bold transition-colors focus:ring-2',
+                    'h-10 w-10 md:h-12 md:w-12 rounded-xl border border-gray-100 text-center text-lg font-bold transition-colors focus:ring-2',
                     className
                 )}
                 maxLength={maxLength}

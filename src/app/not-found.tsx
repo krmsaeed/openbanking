@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function NotFound() {
     return (
-        <div className="flex items-center justify-center bg-gradient-to-br px-4 py-16">
+        <div className="flex items-center justify-center  px-4 py-16">
             <div className="w-full max-w-2xl rounded-xl bg-white p-8 text-center shadow-lg">
                 <h1 className="mb-4 text-5xl font-extrabold text-gray-900">404</h1>
                 <h2 className="mb-3 text-2xl font-semibold text-gray-800">صفحه پیدا نشد</h2>

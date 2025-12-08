@@ -60,7 +60,7 @@ const STEP_DESCRIPTIONS: Record<number, string> = {
     4: 'امضای دیجیتال',
     5: 'تعیین رمز',
     6: 'ارسال مدارک تکمیلی',
-    7: 'پیش نمایش قرارداد',
+    7: 'مطالعه و امضای قرارداد',
 };
 
 export default function Register() {
@@ -123,7 +123,7 @@ export default function Register() {
                     }
                 }
             })();
-        } catch {}
+        } catch { }
     }, [setValue]);
 
     // Read national id from cookie (if present) and set into form

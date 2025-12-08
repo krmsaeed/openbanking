@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Box } from '../ui';
+import { Box, Typography } from '../ui';
 import { List, ListItem } from '../ui/list';
 import CertificateStep from './CertificateStep';
 export default function PasswordStep() {
@@ -113,7 +113,6 @@ export default function PasswordStep() {
                     setUserData({ step: 6 });
                 })
                 .catch(async (error) => {
-                    console.log('🚀 ~ PasswordStep ~ error:', error);
                     const message = await resolveCatalogMessage(
                         error.response?.data,
                         'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
@@ -340,13 +339,19 @@ export default function PasswordStep() {
             </form>
         </Box>
     ) : (
-        <>
+        <Box className="space-y-4">
+            <Box className="text-center text-sm bg-gray-200 p-3 rounded-lg shadow-sm">
+                <Typography variant="span" className='text-purple-800'>
+                    لطفا کد تایید پیامک شده را وارد کنید
+                </Typography>
+            </Box>
             <CertificateStep
                 otp={otp}
                 setOtp={setOtp}
                 onResend={handleResendOTP}
                 onIssue={onIssue}
                 loading={otpLoading}
+                resendLoading={isLoading}
                 timeLeft={timeLeft}
                 setTimeLeft={setTimeLeft}
             />
@@ -357,6 +362,6 @@ export default function PasswordStep() {
                     disabled={otp.length !== 6 || otpLoading}
                 />
             </Box>
-        </>
+        </Box>
     );
 }

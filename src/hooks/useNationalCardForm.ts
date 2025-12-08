@@ -108,12 +108,17 @@ export function useNationalCardForm() {
 
             if (!capturedFile) {
                 setFileError('عکس کارت ملی الزامی است');
+                return;
+            }
+
+            // Check if OCR was valid
+            if (!ocrValid) {
+                setFileError('لطفاً یک عکس معتبر از کارت ملی اسکن کنید');
+                return;
             }
 
             const valid = await form.trigger();
             if (!valid) return;
-
-            if (!capturedFile) return;
 
             await handleSubmit();
         },
