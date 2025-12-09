@@ -5,7 +5,7 @@
             "name": "debug on port 3000",
             "type": "node-terminal",
             "request": "launch",
-            "command": "yarn dev",
+            "command": "node ./server.js",
             "env": {
                 "PORT": "3000"
             },

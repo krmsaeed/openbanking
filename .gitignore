@@ -61,3 +61,5 @@ nginx.conf
 *.tgz
 
 server.js
+.vscode/settings.json
+.vscode/launch.json

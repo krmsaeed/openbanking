@@ -43,6 +43,7 @@ export default function NationalCardOcrScanner({
     const [ocrLoading, setOcrLoading] = useState<boolean>(false);
     const [showPermissionModal, setShowPermissionModal] = useState<boolean>(false);
     const [captureLocked, setCaptureLocked] = useState<boolean>(false);
+    const [resetLoading, setResetLoading] = useState<boolean>(false);
 
     const handleRequestPermission = useCallback(async () => {
         setShowPermissionModal(true);
@@ -61,7 +62,7 @@ export default function NationalCardOcrScanner({
 
     useEffect(() => {
         if (autoOpen && !isCameraOpen && !capturedUrl) {
-            startCamera().catch(() => {});
+            startCamera().catch(() => { });
         }
     }, [autoOpen, isCameraOpen, capturedUrl, startCamera]);
 
@@ -124,25 +125,32 @@ export default function NationalCardOcrScanner({
     }, [ocrLoading, captureLocked, takePhoto, capturedUrl, stopCamera, processOcr]);
 
     const handleReset = useCallback(async () => {
-        if (capturedUrl) {
-            URL.revokeObjectURL(capturedUrl);
-            setCapturedUrl(null);
-            setOcrValid(false);
-        }
+        if (resetLoading) return; // Prevent multiple simultaneous resets
 
-        setCaptureLocked(false);
-
-        stopCamera();
+        setResetLoading(true);
         try {
-            const granted = await requestCameraPermission();
-            if (!granted) {
-                showDismissibleToast('برای گرفتن عکس جدید اجازه‌ی دوربین لازم است', 'error');
+            if (capturedUrl) {
+                URL.revokeObjectURL(capturedUrl);
+                setCapturedUrl(null);
+                setOcrValid(false);
             }
-        } catch (err) {
-            console.warn('failed to restart camera', err);
-            showDismissibleToast('دوربین بازنشانی نشد', 'error');
+
+            setCaptureLocked(false);
+
+            stopCamera();
+            try {
+                const granted = await requestCameraPermission();
+                if (!granted) {
+                    showDismissibleToast('برای گرفتن عکس جدید اجازه‌ی دوربین لازم است', 'error');
+                }
+            } catch (err) {
+                console.warn('failed to restart camera', err);
+                showDismissibleToast('دوربین بازنشانی نشد', 'error');
+            }
+        } finally {
+            setResetLoading(false);
         }
-    }, [capturedUrl, requestCameraPermission, stopCamera]);
+    }, [capturedUrl, requestCameraPermission, stopCamera, resetLoading]);
 
     useEffect(() => {
         return () => {
@@ -178,7 +186,7 @@ export default function NationalCardOcrScanner({
                         </Box>
                     )
                 ) : (
-                    <Box className="relative h-72 max-h-[350px] w-full rounded-lg border-2 border-dashed border-gray-900">
+                    <Box className="relative max-h-[350px] w-full rounded-lg border-2 border-dashed border-gray-900 md:h-64">
                         <Box className="m-auto h-full w-full rounded-lg">
                             <Image
                                 src={capturedUrl}
@@ -232,13 +240,13 @@ export default function NationalCardOcrScanner({
             {<Typography className="text-sm text-red-600">{fileError}</Typography>}
 
             <Box className="flex items-center justify-center gap-2">
-                {!capturedUrl && (
+                {!capturedUrl && !ocrLoading && (
                     <Button
                         onClick={handleCapture}
                         size="sm"
                         variant="success"
-                        disabled={ocrLoading || !isCameraOpen || captureLocked}
-                        loading={ocrLoading}
+                        disabled={!isCameraOpen || captureLocked || resetLoading}
+                        loading={resetLoading}
                     >
                         <span className="flex items-center justify-center gap-2">
                             <CameraIcon className="h-5 w-5" />
@@ -247,13 +255,13 @@ export default function NationalCardOcrScanner({
                     </Button>
                 )}
 
-                {capturedUrl && (
+                {capturedUrl && !resetLoading && (
                     <Box className="flex flex-col items-center gap-2">
                         <Button
                             size="sm"
                             onClick={handleReset}
-                            disabled={ocrLoading && !ocrValid}
-                            loading={ocrLoading}
+                            disabled={resetLoading || ocrLoading}
+                            loading={resetLoading}
                             className="bg-warning-700 cursor-pointer text-white"
                         >
                             <ArrowPathIcon className="ml-2 h-5 w-5" />
