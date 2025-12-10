@@ -27,7 +27,8 @@ export default function Timer({ timeLeft, setTimeLeft, onTimeUp }: TimerProps) {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [timeLeft, setTimeLeft, onTimeUp]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
@@ -35,7 +36,5 @@ export default function Timer({ timeLeft, setTimeLeft, onTimeUp }: TimerProps) {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    return (
-        <Typography className="text-purple-700">{formatTime(timeLeft)}</Typography>
-    );
+    return <Typography className="text-purple-700">{formatTime(timeLeft)}</Typography>;
 }

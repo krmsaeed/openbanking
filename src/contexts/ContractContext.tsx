@@ -34,14 +34,13 @@ interface ContractContextType {
     setError: (value: string | null) => void;
     isResending: boolean;
     setIsResending: (value: boolean) => void;
-
     // OTP & Modal states
     showModal: boolean;
     setShowModal: (value: boolean) => void;
-    otp: string;
-    setOtp: (value: string) => void;
-    otpLoading: boolean;
-    setOtpLoading: (value: boolean) => void;
+    // otp: string;
+    // setOtp: (value: string) => void;
+    // otpLoading: boolean;
+    // setOtpLoading: (value: boolean) => void;
     showPassword: boolean;
     setShowPassword: (value: boolean) => void;
     canResend: boolean;
@@ -51,7 +50,6 @@ interface ContractContextType {
 
     // Handlers
     handleAccept: () => Promise<void>;
-    onResend: (e?: React.MouseEvent) => Promise<boolean>;
     handleCancelConfirm: () => void;
 }
 
@@ -89,36 +87,13 @@ export function ContractProvider({ children }: { children: ReactNode }) {
 
     // OTP & Modal states
     const [showModal, setShowModal] = useState(false);
-    const [otp, setOtp] = useState('');
-    const [otpLoading, setOtpLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(2);
 
-    const onResend = async (e?: React.MouseEvent): Promise<boolean> => {
-        setIsResending(true);
-        try {
-            await httpClient.post('/api/bpms/send-message', {
-                serviceName: 'virtual-open-deposit',
-                processId: userData.processId,
-                formName: 'MtcRequestSignErrorResult',
-                body: {
-                    tryagain: true,
-                },
-            });
-            setTimeLeft(120);
-            return true;
-        } catch (error) {
-            setShowModal(false)
-            // const message = await resolveCatalogMessage(
-            //     axios.isAxiosError(error) ? error.response?.data : undefined,
-            //     'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-            // );
-            // showDismissibleToast(message, 'error');
-            return false;
-        } finally {
-            setIsResending(false);
-        }
-    };
+    // const [otp, setOtp] = useState('');
+    // const [otpLoading, setOtpLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(120);
+
+
 
     const handleAccept = async () => {
         setLoading(true);
@@ -181,10 +156,10 @@ export function ContractProvider({ children }: { children: ReactNode }) {
         // Modal & OTP
         showModal,
         setShowModal,
-        otp,
-        setOtp,
-        otpLoading,
-        setOtpLoading,
+        // otp,
+        // setOtp,
+        // otpLoading,
+        // setOtpLoading,
         showPassword,
         setShowPassword,
         canResend,
@@ -194,7 +169,6 @@ export function ContractProvider({ children }: { children: ReactNode }) {
 
         // Handlers
         handleAccept,
-        onResend,
         handleCancelConfirm,
     };
 

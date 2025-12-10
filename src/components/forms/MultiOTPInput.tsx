@@ -13,7 +13,6 @@ interface MultiOTPInputProps {
     disabled?: boolean;
     className?: string;
 }
-
 export function MultiOTPInput({
     length,
     value,
@@ -23,77 +22,159 @@ export function MultiOTPInput({
     className,
 }: MultiOTPInputProps) {
     const [digits, setDigits] = useState<string[]>(Array(length).fill(''));
+
     const inputRefs = useRef<(OTPInputRef | null)[]>([]);
 
+    const onChangeRef = useRef(onChange);
+    const onSubmitRef = useRef(onSubmit);
+
     useEffect(() => {
-        const newDigits = Array(length).fill('');
-        for (let i = 0; i < Math.min(value.length, length); i++) {
-            newDigits[i] = value[i];
+        onChangeRef.current = onChange;
+        onSubmitRef.current = onSubmit;
+    }, [onChange, onSubmit]);
+
+    useEffect(() => {
+        if (value) {
+            const newDigits = Array(length).fill('');
+            for (let i = 0; i < Math.min(value.length, length); i++) {
+                newDigits[i] = value[i];
+            }
+
+            setDigits(newDigits);
+        } else if (!value) {
+            setDigits(Array(length).fill(''));
         }
-        setDigits(newDigits);
     }, [value, length]);
 
     useEffect(() => {
-        // Focus first input after component mounts
         inputRefs.current[0]?.focus();
     }, []);
 
+    useEffect(() => {}, [digits]);
+
+    const startWebOTPRef = useRef<(() => void) | undefined>(undefined);
+
     useEffect(() => {
-        if (!('OTPCredential' in window)) return;
+        if (!('OTPCredential' in window)) {
+            return;
+        }
 
-        const abortController = new AbortController();
+        let abortController: AbortController | null = null;
+        let mounted = true;
 
-        const requestOTP = async () => {
+        const startWebOTP = async () => {
             try {
+                abortController?.abort();
+                abortController = new AbortController();
                 const credential = await navigator.credentials.get({
                     otp: { transport: ['sms'] },
                     signal: abortController.signal,
                 } as CredentialRequestOptions & { otp: { transport: string[] } });
 
+                if (!mounted) {
+                    return;
+                }
+
                 if (credential && 'code' in credential && typeof credential.code === 'string') {
-                    const matches = credential.code.match(/\d+/g);
+                    const rawCode = credential.code;
+                    // received raw code
+
+                    // Normalize Persian/Arabic-Indic digits to ASCII before extracting numbers
+                    const code = convertPersianToEnglish(rawCode);
+                    // normalized code
+
+                    // extract digit sequences (now ASCII)
+                    const matches = code.match(/\d+/g) || [];
                     let numericCode = '';
 
-                    if (matches && matches.length > 0) {
-                        for (let i = matches.length - 1; i >= 0; i--) {
+                    if (matches.length > 0) {
+                        for (let i = 0; i < matches.length; i++) {
                             if (matches[i].length === length) {
                                 numericCode = matches[i];
                                 break;
                             }
                         }
                         if (!numericCode) {
-                            numericCode = matches[matches.length - 1];
+                            numericCode = matches.reduce((a, b) => (a.length > b.length ? a : b));
                         }
                     }
 
-                    if (numericCode && numericCode.length === length) {
-                        const newDigits = numericCode.split('');
+                    if (numericCode && numericCode.length > 0) {
+                        const codeToUse = numericCode.substring(0, length);
+
+                        const newDigits = codeToUse.split('');
+
+                        // Update state and trigger re-render BEFORE calling onChange
                         setDigits(newDigits);
-                        onChange(numericCode);
 
+                        const notifyParent = () => {
+                            try {
+                                onChangeRef.current(codeToUse);
+                            } catch (err) {
+                                console.log('🚀 ~ notifyParent ~ err:', err);
+                                // ignore
+                            }
+                        };
+                        const tryFocusThenNotify = (attempt = 0) => {
+                            const maxAttempts = 10;
+                            try {
+                                const firstRef = inputRefs.current[0];
+                                if (firstRef) {
+                                    firstRef.focus?.();
+                                }
 
+                                const active = document.activeElement as HTMLElement | null;
+                                const activeInside =
+                                    !!active &&
+                                    active.tagName === 'INPUT' &&
+                                    (active.getAttribute('inputmode') === 'numeric' ||
+                                        (active.getAttribute('autocomplete') || '').includes(
+                                            'one-time-code'
+                                        ) ||
+                                        active.classList.contains('otp-input'));
+
+                                if (activeInside || attempt >= maxAttempts) {
+                                    // Either focused or ran out of retries — notify parent
+                                    notifyParent();
+                                } else {
+                                    // retry after a brief delay (allow modal to finish animation)
+                                    setTimeout(() => tryFocusThenNotify(attempt + 1), 50);
+                                }
+                            } catch {
+                                notifyParent();
+                            }
+                        };
+
+                        if (typeof requestAnimationFrame === 'function') {
+                            requestAnimationFrame(() => tryFocusThenNotify());
+                        } else {
+                            setTimeout(() => tryFocusThenNotify(), 0);
+                        }
+
+                        if (onSubmitRef.current) {
+                            setTimeout(() => {
+                                onSubmitRef.current?.();
+                            }, 200);
+                        }
                     }
                 }
             } catch (error) {
-                console.log('WebOTP error:', error);
+                if (mounted && error instanceof Error && error.name !== 'AbortError') {
+                }
             }
         };
 
-        const promise = requestOTP();
-        // attach a catch to avoid unhandled promise rejection when the
-        // AbortController aborts the navigator.credentials.get() promise.
-        promise.catch((err) => {
-            // ignore AbortError which can be emitted when the effect cleans up
-            if (err && (err.name === 'AbortError' || err.message?.includes('aborted') || String(err).includes('aborted'))) {
-                return;
-            }
-            // log unexpected errors
-            // eslint-disable-next-line no-console
-            console.warn('WebOTP unexpected error:', err);
-        });
+        startWebOTPRef.current = () => {
+            startWebOTP().catch(() => {});
+        };
 
-        return () => abortController.abort();
-    }, [length, onChange, onSubmit]);
+        startWebOTP().catch(() => {});
+
+        return () => {
+            mounted = false;
+            if (abortController) abortController.abort();
+        };
+    }, [length]);
 
     const handleDigitChange = (index: number, digit: string) => {
         const newDigits = [...digits];
@@ -122,7 +203,6 @@ export function MultiOTPInput({
         const pastedText = e.clipboardData.getData('text').replace(/\s+/g, '');
         if (!pastedText) return;
 
-        // Convert Persian/Arabic numbers to English
         const englishText = convertPersianToEnglish(pastedText);
         const chars = englishText.split('').filter((c) => /\d/.test(c));
         if (chars.length === 0) return;
@@ -142,7 +222,7 @@ export function MultiOTPInput({
     };
 
     return (
-        <Box className={`w-full flex justify-between  ${className || ''}`} dir="ltr">
+        <Box className={`flex w-full justify-between ${className || ''}`} dir="ltr">
             {digits.map((digit, index) => (
                 <OTPInput
                     key={index}
@@ -154,6 +234,7 @@ export function MultiOTPInput({
                     onPaste={(e) => handlePaste(index, e)}
                     disabled={disabled}
                     autoFocus={index === 0}
+                    autoComplete={index === 0 ? 'one-time-code' : 'off'}
                     ref={(el: OTPInputRef | null) => {
                         inputRefs.current[index] = el;
                     }}

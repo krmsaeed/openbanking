@@ -86,8 +86,31 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>((props, ref) 
 
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
         const target = e.currentTarget;
+        // Only attempt to set selection range for inputs that support text selection.
+        // Some inputs (checkbox, radio, file, etc.) will throw InvalidStateError.
         setTimeout(() => {
-            target.setSelectionRange(target.value.length, target.value.length);
+            try {
+                const supportsSelection =
+                    typeof target.setSelectionRange === 'function' &&
+                    // exclude input types that don't support selection
+                    ![
+                        'checkbox',
+                        'radio',
+                        'file',
+                        'range',
+                        'color',
+                        'image',
+                        'button',
+                        'submit',
+                        'reset',
+                    ].includes((target.type || '').toLowerCase());
+
+                if (supportsSelection) {
+                    target.setSelectionRange(target.value.length, target.value.length);
+                }
+            } catch {
+                // ignore selection errors (e.g., InvalidStateError) to avoid crashing the app
+            }
         }, 0);
     };
 

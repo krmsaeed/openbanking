@@ -1,5 +1,7 @@
 const RUNTIME_CACHE = 'pwa-runtime-v1';
-const FETCH_TIMEOUT = 10000;
+const FETCH_TIMEOUT = 5000;
+const VERSION_CACHE = 'version-cache-v1';
+const VERSION_EXPIRY = 60000; // 1 minute
 
 function log(level, message, data = null) {
     const timestamp = new Date().toISOString();
@@ -28,8 +30,8 @@ function isValidUrlForCaching(url) {
 
 function getCacheStrategy(req) {
     const url = new URL(req.url);
-    // Always use network-first for the version file so clients can detect updates
-    if (url.pathname === '/version.json') return 'network-first';
+    // version.json uses stale-while-revalidate strategy to balance fresh updates with performance
+    if (url.pathname === '/version.json') return 'stale-while-revalidate';
     if (url.pathname.startsWith('/api/')) {
         return 'network-first';
     }
@@ -42,7 +44,7 @@ function getCacheStrategy(req) {
 async function cleanupOldCaches() {
     try {
         const keys = await caches.keys();
-        const oldCaches = keys.filter(key => key !== RUNTIME_CACHE);
+        const oldCaches = keys.filter(key => key !== RUNTIME_CACHE && key !== VERSION_CACHE);
         if (oldCaches.length > 0) {
             log('info', `Cleaning up ${oldCaches.length} old caches`, oldCaches);
             await Promise.all(oldCaches.map(key => caches.delete(key)));
@@ -104,6 +106,11 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         (async () => {
             try {
+                if (strategy === 'stale-while-revalidate') {
+                    const versionCache = await caches.open(VERSION_CACHE);
+                    return await handleStaleWhileRevalidate(req, versionCache);
+                }
+
                 const cache = await caches.open(RUNTIME_CACHE);
                 if (strategy === 'network-first') {
                     return await handleNetworkFirst(req, cache);
@@ -175,7 +182,7 @@ async function handleNetworkFirst(req, cache) {
         }
         return res;
     } catch (networkError) {
-        log('warn', 'Network request failed, trying cache', networkError);
+        log('debug', 'Network request failed, trying cache', networkError.message);
         try {
             const cached = await cache.match(req);
             if (cached) {
@@ -185,6 +192,52 @@ async function handleNetworkFirst(req, cache) {
         } catch (cacheError) {
             log('error', 'Cache fallback also failed', cacheError);
         }
+        throw networkError;
+    }
+}
+
+async function handleStaleWhileRevalidate(req, cache) {
+    const cacheKey = req.clone();
+
+    try {
+        const cached = await cache.match(cacheKey);
+        if (cached) {
+            // Check if cached response is fresh (within VERSION_EXPIRY)
+            const cacheDate = cached.headers.get('date');
+            const isFresh = cacheDate && (Date.now() - new Date(cacheDate).getTime()) < VERSION_EXPIRY;
+
+            if (isFresh) {
+                log('debug', 'Serving fresh cached version.json', req.url);
+                return cached;
+            }
+        }
+    } catch (e) {
+        log('debug', 'Cache lookup for version.json failed', e.message);
+    }
+
+    // Try to fetch from network in background for stale cache
+    try {
+        const fetchPromise = fetch(req);
+        const timeoutPromise = createTimeoutPromise(2000); // Shorter timeout for version check
+        const res = await Promise.race([fetchPromise, timeoutPromise]);
+
+        if (res && res.ok) {
+            try {
+                await cache.put(cacheKey, res.clone());
+                log('debug', 'Updated cached version.json', req.url);
+            } catch (cacheError) {
+                log('warn', 'Failed to cache version response', cacheError);
+            }
+        }
+        return res;
+    } catch (networkError) {
+        // If network fails but we have cached version, return it
+        const cached = await cache.match(cacheKey);
+        if (cached) {
+            log('info', 'Network failed for version.json, serving stale cache', req.url);
+            return cached;
+        }
+        log('error', 'Failed to fetch version.json and no cache available', networkError.message);
         throw networkError;
     }
 }

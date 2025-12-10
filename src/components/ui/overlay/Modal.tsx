@@ -79,7 +79,7 @@ const Modal = forwardRef<ModalRef, ModalProps>(
 
         const { modalRef: accessibilityRef, modalProps } = useModalAccessibility({
             isOpen,
-            onClose: closeOnEscape ? onClose : () => { },
+            onClose: closeOnEscape ? onClose : () => {},
             autoFocus,
         });
 

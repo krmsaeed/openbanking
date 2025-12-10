@@ -4,18 +4,25 @@ import { useUser } from '@/contexts/UserContext';
 import { showDismissibleToast } from '@/components/ui/feedback/DismissibleToast';
 import { getCookie, saveUserStateToCookie, setCookie } from '@/lib/utils';
 import { resolveCatalogMessage } from '@/services/errorCatalog';
-import axios from 'axios';
+import { makeApiCall as serviceMakeApiCall } from '@/services/bpms';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { ErrorResponse } from '@/types/error';
 
-interface ApiResponse {
-    data: {
-        body: {
-            isCustomer: boolean;
-            isDeposit: boolean;
-        };
-        processId: number;
+type HomeData = {
+    body: {
+        isCustomer: boolean;
+        isDeposit: boolean;
     };
+    processId: number;
+};
+
+function isHomeData(d: unknown): d is HomeData {
+    if (!d || typeof d !== 'object') return false;
+    const obj = d as Record<string, unknown>;
+    if (!('body' in obj) || typeof obj['body'] !== 'object') return false;
+    const body = obj['body'] as Record<string, unknown>;
+    return typeof obj['processId'] === 'number' && typeof body['isCustomer'] === 'boolean' && typeof body['isDeposit'] === 'boolean';
 }
 
 interface UseHomeLoaderReturn {
@@ -43,62 +50,52 @@ export const useHomeLoader = (): UseHomeLoaderReturn => {
             }
 
             const requestPromise = (async () => {
-                await axios
-                    .post('/api/bpms/send-message', {
-                        serviceName: 'virtual-open-deposit',
-                        body: { code },
-                    })
-                    .then((response) => {
-                        const { data } = response as ApiResponse;
+                try {
+                    const response = await serviceMakeApiCall<{ body: { isCustomer: boolean; isDeposit: boolean }; processId: number }>(code);
 
-                        if (!data || !data.body) {
-                            showDismissibleToast('پاسخ نامعتبر از سرور دریافت شد', 'error');
-                            requestCache.delete(code);
-                            return;
-                        }
+                    const data = response?.data;
 
-                        const newState = {
-                            nationalCode: code,
-                            step: 1,
-                            processId: data.processId,
-                            isCustomer: data.body.isCustomer,
-                            isDeposit: data.body.isDeposit,
-                        };
-
-                        setUserData({
-                            ...userData,
-                            ...newState,
-                        });
-
-                        saveUserStateToCookie({
-                            step: newState.step,
-                            processId: newState.processId,
-                            isCustomer: newState.isCustomer,
-                            isDeposit: newState.isDeposit,
-                        });
-
-                        router.push('/register');
-                        requestCache.set(code, true);
-                    })
-                    .catch(async (error) => {
-                        const data = error.response?.data;
-                        const message =
-                            data?.error?.status === 401
-                                ? 'اطلاعات احراز هویت یافت نشد'
-                                : await resolveCatalogMessage(
-                                      data,
-                                      'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-                                  );
-                        showDismissibleToast(message, 'error');
+                    if (!isHomeData(data)) {
+                        showDismissibleToast('پاسخ نامعتبر از سرور دریافت شد', 'error');
+                        setError(null);
                         requestCache.delete(code);
-                        router.push('/');
+                        return;
+                    }
+
+                    const newState = {
+                        nationalCode: code,
+                        step: 1,
+                        processId: data.processId,
+                        isCustomer: data.body.isCustomer,
+                        isDeposit: data.body.isDeposit,
+                    };
+
+                    setUserData({
+                        ...userData,
+                        ...newState,
                     });
+
+                    saveUserStateToCookie({
+                        step: newState.step,
+                        processId: newState.processId,
+                        isCustomer: newState.isCustomer,
+                        isDeposit: newState.isDeposit,
+                    });
+
+                    router.push('/register');
+                    requestCache.set(code, true);
+                } catch (error: unknown) {
+                    const message = (error as ErrorResponse)
+                    await resolveCatalogMessage(message.data, 'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید');
+                    showDismissibleToast(message.data.message, 'error');
+                    setError(message.data.message);
+                }
             })();
 
             requestCache.set(code, requestPromise);
             return requestPromise;
         },
-        [router, setUserData, userData]
+        [router, setUserData, userData, setError]
     );
 
     const initializeLoader = useCallback(async () => {

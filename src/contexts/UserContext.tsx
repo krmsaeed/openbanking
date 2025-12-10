@@ -6,7 +6,7 @@ import {
     removeCookie,
     saveUserStateToCookie,
 } from '@/lib/utils';
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useState, useMemo } from 'react';
 
 interface UserData {
     step?: number;
@@ -174,16 +174,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         localStorage.removeItem('userLoan');
     };
 
-    return (
-        <UserContext.Provider
-            value={{
-                userData,
-                setUserData,
-                updateUserData,
-                clearUserData,
-            }}
-        >
-            {children}
-        </UserContext.Provider>
+    // Memoize context value to prevent unnecessary re-renders of all consumers
+    const contextValue = useMemo(
+        () => ({
+            userData,
+            setUserData,
+            updateUserData,
+            clearUserData,
+        }),
+        [userData]
     );
+
+    return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
 };

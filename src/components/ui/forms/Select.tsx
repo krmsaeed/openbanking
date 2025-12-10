@@ -67,7 +67,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>((props, ref) => {
                     className={mergeClasses(
                         'text-gray w-full rounded-md bg-white p-3 px-8 shadow-md focus:border-none focus:outline-none',
                         disabled &&
-                            'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-500',
+                        'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-500',
                         props.className,
                         color
                     )}
@@ -88,12 +88,12 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>((props, ref) => {
                     {children}
                 </select>
                 {startAdornment && (
-                    <Box className="absolute right-[1rem] bottom-1/2 translate-y-1/2 transform">
+                    <Box className="absolute right-4 bottom-1/2 translate-y-1/2 transform">
                         {startAdornment}
                     </Box>
                 )}
                 {endAdornment && (
-                    <Box className="absolute bottom-1/2 left-[1rem] translate-y-1/2 transform">
+                    <Box className="absolute bottom-1/2 left-4 translate-y-1/2 transform">
                         {endAdornment}
                     </Box>
                 )}

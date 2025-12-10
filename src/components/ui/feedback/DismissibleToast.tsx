@@ -39,8 +39,9 @@ const DismissibleToast: React.FC<DismissibleToastProps> = ({ t, type = 'info', m
     return (
         <Box
             onClick={handleDismiss}
-            className={`${t.visible ? 'animate-enter' : 'animate-leave'
-                } flex cursor-pointer items-center rounded-xl border p-4 ${colors[type]} max-w-md shadow-lg transition-all hover:shadow-xl`}
+            className={`${
+                t.visible ? 'animate-enter' : 'animate-leave'
+            } flex cursor-pointer items-center rounded-xl border p-4 ${colors[type]} max-w-md shadow-lg transition-all hover:shadow-xl`}
         >
             <Box className="flex items-center space-x-2 space-x-reverse">
                 {icons[type]}

@@ -47,11 +47,12 @@ export const otpSchema = z
 
 export const englishFirstNameSchema = z
     .string({ message: 'نام لاتین الزامی است' })
-    .min(4, 'نام لاتین باید حداقل ۴ کاراکتر باشد')
+    .min(2, 'نام لاتین باید حداقل 2 کاراکتر باشد')
     .regex(/^[a-zA-Z ]+$/, 'نام لاتین باید شامل حروف انگلیسی باشد');
 
 export const englishLastNameSchema = z
     .string({ message: 'نام خانوادگی لاتین الزامی است' })
+    .min(2, 'نام خانوادگی لاتین باید حداقل 2 کاراکتر باشد')
     .regex(/^[a-zA-Z ]+$/, 'نام خانوادگی لاتین باید شامل حروف انگلیسی باشد');
 
 export const simplePasswordSchema = z

@@ -18,19 +18,23 @@ export default function ServiceWorkerRegistrar() {
 
     // Flag to prevent modal from showing again after user clicks update
     const isUpdatingRef = useRef(false);
-    const updateIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     // Global flag to ensure version checking starts only once across all instances
     const versionCheckStartedRef = useRef(false);
 
-    // Check for app updates
+    // Check for app updates — only check every 2 minutes (instead of 30 seconds)
     const checkForAppUpdate = async () => {
         // Don't check if we're already updating
         if (isUpdatingRef.current) return;
 
         try {
-            // Force a network fetch for version.json (cache-busting query + no-store)
-            const response = await fetch(`/version.json?_ts=${Date.now()}`, { cache: 'no-store' });
+            // Use fetch with no cache headers to bypass aggressive caching
+            const response = await fetch(`/version.json?_ts=${Date.now()}`, {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, max-age=0',
+                },
+            });
             const currentVersion = await response.json();
 
             const cachedVersion = localStorage.getItem('app-version');
@@ -118,13 +122,16 @@ export default function ServiceWorkerRegistrar() {
     useEffect(() => {
         if (!versionCheckStartedRef.current) {
             versionCheckStartedRef.current = true;
-            checkForAppUpdate();
-            updateIntervalRef.current = setInterval(checkForAppUpdate, 30000); // Check every 30 seconds
-        }
+            // Initial check after 5 seconds (let app stabilize)
+            const initialCheckTimeout = setTimeout(checkForAppUpdate, 5000);
+            // Then check every 2 minutes (120 seconds) instead of 30 seconds
+            const interval = setInterval(checkForAppUpdate, 120000);
 
-        return () => {
-            // Don't clear interval - let it run globally once started
-        };
+            return () => {
+                clearTimeout(initialCheckTimeout);
+                clearInterval(interval);
+            };
+        }
     }, []);
 
     const clearCacheAndReload = async () => {
@@ -133,7 +140,12 @@ export default function ServiceWorkerRegistrar() {
 
         // Update stored version FIRST so modal won't show again
         try {
-            const response = await fetch(`/version.json?_ts=${Date.now()}`, { cache: 'no-store' });
+            const response = await fetch(`/version.json?_ts=${Date.now()}`, {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, max-age=0',
+                },
+            });
             const currentVersion = await response.json();
             localStorage.setItem('app-version', currentVersion.version);
             localStorage.setItem('app-build', currentVersion.build);
@@ -151,7 +163,6 @@ export default function ServiceWorkerRegistrar() {
         try {
             const cacheNames = await caches.keys();
             await Promise.all(cacheNames.map((name) => caches.delete(name)));
-            console.log('All caches cleared successfully');
             setSwInfo((prev) => ({ ...prev, cleared: true, clearing: false }));
         } catch (error) {
             console.error('Failed to clear caches:', error);
@@ -166,7 +177,6 @@ export default function ServiceWorkerRegistrar() {
         if (registration) {
             try {
                 await registration.unregister();
-                console.log('Service worker unregistered');
             } catch (error) {
                 console.error('Failed to unregister SW:', error);
             }

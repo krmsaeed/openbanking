@@ -15,7 +15,6 @@ import {
     type ExtendedRegistrationForm,
 } from '@/lib/schemas/registration';
 import cleanNationalId, {
-    convertPersianToEnglish,
     getCookie,
     isValidNationalId,
 } from '@/lib/utils';
@@ -103,10 +102,9 @@ export default function Register() {
             const nationalId =
                 params.get('nationalId') ||
                 params.get('nationalCode') ||
-                params.get('nid') ||
+                params.get('code') ||
                 getCookie('national_id');
-            const mobile = params.get('mobile') || params.get('phone') || params.get('msisdn');
-            if (!nationalId && !mobile) return;
+            if (!nationalId) return;
             void (async () => {
                 const { isValidNationalId, cleanNationalId } = await import(
                     '@/lib/nationalIdValidator'
@@ -117,17 +115,10 @@ export default function Register() {
                         setValue('nationalCode', cleaned);
                     }
                 }
-                if (mobile) {
-                    const cleanedMobile = convertPersianToEnglish(mobile || '').replace(/\D/g, '');
-                    if (cleanedMobile.length >= 10) {
-                        setValue('phoneNumber', cleanedMobile);
-                    }
-                }
             })();
         } catch { }
     }, [setValue]);
 
-    // Read national id from cookie (if present) and set into form
 
     const getStepDescription = () => STEP_DESCRIPTIONS[userData.step ?? 1] || '';
 

@@ -55,7 +55,7 @@ const buttonVariants = cva(
 
 interface ButtonProps
     extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'color'>,
-    VariantProps<typeof buttonVariants> {
+        VariantProps<typeof buttonVariants> {
     as?: 'button' | 'link';
     href?: string;
     download?: string | boolean;
@@ -68,7 +68,7 @@ interface ButtonProps
 
 interface LinkButtonProps
     extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'color'>,
-    VariantProps<typeof buttonVariants> {
+        VariantProps<typeof buttonVariants> {
     href: string;
     loading?: boolean;
     fullWidth?: boolean;

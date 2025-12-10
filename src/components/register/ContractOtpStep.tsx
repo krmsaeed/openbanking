@@ -11,8 +11,9 @@ import { useUser } from '@/contexts/UserContext';
 import { useContractStep } from '@/hooks/useContractStep';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { set, z } from 'zod';
+import { z } from 'zod';
 import { simplePasswordSchema as personalPasswordSchema } from '@/lib/schemas/personal';
+import { useState } from 'react';
 
 type PasswordFormData = {
     password: string;
@@ -24,44 +25,50 @@ const passwordSchema = z.object({
 
 export default function ContractOtpStep() {
     const { userData } = useUser();
-
+    const [otp, setOtp] = useState('');
+    const [otpLoading, setOtpLoading] = useState(false);
     const {
         setTimeLeft,
         isResending,
         showPassword,
         setShowPassword,
-        onResend,
-        otp,
-        setOtp,
-        otpLoading,
-        setOtpLoading,
+        // otp,
+        // setOtp,
+        // otpLoading,
+        // setOtpLoading,
         setSignedPdfUrl,
         setShowModal,
-        setShowSignedPreview
+        setIsResending,
+        setShowSignedPreview,
     } = useContractStep();
     const {
         control,
         formState: { errors, isValid },
         setError,
         getValues,
+        setValue,
     } = useForm<PasswordFormData>({
         resolver: zodResolver(passwordSchema),
         defaultValues: {
             password: '',
         },
     });
-    const onIssue = async () => {
+    const onIssue = async (): Promise<void> => {
+        setOtpLoading(true);
+        const body = {
+            otpCode: otp,
+            password: getValues('password'),
+        }
+        const resendBody = {
+            tryAgain: true,
+        }
         try {
             const response = await httpClient.post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',
-                formName: 'MtcRequestSignResult',
+                formName: isResending ? 'MtcRequestSignErrorResult' : 'MtcRequestSignResult',
                 processId: userData.processId,
-                body: {
-                    otpCode: otp,
-                    password: getValues('password'),
-                },
+                body: isResending ? resendBody : body,
             });
-
             if (response.status === 200 && response.data?.body?.responseBase64) {
                 const base64 = response.data.body.responseBase64;
                 const pdfDataUrl = typeof base64 === 'string' && base64.startsWith('data:') ? base64 : `data:application/pdf;base64,${base64}`;
@@ -81,6 +88,28 @@ export default function ContractOtpStep() {
         }
     };
 
+    const onIssueRetry = async (): Promise<void> => {
+        setIsResending(true);
+        onIssue()
+        // setTimeLeft(0);
+        // try {
+        //     await httpClient.post('/api/bpms/send-message', {
+        //         serviceName: 'virtual-open-deposit',
+        //         formName: 'MtcRequestSignResult',
+        //         processId: userData.processId,
+        //         body: {
+        //             tryAgain: true,
+        //         },
+        //     });
+        //     setTimeLeft(2);
+        //     showDismissibleToast('کد تایید مجدد ارسال شد', 'success');
+        // } catch {
+        //     // setShowModal(false);
+        //     return;
+        // } finally {
+        //     setIsResending(false);
+        // }
+    };
 
     return (
         <>
@@ -93,14 +122,12 @@ export default function ContractOtpStep() {
                 </Typography>
             </Box>
             <Box className="space-y-4 bg-gray-100 p-3 rounded-lg">
-
-
                 <Box>
                     <Label required>کد تایید</Label>
                     <CertificateStep
                         otp={otp}
                         setOtp={setOtp}
-                        onResend={onResend}
+                        onResend={onIssueRetry}
                         onIssue={onIssue}
                         loading={otpLoading}
                         resendLoading={isResending}

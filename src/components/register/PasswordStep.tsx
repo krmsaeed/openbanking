@@ -67,40 +67,33 @@ export default function PasswordStep() {
             });
     };
 
-    const handleResendOTP = () => {
+    const handleResendOTP = async (): Promise<void> => {
         setIsLoading(true);
-        axios
-            .post('/api/bpms/send-message', {
+        try {
+            await axios.post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',
                 processId: userData.processId,
                 formName: 'CertificateOtpVerify',
-                body: {
-                    ENFirstName: getValues('ENFirstName'),
-                    ENLastName: getValues('ENLastName'),
-                    password: getValues('password'),
-                    tryAgain: true,
-                },
-            })
-            .then(() => {
-                setShowOtp(false);
-            })
-            .catch(async (error) => {
-                const message = await resolveCatalogMessage(
-                    error.response?.data,
-                    'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-                );
-                showDismissibleToast(message, 'error');
-            })
-            .finally(() => {
-                setIsLoading(false);
+                body: {}
             });
+            setShowOtp(false);
+        } catch (error: unknown) {
+            const responseData = axios.isAxiosError(error) ? error.response?.data : undefined;
+            const message = await resolveCatalogMessage(
+                responseData,
+                'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
+            );
+            showDismissibleToast(message, 'error');
+        } finally {
+            setIsLoading(false);
+        }
     };
     const [showPassword, setShowPassword] = useState(false);
-    const onIssue = () => {
+    const onIssue = async (): Promise<void> => {
         if (otp.length === 6) {
             setOtpLoading(true);
-            axios
-                .post('/api/bpms/send-message', {
+            try {
+                await axios.post('/api/bpms/send-message', {
                     serviceName: 'virtual-open-deposit',
                     formName: 'CertificateOtpVerify',
                     processId: userData.processId,
@@ -108,20 +101,18 @@ export default function PasswordStep() {
                         otpCode: otp.trim(),
                         password: userData.password,
                     },
-                })
-                .then(() => {
-                    setUserData({ step: 6 });
-                })
-                .catch(async (error) => {
-                    const message = await resolveCatalogMessage(
-                        error.response?.data,
-                        'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
-                    );
-                    showDismissibleToast(message, 'error');
-                })
-                .finally(() => {
-                    setOtpLoading(false);
                 });
+                setUserData({ step: 6 });
+            } catch (error: unknown) {
+                const responseData = axios.isAxiosError(error) ? error.response?.data : undefined;
+                const message = await resolveCatalogMessage(
+                    responseData,
+                    'عملیات با خطا مواجه شد، لطفاً دوباره تلاش کنید'
+                );
+                showDismissibleToast(message, 'error');
+            } finally {
+                setOtpLoading(false);
+            }
         } else {
             showDismissibleToast('کد تایید را کامل وارد کنید', 'error');
         }

@@ -62,7 +62,7 @@ export default function NationalCardOcrScanner({
 
     useEffect(() => {
         if (autoOpen && !isCameraOpen && !capturedUrl) {
-            startCamera().catch(() => { });
+            startCamera().catch(() => {});
         }
     }, [autoOpen, isCameraOpen, capturedUrl, startCamera]);
 
@@ -186,19 +186,21 @@ export default function NationalCardOcrScanner({
                         </Box>
                     )
                 ) : (
-                    <Box className="relative max-h-[350px] w-full rounded-lg border-2 border-dashed border-gray-900 md:h-64">
-                        <Box className="m-auto h-full w-full rounded-lg">
+                    <Box className="relative w-full rounded-lg border-2 border-dashed border-gray-900">
+                        <Box className="relative h-64 max-h-[350px] w-full rounded-lg md:h-64">
                             <Image
                                 src={capturedUrl}
                                 alt="preview"
                                 fill
                                 className="rounded-lg object-cover p-1"
                                 unoptimized
+                                sizes="(max-width: 768px) 100vw, 640px"
+                                priority
                             />
                         </Box>
 
-                        {!ocrLoading && (
-                            <Box className="absolute top-2 left-2 rounded-lg">
+                        {!ocrLoading && capturedUrl && (
+                            <Box className="absolute top-2 left-2 z-10 rounded-lg">
                                 {ocrValid ? (
                                     <Box className="bg-success-500 flex items-center rounded-full border-2 border-white p-1 text-white shadow-xl backdrop-blur-sm">
                                         <CheckIcon className="h-6 w-6 font-bold" />
@@ -214,7 +216,7 @@ export default function NationalCardOcrScanner({
                 )}
                 <canvas ref={canvasRef} style={{ display: 'none' }} />
                 {ocrLoading && (
-                    <Box className="absolute inset-0 flex items-center justify-center bg-black/40">
+                    <Box className="absolute inset-0 z-20 flex items-center justify-center rounded-lg bg-black/40">
                         <Box className="flex flex-col items-center gap-2">
                             <svg className="h-10 w-10 animate-spin text-white" viewBox="0 0 24 24">
                                 <circle

@@ -80,3 +80,43 @@ export async function kvDelete(key: string): Promise<void> {
         tx.onerror = () => reject(tx.error || new Error('Failed to delete value'));
     });
 }
+
+type IDBFactoryWithDatabases = IDBFactory & {
+    databases?: () => Promise<Array<{ name?: string }>>;
+};
+
+export function deleteDatabase(name: string): Promise<void> {
+    return new Promise((resolve) => {
+        try {
+            const request = indexedDB.deleteDatabase(name);
+            request.onsuccess = () => resolve();
+            request.onerror = () => resolve();
+            request.onblocked = () => resolve();
+        } catch {
+            resolve();
+        }
+    });
+}
+
+export async function clearIndexedDBDatabases(): Promise<void> {
+    if (typeof indexedDB === 'undefined') return;
+    const idbWithListing = indexedDB as IDBFactoryWithDatabases;
+
+    if (typeof idbWithListing.databases === 'function') {
+        try {
+            const databases = await idbWithListing.databases();
+            const deletions = databases
+                .map((db) => db.name)
+                .filter((name): name is string => Boolean(name))
+                .map((name) => deleteDatabase(name));
+            await Promise.all(deletions);
+            return;
+        } catch (error) {
+            // Swallow errors to avoid failing client reset logic
+            console.error('Failed to enumerate IndexedDB databases:', error);
+        }
+    }
+
+    const fallbackDatabases: string[] = [];
+    await Promise.all(fallbackDatabases.map((name) => deleteDatabase(name)));
+}

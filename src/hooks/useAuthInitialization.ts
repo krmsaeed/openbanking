@@ -73,7 +73,7 @@ export const useAuthInitialization = ({
 
             const url = new URL(window.location.href);
             url.searchParams.delete('token');
-            route.push("/")
+            route.push('/');
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'خطای نامشخص در احراز هویت';
             console.error('Auth initialization error:', err);

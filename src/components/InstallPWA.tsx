@@ -45,13 +45,9 @@ export default function InstallPWA() {
 
         try {
             await installPrompt.prompt();
-            const { outcome } = await installPrompt.userChoice;
+            await installPrompt.userChoice;
 
-            if (outcome === 'accepted') {
-                console.log('✅ PWA نصب شد');
-            } else {
-                console.log('❌ کاربر نصب را رد کرد');
-            }
+            // outcome handled silently in production
 
             setInstallPrompt(null);
             setIsInstallable(false);

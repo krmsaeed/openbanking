@@ -9,7 +9,7 @@ import { memo } from 'react';
 const HomeLoader = memo(() => {
     const { error, retry } = useHomeLoader();
     return (
-        <Box className="relative flex w-full max-w-lg flex-col items-center justify-center gap-6 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 p-8 shadow-lg">
+        <Box className="relative flex w-full max-w-lg flex-col items-center justify-center gap-6 rounded-2xl bg-linear-to-tr from-gray-200 to-gray-300 p-8 shadow-lg">
             <ThemeToggle className="absolute top-2 right-2 z-10" />
             <Box className="flex h-32 w-32 items-center justify-center">
                 <Box className="animate-spin-slow">

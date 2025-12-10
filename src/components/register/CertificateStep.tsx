@@ -9,8 +9,8 @@ import { useContractStep } from '@/hooks/useContractStep';
 interface Props {
     otp: string;
     setOtp: (v: string) => void;
-    onIssue: () => void;
-    onResend?: () => void;
+    onIssue: () => Promise<void>;
+    onResend?: () => Promise<void>;
     loading?: boolean;
     passwordInput?: React.ReactNode;
     isValid?: boolean;
@@ -44,12 +44,13 @@ export default function CertificateStep({
     otp,
     setOtp,
     onIssue,
+    onResend,
     loading,
 
     resendLoading,
 }: Props) {
 
-    const { timeLeft, setTimeLeft, onResend, canResend, setCanResend } = useContractStep();
+    const { timeLeft, setTimeLeft, canResend, setCanResend } = useContractStep();
     useEffect(() => {
 
         const timer = setInterval(() => {
@@ -89,7 +90,8 @@ export default function CertificateStep({
                 disabled={loading}
                 className=' mt-2 '
             />
-            <Box className=" flex justify-end">
+            <Box className=" flex justify-end gap-2">
+
                 {canResend && (
                     <Button
                         onClick={handleResend}
