@@ -11,7 +11,7 @@ import httpClient from '@/lib/httpClient';
 import Swal from 'sweetalert2';
 import { toPersianDate } from '@/lib/utils';
 import axios from 'axios';
-import { useContractStep } from '@/hooks/useContractStep';
+import { useContractStep } from '@/contexts/ContractContext';
 
 export default function ContractStep() {
     const { userData } = useUser();

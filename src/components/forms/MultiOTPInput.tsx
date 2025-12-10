@@ -79,7 +79,19 @@ export function MultiOTPInput({
             }
         };
 
-        requestOTP();
+        const promise = requestOTP();
+        // attach a catch to avoid unhandled promise rejection when the
+        // AbortController aborts the navigator.credentials.get() promise.
+        promise.catch((err) => {
+            // ignore AbortError which can be emitted when the effect cleans up
+            if (err && (err.name === 'AbortError' || err.message?.includes('aborted') || String(err).includes('aborted'))) {
+                return;
+            }
+            // log unexpected errors
+            // eslint-disable-next-line no-console
+            console.warn('WebOTP unexpected error:', err);
+        });
+
         return () => abortController.abort();
     }, [length, onChange, onSubmit]);
 

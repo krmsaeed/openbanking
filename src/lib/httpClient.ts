@@ -1,10 +1,18 @@
 import { clearAuthTokens, getAccessToken } from '@/lib/auth';
 import { clearUserStateCookies } from '@/lib/utils';
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import { useRouter } from 'next/navigation';
 
 type IDBFactoryWithDatabases = IDBFactory & {
     databases?: () => Promise<Array<{ name?: string }>>;
 };
+
+// Store router instance for use in interceptors
+let routerInstance: ReturnType<typeof useRouter> | null = null;
+
+export function setHttpClientRouter(router: ReturnType<typeof useRouter>) {
+    routerInstance = router;
+}
 
 function deleteDatabase(name: string): Promise<void> {
     return new Promise((resolve) => {
@@ -66,7 +74,12 @@ async function resetClientState(): Promise<void> {
         console.error('Failed to clear IndexedDB after timeout:', error);
     }
 
-    window.location.href = '/';
+    // Use router if available, otherwise fall back to window.location
+    if (routerInstance) {
+        routerInstance.push('/');
+    } else {
+        window.location.href = '/';
+    }
 }
 
 // Request deduplication cache

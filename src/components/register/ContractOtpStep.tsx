@@ -11,7 +11,7 @@ import { useUser } from '@/contexts/UserContext';
 import { useContractStep } from '@/hooks/useContractStep';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { set, z } from 'zod';
 import { simplePasswordSchema as personalPasswordSchema } from '@/lib/schemas/personal';
 
 type PasswordFormData = {
@@ -35,6 +35,9 @@ export default function ContractOtpStep() {
         setOtp,
         otpLoading,
         setOtpLoading,
+        setSignedPdfUrl,
+        setShowModal,
+        setShowSignedPreview
     } = useContractStep();
     const {
         control,
@@ -47,11 +50,7 @@ export default function ContractOtpStep() {
             password: '',
         },
     });
-
-
-
     const onIssue = async () => {
-        setOtpLoading(true);
         try {
             const response = await httpClient.post('/api/bpms/send-message', {
                 serviceName: 'virtual-open-deposit',
@@ -64,10 +63,11 @@ export default function ContractOtpStep() {
             });
 
             if (response.status === 200 && response.data?.body?.responseBase64) {
-                showDismissibleToast('تسهیلات با موفقیت امضا شد', 'success');
-                // Handle next step here
-            } else {
-                showDismissibleToast('پاسخ نامعتبر دریافت شد', 'error');
+                const base64 = response.data.body.responseBase64;
+                const pdfDataUrl = typeof base64 === 'string' && base64.startsWith('data:') ? base64 : `data:application/pdf;base64,${base64}`;
+                setSignedPdfUrl(pdfDataUrl);
+                setShowModal(false);
+                setShowSignedPreview(true);
             }
         } catch (error) {
             const message = await resolveCatalogMessage(
@@ -94,6 +94,19 @@ export default function ContractOtpStep() {
             </Box>
             <Box className="space-y-4 bg-gray-100 p-3 rounded-lg">
 
+
+                <Box>
+                    <Label required>کد تایید</Label>
+                    <CertificateStep
+                        otp={otp}
+                        setOtp={setOtp}
+                        onResend={onResend}
+                        onIssue={onIssue}
+                        loading={otpLoading}
+                        resendLoading={isResending}
+                    />
+
+                </Box>
                 <Box className="relative">
                     <Controller
                         name="password"
@@ -151,27 +164,10 @@ export default function ContractOtpStep() {
                     />
 
                 </Box>
-                <Box>
-                    <Label required>کد تایید</Label>
-                    <CertificateStep
-                        otp={otp}
-                        setOtp={setOtp}
-                        onResend={onResend}
-                        onIssue={onIssue}
-                        loading={otpLoading}
-                        resendLoading={isResending}
-
-                    />
-
-                </Box>
-
                 <Box className="mt-4">
                     <LoadingButton
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            onIssue();
-                        }}
+                        title="تایید"
+                        onClick={onIssue}
                         loading={otpLoading}
                         disabled={otp.length !== 6 || !isValid || otpLoading || isResending}
                     />

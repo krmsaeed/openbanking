@@ -4,6 +4,7 @@ import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import ServiceWorkerUnregistrar from '@/components/ServiceWorkerUnregistrar';
 import { ToastProvider } from '@/components/ui/feedback/Toast';
 import { UserProvider } from '@/contexts/UserContext';
+import { HttpClientRouterProvider } from '@/components/HttpClientRouterProvider';
 import ThemeProvider from '@/lib/ThemeProvider';
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
@@ -132,6 +133,7 @@ export default function RootLayout({
             <body className={` ${iranYekan.className} bg-gray flex w-full flex-col items-center`}>
                 <ThemeProvider>
                     <UserProvider>
+                        <HttpClientRouterProvider />
                         <ToastProvider>
                             {process.env.NEXT_PUBLIC_IS_STAGE === 'false' && (
                                 <ErrorCatalogInitializer />

@@ -2,7 +2,7 @@
 import { MultiOTPInput } from '@/components/forms';
 import { Box, Typography } from '@/components/ui';
 import { Button } from '@/components/ui/core/Button';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useContractStep } from '@/hooks/useContractStep';
 
@@ -53,7 +53,7 @@ export default function CertificateStep({
     useEffect(() => {
 
         const timer = setInterval(() => {
-            setTimeLeft((prev: number) => {
+            (setTimeLeft as React.Dispatch<React.SetStateAction<number>>)((prev: number) => {
                 if (prev <= 1) {
                     setCanResend(true);
                     return 0;
@@ -98,11 +98,10 @@ export default function CertificateStep({
                         disabled={loading || resendLoading}
                     >
 
-                        {!resendLoading ? (
-                            ' ارسال مجدد کد'
-                        ) : (
-                            <Spinner className="mr-2" />
+                        {resendLoading && (
+                            <Spinner className="ml-2" />
                         )}
+                        ارسال مجدد کد
                     </Button>
                 )}
             </Box>

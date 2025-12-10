@@ -7,6 +7,7 @@ import Sidebar from '@/components/register/Sidebar';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Box, Card, Typography } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
+import { ContractProvider } from '@/contexts/ContractContext';
 import { getNationalId } from '@/lib/auth';
 import { mediaStreamManager } from '@/lib/mediaStreamManager';
 import {
@@ -142,22 +143,24 @@ export default function Register() {
     ];
 
     return (
-        <Box className="container flex justify-center">
-            <Box
-                className={`my-2 flex w-full flex-col items-start gap-4 md:my-8 ${userData.step === 7 ? 'md:max-w-[50rem]' : 'md:max-w-[40rem]'} md:flex-row md:justify-center`}
-            >
-                <Sidebar />
+        <ContractProvider>
+            <Box className="container flex justify-center">
+                <Box
+                    className={`my-2 flex w-full flex-col items-start gap-4 md:my-8 ${userData.step === 7 ? 'md:max-w-[50rem]' : 'md:max-w-[40rem]'} md:flex-row md:justify-center`}
+                >
+                    <Sidebar />
 
-                <Box className="relative w-full">
-                    <ThemeToggle className="top-1 right-1" />
-                    <Card className="space-y-2 px-1 sm:px-4">
-                        <Typography variant="h5" className="text-center text-gray-800">
-                            {getStepDescription()}
-                        </Typography>
-                        {steps[userData.step ?? 1]}
-                    </Card>
+                    <Box className="relative w-full">
+                        <ThemeToggle className="top-1 right-1" />
+                        <Card className="space-y-2 px-1 sm:px-4">
+                            <Typography variant="h5" className="text-center text-gray-800">
+                                {getStepDescription()}
+                            </Typography>
+                            {steps[userData.step ?? 1]}
+                        </Card>
+                    </Box>
                 </Box>
             </Box>
-        </Box>
+        </ContractProvider>
     );
 }

@@ -1,5 +1,5 @@
 'use client';
-import { Box } from '@/components/ui';
+import { Box, Typography } from '@/components/ui';
 import {
     CheckCircleIcon,
     ExclamationTriangleIcon,
@@ -39,13 +39,12 @@ const DismissibleToast: React.FC<DismissibleToastProps> = ({ t, type = 'info', m
     return (
         <Box
             onClick={handleDismiss}
-            className={`${
-                t.visible ? 'animate-enter' : 'animate-leave'
-            } flex cursor-pointer items-center rounded-xl border p-4 ${colors[type]} max-w-md shadow-lg transition-all hover:shadow-xl`}
+            className={`${t.visible ? 'animate-enter' : 'animate-leave'
+                } flex cursor-pointer items-center rounded-xl border p-4 ${colors[type]} max-w-md shadow-lg transition-all hover:shadow-xl`}
         >
-            <Box className="flex items-center space-x-3 space-x-reverse">
+            <Box className="flex items-center space-x-2 space-x-reverse">
                 {icons[type]}
-                <p className="text-sm font-medium text-gray-900">{message}</p>
+                <Typography className="text-sm font-medium text-gray-900">{message}</Typography>
             </Box>
         </Box>
     );

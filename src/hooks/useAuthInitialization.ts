@@ -18,12 +18,11 @@ interface UseAuthInitializationReturn {
 export const useAuthInitialization = ({
     requireAuth = true,
 }: UseAuthInitializationOptions = {}): UseAuthInitializationReturn => {
-    const router = useRouter();
     const searchParams = useSearchParams();
     const [isInitialized, setIsInitialized] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
+    const route = useRouter();
     const validateAndCleanNationalId = useCallback(async (code: string) => {
         try {
             const { isValidNationalId, cleanNationalId } = await import(
@@ -59,7 +58,6 @@ export const useAuthInitialization = ({
 
             if (!token || !code) {
                 if (requireAuth) {
-                    router.push('/not-eligible?error=missing_params');
                     return;
                 }
                 setIsInitialized(true);
@@ -75,7 +73,7 @@ export const useAuthInitialization = ({
 
             const url = new URL(window.location.href);
             url.searchParams.delete('token');
-            window.history.replaceState({}, '', url.toString());
+            route.push("/")
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'خطای نامشخص در احراز هویت';
             console.error('Auth initialization error:', err);
@@ -83,14 +81,13 @@ export const useAuthInitialization = ({
 
             if (requireAuth) {
                 showDismissibleToast(errorMessage, 'error');
-                router.push('/not-eligible?error=initialization_failed');
             } else {
                 setIsInitialized(true);
             }
         } finally {
             setIsLoading(false);
         }
-    }, [searchParams, router, requireAuth, validateAndCleanNationalId]);
+    }, [searchParams, requireAuth, route, validateAndCleanNationalId]);
 
     useEffect(() => {
         initializeAuthentication();
