@@ -80,6 +80,10 @@ export default function CertificateStep({
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
+    const handleIssue = async () => {
+        await onIssue();
+    };
+
     return (
         <Box className="space-y-2 ">
             <MultiOTPInput
